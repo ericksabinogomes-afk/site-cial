@@ -1,0 +1,109 @@
+/*==================================================
+            ELEMENTOS DO LOGIN
+==================================================*/
+
+const loginForm = document.getElementById("loginForm");
+
+const usuario = document.getElementById("usuario");
+
+const senha = document.getElementById("senha");
+
+const toggleSenha = document.getElementById("toggleSenha");
+
+
+/*==================================================
+        MOSTRAR / OCULTAR SENHA
+==================================================*/
+
+toggleSenha.addEventListener("click", () => {
+
+    if (senha.type === "password") {
+
+        senha.type = "text";
+
+        toggleSenha.textContent = "🙈";
+
+    } else {
+
+        senha.type = "password";
+
+        toggleSenha.textContent = "👁";
+
+    }
+
+});
+/*==================================================
+            VALIDAÇÃO DO LOGIN
+==================================================*/
+
+loginForm.addEventListener("submit", (event) => {
+
+    event.preventDefault();
+
+    const usuarioValor = usuario.value.trim();
+
+    const senhaValor = senha.value.trim();
+
+    if (usuarioValor === "") {
+
+        alert("Por favor, informe seu e-mail ou CPF.");
+
+        usuario.focus();
+
+        return;
+
+    }
+
+    if (senhaValor === "") {
+
+        alert("Por favor, informe sua senha.");
+
+        senha.focus();
+
+        return;
+
+    }
+
+    realizarLogin(usuarioValor, senhaValor);
+
+});
+/*==================================================
+            LOGIN (SIMULAÇÃO)
+==================================================*/
+
+function realizarLogin(usuarioDigitado, senhaDigitada){
+
+    console.log("Usuário:", usuarioDigitado);
+
+    console.log("Senha:", senhaDigitada);
+
+    alert("Login validado com sucesso! (Modo de desenvolvimento)");
+
+}
+/*==================================================
+        LOGIN (SIMULAÇÃO)
+==================================================*/
+
+function realizarLogin(usuarioDigitado, senhaDigitada){
+
+    const botaoLogin = document.querySelector(".btn-login");
+
+    botaoLogin.disabled = true;
+
+    botaoLogin.textContent = "Entrando...";
+
+    setTimeout(() => {
+
+        console.log("Usuário:", usuarioDigitado);
+
+        console.log("Senha:", senhaDigitada);
+
+        alert("Login validado com sucesso! (Modo de desenvolvimento)");
+
+        botaoLogin.disabled = false;
+
+        botaoLogin.textContent = "Entrar";
+
+    },1000);
+
+}

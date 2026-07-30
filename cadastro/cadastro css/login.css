@@ -1,0 +1,488 @@
+/*==================================================
+                    RESET
+==================================================*/
+
+*{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+body{
+
+    font-family:'Montserrat',sans-serif;
+
+    background:#f5f5f5;
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:40px 20px;
+
+}
+
+
+/*==================================================
+                LOGIN CONTAINER
+==================================================*/
+
+.login-container{
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+
+/*==================================================
+                    LOGIN CARD
+==================================================*/
+
+.login-card{
+
+    width:100%;
+
+    max-width:500px;
+
+    background:#ffffff;
+
+    border-radius:18px;
+
+    padding:45px;
+
+    box-shadow:0 15px 45px rgba(0,0,0,.12);
+
+}
+/*==================================================
+                    LOGO
+==================================================*/
+
+.logo{
+
+    display:flex;
+
+    justify-content:center;
+
+    margin-bottom:30px;
+
+}
+
+.logo img{
+
+    width:170px;
+
+    height:auto;
+
+    user-select:none;
+
+}
+
+
+/*==================================================
+                LOGIN HEADER
+==================================================*/
+
+.login-header{
+
+    text-align:center;
+
+    margin-bottom:35px;
+
+}
+
+.login-header h1{
+
+    font-size:2rem;
+
+    color:#222;
+
+    font-weight:700;
+
+    margin-bottom:10px;
+
+}
+
+.login-header p{
+
+    font-size:1rem;
+
+    color:#666;
+
+    line-height:1.6;
+
+}
+/*==================================================
+                FORMULÁRIO
+==================================================*/
+
+#loginForm{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:22px;
+
+}
+
+.form-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.form-group label{
+
+    font-size:.95rem;
+
+    font-weight:600;
+
+    color:#333;
+
+    margin-bottom:8px;
+
+}
+
+.form-group input{
+
+    width:100%;
+
+    height:52px;
+
+    padding:0 16px;
+
+    border:1px solid #d9d9d9;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+    font-family:'Montserrat',sans-serif;
+
+    outline:none;
+
+    transition:.30s;
+
+    background:#fff;
+
+}
+
+.form-group input::placeholder{
+
+    color:#999;
+
+}
+
+.form-group input:focus{
+
+    border-color:#F37021;
+
+    box-shadow:0 0 0 4px rgba(243,112,33,.15);
+
+}
+/*==================================================
+                PASSWORD FIELD
+==================================================*/
+
+.password-field{
+
+    position:relative;
+
+}
+
+.password-field input{
+
+    padding-right:55px;
+
+}
+
+.toggle-password{
+
+    position:absolute;
+
+    top:50%;
+
+    right:16px;
+
+    transform:translateY(-50%);
+
+    background:none;
+
+    border:none;
+
+    cursor:pointer;
+
+    font-size:18px;
+
+    color:#777;
+
+    transition:.30s;
+
+}
+
+.toggle-password:hover{
+
+    color:#F37021;
+
+}
+/*==================================================
+                LOGIN OPTIONS
+==================================================*/
+
+.login-options{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:-5px;
+
+    margin-bottom:8px;
+
+}
+
+.remember-me{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-size:14px;
+
+    color:#555;
+
+    cursor:pointer;
+
+}
+
+.remember-me input{
+
+    width:16px;
+
+    height:16px;
+
+    cursor:pointer;
+
+}
+
+.login-options a{
+
+    font-size:14px;
+
+    color:#F37021;
+
+    text-decoration:none;
+
+    font-weight:600;
+
+    transition:.30s;
+
+}
+
+.login-options a:hover{
+
+    text-decoration:underline;
+
+}
+
+
+/*==================================================
+                BOTÃO ENTRAR
+==================================================*/
+
+.btn-login{
+
+    width:100%;
+
+    height:54px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#F37021;
+
+    color:#fff;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    font-family:'Montserrat',sans-serif;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+}
+
+.btn-login:hover{
+
+    background:#d95f17;
+
+    transform:translateY(-2px);
+
+}
+
+
+/*==================================================
+                LOGIN FOOTER
+==================================================*/
+
+.login-footer{
+
+    margin-top:35px;
+
+    text-align:center;
+
+}
+
+.login-footer p{
+
+    color:#666;
+
+    margin-bottom:15px;
+
+    font-size:15px;
+
+}
+
+.btn-cadastro{
+
+    display:inline-flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    width:100%;
+
+    height:52px;
+
+    border:2px solid #F37021;
+
+    border-radius:10px;
+
+    color:#F37021;
+
+    text-decoration:none;
+
+    font-weight:600;
+
+    transition:.30s;
+
+}
+
+.btn-cadastro:hover{
+
+    background:#F37021;
+
+    color:#fff;
+
+}
+/*==================================================
+                ANIMAÇÕES
+==================================================*/
+
+.login-card{
+
+    animation:fadeUp .5s ease;
+
+}
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+
+/*==================================================
+                RESPONSIVIDADE
+==================================================*/
+
+@media(max-width:600px){
+
+    body{
+
+        padding:20px;
+
+    }
+
+    .login-card{
+
+        padding:30px 25px;
+
+        border-radius:15px;
+
+    }
+
+    .logo img{
+
+        width:140px;
+
+    }
+
+    .login-header h1{
+
+        font-size:1.7rem;
+
+    }
+
+    .login-header p{
+
+        font-size:.95rem;
+
+    }
+
+    .login-options{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:15px;
+
+    }
+
+}

@@ -98,7 +98,7 @@ function realizarLogin(usuarioDigitado, senhaDigitada){
 
         console.log("Senha:", senhaDigitada);
 
-        alert("Login validado com sucesso! (Modo de desenvolvimento)");
+       window.location.href = "area-cliente.html";
 
         botaoLogin.disabled = false;
 

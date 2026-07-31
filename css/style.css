@@ -1498,30 +1498,833 @@ h2{
 }
 
 /*==================================================
-                CARRINHO
+                    RESET
 ==================================================*/
 
-body{
-
-    background:#111111;
-
-    font-family:'Montserrat',sans-serif;
-
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.cart-page{
+html{
+    scroll-behavior: smooth;
+}
 
-    padding:60px 0 100px;
+body{
+    font-family: "Montserrat", sans-serif;
+    background: rgb(250,247,240);
+    color: #333;
+}
 
+img{
+    max-width: 100%;
+    display: block;
+}
+
+a{
+    text-decoration: none;
+    color: inherit;
+}
+
+button{
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
 }
 
 .container{
+    width: 90%;
+    max-width: 1400px;
+    margin: auto;
+}
 
-    width:90%;
 
-    max-width:1400px;
 
-    margin:auto;
+/*==================================================
+                    HEADER
+==================================================*/
+
+.cart-header{
+
+    background: #ffffff;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 1000;
+
+}
+
+.cart-header .container{
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 18px 0;
+
+}
+
+.logo img{
+
+    width: 190px;
+
+}
+
+.btn-back{
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    background: #552b04;
+
+    color: white;
+
+    padding: 12px 22px;
+
+    border-radius: 12px;
+
+    font-weight: 600;
+
+    transition: .3s;
+
+}
+
+.btn-back:hover{
+
+    background: #f58220;
+
+    transform: translateY(-2px);
+
+}
+
+
+
+/*==================================================
+                    BANNER
+==================================================*/
+
+.cart-banner{
+
+    background: linear-gradient(135deg,#552b04,#7a3d07);
+
+    color: white;
+
+    padding: 70px 0;
+
+    text-align: center;
+
+}
+
+.cart-banner h1{
+
+    font-size: 42px;
+
+    margin-bottom: 15px;
+
+    font-weight: 700;
+
+}
+
+.cart-banner h1 i{
+
+    color: #f58220;
+
+    margin-right: 12px;
+
+}
+
+.cart-banner p{
+
+    font-size: 18px;
+
+    opacity: .9;
+
+}
+
+
+
+/*==================================================
+                    LAYOUT
+==================================================*/
+
+.cart-main{
+
+    padding: 50px 0;
+
+}
+
+.cart-layout{
+
+    display: grid;
+
+    grid-template-columns: 2fr 380px;
+
+    gap: 35px;
+
+    align-items: flex-start;
+
+}
+
+.cart-products{
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 25px;
+
+}
+
+
+
+/*==================================================
+            CARRINHO VAZIO
+==================================================*/
+
+.cart-empty{
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 70px 40px;
+
+    text-align: center;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+
+}
+
+.cart-empty i{
+
+    font-size: 80px;
+
+    color: #f58220;
+
+    margin-bottom: 25px;
+
+}
+
+.cart-empty h2{
+
+    color: #552b04;
+
+    margin-bottom: 12px;
+
+}
+
+.cart-empty p{
+
+    color: #777;
+
+    font-size: 17px;
+
+}
+/*==================================================
+                    RESET
+==================================================*/
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html{
+    scroll-behavior: smooth;
+}
+
+body{
+    font-family: "Montserrat", sans-serif;
+    background: rgb(250,247,240);
+    color: #333;
+}
+
+img{
+    max-width: 100%;
+    display: block;
+}
+
+a{
+    text-decoration: none;
+    color: inherit;
+}
+
+button{
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.container{
+    width: 90%;
+    max-width: 1400px;
+    margin: auto;
+}
+
+
+
+/*==================================================
+                    HEADER
+==================================================*/
+
+.cart-header{
+
+    background: #ffffff;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 1000;
+
+}
+
+.cart-header .container{
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 18px 0;
+
+}
+
+.logo img{
+
+    width: 190px;
+
+}
+
+.btn-back{
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    background: #552b04;
+
+    color: white;
+
+    padding: 12px 22px;
+
+    border-radius: 12px;
+
+    font-weight: 600;
+
+    transition: .3s;
+
+}
+
+.btn-back:hover{
+
+    background: #f58220;
+
+    transform: translateY(-2px);
+
+}
+
+
+
+/*==================================================
+                    BANNER
+==================================================*/
+
+.cart-banner{
+
+    background: linear-gradient(135deg,#552b04,#7a3d07);
+
+    color: white;
+
+    padding: 70px 0;
+
+    text-align: center;
+
+}
+
+.cart-banner h1{
+
+    font-size: 42px;
+
+    margin-bottom: 15px;
+
+    font-weight: 700;
+
+}
+
+.cart-banner h1 i{
+
+    color: #f58220;
+
+    margin-right: 12px;
+
+}
+
+.cart-banner p{
+
+    font-size: 18px;
+
+    opacity: .9;
+
+}
+
+
+
+/*==================================================
+                    LAYOUT
+==================================================*/
+
+.cart-main{
+
+    padding: 50px 0;
+
+}
+
+.cart-layout{
+
+    display: grid;
+
+    grid-template-columns: 2fr 380px;
+
+    gap: 35px;
+
+    align-items: flex-start;
+
+}
+
+.cart-products{
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 25px;
+
+}
+
+
+
+/*==================================================
+            CARRINHO VAZIO
+==================================================*/
+
+.cart-empty{
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 70px 40px;
+
+    text-align: center;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+
+}
+
+.cart-empty i{
+
+    font-size: 80px;
+
+    color: #f58220;
+
+    margin-bottom: 25px;
+
+}
+
+.cart-empty h2{
+
+    color: #552b04;
+
+    margin-bottom: 12px;
+
+}
+
+.cart-empty p{
+
+    color: #777;
+
+    font-size: 17px;
+
+}
+/*==================================================
+                RESUMO DO PEDIDO
+==================================================*/
+
+.cart-summary{
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+
+    position: sticky;
+
+    top: 100px;
+
+}
+
+.cart-summary h2{
+
+    color: #552b04;
+
+    font-size: 28px;
+
+    margin-bottom: 30px;
+
+    text-align: center;
+
+}
+
+.summary-row{
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 18px;
+
+    font-size: 17px;
+
+    color: #555;
+
+}
+
+.summary-row strong{
+
+    color: #333;
+
+    font-size: 18px;
+
+}
+
+.cart-summary hr{
+
+    border: none;
+
+    border-top: 1px solid #e5e5e5;
+
+    margin: 25px 0;
+
+}
+
+.summary-total{
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 30px;
+
+    font-size: 22px;
+
+    font-weight: bold;
+
+}
+
+.summary-total strong{
+
+    color: #f58220;
+
+    font-size: 30px;
+
+}
+
+
+
+/*==================================================
+                OBSERVAÇÕES
+==================================================*/
+
+.cart-summary label{
+
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #552b04;
+
+    font-weight: 600;
+
+}
+
+.cart-summary textarea{
+
+    width: 100%;
+
+    height: 120px;
+
+    resize: none;
+
+    padding: 15px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 12px;
+
+    outline: none;
+
+    font-size: 15px;
+
+    margin-bottom: 25px;
+
+    transition: .3s;
+
+    font-family: inherit;
+
+}
+
+.cart-summary textarea:focus{
+
+    border-color: #f58220;
+
+    box-shadow: 0 0 10px rgba(245,130,32,.2);
+
+}
+
+
+
+/*==================================================
+                    BOTÕES
+==================================================*/
+
+.btn-finish,
+.btn-whatsapp{
+
+    width: 100%;
+
+    padding: 16px;
+
+    border-radius: 12px;
+
+    font-size: 17px;
+
+    font-weight: 600;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 10px;
+
+    transition: .3s;
+
+}
+
+.btn-finish{
+
+    background: #f58220;
+
+    color: white;
+
+    margin-bottom: 15px;
+
+}
+
+.btn-finish:hover{
+
+    background: #d96f12;
+
+    transform: translateY(-2px);
+
+}
+
+.btn-whatsapp{
+
+    background: #25D366;
+
+    color: white;
+
+}
+
+.btn-whatsapp:hover{
+
+    background: #1ebd59;
+
+    transform: translateY(-2px);
+
+}
+
+
+
+/*==================================================
+                    FOOTER
+==================================================*/
+
+footer{
+
+    margin-top: 70px;
+
+}
+
+
+
+/*==================================================
+                RESPONSIVIDADE
+==================================================*/
+
+@media(max-width:1200px){
+
+    .cart-layout{
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .cart-summary{
+
+        position: static;
+
+    }
+
+}
+
+
+
+@media(max-width:900px){
+
+    .cart-item{
+
+        grid-template-columns: 1fr;
+
+        text-align: center;
+
+    }
+
+    .cart-item-image{
+
+        margin: auto;
+
+    }
+
+    .cart-item-info{
+
+        text-align: center;
+
+    }
+
+    .cart-item-quantity{
+
+        justify-self: center;
+
+    }
+
+    .cart-item-subtotal{
+
+        margin-top: 10px;
+
+    }
+
+    .btn-remove{
+
+        width: 100%;
+
+        height: 50px;
+
+        font-size: 17px;
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        gap: 10px;
+
+    }
+
+}
+
+
+
+@media(max-width:768px){
+
+    .cart-banner{
+
+        padding: 50px 20px;
+
+    }
+
+    .cart-banner h1{
+
+        font-size: 32px;
+
+    }
+
+    .cart-header .container{
+
+        flex-direction: column;
+
+        gap: 20px;
+
+    }
+
+    .logo img{
+
+        width: 170px;
+
+    }
+
+}
+
+
+
+@media(max-width:500px){
+
+    .container{
+
+        width: 94%;
+
+    }
+
+    .cart-item{
+
+        padding: 18px;
+
+    }
+
+    .cart-item-info h3{
+
+        font-size: 21px;
+
+    }
+
+    .cart-item-info strong{
+
+        font-size: 24px;
+
+    }
+
+    .summary-total strong{
+
+        font-size: 24px;
+
+    }
 
 }
 

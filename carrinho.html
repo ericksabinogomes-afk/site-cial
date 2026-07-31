@@ -4,181 +4,216 @@
 <head>
 
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Meu Carrinho | CIAL Asa Sul</title>
-
-    <link rel="stylesheet" href="css/style.css">
+    <title>Carrinho | CIAL Asa Sul</title>
 
     <link rel="stylesheet" href="css/carrinho.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+        href="css/style.css">
 
 </head>
 
 <body>
 
-<header class="cart-header">
+    <!--==========================
+            HEADER
+    ===========================-->
 
-    <div class="container">
+    <header class="cart-header">
 
-        <a href="index.html" class="logo">
+        <div class="container">
 
-            <img src="imagens/logo.png" alt="CIAL Asa Sul">
+            <a href="index.html" class="logo">
 
-        </a>
+                <img src="imagens/logo.png" alt="Logo CIAL">
 
-        <a href="produtos.html" class="back-shop">
+            </a>
 
-            <i class="fa-solid fa-arrow-left"></i>
+            <a href="produtos.html" class="btn-back">
 
-            Continuar Comprando
+                <i class="fa-solid fa-arrow-left"></i>
 
-        </a>
+                Continuar Comprando
 
-    </div>
+            </a>
 
-</header>
+        </div>
 
-<section class="cart-title">
-
-    <div class="container">
-
-        <h1>
-
-            <i class="fa-solid fa-cart-shopping"></i>
-
-            Meu Carrinho
-
-        </h1>
-
-        <p>
-
-            Revise seus produtos antes de finalizar seu pedido.
-
-        </p>
-
-    </div>
-
-</section>
-
-<main class="cart-page">
-
-    <div class="container">
-
-        <section class="cart-products">
+    </header>
 
 
-        </section>
+    <!--==========================
+            BANNER
+    ===========================-->
 
-        <section class="order-summary">
+    <section class="cart-banner">
 
-            <h2>
+        <div class="container">
 
-                Resumo do Pedido
+            <h1>
 
-            </h2>
+                <i class="fa-solid fa-cart-shopping"></i>
 
-            <div class="summary-row">
+                Meu Carrinho
 
-                <span>Subtotal</span>
+            </h1>
 
-                <strong id="subtotal">
+            <p>
 
-                    R$ 0,00
+                Confira seus produtos antes de finalizar seu pedido.
 
-                </strong>
+            </p>
 
-            </div>
+        </div>
 
-            <div class="summary-row">
+    </section>
 
-                <span>Frete</span>
 
-                <strong>
 
-                    A calcular
+    <!--==========================
+            CONTEÚDO
+    ===========================-->
 
-                </strong>
+    <main class="cart-main">
 
-            </div>
+        <div class="container cart-layout">
 
-            <div class="summary-total">
 
-                <span>Total</span>
+            <!-- Produtos -->
 
-                <strong id="total">
+            <section class="cart-products">
 
-                    R$ 0,00
+                <!--
+                    Os produtos serão criados
+                    automaticamente pelo JavaScript.
+                -->
 
-                </strong>
+            </section>
 
-            </div>
 
-            <div class="cart-notes">
 
-                <label for="observacoes">
+            <!-- Resumo -->
+
+            <aside class="cart-summary">
+
+                <h2>
+
+                    Resumo do Pedido
+
+                </h2>
+
+
+                <div class="summary-row">
+
+                    <span>Subtotal</span>
+
+                    <strong id="subtotal">
+
+                        R$ 0,00
+
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>Frete</span>
+
+                    <strong id="shipping">
+
+                        A calcular
+
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>Desconto</span>
+
+                    <strong id="discount">
+
+                        R$ 0,00
+
+                    </strong>
+
+                </div>
+
+
+                <hr>
+
+
+                <div class="summary-total">
+
+                    <span>Total</span>
+
+                    <strong id="total">
+
+                        R$ 0,00
+
+                    </strong>
+
+                </div>
+
+
+                <label for="obs">
 
                     Observações
 
                 </label>
 
                 <textarea
+                    id="obs"
+                    placeholder="Deseja informar alguma observação sobre o pedido?"></textarea>
 
-                    id="observacoes"
-
-                    placeholder="Ex.: Retirar na loja, orçamento para empresa, entrega...">
-
-                </textarea>
-
-            </div>
-
-            <div class="cart-buttons">
 
                 <button class="btn-finish">
+
+                    <i class="fa-solid fa-check"></i>
 
                     Finalizar Pedido
 
                 </button>
 
+
                 <button class="btn-whatsapp">
 
                     <i class="fa-brands fa-whatsapp"></i>
 
-                    Finalizar pelo WhatsApp
+                    Enviar pelo WhatsApp
 
                 </button>
 
-            </div>
+            </aside>
 
-            <a href="produtos.html"
-               class="continue-shopping">
+        </div>
 
-                ← Continuar Comprando
+    </main>
 
-            </a>
 
-        </section>
 
-    </div>
+    <!--==========================
+            FOOTER
+    ===========================-->
 
-</main>
+    <footer>
 
-<footer>
+        <!-- Mesmo footer utilizado no restante do site -->
 
-    <!-- Footer da CIAL -->
+    </footer>
 
-</footer>
 
-<script src="js/carrinho.js"></script>
+
+    <script src="js/carrinho.js"></script>
 
 </body>
 

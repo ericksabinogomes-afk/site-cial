@@ -421,7 +421,7 @@ if(cep){
     VALIDAÇÃO FINAL
 ==========================================================*/
 
-form.addEventListener("submit", function(event){
+form.addEventListener("submit", async function(event){
 
     event.preventDefault();
 
@@ -461,11 +461,40 @@ form.addEventListener("submit", function(event){
 
 
     /*======================================================
-        CADASTRO CONCLUÍDO
+        Pegar campos para o back
     ======================================================*/
+    const nome = document.getElementById("nome").value;
 
-    alert("Cadastro realizado com sucesso!");
+    const email = document.getElementById("email").value;
 
-    form.submit();
+    /*mandar para o supabase*/
+    try {
+        const response = await fetch("http://localhost:4000/cadastro", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nome,
+                email,
+                senha: senha.value
+            })
+        });
 
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+            alert("Erro ao cadastrar: " + (result.erro || "tente novamente"));
+            return;
+        }
+
+        /* CADASTRO CONCLUÍDO */
+        alert("Cadastro realizado com sucesso!");
+        // redirecionar para a pagina certa
+        // por exemplo:
+        // window.location.href = "login.html";
+    } catch (error) {
+        console.error(error);
+        alert("Erro de conexão com o servidor. Tente novamente.");
+    }
 });

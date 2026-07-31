@@ -82,7 +82,7 @@ function realizarLogin(usuarioDigitado, senhaDigitada){
 }
 /*==================================================
         LOGIN (SIMULAÇÃO)
-==================================================*/
+====================================================
 
 function realizarLogin(usuarioDigitado, senhaDigitada){
 
@@ -106,4 +106,48 @@ function realizarLogin(usuarioDigitado, senhaDigitada){
 
     },1000);
 
+}*/
+
+/*==================================================
+        LOGIN (BACKEND REAL)
+==================================================*/
+
+async function realizarLogin(usuarioDigitado, senhaDigitada){
+
+    const botaoLogin = document.querySelector(".btn-login");
+
+    botaoLogin.disabled = true;
+    botaoLogin.textContent = "Entrando...";
+
+    try {
+        const response = await fetch("http://localhost:4000/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: usuarioDigitado, // se o campo for e-mail
+                senha: senhaDigitada
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+            alert(result.erro || "E-mail ou senha inválidos.");
+            botaoLogin.disabled = false;
+            botaoLogin.textContent = "Entrar";
+            return;
+        }
+
+        alert("Login realizado com sucesso!");
+        // redirecionar se quiser:
+        // window.location.href = "index.html";
+    } catch (error) {
+        console.error(error);
+        alert("Erro de conexão com o servidor. Tente novamente.");
+    } finally {
+        botaoLogin.disabled = false;
+        botaoLogin.textContent = "Entrar";
+    }
 }

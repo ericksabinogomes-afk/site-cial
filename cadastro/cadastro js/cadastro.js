@@ -495,6 +495,6 @@ form.addEventListener("submit", async function(event){
         // window.location.href = "login.html";
     } catch (error) {
         console.error(error);
-        alert("Erro de conexão com o servidor. Tente novamente.");
+        window.location.href = "login.html"
     }
 });

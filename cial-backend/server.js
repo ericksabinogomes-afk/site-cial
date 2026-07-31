@@ -33,6 +33,31 @@ app.get('/teste-supabase', async (req, res) => {
   }
 });
 
+app.post('/login', async (req, res) => {
+  const { email, senha } = req.body;
+
+  try {
+    const { data, error } = await supabase
+      .from('usuarios')
+      .select('*')
+      .eq('email', email)
+      .eq('senha', senha)
+      .limit(1);
+
+    if (error) {
+      return res.status(500).json({ erro: error.message });
+    }
+
+    if (!data || data.length === 0) {
+      return res.status(401).json({ ok: false, erro: 'E-mail ou senha inválidos' });
+    }
+
+    // por enquanto, só confirma login
+    res.json({ ok: true, usuario: data[0] });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
 
 const PORT = process.env.PORT || 4000;
 
@@ -60,3 +85,4 @@ app.post('/cadastro', async (req, res) => {
     res.status(500).json({ erro: err.message });
   }
 });
+

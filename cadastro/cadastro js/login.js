@@ -140,9 +140,8 @@ async function realizarLogin(usuarioDigitado, senhaDigitada){
             return;
         }
 
-        alert("Login realizado com sucesso!");
-        // redirecionar se quiser:
-        // window.location.href = "index.html";
+        window.location.href = "../cadastro/area-cliente.html";
+        
     } catch (error) {
         console.error(error);
         alert("Erro de conexão com o servidor. Tente novamente.");

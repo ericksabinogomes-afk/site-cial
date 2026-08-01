@@ -488,10 +488,7 @@ form.addEventListener("submit", async function(event){
             return;
         }
 
-        /* CADASTRO CONCLUÍDO */
-        alert("Cadastro realizado com sucesso!");
-        // redirecionar para a pagina certa
-        // por exemplo:
+       window.location.href = "../area-cliente.html";
         // window.location.href = "login.html";
     } catch (error) {
         console.error(error);

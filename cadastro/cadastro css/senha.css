@@ -1,0 +1,39 @@
+/*==================================
+           RESET
+ ===================================*/
+
+ *{ 
+
+   margin: 0;
+   padding:0;
+   box-sizing: border-box;
+
+}
+   body{
+   font-family:montserrat, sans-serif;
+ 
+   background:
+   linear-gradient(135deg, #f7f5f2, #ece7df);
+     
+
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+
+   }
+
+
+   /*=================================
+             CONTAINER
+   ==================================*/
+
+   .recover-container{
+
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+   }

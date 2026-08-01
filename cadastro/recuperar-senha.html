@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Recuperar Senha | CIAL Asa Sul</title>
+
+    <link rel="stylesheet"
+          href="css/recuperar-senha.css">
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+    <main class="recover-container">
+
+        <div class="recover-card">
+
+            <div class="logo">
+
+                <img src="imagens/logo.png"
+                     alt="Logo CIAL">
+
+            </div>
+
+            <h1>
+
+                Recuperar Senha
+
+            </h1>
+
+            <p>
+
+                Informe seu e-mail para recuperar sua conta.
+
+            </p>
+
+
+
+            <!--==========================
+                    ETAPA 1
+            ==========================-->
+
+            <section
+                id="step-email"
+                class="step active">
+
+                <label>
+
+                    E-mail
+
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Digite seu e-mail">
+
+                <button
+                    class="btn-primary"
+                    id="btnEnviar">
+
+                    Enviar Código
+
+                </button>
+
+            </section>
+
+
+
+            <!--==========================
+                    ETAPA 2
+            ==========================-->
+
+            <section
+                id="step-code"
+                class="step">
+
+                <label>
+
+                    Código recebido
+
+                </label>
+
+                <input
+                    type="text"
+                    id="codigo"
+                    maxlength="6"
+                    placeholder="Digite o código">
+
+                <button
+                    class="btn-primary"
+                    id="btnValidar">
+
+                    Validar Código
+
+                </button>
+
+            </section>
+
+
+
+            <!--==========================
+                    ETAPA 3
+            ==========================-->
+
+            <section
+                id="step-password"
+                class="step">
+
+                <label>
+
+                    Nova senha
+
+                </label>
+
+                <input
+                    type="password"
+                    id="novaSenha"
+                    placeholder="Digite a nova senha">
+
+                <label>
+
+                    Confirmar senha
+
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmarSenha"
+                    placeholder="Confirme a senha">
+
+                <button
+                    class="btn-primary"
+                    id="btnAlterar">
+
+                    Alterar Senha
+
+                </button>
+
+            </section>
+
+            <a href="login.html"
+               class="voltar">
+
+                ← Voltar para Login
+
+            </a>
+
+        </div>
+
+    </main>
+
+    <script src="js/recuperar-senha.js"></script>
+
+</body>
+
+</html>

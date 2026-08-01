@@ -488,10 +488,10 @@ form.addEventListener("submit", async function(event){
             return;
         }
 
-       window.location.href = "../area-cliente.html";
-        // window.location.href = "login.html";
+       window.location.href = "../cadastro/login.html";
+    
     } catch (error) {
         console.error(error);
-        window.location.href = "login.html"
+        window.location.href = "../cadastro/login.html"
     }
 });

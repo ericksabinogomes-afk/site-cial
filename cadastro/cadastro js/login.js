@@ -6,7 +6,7 @@ const loginForm = document.getElementById("loginForm");
 
 const usuario = document.getElementById("usuario");
 
-const senha = document.getElementById("senha");
+const senhaLogin = document.getElementById("senha");
 
 const toggleSenha = document.getElementById("toggleSenha");
 
@@ -69,7 +69,7 @@ loginForm.addEventListener("submit", (event) => {
 });
 /*==================================================
             LOGIN (SIMULAÇÃO)
-==================================================*/
+==================================================
 
 function realizarLogin(usuarioDigitado, senhaDigitada){
 
@@ -112,8 +112,7 @@ function realizarLogin(usuarioDigitado, senhaDigitada){
         LOGIN (BACKEND REAL)
 ==================================================*/
 
-async function realizarLogin(usuarioDigitado, senhaDigitada){
-
+async function realizarLogin(usuarioDigitado, senhaDigitada) {
     const botaoLogin = document.querySelector(".btn-login");
 
     botaoLogin.disabled = true;
@@ -126,7 +125,7 @@ async function realizarLogin(usuarioDigitado, senhaDigitada){
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                email: usuarioDigitado, // se o campo for e-mail
+                identificador: usuarioDigitado, // pode ser e-mail OU CPF
                 senha: senhaDigitada
             })
         });
@@ -134,14 +133,14 @@ async function realizarLogin(usuarioDigitado, senhaDigitada){
         const result = await response.json();
 
         if (!response.ok || !result.ok) {
-            alert(result.erro || "E-mail ou senha inválidos.");
+            alert(result.erro || "Usuário ou senha inválidos.");
             botaoLogin.disabled = false;
             botaoLogin.textContent = "Entrar";
             return;
         }
 
+        // login OK: redireciona para área do cliente
         window.location.href = "../cadastro/area-cliente.html";
-        
     } catch (error) {
         console.error(error);
         alert("Erro de conexão com o servidor. Tente novamente.");

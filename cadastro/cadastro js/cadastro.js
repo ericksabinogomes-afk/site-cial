@@ -460,14 +460,25 @@ form.addEventListener("submit", async function(event){
     }
 
 
-    /*======================================================
-        Pegar campos para o back
-    ======================================================*/
-    const nome = document.getElementById("nome").value;
-
+/*======================================================
+    Pegar campos para o back
+=======================================================*/
+  const nome = document.getElementById("nome").value;
     const email = document.getElementById("email").value;
+    const cpfValor = document.getElementById("cpf").value;
+    const telefoneValor = document.getElementById("telefone")?.value || "";
+    const whatsappValor = document.getElementById("whatsapp")?.value || "";
+    const cepValor = document.getElementById("cep").value;
+    const ruaValor = document.getElementById("rua").value;
+    const bairroValor = document.getElementById("bairro").value;
+    const cidadeValor = document.getElementById("cidade").value;
+    const estadoValor = document.getElementById("estado").value;
+    const numeroEnderecoValor = document.getElementById("numero").value;
+    const tipoPessoaValor = document.getElementById("tipoPessoa")?.value || null;
+    const cnpjValor = document.getElementById("cnpj")?.value || "";
+    const razaoSocialValor = document.getElementById("razaoSocial")?.value || "";
+    const nomeFantasiaValor = document.getElementById("nomeFantasia")?.value || "";
 
-    /*mandar para o supabase*/
     try {
         const response = await fetch("http://localhost:4000/cadastro", {
             method: "POST",
@@ -477,7 +488,20 @@ form.addEventListener("submit", async function(event){
             body: JSON.stringify({
                 nome,
                 email,
-                senha: senha.value
+                senha: senha.value,
+                cpf: cpfValor,
+                telefone: telefoneValor,
+                whatsapp: whatsappValor,
+                cep: cepValor,
+                rua: ruaValor,
+                bairro: bairroValor,
+                cidade: cidadeValor,
+                estado: estadoValor,
+                numero_endereco: numeroEnderecoValor,
+                tipo_pessoa: tipoPessoaValor,
+                cnpj: cnpjValor,
+                razao_social: razaoSocialValor,
+                nome_fantasia: nomeFantasiaValor
             })
         });
 
@@ -488,10 +512,9 @@ form.addEventListener("submit", async function(event){
             return;
         }
 
-       window.location.href = "../cadastro/login.html";
-    
+        window.location.href = "../cadastro/login.html";
     } catch (error) {
         console.error(error);
-        window.location.href = "../cadastro/login.html"
+        alert("Erro de conexão. Tente novamente.");
     }
 });

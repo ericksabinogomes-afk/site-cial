@@ -1,39 +1,381 @@
-/*==================================
-           RESET
- ===================================*/
+/*==================================================
+                    RESET
+==================================================*/
 
- *{ 
+*{
 
-   margin: 0;
-   padding:0;
-   box-sizing: border-box;
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
 
 }
-   body{
-   font-family:montserrat, sans-serif;
- 
-   background:
-   linear-gradient(135deg, #f7f5f2, #ece7df);
-     
 
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 30px;
+body{
 
-   }
+    font-family: "Montserrat", sans-serif;
 
+    background: linear-gradient(135deg,#f7f5f2,#ece7df);
 
-   /*=================================
-             CONTAINER
-   ==================================*/
+    min-height: 100vh;
 
-   .recover-container{
-
-    width: 100%;
     display: flex;
+
     justify-content: center;
+
     align-items: center;
 
-   }
+    padding: 30px;
+
+}
+
+
+
+/*==================================================
+                CONTAINER
+==================================================*/
+
+.recover-container{
+
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+
+
+/*==================================================
+                    CARD
+==================================================*/
+
+.recover-card{
+
+    width: 100%;
+
+    max-width: 470px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 45px;
+
+    box-shadow: 0 15px 40px rgba(0,0,0,.10);
+
+    animation: aparecer .5s ease;
+
+}
+
+
+
+/*==================================================
+                    LOGO
+==================================================*/
+
+.logo{
+
+    text-align: center;
+
+    margin-bottom: 30px;
+
+}
+
+.logo img{
+
+    width: 170px;
+
+}
+
+
+
+/*==================================================
+                    TÍTULO
+==================================================*/
+
+.recover-card h1{
+
+    text-align: center;
+
+    color: #552b04;
+
+    margin-bottom: 12px;
+
+    font-size: 32px;
+
+}
+
+.recover-card p{
+
+    text-align: center;
+
+    color: #777;
+
+    line-height: 1.6;
+
+    margin-bottom: 35px;
+
+}
+
+
+
+/*==================================================
+                    ETAPAS
+==================================================*/
+
+.step{
+
+    display: none;
+
+    animation: aparecer .35s ease;
+
+}
+
+.step.active{
+
+    display: block;
+
+}
+/*==================================================
+                    LABELS
+==================================================*/
+
+.step label{
+
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #552b04;
+
+    font-weight: 600;
+
+    font-size: 15px;
+
+}
+
+
+
+/*==================================================
+                    INPUTS
+==================================================*/
+
+.step input{
+
+    width: 100%;
+
+    padding: 15px;
+
+    margin-bottom: 25px;
+
+    border: 1px solid #d9d9d9;
+
+    border-radius: 12px;
+
+    outline: none;
+
+    font-size: 15px;
+
+    transition: .3s;
+
+    font-family: inherit;
+
+}
+
+.step input:focus{
+
+    border-color: #f58220;
+
+    box-shadow: 0 0 0 4px rgba(245,130,32,.15);
+
+}
+
+
+
+/*==================================================
+                    BOTÃO
+==================================================*/
+
+.btn-primary{
+
+    width: 100%;
+
+    background: #f58220;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 12px;
+
+    padding: 16px;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .3s;
+
+}
+
+.btn-primary:hover{
+
+    background: #d86d11;
+
+    transform: translateY(-2px);
+
+}
+
+.btn-primary:active{
+
+    transform: scale(.98);
+
+}
+
+
+
+/*==================================================
+                LINK VOLTAR
+==================================================*/
+
+.voltar{
+
+    display: block;
+
+    text-align: center;
+
+    margin-top: 30px;
+
+    text-decoration: none;
+
+    color: #552b04;
+
+    font-weight: 600;
+
+    transition: .3s;
+
+}
+
+.voltar:hover{
+
+    color: #f58220;
+
+}
+
+
+
+/*==================================================
+                ANIMAÇÃO
+==================================================*/
+
+@keyframes aparecer{
+
+    from{
+
+        opacity: 0;
+
+        transform: translateY(20px);
+
+    }
+
+    to{
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+
+}
+
+
+
+/*==================================================
+                RESPONSIVO
+==================================================*/
+
+@media(max-width:600px){
+
+    body{
+
+        padding: 20px;
+
+    }
+
+    .recover-card{
+
+        padding: 30px 25px;
+
+    }
+
+    .logo img{
+
+        width: 140px;
+
+    }
+
+    .recover-card h1{
+
+        font-size: 28px;
+
+    }
+
+    .recover-card p{
+
+        font-size: 15px;
+
+    }
+
+}
+/*==================================================
+                MENSAGENS
+==================================================*/
+
+#mensagem{
+
+    display: none;
+
+    margin-bottom: 25px;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    text-align: center;
+
+}
+
+#mensagem.sucesso{
+
+    display: block;
+
+    background: #e8f8ee;
+
+    color: #188038;
+
+    border: 1px solid #b7e1c0;
+
+}
+
+#mensagem.erro{
+
+    display: block;
+
+    background: #fdecec;
+
+    color: #c62828;
+
+    border: 1px solid #f5bcbc;
+
+}

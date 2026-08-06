@@ -14,6 +14,85 @@ const btnGarantia = document.querySelectorAll(".btn-garantia");
 
 const btnSalvar = document.querySelector(".btn-salvar");
 const btnAlterarSenha = document.querySelector(".btn-alterar-senha");
+
+/* ===== NOVO: usuário logado ===== */
+
+let usuarioAtual = null;
+
+function carregarUsuarioLogado() {
+    const usuarioJSON = localStorage.getItem("usuarioCial");
+
+    if (!usuarioJSON) {
+        // Não está logado -> volta para login
+        window.location.href = "../cadastro/login.html";
+        return null;
+    }
+
+    try {
+        const usuario = JSON.parse(usuarioJSON);
+        return usuario;
+    } catch (e) {
+        console.error("Erro ao ler usuarioCial:", e);
+        localStorage.removeItem("usuarioCial");
+        window.location.href = "../cadastro/login.html";
+        return null;
+    }
+}
+
+function atualizarInterfaceUsuario() {
+    if (!usuarioAtual) return;
+
+    const nomeCompleto = usuarioAtual.nome || "Cliente";
+    const primeiroNome = nomeCompleto.split(" ")[0];
+    const iniciais = nomeCompleto
+        .split(" ")
+        .filter(Boolean)
+        .map(n => n[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase();
+
+    // Topo
+    const spanNomeUsuario = document.getElementById("nomeUsuario");
+    if (spanNomeUsuario) {
+        spanNomeUsuario.textContent = `Olá, ${primeiroNome} 👋`;
+    }
+
+    const avatarTopo = document.querySelector(".avatar");
+    if (avatarTopo) {
+        avatarTopo.textContent = iniciais;
+    }
+
+    const fotoPerfil = document.querySelector(".foto-perfil");
+    if (fotoPerfil) {
+        fotoPerfil.textContent = iniciais;
+    }
+
+    const h2PerfilNome = document.querySelector(".perfil h2");
+    if (h2PerfilNome) {
+        h2PerfilNome.textContent = nomeCompleto;
+    }
+
+    // Form "Meus Dados"
+    const inputNome = document.getElementById("nome");
+    const inputEmail = document.getElementById("email");
+    const inputTelefone = document.getElementById("telefone");
+    const inputCpf = document.getElementById("cpf");
+
+    if (inputNome) inputNome.value = usuarioAtual.nome || "";
+    if (inputEmail) inputEmail.value = usuarioAtual.email || "";
+    if (inputTelefone) inputTelefone.value = usuarioAtual.telefone || "";
+    if (inputCpf) inputCpf.value = usuarioAtual.cpf || "";
+}
+
+/* ===== Logout ===== */
+
+function fazerLogout() {
+    localStorage.removeItem("usuarioCial");
+    window.location.href = "../cadastro/login.html";
+}
+
+
 /* =====================================================
    ABRIR SEÇÃO
 ===================================================== */
@@ -64,9 +143,7 @@ function iniciarMenu() {
                 const confirmar = confirm("Deseja realmente sair da sua conta?");
 
                 if (confirmar) {
-
-                    alert("Logout em desenvolvimento.");
-
+                    fazerLogout();
                 }
 
                 return;
@@ -223,22 +300,22 @@ function iniciarSeguranca() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    // Carregar usuário logado
+    usuarioAtual = carregarUsuarioLogado();
+    if (!usuarioAtual) return; // se não tiver, já redirecionou
+
+    // Atualizar topo e "Meus Dados"
+    atualizarInterfaceUsuario();
+
+    // Inicializar o resto da página
     iniciarMenu();
-
     iniciarCards();
-
     iniciarPedidos();
-
     iniciarFavoritos();
-
     iniciarOrcamentos();
-
     iniciarGarantias();
-
     iniciarDados();
-
     iniciarSeguranca();
-
     abrirSecao("inicio");
 
 });

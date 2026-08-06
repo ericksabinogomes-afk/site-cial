@@ -139,6 +139,12 @@ async function realizarLogin(usuarioDigitado, senhaDigitada) {
             return;
         }
 
+        // ====== AQUI: salvar usuário no localStorage ======
+        const usuarioLogado = result.usuario; // vem do backend
+
+        // Ex: { id, nome, email, cpf }
+        localStorage.setItem("usuarioCial", JSON.stringify(usuarioLogado));
+
         // login OK: redireciona para área do cliente
         window.location.href = "../cadastro/area-cliente.html";
     } catch (error) {

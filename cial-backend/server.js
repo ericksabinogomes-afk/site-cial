@@ -60,19 +60,19 @@ app.post('/cadastro', async (req, res) => {
   } = req.body;
 
   try {
-    // 1) Inserir na tabela usuarios (somente colunas que existem em public.usuarios)
+    // Inserir na tabela usuarios
     const { data: usuarios, error: usuarioError } = await supabase
       .from('usuarios')
       .insert([{
         nome,
         email,
-        senha,            // depois você troca por hash
+        senha,            // depois trocar por hash
         cpf,
         telefone,
-        whastapp: whatsapp, // coluna no banco se chama "whastapp"
+        whastapp: whatsapp, 
         tipo: tipo_pessoa   // Fisica / Juridica, como você definir
       }])
-      .select('id');        // precisamos do id gerado
+      .select('id');        
 
     if (usuarioError) {
       console.error('Erro ao inserir em usuarios:', usuarioError);
@@ -81,7 +81,7 @@ app.post('/cadastro', async (req, res) => {
 
     const usuarioId = usuarios[0].id;
 
-    // 2) Inserir endereço na tabela Enderecos
+    // Inserir endereço na tabela Enderecos
     const { error: enderecoError } = await supabase
       .from('Enderecos')
       .insert([{
@@ -96,10 +96,10 @@ app.post('/cadastro', async (req, res) => {
 
     if (enderecoError) {
       console.error('Erro ao inserir em Enderecos:', enderecoError);
-      // não vou falhar o cadastro por isso, só logar
+      
     }
 
-    // 3) Se for pessoa jurídica, inserir em dados_pj
+    // Se for pessoa jurídica, inserir em dados_pj
     const cnpjLimpo = cnpj ? String(cnpj).replace(/\D/g, '') : null;
 
     if (tipo_pessoa === 'pj' && cnpjLimpo) {
@@ -150,7 +150,7 @@ app.post('/login', async (req, res) => {
     if (ehCpf) {
       // LOGIN POR CPF
 
-      // 1) tenta achar exatamente como está salvo no banco (formatado)
+      // tenta achar exatamente como está salvo no banco (formatado)
       let resultado = await supabase
         .from('usuarios')
         .select('*')
@@ -160,7 +160,7 @@ app.post('/login', async (req, res) => {
       data = resultado.data;
       error = resultado.error;
 
-      // 2) se não achou, tenta versão somente números (caso você mude o cadastro depois)
+      // se não achou, tenta versão somente numeros
       if (!data || data.length === 0) {
         resultado = await supabase
           .from('usuarios')
@@ -172,7 +172,7 @@ app.post('/login', async (req, res) => {
         error = resultado.error;
       }
     } else {
-      // LOGIN POR E-MAIL (mantém como estava)
+      // LOGIN POR E-MAIL 
       const resultado = await supabase
         .from('usuarios')
         .select('*')
@@ -204,7 +204,8 @@ app.post('/login', async (req, res) => {
         id: usuario.id,
         nome: usuario.nome,
         email: usuario.email,
-        cpf: usuario.cpf
+        cpf: usuario.cpf,
+        telefone: usuario.telefone
       }
     });
   } catch (err) {

@@ -24,6 +24,7 @@ function carregarUsuarioLogado() {
 
     if (!usuarioJSON) {
         // Não está logado -> volta para login
+
         window.location.href = "../cadastro/login.html";
         return null;
     }
@@ -31,6 +32,7 @@ function carregarUsuarioLogado() {
     try {
         const usuario = JSON.parse(usuarioJSON);
         return usuario;
+
     } catch (e) {
         console.error("Erro ao ler usuarioCial:", e);
         localStorage.removeItem("usuarioCial");
@@ -265,17 +267,55 @@ function iniciarGarantias() {
 ===================================================== */
 
 function iniciarDados() {
-
     if (!btnSalvar) return;
 
-    btnSalvar.addEventListener("click", (event) => {
-
+    btnSalvar.addEventListener("click", async (event) => {
         event.preventDefault();
 
-        alert("Dados atualizados com sucesso!");
+        if (!usuarioAtual) {
+            alert("Usuário não encontrado na sessão.");
+            return;
+        }
 
+        const nome = document.getElementById("nome").value.trim();
+        const email = document.getElementById("email").value.trim(); // por enquanto só exibe
+        const telefone = document.getElementById("telefone").value.trim();
+        const cpf = document.getElementById("cpf").value.trim();
+
+        if (!nome || !email) {
+            alert("Nome e email são obrigatórios.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:4000/meus-dados/${usuarioAtual.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ nome, telefone, cpf })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.ok) {
+                alert("Erro ao salvar dados: " + (result.erro || "tente novamente"));
+                return;
+            }
+
+            // Atualiza também o que está no localStorage
+            usuarioAtual.nome = nome;
+            usuarioAtual.telefone = telefone;
+            usuarioAtual.cpf = cpf;
+            localStorage.setItem("usuarioCial", JSON.stringify(usuarioAtual));
+
+            atualizarInterfaceUsuario();
+            alert("Dados atualizados com sucesso!");
+        } catch (error) {
+            console.error(error);
+            alert("Erro de conexão ao salvar dados.");
+        }
     });
-
 }
 /* =====================================================
    SEGURANÇA

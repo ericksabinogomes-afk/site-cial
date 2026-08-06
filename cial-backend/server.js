@@ -7,7 +7,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/*Conectar a API (node e supabase)*/
+/*==========================================================
+    Conectar a API (node e supabase
+==========================================================*/
 
 app.get('/', (req, res) => {
   res.send('API do CIAL rodando');
@@ -38,7 +40,9 @@ app.get('/teste-supabase', async (req, res) => {
 });
 
 
-/* Salvar os dados no bd */
+/*==========================================================
+    Salvar os dados no bd 
+==========================================================*/
 app.post('/cadastro', async (req, res) => {
   const {
     nome,
@@ -124,13 +128,50 @@ app.post('/cadastro', async (req, res) => {
   }
 });
 
+
+/*==========================================================
+    Atualizar meus dados
+==========================================================*/
+
+app.put('/meus-dados/:id', async (req, res) => {
+  const usuarioId = parseInt(req.params.id, 10);
+  const { nome, telefone, cpf } = req.body;
+
+  if (!usuarioId) {
+    return res.status(400).json({ ok: false, erro: 'ID inválido' });
+  }
+
+  try {
+    const { error } = await supabase
+      .from('usuarios')
+      .update({
+        nome,
+        telefone,
+        cpf
+      })
+      .eq('id', usuarioId);
+
+    if (error) {
+      console.error('Erro ao atualizar usuario:', error);
+      return res.status(500).json({ ok: false, erro: error.message });
+    }
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('Erro inesperado no /meus-dados:', err);
+    return res.status(500).json({ ok: false, erro: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-/* Login */
+/*==========================================================
+    Login
+==========================================================*/
 
 app.post('/login', async (req, res) => {
   const { identificador, senha } = req.body;

@@ -107,12 +107,48 @@ app.post('/login', async (req, res) => {
   }
 
   try {
-    // busca por email OU cpf
-    const { data, error } = await supabase
-      .from('usuarios')
-      .select('*')
-      .or(`email.eq.${identificador},cpf.eq.${identificador}`)
-      .limit(1);
+    // Remove tudo que não é número
+    const cpfLimpo = identificador.replace(/\D/g, '');
+    const ehCpf = cpfLimpo.length === 11 && !identificador.includes('@');
+
+    let data;
+    let error;
+
+    if (ehCpf) {
+      // LOGIN POR CPF
+
+      // 1) tenta achar exatamente como está salvo no banco (formatado)
+      let resultado = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('cpf', identificador)   // ex: 396.088.388-94
+        .limit(1);
+
+      data = resultado.data;
+      error = resultado.error;
+
+      // 2) se não achou, tenta versão somente números (caso você mude o cadastro depois)
+      if (!data || data.length === 0) {
+        resultado = await supabase
+          .from('usuarios')
+          .select('*')
+          .eq('cpf', cpfLimpo)    
+          .limit(1);
+
+        data = resultado.data;
+        error = resultado.error;
+      }
+    } else {
+      // LOGIN POR E-MAIL (mantém como estava)
+      const resultado = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('email', identificador)
+        .limit(1);
+
+      data = resultado.data;
+      error = resultado.error;
+    }
 
     if (error) {
       return res.status(500).json({ ok: false, erro: error.message });

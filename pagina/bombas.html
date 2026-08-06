@@ -24,7 +24,7 @@
           rel="stylesheet">
 
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+          href="pagina/bombas.css">
 
 </head>
 
@@ -60,11 +60,7 @@
 
             </a>
 
-            <a href="assistencia.html">
 
-                Assistência Técnica
-
-            </a>
 
             <a href="bombas.html"
                class="ativo">
@@ -73,11 +69,7 @@
 
             </a>
 
-            <a href="contato.html">
-
-                Contato
-
-            </a>
+            
 
         </nav>
 
@@ -130,7 +122,7 @@
 
         <p>
 
-            Encontre bombas, motobombas, sistemas de irrigação, acessórios e soluções completas para uso residencial, agrícola e industrial.
+            Soluções completas para abastecimento de água, irrigação, pressurização e aplicações residenciais, comerciais, agrícolas e industriais.
 
         </p>
 
@@ -181,7 +173,7 @@
             <input
                 type="text"
                 id="pesquisa"
-                placeholder="Pesquisar bombas, irrigação ou acessórios...">
+                placeholder="Pesquisar bombas, motores, irrigação ou acessórios...">
 
             <button id="btnPesquisar">
 
@@ -222,9 +214,10 @@
 
         <ul class="categorias">
 
-            <li data-categoria="todos" class="ativo">
+            <li data-categoria="todos"
+                class="ativo">
 
-                🏠 Todos
+                🏠 Todos os Produtos
 
             </li>
 
@@ -260,7 +253,7 @@
 
             <li data-categoria="irrigacao">
 
-                🌱 Irrigação
+                🌱 Sistemas de Irrigação
 
             </li>
 
@@ -320,9 +313,9 @@
 
             <li>Dancor</li>
 
-            <li>KSB</li>
-
             <li>Thebe</li>
+
+            <li>KSB</li>
 
             <li>Ferrari</li>
 
@@ -358,13 +351,13 @@
 
             <li>Agrícola</li>
 
-            <li>Poços Artesianos</li>
-
             <li>Irrigação</li>
 
             <li>Piscinas</li>
 
-            <li>Jardins</li>
+            <li>Poços Artesianos</li>
+
+            <li>Construção Civil</li>
 
         </ul>
 
@@ -444,9 +437,15 @@
 
             </option>
 
+            <option value="5000">
+
+                Até R$ 5.000
+
+            </option>
+
             <option value="999999">
 
-                Acima de R$ 3.000
+                Acima de R$ 5.000
 
             </option>
 
@@ -476,7 +475,7 @@
 
             <p>
 
-                Soluções completas para residências, fazendas, empresas e indústrias.
+                Encontre bombas, motobombas, sistemas de irrigação e acessórios para qualquer aplicação.
 
             </p>
 
@@ -533,4 +532,168 @@
         </div>
 
     </div>
-    
+            <!--==================================
+                ATALHOS
+        ===================================-->
+
+        <div class="atalhos">
+
+            <button class="atalho ativo">
+
+                Todos
+
+            </button>
+
+            <button class="atalho">
+
+                Promoções
+
+            </button>
+
+            <button class="atalho">
+
+                Novidades
+
+            </button>
+
+            <button class="atalho">
+
+                Mais Vendidos
+
+            </button>
+
+            <button class="atalho">
+
+                Irrigação
+
+            </button>
+
+            <button class="atalho">
+
+                Bombas Residenciais
+
+            </button>
+
+        </div>
+
+
+
+        <!--==================================
+                GRID DOS PRODUTOS
+        ===================================-->
+
+        <div
+            id="gridProdutos"
+            class="grid-produtos">
+
+            <!--
+
+                TODOS OS PRODUTOS
+                SERÃO GERADOS
+                PELO JAVASCRIPT
+
+            -->
+
+        </div>
+
+    </section>
+
+</div>
+
+</main>
+
+
+
+<!--==================================
+                FOOTER
+===================================-->
+
+<footer class="footer">
+
+    <div class="container">
+
+        <div class="footer-logo">
+
+            <img
+                src="imagens/logo.png"
+                alt="Logo CIAL">
+
+            <p>
+
+                Especialistas em Bombas, Irrigação e Soluções Hidráulicas.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="footer-links">
+
+            <a href="index.html">
+
+                Início
+
+            </a>
+
+            <a href="produtos.html">
+
+                Produtos STIHL
+
+            </a>
+
+            <a href="assistencia.html">
+
+                Assistência Técnica
+
+            </a>
+
+            <a href="bombas.html">
+
+                Bombas e Irrigação
+
+            </a>
+
+            <a href="contato.html">
+
+                Contato
+
+            </a>
+
+        </div>
+
+
+
+        <div class="footer-social">
+
+            <a href="#">
+
+                <i class="fa-brands fa-instagram"></i>
+
+            </a>
+
+            <a href="#">
+
+                <i class="fa-brands fa-facebook-f"></i>
+
+            </a>
+
+            <a href="#">
+
+                <i class="fa-brands fa-whatsapp"></i>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+
+<script src="js/bombas.js"></script>
+
+</body>
+
+</html>

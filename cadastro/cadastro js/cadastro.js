@@ -465,7 +465,7 @@ form.addEventListener("submit", async function(event){
 =======================================================*/
   const nome = document.getElementById("nome").value;
     const email = document.getElementById("email").value;
-    const cpfValor = document.getElementById("cpf").value;
+    const cpfDigitado = document.getElementById("cpf").value;
     const cpfLimpo = cpfDigitado ? cpfDigitado.replace(/\D/g, "") : null;
     const telefoneValor = document.getElementById("telefone")?.value || "";
     const whatsappValor = document.getElementById("whatsapp")?.value || "";

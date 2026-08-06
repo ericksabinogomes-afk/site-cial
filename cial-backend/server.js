@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 /*Teste do bd*/
@@ -38,7 +38,7 @@ app.get('/teste-supabase', async (req, res) => {
 });
 
 
- /* Salvar os dados no bd */
+/* Salvar os dados no bd */
 app.post('/cadastro', async (req, res) => {
   const {
     nome,
@@ -60,34 +60,67 @@ app.post('/cadastro', async (req, res) => {
   } = req.body;
 
   try {
-    const { data, error } = await supabase
+    // 1) Inserir na tabela usuarios (somente colunas que existem em public.usuarios)
+    const { data: usuarios, error: usuarioError } = await supabase
       .from('usuarios')
       .insert([{
         nome,
         email,
-        senha, // depois vamos trocar por hash
+        senha,            // depois você troca por hash
         cpf,
         telefone,
-        whatsapp,
+        whastapp: whatsapp, // coluna no banco se chama "whastapp"
+        tipo: tipo_pessoa   // Fisica / Juridica, como você definir
+      }])
+      .select('id');        // precisamos do id gerado
+
+    if (usuarioError) {
+      console.error('Erro ao inserir em usuarios:', usuarioError);
+      return res.status(500).json({ ok: false, erro: usuarioError.message });
+    }
+
+    const usuarioId = usuarios[0].id;
+
+    // 2) Inserir endereço na tabela Enderecos
+    const { error: enderecoError } = await supabase
+      .from('Enderecos')
+      .insert([{
+        usuario_id: usuarioId,
         cep,
         rua,
         bairro,
         cidade,
         estado,
-        numero_endereco,
-        tipo_pessoa,
-        cnpj,
-        razao_social,
-        nome_fantasia
-      }], { returning: 'minimal' });
+        numero_endereco
+      }]);
 
-    if (error) {
-      return res.status(500).json({ ok: false, erro: error.message });
+    if (enderecoError) {
+      console.error('Erro ao inserir em Enderecos:', enderecoError);
+      // não vou falhar o cadastro por isso, só logar
     }
 
-    res.status(201).json({ ok: true });
+    // 3) Se for pessoa jurídica, inserir em dados_pj
+    const cnpjLimpo = cnpj ? String(cnpj).replace(/\D/g, '') : null;
+
+    if (tipo_pessoa === 'pj' && cnpjLimpo) {
+      const { error: pjError } = await supabase
+        .from('dados_pj')
+        .insert([{
+          usuario_id: usuarioId,
+          cnpj: cnpjLimpo,
+          razao_social,
+          nome_fantasia
+        }]);
+
+      if (pjError) {
+        console.error('Erro ao inserir em dados_pj:', pjError);
+      }
+    }
+
+    return res.status(201).json({ ok: true });
   } catch (err) {
-    res.status(500).json({ ok: false, erro: err.message });
+    console.error('Erro inesperado no /cadastro:', err);
+    return res.status(500).json({ ok: false, erro: err.message });
   }
 });
 

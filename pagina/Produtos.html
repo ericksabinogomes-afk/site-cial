@@ -8,7 +8,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Produtos STIHL | CIAL Asa Sul</title>
+    <title>Produtos | CIAL Asa Sul</title>
 
     <link rel="stylesheet"
           href="css/produtos.css">
@@ -24,59 +24,94 @@
           rel="stylesheet">
 
     <link rel="stylesheet"
-          href="css/style.css">
+          href="css/produtos.css">
 
 </head>
 
 <body>
 
-<!--===================================
+<!--==================================
             HEADER
-====================================-->
+===================================-->
 
-<header class="header-produtos">
+<header class="header">
 
     <div class="container">
 
-        <!-- LOGO -->
+        <a href="index.html"
+           class="logo">
 
-        <div class="logo">
+            <img src="imagens/logo.png"
+                 alt="Logo CIAL">
+
+        </a>
+
+        <nav>
 
             <a href="index.html">
 
-                <img src="../IMAGENS/logo.png"
-                     alt="CIAL Asa Sul">
+                Início
 
             </a>
 
-        </div>
+            <a href="produtos.html"
+               class="ativo">
 
-        <!-- PESQUISA -->
+                Produtos
 
-        <div class="search-box">
+            </a>
 
-            <input
-                type="search"
-                placeholder="O que você procura hoje?">
+            <a href="assistencia.html">
 
-            <button>
+                Assistência Técnica
 
-                <i class="fa-solid fa-magnifying-glass"></i>
+            </a>
 
-            </button>
+            <a href="bombas.html">
 
-        </div>
+                Bombas e Irrigação
 
-        <!-- CARRINHO -->
+            </a>
+
+            <a href="contato.html">
+
+                Contato
+
+            </a>
+
+        </nav>
 
         <div class="header-icons">
+
+            <a href="favoritos.html">
+
+                <i class="${
+    estado.favoritos.includes(produto.id)
+
+    ? 'fa-solid'
+
+    : 'fa-regular'
+
+} fa-heart"></i>
+
+            </a>
+
+            <a href="login.html">
+
+                <i class="fa-regular fa-user"></i>
+
+            </a>
 
             <a href="carrinho.html"
                class="cart">
 
                 <i class="fa-solid fa-cart-shopping"></i>
 
-                <span>0</span>
+                <span id="contadorCarrinho">
+
+                    0
+
+                </span>
 
             </a>
 
@@ -86,9 +121,9 @@
 
 </header>
 
-<!--===================================
+<!--==================================
             BANNER
-====================================-->
+===================================-->
 
 <section class="banner-produtos">
 
@@ -102,7 +137,7 @@
 
         <p>
 
-            Encontre toda a linha de equipamentos, peças, acessórios e EPIs originais STIHL disponíveis na CIAL Asa Sul.
+            Encontre toda a linha de equipamentos, acessórios, peças e EPIs disponíveis na CIAL Asa Sul.
 
         </p>
 
@@ -110,574 +145,315 @@
 
 </section>
 
-<!--===================================
+<!--==================================
+            BREADCRUMB
+===================================-->
+
+<section class="breadcrumb">
+
+    <div class="container">
+
+        <a href="index.html">
+
+            Início
+
+        </a>
+
+        <span>
+
+            /
+
+        </span>
+
+        <strong>
+
+            Produtos
+
+        </strong>
+
+    </div>
+
+</section>
+
+<!--==================================
+            PESQUISA
+===================================-->
+
+<section class="pesquisa">
+
+    <div class="container">
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="pesquisa"
+                placeholder="Pesquisar produtos por nome ou código...">
+
+            <button id="btnPesquisar">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!--==================================
             CONTEÚDO
-====================================-->
+===================================-->
 
 <main class="pagina-produtos">
 
     <div class="container">
+        <!--==================================
+            SIDEBAR
+===================================-->
 
-        <!--===================================
-                    SIDEBAR
-        ===================================-->
+<aside class="sidebar">
 
-        <aside class="sidebar">
-
-            <div class="sidebar-scroll">
-
-<!--===================================
-            PESQUISA
-====================================-->
-
-<div class="filtro">
-
-    <h3>
-
-        <i class="fa-solid fa-magnifying-glass"></i>
-
-        Buscar Produto
-
-    </h3>
-
-    <div class="search-box">
-
-        <input
-            type="text"
-            id="pesquisa"
-            placeholder="Buscar por nome ou código">
-
-        <button id="btnPesquisar">
-
-            <i class="fa-solid fa-magnifying-glass"></i>
-
-        </button>
-
-    </div>
-
-</div>
-
-
-
-<!--===================================
+    <!--==============================
             CATEGORIAS
-====================================-->
+    ==============================-->
 
-<div class="filtro">
+    <div class="sidebar-card">
 
-    <h3>
+        <h2>
 
-        <i class="fa-solid fa-layer-group"></i>
+            Categorias
 
-        Categorias
+        </h2>
 
-    </h3>
+        <ul class="categorias">
 
+            <li data-categoria="todos" class="ativo">
 
+                🏠 Todos os Produtos
 
-    <div class="categoria">
+            </li>
 
-        <button
-            class="categoria-btn ativo"
-            data-categoria="todos">
-
-            <span>
-
-                🏠 Todos
-
-            </span>
-
-        </button>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="motosserras">
-
-            <span>
+            <li data-categoria="motosserras">
 
                 🪚 Motosserras
 
-            </span>
+            </li>
 
-            <div>
-
-                <span class="contador">0</span>
-
-                <i class="fa-solid fa-chevron-down"></i>
-
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="rocadeiras">
-
-            <span>
+            <li data-categoria="rocadeiras">
 
                 🌿 Roçadeiras
 
-            </span>
+            </li>
 
-            <div>
-
-                <span class="contador">0</span>
-
-                <i class="fa-solid fa-chevron-down"></i>
-
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="sopradores">
-
-            <span>
+            <li data-categoria="sopradores">
 
                 💨 Sopradores
 
-            </span>
+            </li>
 
-            <div>
+            <li data-categoria="lavadoras">
 
-                <span class="contador">0</span>
+                💦 Lavadoras de Alta Pressão
 
-                <i class="fa-solid fa-chevron-down"></i>
+            </li>
 
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="lavadoras">
-
-            <span>
-
-                💦 Lavadoras
-
-            </span>
-
-            <div>
-
-                <span class="contador">0</span>
-
-                <i class="fa-solid fa-chevron-down"></i>
-
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="cortadores">
-
-            <span>
+            <li data-categoria="cortadores">
 
                 🌱 Cortadores de Grama
 
-            </span>
+            </li>
 
-            <div>
+            <li data-categoria="podadores">
 
-                <span class="contador">0</span>
+                ✂️ Podadores de Cerca Viva
 
-                <i class="fa-solid fa-chevron-down"></i>
+            </li>
 
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="podadores">
-
-            <span>
-
-                ✂️ Podadores
-
-            </span>
-
-            <div>
-
-                <span class="contador">0</span>
-
-                <i class="fa-solid fa-chevron-down"></i>
-
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="motopodas">
-
-            <span>
+            <li data-categoria="motopodas">
 
                 🌳 Motopodas
 
-            </span>
+            </li>
 
-            <div>
-
-                <span class="contador">0</span>
-
-                <i class="fa-solid fa-chevron-down"></i>
-
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="kombisystem">
-
-            <span>
+            <li data-categoria="kombisystem">
 
                 🔧 KombiSystem
 
-            </span>
+            </li>
 
-            <div>
-
-                <span class="contador">0</span>
-
-                <i class="fa-solid fa-chevron-down"></i>
-
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="bateria">
-
-            <span>
+            <li data-categoria="bateria">
 
                 🔋 Linha a Bateria
 
-            </span>
+            </li>
 
-            <div>
-
-                <span class="contador">0</span>
-
-                <i class="fa-solid fa-chevron-down"></i>
-
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="eletrica">
-
-            <span>
+            <li data-categoria="eletrica">
 
                 🔌 Linha Elétrica
 
-            </span>
+            </li>
 
-            <div>
+            <li data-categoria="aspiradores">
 
-                <span class="contador">0</span>
+                🧹 Aspiradores
 
-                <i class="fa-solid fa-chevron-down"></i>
+            </li>
 
-            </div>
+            <li data-categoria="pecas">
 
-        </button>
+                ⚙️ Peças de Reposição
 
-        <div class="subcategoria"></div>
+            </li>
 
-    </div>
+            <li data-categoria="ferramentas">
 
+                🛠 Ferramentas de Corte
 
+            </li>
 
-    <div class="categoria">
+            <li data-categoria="lubrificantes">
 
-        <button
-            class="categoria-btn"
-            data-categoria="pecas">
+                🛢 Lubrificantes
 
-            <span>
+            </li>
 
-                ⚙️ Peças e Acessórios
+            <li data-categoria="combustiveis">
 
-            </span>
+                ⛽ Combustíveis
 
-            <div>
+            </li>
 
-                <span class="contador">0</span>
-
-                <i class="fa-solid fa-chevron-down"></i>
-
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="lubrificantes">
-
-            <span>
-
-                🛢️ Lubrificantes
-
-            </span>
-
-            <div>
-
-                <span class="contador">0</span>
-
-                <i class="fa-solid fa-chevron-down"></i>
-
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
-
-    </div>
-
-
-
-    <div class="categoria">
-
-        <button
-            class="categoria-btn"
-            data-categoria="epis">
-
-            <span>
+            <li data-categoria="epis">
 
                 🦺 EPIs
 
-            </span>
+            </li>
 
-            <div>
+            <li data-categoria="acessorios">
 
-                <span class="contador">0</span>
+                🎒 Acessórios
 
-                <i class="fa-solid fa-chevron-down"></i>
+            </li>
 
-            </div>
-
-        </button>
-
-        <div class="subcategoria"></div>
+        </ul>
 
     </div>
 
-</div>
+
+
+    <!--==============================
+            FILTROS
+    ==============================-->
+
+    <div class="sidebar-card">
+
+        <h2>
+
+            Aplicação
+
+        </h2>
+
+        <ul class="filtros">
+
+            <li>Uso Doméstico</li>
+
+            <li>Uso Profissional</li>
+
+            <li>Jardinagem</li>
+
+            <li>Agricultura</li>
+
+            <li>Paisagismo</li>
+
+        </ul>
+
+    </div>
 
 
 
-<!--===================================
-        FILTROS RÁPIDOS
-====================================-->
+    <div class="sidebar-card">
 
-<div class="filtro">
+        <h2>
 
-    <h3>⭐ Destaques</h3>
+            Destaques
 
-    <button class="filtro-btn">Promoções</button>
+        </h2>
 
-    <button class="filtro-btn">Mais Vendidos</button>
+        <ul class="filtros">
 
-    <button class="filtro-btn">Lançamentos</button>
+            <li>Promoções</li>
 
-    <button class="filtro-btn">Novidades</button>
+            <li>Lançamentos</li>
 
-</div>
+            <li>Mais Vendidos</li>
 
+            <li>Novidades</li>
 
+        </ul>
 
-<!--===================================
-        APLICAÇÃO
-====================================-->
-
-<div class="filtro">
-
-    <h3>🎯 Aplicação</h3>
-
-    <button class="filtro-btn">Uso Doméstico</button>
-
-    <button class="filtro-btn">Uso Profissional</button>
-
-    <button class="filtro-btn">Jardinagem</button>
-
-    <button class="filtro-btn">Agricultura</button>
-
-    <button class="filtro-btn">Paisagismo</button>
-
-    <button class="filtro-btn">Construção Civil</button>
-
-    <button class="filtro-btn">Poda</button>
-
-    <button class="filtro-btn">Limpeza</button>
-
-</div>
+    </div>
 
 
 
-<!--===================================
-        FAIXA DE PREÇO
-====================================-->
+    <div class="sidebar-card">
 
-<div class="filtro">
+        <h2>
 
-    <h3>💰 Faixa de Preço</h3>
+            Faixa de Preço
 
-    <button class="filtro-btn">Até R$ 500</button>
+        </h2>
 
-    <button class="filtro-btn">R$ 500 a R$ 1.500</button>
+        <select id="filtroPreco">
 
-    <button class="filtro-btn">R$ 1.500 a R$ 3.000</button>
+            <option value="">
 
-    <button class="filtro-btn">Acima de R$ 3.000</button>
+                Todas
 
-</div>
+            </option>
+
+            <option value="500">
+
+                Até R$ 500
+
+            </option>
+
+            <option value="1500">
+
+                Até R$ 1.500
+
+            </option>
+
+            <option value="3000">
+
+                Até R$ 3.000
+
+            </option>
+
+            <option value="999999">
+
+                Acima de R$ 3.000
+
+            </option>
+
+        </select>
+
+    </div>
+
+</aside>
 
 
 
-<!--===================================
-        DISPONIBILIDADE
-====================================-->
-
-<div class="filtro">
-
-    <h3>📦 Disponibilidade</h3>
-
-    <button class="filtro-btn">✔ Em Estoque</button>
-
-    <button class="filtro-btn">🚚 Sob Encomenda</button>
-
-    <button class="filtro-btn">🔥 Promoção</button>
-
-</div>
-
-
-
-<!--===================================
-            ORDENAÇÃO
-====================================-->
-
-<div class="filtro">
-
-    <h3>↕ Ordenar</h3>
-
-    <select id="ordenacao">
-
-        <option>Mais Recentes</option>
-        <option>Menor Preço</option>
-        <option>Maior Preço</option>
-        <option>Nome A-Z</option>
-        <option>Nome Z-A</option>
-        <option>Mais Vendidos</option>
-
-    </select>
-
-</div>
-
-            </div>
-
-        </aside>
-        <!--===================================
+<!--==================================
         ÁREA DOS PRODUTOS
-====================================-->
+===================================-->
 
-<section class="produtos-area">
+<section class="produtos">
 
     <div class="produtos-header">
 
-        <div class="titulo-produtos">
+        <div>
 
             <h2>
 
@@ -687,7 +463,7 @@
 
             <p>
 
-                Encontre equipamentos, peças e acessórios originais STIHL.
+                Todos os equipamentos disponíveis.
 
             </p>
 
@@ -695,7 +471,7 @@
 
         <div class="acoes-produtos">
 
-            <div class="resultado">
+            <span>
 
                 <strong id="totalProdutos">
 
@@ -705,9 +481,9 @@
 
                 produtos encontrados
 
-            </div>
+            </span>
 
-            <select id="ordenacaoTopo">
+            <select id="ordenacao">
 
                 <option value="recentes">
 
@@ -739,81 +515,79 @@
 
                 </option>
 
-                <option value="vendidos">
-
-                    Mais Vendidos
-
-                </option>
-
             </select>
 
         </div>
 
     </div>
+            <!--==================================
+                ATALHOS
+        ===================================-->
+
+        <div class="atalhos">
+
+            <button class="atalho ativo">
+
+                Todos
+
+            </button>
+
+            <button class="atalho">
+
+                Promoções
+
+            </button>
+
+            <button class="atalho">
+
+                Lançamentos
+
+            </button>
+
+            <button class="atalho">
+
+                Mais Vendidos
+
+            </button>
+
+            <button class="atalho">
+
+                Linha a Bateria
+
+            </button>
+
+        </div>
 
 
 
-    <div class="atalhos">
+        <!--==================================
+                GRID DOS PRODUTOS
+        ===================================-->
 
-        <button class="atalho ativo">
+        <div
+            id="gridProdutos"
+            class="grid-produtos">
 
-            Todos
+            <!--
 
-        </button>
+                TODOS OS CARDS SERÃO
+                CRIADOS PELO JAVASCRIPT
 
-        <button class="atalho">
+            -->
 
-            Promoções
+        </div>
 
-        </button>
+    </section>
 
-        <button class="atalho">
-
-            Lançamentos
-
-        </button>
-
-        <button class="atalho">
-
-            Mais Vendidos
-
-        </button>
-
-        <button class="atalho">
-
-            Linha a Bateria
-
-        </button>
-
-    </div>
-
-
-
-    <!--==============================
-            GRID DE PRODUTOS
-    ==============================-->
-
-    <div
-        class="grid-produtos"
-        id="gridProdutos">
-
-        <!--
-
-            Os cards serão criados
-            automaticamente pelo JavaScript.
-
-        -->
-
-    </div>
-
-</section>
-
-    </div>
+</div>
 
 </main>
-<!--===================================
+
+
+
+<!--==================================
             FOOTER
-====================================-->
+===================================-->
 
 <footer class="footer">
 
@@ -898,12 +672,6 @@
 </footer>
 
 
-
-<!--===================================
-            JAVASCRIPT
-====================================-->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js"></script>
 
 <script src="js/produtos.js"></script>
 

@@ -1,0 +1,346 @@
+/*==================================================
+                    RESET
+==================================================*/
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#121212;
+    color:#ffffff;
+    font-family:'Montserrat',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+}
+
+img{
+    display:block;
+    max-width:100%;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+ul{
+    list-style:none;
+}
+
+button,
+input{
+    border:none;
+    outline:none;
+    font-family:inherit;
+}
+
+/*==================================================
+                VARIÁVEIS
+==================================================*/
+
+:root{
+
+    --preto:#121212;
+    --preto2:#1A1A1A;
+    --preto3:#0B0B0B;
+
+    --laranja:#F37021;
+    --laranja-hover:#D95F18;
+
+    --branco:#FFFFFF;
+
+    --cinza:#C8C8C8;
+    --cinza2:#666666;
+
+    --borda:rgba(255,255,255,.08);
+
+    --radius:20px;
+
+    --shadow:0 15px 35px rgba(0,0,0,.18);
+
+}
+
+/*==================================================
+                SCROLLBAR
+==================================================*/
+
+::-webkit-scrollbar{
+
+    width:12px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#111111;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--laranja);
+
+    border-radius:20px;
+
+    border:2px solid #111111;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:var(--laranja-hover);
+
+}
+/*==================================================
+                GLOBAIS
+==================================================*/
+
+.container{
+
+    width:min(92%,1400px);
+
+    margin:auto;
+
+}
+
+.container-fluid{
+
+    width:100%;
+
+}
+
+section{
+
+    width:100%;
+
+}
+
+h2{
+
+   
+
+    font-family:Georgia,serif;
+
+    font-size:46px;
+
+    font-weight:normal;
+
+    color:var(--laranja);
+
+
+}
+
+.btn-product{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    width:100%;
+
+    height:52px;
+
+    background:var(--laranja);
+
+    color:#fff;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+    transition:.30s;
+
+}
+
+.btn-product:hover{
+
+    background:var(--laranja-hover);
+
+}
+
+/*==================================================
+                    TOP BAR
+==================================================*/
+
+.top-bar{
+
+    background:#0d0d0d;
+
+    border-bottom:1px solid var(--borda);
+
+}
+
+.top-bar .container{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    min-height:42px;
+
+}
+
+.top-left,
+.top-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:25px;
+
+}
+
+.top-left span,
+.top-right span,
+.top-right a{
+
+    color:var(--cinza);
+
+    font-size:14px;
+
+}
+
+.top-left i,
+.top-right i{
+
+    color:var(--laranja);
+
+    margin-right:6px;
+
+}
+
+.top-right a{
+
+    transition:.30s;
+
+}
+
+.top-right a:hover{
+
+    color:var(--laranja);
+
+}
+
+/*==================================================
+                    HEADER
+==================================================*/
+
+.header{
+
+    background:var(--preto);
+
+    border-bottom:1px solid var(--borda);
+
+}
+
+.header .container{
+
+    display:grid;
+
+    grid-template-columns:220px 1fr 70px;
+
+    align-items:center;
+
+    gap:35px;
+
+    padding:22px 0;
+
+}
+
+/*==================================================
+                    LOGO
+==================================================*/
+
+.logo{
+
+    display:flex;
+
+    align-items:center;
+
+}
+
+.logo img{
+
+    width:180px;
+
+    transition:.30s;
+
+}
+
+.logo img:hover{
+
+    transform:scale(1.03);
+
+}
+
+/*==================================================
+                PESQUISA
+==================================================*/
+
+.search-box{
+
+    display:flex;
+
+    height:56px;
+
+    background:#fff;
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow);
+
+}
+
+.search-box input{
+
+    flex:1;
+
+    padding:0 22px;
+
+    font-size:16px;
+
+    color:#333;
+
+}
+
+.search-box input::placeholder{
+
+    color:#888;
+
+}
+
+.search-box button{
+
+    width:70px;
+
+    background:var(--laranja);
+
+    color:#fff;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+    font-size:20px;
+
+}
+
+.search-box button:hover{
+
+    background:var(--laranja-hover);
+
+}

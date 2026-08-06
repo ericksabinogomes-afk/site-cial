@@ -11,9 +11,6 @@
     <title>Bombas e Irrigação | CIAL Asa Sul</title>
 
     <link rel="stylesheet"
-          href="css/style.css">
-
-    <link rel="stylesheet"
           href="css/bombas.css">
 
     <link rel="preconnect"
@@ -23,7 +20,7 @@
           href="https://fonts.gstatic.com"
           crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet">
 
     <link rel="stylesheet"
@@ -33,19 +30,23 @@
 
 <body>
 
-    <header class="bombas-header">
+<!--==================================
+            HEADER
+===================================-->
+
+<header class="header">
 
     <div class="container">
 
         <a href="index.html"
            class="logo">
 
-            <img src="../IMAGENS/logo.png"
-                 alt="CIAL Asa Sul">
+            <img src="imagens/logo.png"
+                 alt="Logo CIAL">
 
         </a>
 
-        <nav class="breadcrumb">
+        <nav>
 
             <a href="index.html">
 
@@ -53,632 +54,483 @@
 
             </a>
 
-            <span>/</span>
+            <a href="produtos.html">
 
-            <strong>
+                Produtos
+
+            </a>
+
+            <a href="assistencia.html">
+
+                Assistência Técnica
+
+            </a>
+
+            <a href="bombas.html"
+               class="ativo">
 
                 Bombas e Irrigação
 
-            </strong>
+            </a>
+
+            <a href="contato.html">
+
+                Contato
+
+            </a>
 
         </nav>
+
+        <div class="header-icons">
+
+            <a href="favoritos.html">
+
+                <i class="fa-regular fa-heart"></i>
+
+            </a>
+
+            <a href="login.html">
+
+                <i class="fa-regular fa-user"></i>
+
+            </a>
+
+            <a href="carrinho.html"
+               class="cart">
+
+                <i class="fa-solid fa-cart-shopping"></i>
+
+                <span id="contadorCarrinho">
+
+                    0
+
+                </span>
+
+            </a>
+
+        </div>
 
     </div>
 
 </header>
 
-<!--==========================================
-                BANNER
-===========================================-->
+<!--==================================
+            BANNER
+===================================-->
 
 <section class="banner-bombas">
 
     <div class="container">
 
-        <div class="banner-content">
+        <h1>
 
-            <span class="subtitle">
+            Bombas e Irrigação
 
-                💧 Soluções em Bombas e Irrigação
+        </h1>
+
+        <p>
+
+            Encontre bombas, motobombas, sistemas de irrigação, acessórios e soluções completas para uso residencial, agrícola e industrial.
+
+        </p>
+
+    </div>
+
+</section>
+
+<!--==================================
+            BREADCRUMB
+===================================-->
+
+<section class="breadcrumb">
+
+    <div class="container">
+
+        <a href="index.html">
+
+            Início
+
+        </a>
+
+        <span>
+
+            /
+
+        </span>
+
+        <strong>
+
+            Bombas e Irrigação
+
+        </strong>
+
+    </div>
+
+</section>
+
+<!--==================================
+            PESQUISA
+===================================-->
+
+<section class="pesquisa">
+
+    <div class="container">
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="pesquisa"
+                placeholder="Pesquisar bombas, irrigação ou acessórios...">
+
+            <button id="btnPesquisar">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!--==================================
+            CONTEÚDO
+===================================-->
+
+<main class="pagina-bombas">
+
+    <div class="container">
+        <!--==================================
+            SIDEBAR
+===================================-->
+
+<aside class="sidebar">
+
+    <!--==============================
+            CATEGORIAS
+    ==============================-->
+
+    <div class="sidebar-card">
+
+        <h2>
+
+            Categorias
+
+        </h2>
+
+        <ul class="categorias">
+
+            <li data-categoria="todos" class="ativo">
+
+                🏠 Todos
+
+            </li>
+
+            <li data-categoria="perifericas">
+
+                💧 Bombas Periféricas
+
+            </li>
+
+            <li data-categoria="centrifugas">
+
+                🌊 Bombas Centrífugas
+
+            </li>
+
+            <li data-categoria="submersas">
+
+                🚰 Bombas Submersas
+
+            </li>
+
+            <li data-categoria="pressurizadores">
+
+                🏡 Pressurizadores
+
+            </li>
+
+            <li data-categoria="motobombas">
+
+                🚜 Motobombas
+
+            </li>
+
+            <li data-categoria="irrigacao">
+
+                🌱 Irrigação
+
+            </li>
+
+            <li data-categoria="aspersores">
+
+                🚿 Aspersores
+
+            </li>
+
+            <li data-categoria="mangueiras">
+
+                💦 Mangueiras
+
+            </li>
+
+            <li data-categoria="conexoes">
+
+                🔧 Conexões
+
+            </li>
+
+            <li data-categoria="acessorios">
+
+                ⚙️ Acessórios
+
+            </li>
+
+            <li data-categoria="pecas">
+
+                🛠️ Peças
+
+            </li>
+
+        </ul>
+
+    </div>
+
+
+
+    <!--==============================
+                MARCAS
+    ==============================-->
+
+    <div class="sidebar-card">
+
+        <h2>
+
+            Marcas
+
+        </h2>
+
+        <ul class="filtros">
+
+            <li>Schneider</li>
+
+            <li>Leão</li>
+
+            <li>Dancor</li>
+
+            <li>KSB</li>
+
+            <li>Thebe</li>
+
+            <li>Ferrari</li>
+
+            <li>Worker</li>
+
+            <li>Outras</li>
+
+        </ul>
+
+    </div>
+
+
+
+    <!--==============================
+                APLICAÇÃO
+    ==============================-->
+
+    <div class="sidebar-card">
+
+        <h2>
+
+            Aplicação
+
+        </h2>
+
+        <ul class="filtros">
+
+            <li>Residencial</li>
+
+            <li>Comercial</li>
+
+            <li>Industrial</li>
+
+            <li>Agrícola</li>
+
+            <li>Poços Artesianos</li>
+
+            <li>Irrigação</li>
+
+            <li>Piscinas</li>
+
+            <li>Jardins</li>
+
+        </ul>
+
+    </div>
+
+
+
+    <!--==============================
+                POTÊNCIA
+    ==============================-->
+
+    <div class="sidebar-card">
+
+        <h2>
+
+            Potência
+
+        </h2>
+
+        <ul class="filtros">
+
+            <li>1/2 CV</li>
+
+            <li>3/4 CV</li>
+
+            <li>1 CV</li>
+
+            <li>2 CV</li>
+
+            <li>3 CV</li>
+
+            <li>5 CV</li>
+
+            <li>Acima de 5 CV</li>
+
+        </ul>
+
+    </div>
+
+
+
+    <!--==============================
+            FAIXA DE PREÇO
+    ==============================-->
+
+    <div class="sidebar-card">
+
+        <h2>
+
+            Faixa de Preço
+
+        </h2>
+
+        <select id="filtroPreco">
+
+            <option value="">
+
+                Todas
+
+            </option>
+
+            <option value="500">
+
+                Até R$ 500
+
+            </option>
+
+            <option value="1500">
+
+                Até R$ 1.500
+
+            </option>
+
+            <option value="3000">
+
+                Até R$ 3.000
+
+            </option>
+
+            <option value="999999">
+
+                Acima de R$ 3.000
+
+            </option>
+
+        </select>
+
+    </div>
+
+</aside>
+
+
+
+<!--==================================
+        ÁREA DOS PRODUTOS
+===================================-->
+
+<section class="bombas">
+
+    <div class="bombas-header">
+
+        <div>
+
+            <h2>
+
+                Bombas e Irrigação
+
+            </h2>
+
+            <p>
+
+                Soluções completas para residências, fazendas, empresas e indústrias.
+
+            </p>
+
+        </div>
+
+        <div class="acoes-produtos">
+
+            <span>
+
+                <strong id="totalProdutos">
+
+                    0
+
+                </strong>
+
+                produtos encontrados
 
             </span>
 
-            <h1>
+            <select id="ordenacao">
 
-                Qualidade, eficiência e as melhores marcas para o seu projeto.
+                <option value="recentes">
 
-            </h1>
+                    Mais Recentes
 
-            <p>
+                </option>
 
-                Trabalhamos com bombas, sistemas de irrigação e acessórios
-                para residências, chácaras, fazendas, condomínios e empresas.
+                <option value="menor">
 
-            </p>
+                    Menor Preço
 
-            <div class="banner-buttons">
+                </option>
 
-                <a href="#produtos"
-                   class="btn-primary">
+                <option value="maior">
 
-                    Ver Produtos
+                    Maior Preço
 
-                </a>
+                </option>
 
-                <a href="https://wa.me/55SEUNUMERO"
-                   class="btn-secondary">
+                <option value="az">
 
-                    <i class="fa-brands fa-whatsapp"></i>
+                    Nome A-Z
 
-                    Fale Conosco
+                </option>
 
-                </a>
+                <option value="za">
 
-            </div>
+                    Nome Z-A
 
-        </div>
+                </option>
 
-    </div>
-
-</section>
-
-<!--==========================================
-            NOSSAS ESPECIALIDADES
-===========================================-->
-
-<section class="categories">
-
-    <div class="container">
-
-        <div class="section-title">
-
-            <h2>
-
-                Nossas Especialidades
-
-            </h2>
-
-            <p>
-
-                Soluções completas para diferentes aplicações.
-
-            </p>
-
-        </div>
-
-        <div class="categories-grid">
-
-            <!-- Bombas -->
-
-            <article class="category-card">
-
-                <i class="fa-solid fa-water"></i>
-
-                <h3>
-
-                    Bombas
-
-                </h3>
-
-                <p>
-
-                    Bombas para residências, chácaras,
-                    fazendas, indústrias e condomínios.
-
-                </p>
-
-            </article>
-
-            <!-- Irrigação -->
-
-            <article class="category-card">
-
-                <i class="fa-solid fa-seedling"></i>
-
-                <h3>
-
-                    Irrigação
-
-                </h3>
-
-                <p>
-
-                    Equipamentos para irrigação agrícola,
-                    jardins e áreas verdes.
-
-                </p>
-
-            </article>
-
-            <!-- Acessórios -->
-
-            <article class="category-card">
-
-                <i class="fa-solid fa-screwdriver-wrench"></i>
-
-                <h3>
-
-                    Acessórios
-
-                </h3>
-
-                <p>
-
-                    Conexões, mangueiras, peças e
-                    acessórios para instalação.
-
-                </p>
-
-            </article>
+            </select>
 
         </div>
 
     </div>
-
-</section>
-
-<!--==========================================
-            PRODUTOS EM DESTAQUE
-===========================================-->
-
-<section class="featured-products" id="produtos">
-
-    <div class="container">
-
-        <div class="section-title">
-
-            <h2>
-
-                Produtos em Destaque
-
-            </h2>
-
-            <p>
-
-                Conheça algumas das soluções disponíveis em nossa loja.
-
-            </p>
-
-        </div>
-
-        <div class="products-grid">
-
-            <!-- Produto 1 -->
-
-            <article class="product-card">
-
-                <img src="../IMAGENS/bombas.webp"
-                     alt="Produto">
-
-                <h3>
-
-                    Bomba Centrífuga
-
-                </h3>
-
-                <span>
-
-                    Marca: Schneider
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-            <!-- Produto 2 -->
-
-            <article class="product-card">
-
-                <img src="../IMAGENS/bombas/produto2.png"
-                     alt="Produto">
-
-                <h3>
-
-                    Bomba Submersa
-
-                </h3>
-
-                <span>
-
-                    Marca: Ebara
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-            <!-- Produto 3 -->
-
-            <article class="product-card">
-
-                <img src="imagens/bombas/produto3.png" ??
-                     alt="Produto">
-
-                <h3>
-
-                    Motobomba
-
-                </h3>
-
-                <span>
-
-                    Marca: Claw
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-            <!-- Produto 4 -->
-
-            <article class="product-card">
-
-                <img src="imagens/bombas/produto4.png" ?
-                     alt="Produto">
-
-                <h3>
-
-                    Pressurizador
-
-                </h3>
-
-                <span>
-
-                    Marca: Schneider
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-            <!-- Produto 5 -->
-
-            <article class="product-card">
-
-                <img src="imagens/bombas/produto5.png"
-                     alt="Produto">
-
-                <h3>
-
-                    Kit de Irrigação
-
-                </h3>
-
-                <span>
-
-                    Marca: Makita
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-            <!-- Produto 6 -->
-
-            <article class="product-card">
-
-                <img src="imagens/bombas/produto6.png"
-                     alt="Produto">
-
-                <h3>
-
-                    Acessórios
-
-                </h3>
-
-                <span>
-
-                    Diversas Marcas
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!--==========================================
-            PRODUTOS EM DESTAQUE
-===========================================-->
-
-<section class="featured-products" id="produtos">
-
-    <div class="container">
-
-        <div class="section-title">
-
-            <h2>
-
-                Produtos em Destaque
-
-            </h2>
-
-            <p>
-
-                Conheça algumas das soluções disponíveis em nossa loja.
-
-            </p>
-
-        </div>
-
-        <div class="products-grid">
-
-            <!-- Produto 1 -->
-
-            <article class="product-card">
-
-                <img src="imagens/bombas/produto1.png"
-                     alt="Produto">
-
-                <h3>
-
-                    Bomba Centrífuga
-
-                </h3>
-
-                <span>
-
-                    Marca: Schneider
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-            <!-- Produto 2 -->
-
-            <article class="product-card">
-
-                <img src="imagens/bombas/produto2.png"
-                     alt="Produto">
-
-                <h3>
-
-                    Bomba Submersa
-
-                </h3>
-
-                <span>
-
-                    Marca: Ebara
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-            <!-- Produto 3 -->
-
-            <article class="product-card">
-
-                <img src="imagens/bombas/produto3.png"
-                     alt="Produto">
-
-                <h3>
-
-                    Motobomba
-
-                </h3>
-
-                <span>
-
-                    Marca: Claw
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-            <!-- Produto 4 -->
-
-            <article class="product-card">
-
-                <img src="imagens/bombas/produto4.png"
-                     alt="Produto">
-
-                <h3>
-
-                    Pressurizador
-
-                </h3>
-
-                <span>
-
-                    Marca: Schneider
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-            <!-- Produto 5 -->
-
-            <article class="product-card">
-
-                <img src="imagens/bombas/produto5.png"
-                     alt="Produto">
-
-                <h3>
-
-                    Kit de Irrigação
-
-                </h3>
-
-                <span>
-
-                    Marca: Makita
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-            <!-- Produto 6 -->
-
-            <article class="product-card">
-
-                <img src="imagens/bombas/produto.png"
-                     alt="Produto">
-
-                <h3>
-
-                    Acessórios
-
-                </h3>
-
-                <span>
-
-                    Diversas Marcas
-
-                </span>
-
-                <a href="#"
-                   class="btn-product">
-
-                    Ver Produto
-
-                </a>
-
-            </article>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!--==========================================
-            FALE CONOSCO
-===========================================-->
-
-<section class="contact-cta">
-
-    <div class="container">
-
-        <div class="cta-content">
-
-            <h2>
-
-                Precisa de ajuda para escolher a bomba ideal?
-
-            </h2>
-
-            <p>
-
-                Nossa equipe está pronta para orientar você e encontrar
-                a melhor solução para sua residência, chácara, fazenda
-                ou empresa.
-
-            </p>
-
-            <div class="cta-buttons">
-
-                <a href="https://wa.me/55SEUNUMERO"
-
-                   class="btn-whatsapp">
-
-                    <i class="fa-brands fa-whatsapp"></i>
-
-                    Falar pelo WhatsApp
-
-                </a>
-
-                <a href="produtos.html"
-
-                   class="btn-secondary">
-
-                    Ver Outros Produtos
-
-                </a>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!--==========================================
-                FOOTER
-===========================================-->
-
-<footer>
-
-    <!-- Footer padrão da CIAL -->
-
-</footer>
-
-</body>
-
-</html>
+    

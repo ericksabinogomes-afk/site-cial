@@ -1,29 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 
 <head>
 
-    <!-- ==========================================
-                    META TAGS
-    =========================================== -->
-
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <meta name="description"
-          content="CIAL Asa Sul - Loja Autorizada STIHL. Motosserras, Roçadeiras, Bombas, Irrigação, Lavadoras e Assistência Técnica em Brasília.">
-
-    <meta name="keywords"
-          content="STIHL, bombas, irrigação, motosserra, roçadeira, Brasília, Asa Sul">
-
-    <meta name="author"
-          content="CIAL Asa Sul">
-
-    <!-- ==========================================
-                    TÍTULO
-    =========================================== -->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>
 
@@ -31,134 +16,110 @@
 
     </title>
 
-    <!-- ==========================================
-                    FONTS
-    =========================================== -->
+    <link
+        rel="stylesheet"
+        href="pagina css/index.css">
 
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
 
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
-    <!-- ==========================================
-                  FONT AWESOME
-    =========================================== -->
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <!-- ==========================================
-                     CSS
-    =========================================== -->
-
-    <link rel="stylesheet"
-        <link rel="stylesheet" href="css/style.css">
-
-    <!-- ==========================================
-                  FAVICON
-    =========================================== -->
-
-    <link rel="icon"
-          href="../IMAGENS/favicon.png" ????? 
-          type="image/png">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 </head>
+
 <body>
 
-<!-- ==========================================
-                TOPO
-=========================================== -->
-
-<div class="top-bar">
-
-    <div class="container">
-
-        <div class="top-left">
-
-            <span>
-
-                <i class="fa-solid fa-location-dot"></i>
-
-                Asa Sul • Brasília - DF
-
-            </span>
-
-        </div>
-
-        <div class="top-right">
-
-            <a href="../cadastro/login.html" class="top-login"
-        
-
-                <i class="fa-regular fa-user"></i>
-
-                Entrar / Cadastrar
-
-            </a>
-
-            <a href="https://wa.me/556133333333" class="top-whatsapp">
-
-                <i class="fa-brands fa-whatsapp"></i>
-
-                (61) 3333-3333
-
-            </a>
-
-        </div>
-
-    </div>
-
-</div>
-<!-- ==========================================
+<!--==================================
                 HEADER
-=========================================== -->
+===================================-->
 
 <header class="header">
 
     <div class="container">
 
-        <!-- LOGO -->
+        <a
+            href="index.html"
+            class="logo">
 
-        <div class="logo">
+            <img
+                src="imagens/logo.png"
+                alt="Logo CIAL">
 
-            <a href="index.html">
+        </a>
 
-                <img src="../IMAGENS/logo.png" alt="CIAL Asa Sul">
+        <nav>
+
+            <a
+                href="index.html"
+                class="ativo">
+
+                Início
 
             </a>
 
-        </div>
+            <a
+                href="produtos.html">
 
-        <!-- PESQUISA -->
+                Produtos STIHL
 
-        <div class="search-box">
+            </a>
 
-            <input
-                type="search"
-                placeholder="O que você procura hoje?">
+            <a
+                href="bombas.html">
 
-            <button>
+                Bombas e Irrigação
 
-                <i class="fa-solid fa-magnifying-glass"></i>
+            </a>
 
-            </button>
+            <a
+                href="#assistencia"
+                id="abrirAssistencia">
 
-        </div>
+                Assistência Técnica
 
-        <!-- CARRINHO -->
+            </a>
+
+        </nav>
 
         <div class="header-icons">
 
-            <a href="carrinho.html" class="cart">
+            <a
+                href="favoritos.html">
+
+                <i class="fa-regular fa-heart"></i>
+
+            </a>
+
+            <a
+                href="login.html">
+
+                <i class="fa-regular fa-user"></i>
+
+            </a>
+
+            <a
+                href="carrinho.html"
+                class="cart">
 
                 <i class="fa-solid fa-cart-shopping"></i>
 
-                <span>0</span>
+                <span id="contadorCarrinho">
+
+                    0
+
+                </span>
 
             </a>
 
@@ -167,37 +128,860 @@
     </div>
 
 </header>
-<!-- ==========================================
-                MENU PRINCIPAL
-========================================== -->
 
-<nav class="navbar">
+<!--==================================
+                HERO
+===================================-->
+
+<section class="hero">
+
+    <div class="container hero-container">
+
+        <div class="hero-texto">
+
+            <span class="hero-tag">
+
+                LOJA AUTORIZADA STIHL
+
+            </span>
+
+            <h1>
+
+                Máquinas, Bombas e Irrigação para quem exige qualidade.
+
+            </h1>
+
+            <p>
+
+                A CIAL Asa Sul oferece equipamentos profissionais STIHL, bombas hidráulicas, soluções para irrigação e assistência técnica especializada.
+
+            </p>
+
+            <div class="hero-botoes">
+
+                <a
+                    href="produtos.html"
+                    class="btn-laranja">
+
+                    Ver Produtos STIHL
+
+                </a>
+
+                <a
+                    href="bombas.html"
+                    class="btn-preto">
+
+                    Bombas e Irrigação
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="hero-imagem">
+
+            <img
+                src="imagens/hero-home.png"
+                alt="Produtos CIAL">
+
+        </div>
+
+    </div>
+
+</section>
+<!--==================================
+        CATEGORIAS PRINCIPAIS
+===================================-->
+
+<section class="categorias-home">
 
     <div class="container">
 
-        <ul class="menu">
+        <div class="section-title">
 
-            <li>
+            <span>
 
-                <a href="index.html" class="active">
+                EXPLORE
+
+            </span>
+
+            <h2>
+
+                Nossos Principais Produtos
+
+            </h2>
+
+            <p>
+
+                Escolha uma categoria e encontre os melhores equipamentos para o seu trabalho.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="categorias-grid">
+
+            <a href="produtos.html" class="categoria-card">
+
+                <img src="IMAGENS/motossera.jpg"
+                     alt="Motosserras">
+
+                <h3>
+
+                    Motosserras
+
+                </h3>
+
+            </a>
+
+
+
+            <a href="produtos.html" class="categoria-card">
+
+                <img src="imagens/categorias/rocadeira.png"
+                     alt="Roçadeiras">
+
+                <h3>
+
+                    Roçadeiras
+
+                </h3>
+
+            </a>
+
+
+
+            <a href="produtos.html" class="categoria-card">
+
+                <img src="imagens/categorias/soprador.png"
+                     alt="Sopradores">
+
+                <h3>
+
+                    Sopradores
+
+                </h3>
+
+            </a>
+
+
+
+            <a href="produtos.html" class="categoria-card">
+
+                <img src="imagens/categorias/podador.png"
+                     alt="Podadores">
+
+                <h3>
+
+                    Podadores
+
+                </h3>
+
+            </a>
+
+
+
+            <a href="bombas.html" class="categoria-card">
+
+                <img src="imagens/categorias/bomba.png"
+                     alt="Bombas">
+
+                <h3>
+
+                    Bombas
+
+                </h3>
+
+            </a>
+
+
+
+            <a href="bombas.html" class="categoria-card">
+
+                <img src="imagens/categorias/irrigacao.png"
+                     alt="Irrigação">
+
+                <h3>
+
+                    Irrigação
+
+                </h3>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+<!--==================================
+        PRODUTOS STIHL
+===================================-->
+
+<section class="stihl-home">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span>
+
+                STIHL
+
+            </span>
+
+            <h2>
+
+                Produtos em Destaque
+
+            </h2>
+
+            <p>
+
+                Conheça a linha completa de equipamentos STIHL para uso profissional e doméstico.
+
+            </p>
+
+        </div>
+
+        <div class="stihl-content">
+
+            <div class="stihl-texto">
+
+                <h3>
+
+                    Tecnologia, potência e confiança.
+
+                </h3>
+
+                <p>
+
+                    Trabalhamos com motosserras, roçadeiras, sopradores, podadores, lavadoras de alta pressão e diversos equipamentos da linha STIHL, sempre com garantia e assistência autorizada.
+
+                </p>
+
+                <ul>
+
+                    <li>
+
+                        ✔ Produtos Originais STIHL
+
+                    </li>
+
+                    <li>
+
+                        ✔ Garantia de Fábrica
+
+                    </li>
+
+                    <li>
+
+                        ✔ Assistência Técnica Especializada
+
+                    </li>
+
+                    <li>
+
+                        ✔ Peças Originais
+
+                    </li>
+
+                </ul>
+
+                <a
+                    href="produtos.html"
+                    class="btn-laranja">
+
+                    Ver Todos os Produtos
+
+                </a>
+
+            </div>
+
+            <div class="stihl-imagem">
+
+                <img
+                    src="imagens/stihl-home.png"
+                    alt="Produtos STIHL">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!--==================================
+        BOMBAS E IRRIGAÇÃO
+===================================-->
+
+<section class="bombas-home">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span>
+
+                BOMBAS E IRRIGAÇÃO
+
+            </span>
+
+            <h2>
+
+                Soluções para Todos os Projetos
+
+            </h2>
+
+            <p>
+
+                Trabalhamos com bombas hidráulicas, sistemas de irrigação e acessórios das principais marcas do mercado.
+
+            </p>
+
+        </div>
+
+        <div class="bombas-content">
+
+            <div class="bombas-imagem">
+
+                <img
+                    src="imagens/bombas-home.png"
+                    alt="Bombas e Irrigação">
+
+            </div>
+
+            <div class="bombas-texto">
+
+                <h3>
+
+                    Equipamentos para uso residencial, agrícola e industrial.
+
+                </h3>
+
+                <p>
+
+                    Oferecemos soluções completas para abastecimento de água, irrigação, pressurização, poços artesianos, piscinas e diversas aplicações hidráulicas.
+
+                </p>
+
+                <ul>
+
+                    <li>
+
+                        ✔ Bombas Periféricas
+
+                    </li>
+
+                    <li>
+
+                        ✔ Bombas Centrífugas
+
+                    </li>
+
+                    <li>
+
+                        ✔ Pressurizadores
+
+                    </li>
+
+                    <li>
+
+                        ✔ Sistemas de Irrigação
+
+                    </li>
+
+                    <li>
+
+                        ✔ Acessórios e Conexões
+
+                    </li>
+
+                </ul>
+
+                <a
+                    href="bombas.html"
+                    class="btn-laranja">
+
+                    Conhecer Linha Completa
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!--==================================
+        ASSISTÊNCIA TÉCNICA
+===================================-->
+
+<section
+    class="assistencia-home"
+    id="assistencia">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span>
+
+                ASSISTÊNCIA TÉCNICA
+
+            </span>
+
+            <h2>
+
+                Oficina Autorizada STIHL
+
+            </h2>
+
+            <p>
+
+                Técnicos especializados, peças originais e equipamentos modernos para garantir o melhor desempenho da sua máquina.
+
+            </p>
+
+        </div>
+
+        <div class="assistencia-content">
+
+            <div class="assistencia-texto">
+
+                <h3>
+
+                    Cuidamos do seu equipamento como se fosse nosso.
+
+                </h3>
+
+                <p>
+
+                    Nossa equipe realiza manutenção preventiva, corretiva, revisões, diagnósticos técnicos e substituição de peças originais, garantindo segurança, desempenho e maior vida útil para o seu equipamento.
+
+                </p>
+
+                <div class="assistencia-lista">
+
+                    <div>
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Manutenção Preventiva
+
+                    </div>
+
+                    <div>
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Manutenção Corretiva
+
+                    </div>
+
+                    <div>
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Peças Originais STIHL
+
+                    </div>
+
+                    <div>
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Garantia de Serviço
+
+                    </div>
+
+                    <div>
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Técnicos Especializados
+
+                    </div>
+
+                    <div>
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Orçamento Técnico
+
+                    </div>
+
+                </div>
+
+                <button
+                    id="btnAssistencia"
+                    class="btn-laranja">
+
+                    Solicitar Assistência Técnica
+
+                </button>
+
+            </div>
+
+            <div class="assistencia-imagem">
+
+                <img
+                    src="imagens/assistencia-home.png"
+                    alt="Assistência Técnica CIAL">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!--==================================
+        POPUP ASSISTÊNCIA
+===================================-->
+
+<div
+    class="modal-assistencia"
+    id="modalAssistencia">
+
+    <div class="modal-box">
+
+        <button
+            class="fechar-modal"
+            id="fecharModal">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+        <div class="modal-topo">
+
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+
+            <h2>
+
+                Assistência Técnica
+
+            </h2>
+
+            <p>
+
+                Atendimento especializado para equipamentos STIHL.
+
+            </p>
+
+        </div>
+
+        <div class="modal-conteudo">
+
+            <p>
+
+                Clique no botão abaixo para falar diretamente com um técnico especializado pelo WhatsApp.
+
+            </p>
+
+            <button
+                id="btnWhatsappTecnico"
+                class="btn-whatsapp">
+
+                <i class="fa-brands fa-whatsapp"></i>
+
+                Falar com o Técnico
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<!--==================================
+        DIFERENCIAIS
+===================================-->
+
+<section class="diferenciais">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span>
+
+                POR QUE ESCOLHER A CIAL?
+
+            </span>
+
+            <h2>
+
+                Compromisso com Qualidade e Confiança
+
+            </h2>
+
+            <p>
+
+                Há anos oferecendo produtos de qualidade, atendimento especializado e soluções completas para nossos clientes.
+
+            </p>
+
+        </div>
+
+        <div class="diferenciais-grid">
+
+            <div class="diferencial-card">
+
+                <i class="fa-solid fa-award"></i>
+
+                <h3>
+
+                    Loja Autorizada STIHL
+
+                </h3>
+
+                <p>
+
+                    Produtos originais com garantia de fábrica e atendimento especializado.
+
+                </p>
+
+            </div>
+
+            <div class="diferencial-card">
+
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+
+                <h3>
+
+                    Assistência Técnica
+
+                </h3>
+
+                <p>
+
+                    Oficina autorizada com técnicos qualificados e peças originais.
+
+                </p>
+
+            </div>
+
+            <div class="diferencial-card">
+
+                <i class="fa-solid fa-truck-fast"></i>
+
+                <h3>
+
+                    Entrega Rápida
+
+                </h3>
+
+                <p>
+
+                    Agilidade para que seu equipamento chegue com segurança.
+
+                </p>
+
+            </div>
+
+            <div class="diferencial-card">
+
+                <i class="fa-solid fa-credit-card"></i>
+
+                <h3>
+
+                    Parcelamento Facilitado
+
+                </h3>
+
+                <p>
+
+                    Diversas formas de pagamento para facilitar sua compra.
+
+                </p>
+
+            </div>
+
+            <div class="diferencial-card">
+
+                <i class="fa-solid fa-headset"></i>
+
+                <h3>
+
+                    Atendimento Especializado
+
+                </h3>
+
+                <p>
+
+                    Nossa equipe está preparada para indicar a melhor solução para sua necessidade.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!--==================================
+            MARCAS PARCEIRAS
+===================================-->
+
+<section class="marcas-home">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span>
+
+                MARCAS
+
+            </span>
+
+            <h2>
+
+                Trabalhamos com as Melhores Marcas
+
+            </h2>
+
+            <p>
+
+                Equipamentos, bombas e acessórios das marcas mais reconhecidas do mercado.
+
+            </p>
+
+        </div>
+
+        <div class="marcas-slider">
+
+            <div class="marca-card">
+
+                <img
+                    src="imagens/marcas/stihl.png"
+                    alt="STIHL">
+
+            </div>
+
+            <div class="marca-card">
+
+                <img
+                    src="imagens/marcas/schneider.png"
+                    alt="Schneider">
+
+            </div>
+
+            <div class="marca-card">
+
+                <img
+                    src="imagens/marcas/leao.png"
+                    alt="Leão">
+
+            </div>
+
+            <div class="marca-card">
+
+                <img
+                    src="imagens/marcas/dancor.png"
+                    alt="Dancor">
+
+            </div>
+
+            <div class="marca-card">
+
+                <img
+                    src="imagens/marcas/ksb.png"
+                    alt="KSB">
+
+            </div>
+
+            <div class="marca-card">
+
+                <img
+                    src="imagens/marcas/thebe.png"
+                    alt="Thebe">
+
+            </div>
+
+            <div class="marca-card">
+
+                <img
+                    src="imagens/marcas/ferrari.png"
+                    alt="Ferrari">
+
+            </div>
+
+            <div class="marca-card">
+
+                <img
+                    src="imagens/marcas/worker.png"
+                    alt="Worker">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!--==================================
+                FOOTER
+===================================-->
+
+<footer class="footer">
+
+    <div class="container">
+
+        <div class="footer-grid">
+
+            <!--======================
+                    EMPRESA
+            =======================-->
+
+            <div class="footer-col">
+
+                <img
+                    src="imagens/logo.png"
+                    alt="Logo CIAL"
+                    class="footer-logo">
+
+                <p>
+
+                    Loja Autorizada STIHL especializada em máquinas,
+                    bombas, irrigação e assistência técnica.
+
+                </p>
+
+            </div>
+
+
+
+            <!--======================
+                    LINKS
+            =======================-->
+
+            <div class="footer-col">
+
+                <h3>
+
+                    Navegação
+
+                </h3>
+
+                <a href="index.html">
 
                     Início
 
                 </a>
 
-            </li>
-
-            <li>
-
-                <a href="Produtos.html">
+                <a href="produtos.html">
 
                     Produtos STIHL
 
                 </a>
-
-            </li>
-
-            <li>
 
                 <a href="bombas.html">
 
@@ -205,427 +989,267 @@
 
                 </a>
 
-            </li>
+                <a
+                    href="#"
+                    id="footerAssistencia">
 
-           
-        </ul>
+                    Assistência Técnica
 
-    </div>
+                </a>
 
-</nav>
-<!-- ==========================================
-                BANNER
-========================================== -->
+            </div>
 
-<section class="banner">
 
-    <div class="container-fluid">
 
-        <img
-          
-    src="../IMAGENS/banner.png"
-    alt="Banner CIAL Asa Sul">
+            <!--======================
+                HORÁRIO
+            =======================-->
 
-    </div>
+            <div class="footer-col">
 
-</section>
+                <h3>
 
-<!-- ==========================================
-            DIFERENCIAIS
-========================================== -->
+                    Horário
 
-<section class="features">
+                </h3>
 
-    <div class="container">
+                <p>
 
-        <div class="feature">
+                    Segunda a Sexta
 
-            <i class="fa-solid fa-shield-halved"></i>
+                </p>
 
-            <h3>Loja Autorizada</h3>
+                <span>
 
-            <p>Produtos originais STIHL.</p>
-
-        </div>
-
-        <div class="feature">
-
-            <i class="fa-solid fa-credit-card"></i>
-
-            <h3>Parcelamento</h3>
-
-            <p>Motosserras e roçadeiras em até 5x sem juros. Bombas e irrigação em até 3x sem juros.</p>
-
-        </div>
-
-        <div class="feature">
-
-            <i class="fa-solid fa-screwdriver-wrench"></i>
-
-            <h3>Assistência Técnica</h3>
-
-            <p>Equipe especializada e peças originais.</p>
-
-        </div>
-
-        <div class="feature">
-
-            <i class="fa-solid fa-location-dot"></i>
-
-            <h3>Asa Sul</h3>
-
-            <p>Atendimento presencial em Brasília - DF.</p>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- ==========================================
-                CATEGORIAS
-========================================== -->
-
-<section class="categories">
-
-    <div class="container">
-
-        <h2>Categorias</h2>
-
-        <div class="categories-grid">
-
-            <a href="produtos.html" class="category-card">
-
-                <img src="../IMAGENS/motossera.jpg" alt="Motosserras">
-
-                <h3>Motosserras</h3>
-
-            </a>
-
-            <a href="produtos.html" class="category-card">
-
-                <img src="../IMAGENS/roçadeiras.png" alt="Roçadeiras">
-
-                <h3>Roçadeiras</h3>
-
-            </a>
-
-            <a href="bombas.html" class="category-card">
-
-                <img src="../IMAGENS/bombas.webp" alt="Bombas">
-
-                <h3>Bombas</h3>
-
-            </a>
-
-            <a href="bombas.html" class="category-card">
-
-                <img src="../IMAGENS/irrigaçoes.webp" alt="Irrigação">
-
-                <h3>Irrigação</h3>
-
-            </a>
-
-            <a href="produtos.html" class="category-card">
-
-                <img src="../IMAGENS/lavadoras.webp" alt="Lavadoras">
-
-                <h3>Lavadoras</h3>
-
-            </a>
-
-            <a href="produtos.html" class="category-card">
-
-                <img src="../IMAGENS/acessorios.webp" alt="Acessórios">
-
-                <h3>Acessórios</h3>
-
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- ==========================================
-            PRODUTOS EM DESTAQUE
-========================================== -->
-
-<section class="featured-products">
-
-    <div class="container">
-
-        <div class="section-header">
-
-            <h2>Produtos em Destaque</h2>
-            
-
-            <a href="produtos.html" class="catalog-link">
-
-                Ver catálogo completo
-
-                <i class="fa-solid fa-arrow-right"></i>
-
-            </a>
-
-        </div>
-
-        <div class="products-grid">
-
-            <!-- GTA 40 -->
-
-            <article class="product-card">
-
-                <span class="badge badge-new">
-
-                    NOVO
+                    08:00 às 18:00
 
                 </span>
 
-                <img src="../IMAGENS/gta 40.jpg"
-                     alt="STIHL GTA 40">
+                <p>
 
-                <div class="product-content">
+                    Sábado
 
-                    <h3>STIHL GTA 40</h3>
+                </p>
 
-                    <p>
+                <span>
 
-                        Podador a bateria compacto para podas rápidas,
-                        limpas e precisas.
-
-                    </p>
-
-                    <a href="produto-gta40.html" ???
-                       class="btn-product">
-
-                        Ver Produto
-
-                    </a>
-
-                </div>
-
-            </article>
-
-            <!-- FS 220 -->
-
-            <article class="product-card">
-
-                <span class="badge badge-best">
-
-                    MAIS VENDIDO
+                    08:00 às 12:00
 
                 </span>
 
-                <img src="../IMAGENS/FS 220.jpg"
-                     alt="STIHL FS 220">
+            </div>
 
-                <div class="product-content">
 
-                    <h3>STIHL FS 221</h3>
 
-                    <p>
+            <!--======================
+                    REDES
+            =======================-->
 
-                        Roçadeira profissional de alta potência para uso
-                        intenso em qualquer terreno.
+            <div class="footer-col">
 
-                    </p>
+                <h3>
 
-                    <a href="produto-fs220.html" 
-                       class="btn-product">
+                    Redes Sociais
 
-                        Ver Produto
+                </h3>
+
+                <div class="footer-social">
+
+                    <a href="#">
+
+                        <i class="fa-brands fa-instagram"></i>
+
+                    </a>
+
+                    <a href="#">
+
+                        <i class="fa-brands fa-facebook-f"></i>
+
+                    </a>
+
+                    <a href="#">
+
+                        <i class="fa-brands fa-whatsapp"></i>
 
                     </a>
 
                 </div>
 
-            </article>
+            </div>
 
-            <!-- MS 661 -->
+        </div>
 
-            <article class="product-card">
 
-                <span class="badge badge-pro">
 
-                    LINHA PROFISSIONAL
+        <div class="footer-copy">
 
-                </span>
-
-                <img src="../IMAGENS/MS 661.webp"
-                     alt="STIHL MS 661">
-
-                <div class="product-content">
-
-                    <h3>STIHL MS 661</h3>
-
-                    <p>
-
-                        Motosserra desenvolvida para trabalhos
-                        florestais de alto desempenho.
-
-                    </p>
-
-                    <a href="produto-ms661.html"
-                       class="btn-product">
-
-                        Ver Produto
-
-                    </a>
-
-                </div>
-
-            </article>
-
-            <!-- CATÁLOGO -->
-
-            <article class="product-card catalog-card">
-
-                <div class="catalog-icon">
-
-                    <i class="fa-solid fa-book-open"></i>
-
-                </div>
-
-                <div class="product-content">
-
-                    <h3>Explore nosso catálogo</h3>
-
-                    <p>
-
-                        Conheça toda a linha STIHL, bombas,
-                        irrigação e acessórios disponíveis.
-
-                    </p>
-
-                    <a href="produtos.html"
-                       class="btn-product">
-
-                        Ver Catálogo
-
-                    </a>
-
-                </div>
-
-            </article>
+            © 2026 CIAL Asa Sul • Todos os direitos reservados.
 
         </div>
 
     </div>
 
-</section>
-<!-- ==========================================
-            MARCAS PARCEIRAS
-========================================== -->
+</footer>
+<!--==================================
+        WHATSAPP FLUTUANTE
+===================================-->
 
-<section class="brands">
+<a
+    href="#"
+    id="btnWhatsapp"
+
+    class="whatsapp-float">
+
+    <i class="fa-brands fa-whatsapp"></i>
+
+</a>
+<!--==================================
+                LOCALIZAÇÃO
+===================================-->
+
+<section class="localizacao">
 
     <div class="container">
 
-        <div class="section-header">
+        <div class="section-title">
 
-            <h2>Marcas que Trabalhamos</h2>
+            <span>
 
-        </div>
+                ONDE ESTAMOS
 
-        <div class="brands-grid">
+            </span>
 
-            <img src="imagens/marcas/stihl.png" alt="STIHL"> ?? Cade as marcas?
+            <h2>
 
-            <img src="imagens/marcas/schneider.png" alt="Schneider">
+                Venha Conhecer Nossa Loja
 
-            <img src="imagens/marcas/karcher.png" alt="Kärcher">
-
-            <img src="imagens/marcas/leao.png" alt="Leão">
-
-            <img src="imagens/marcas/plastcor.png" alt="Plastcor">
-
-            <img src="imagens/marcas/trapp.png" alt="Trapp">
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- ==========================================
-                RODAPÉ
-========================================== -->
-
-<footer class="footer">
-
-    <div class="container footer-grid">
-
-        <div>
-
-            <h3>CIAL Asa Sul</h3>
+            </h2>
 
             <p>
 
-                Loja Autorizada STIHL em Brasília.
+                Estamos prontos para atender você com produtos, assistência técnica e atendimento especializado.
 
             </p>
 
         </div>
 
-        <div>
+        <div class="localizacao-content">
 
-            <h3>Links</h3>
+            <div class="localizacao-info">
 
-            <ul>
+                <div class="info-item">
 
-                <li><a href="index.html">Início</a></li>
+                    <i class="fa-solid fa-location-dot"></i>
 
-                <li><a href="produtos.html">Produtos</a></li>
+                    <div>
 
-                <li><a href="bombas.html">Bombas</a></li>
+                        <h3>
 
-                <li><a href="assistencia.html">Assistência</a></li>
+                            Endereço
 
-            </ul>
+                        </h3>
 
-        </div>
+                        <p>
 
-        <div>
+                            Asa Sul • Brasília - DF
 
-            <h3>Contato</h3>
+                        </p>
 
-            <p>(61) 3333-3333</p>
+                    </div>
 
-            <p>contato@cialasasul.com.br</p>
+                </div>
 
-            <p>Asa Sul - Brasília/DF</p>
 
-        </div>
 
-        <div>
+                <div class="info-item">
 
-            <h3>Atendimento</h3>
+                    <i class="fa-solid fa-clock"></i>
 
-            <p>Segunda a Sexta</p>
+                    <div>
 
-            <p>08h às 18h</p>
+                        <h3>
 
-            <p>Sábado: 08h às 13h</p>
+                            Horário
+
+                        </h3>
+
+                        <p>
+
+                            Segunda a Sexta
+
+                        </p>
+
+                        <p>
+
+                            08:00 às 18:00
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="info-item">
+
+                    <i class="fa-solid fa-store"></i>
+
+                    <div>
+
+                        <h3>
+
+                            Atendimento
+
+                        </h3>
+
+                        <p>
+
+                            Loja Física
+
+                        </p>
+
+                        <p>
+
+                            Assistência Técnica
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="mapa">
+
+                <iframe
+
+                    src=""
+
+                    loading="lazy"
+
+                    allowfullscreen>
+
+                </iframe>
+
+            </div>
 
         </div>
 
     </div>
 
-    <div class="footer-bottom">
-
-        <p>
-
-            © 2026 CIAL Asa Sul - Todos os direitos reservados.
-
-        </p>
+</section>
+        </div>
 
     </div>
 
-</footer>
-
-<script src="js/script.js"></script>
+</section>
+        </div>
+<script src="pagina js/index.js"></script>
 
 </body>
+
 </html>

@@ -170,6 +170,163 @@ app.listen(PORT, () => {
 });
 
 /*==========================================================
+    ROTAS DE PRODUTOS
+==========================================================*/
+
+// Listar produtos (apenas ativos)
+app.get('/produtos', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('produtos')
+      .select('*')
+      .eq('ativo', true)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return res.status(500).json({ erro: error.message });
+    }
+
+    res.json({ ok: true, data });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// Listar todos (para o admin, inclusive inativos se quiser)
+app.get('/admin/produtos', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('produtos')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return res.status(500).json({ erro: error.message });
+    }
+
+    res.json({ ok: true, data });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// Criar produto (admin)
+app.post('/admin/produtos', async (req, res) => {
+  const {
+    nome,
+    codigo,
+    categoria,
+    preco,
+    estoque,
+    imagem,
+    selo,
+    destaque
+  } = req.body;
+
+  if (!nome || !codigo || !categoria || preco == null) {
+    return res.status(400).json({
+      ok: false,
+      erro: 'Informe nome, código, categoria e preço'
+    });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('produtos')
+      .insert([{
+        nome,
+        codigo,
+        categoria,
+        preco: Number(preco),
+        estoque: estoque || 'Em estoque',
+        imagem: imagem || '',
+        selo: selo || null,
+        destaque: !!destaque,
+        ativo: true
+      }])
+      .select('id');
+
+    if (error) {
+      return res.status(500).json({ ok: false, erro: error.message });
+    }
+
+    res.status(201).json({ ok: true, data });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// Atualizar produto (admin)
+app.put('/admin/produtos/:id', async (req, res) => {
+  const produtoId = parseInt(req.params.id, 10);
+  const {
+    nome,
+    codigo,
+    categoria,
+    preco,
+    estoque,
+    imagem,
+    selo,
+    destaque,
+    ativo
+  } = req.body;
+
+  if (!produtoId) {
+    return res.status(400).json({ ok: false, erro: 'ID inválido' });
+  }
+
+  const dadosAtualizacao = {};
+  if (nome !== undefined) dadosAtualizacao.nome = nome;
+  if (codigo !== undefined) dadosAtualizacao.codigo = codigo;
+  if (categoria !== undefined) dadosAtualizacao.categoria = categoria;
+  if (preco !== undefined) dadosAtualizacao.preco = Number(preco);
+  if (estoque !== undefined) dadosAtualizacao.estoque = estoque;
+  if (imagem !== undefined) dadosAtualizacao.imagem = imagem;
+  if (selo !== undefined) dadosAtualizacao.selo = selo;
+  if (destaque !== undefined) dadosAtualizacao.destaque = !!destaque;
+  if (ativo !== undefined) dadosAtualizacao.ativo = !!ativo;
+
+  try {
+    const { error } = await supabase
+      .from('produtos')
+      .update(dadosAtualizacao)
+      .eq('id', produtoId);
+
+    if (error) {
+      return res.status(500).json({ ok: false, erro: error.message });
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+// Excluir produto (admin)
+app.delete('/admin/produtos/:id', async (req, res) => {
+  const produtoId = parseInt(req.params.id, 10);
+
+  if (!produtoId) {
+    return res.status(400).json({ ok: false, erro: 'ID inválido' });
+  }
+
+  try {
+    const { error } = await supabase
+      .from('produtos')
+      .delete()
+      .eq('id', produtoId);
+
+    if (error) {
+      return res.status(500).json({ ok: false, erro: error.message });
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
+/*==========================================================
     Login
 ==========================================================*/
 

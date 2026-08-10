@@ -69,120 +69,46 @@ const estado = {
 };
 
 
-
-/*==================================================
-                    PRODUTOS
-==================================================*/
-
-/*
-
-Aqui ficará nosso banco de produtos.
-
-Por enquanto será um array.
-
-Depois o Backend substituirá
-automaticamente.
-
-*/
-
-const produtos = [
-    {
-        id: 1,
-        categoria: "motosserras",
-        nome: "MS 162",
-        codigo: "MS162",
-        selo: "NOVO",
-        preco: 1299.90,
-        parcela: "10x de R$ 129,99",
-        estoque: "Em estoque",
-        imagem: "../pagina/imagem/sopradores.webp"
-    },
-
-    {
-        id: 2,
-        categoria: "motosserras",
-        nome: "MS 170",
-        codigo: "MS170",
-        selo: "MAIS VENDIDA",
-        preco: 1799.90,
-        parcela: "10x de R$ 179,99",
-        estoque: "Em estoque",
-        imagem: "imagens/produtos/motosserras/ms170.png"
-    },
-
-    {
-        id: 3,
-        categoria: "motosserras",
-        nome: "MS 172",
-        codigo: "MS172",
-        selo: "NOVO",
-        preco: 1999.90,
-        parcela: "10x de R$ 199,99",
-        estoque: "Em estoque",
-        imagem: "imagens/produtos/motosserras/ms172.png"
-    },
-
-    {
-        id: 4,
-        categoria: "motosserras",
-        nome: "MS 180",
-        codigo: "MS180",
-        selo: "POPULAR",
-        preco: 2299.90,
-        parcela: "10x de R$ 229,99",
-        estoque: "Em estoque",
-        imagem: "imagens/produtos/motosserras/ms180.png"
-    },
-
-    {
-        id: 5,
-        categoria: "motosserras",
-        nome: "MS 182",
-        codigo: "MS182",
-        selo: "NOVO",
-        preco: 2499.90,
-        parcela: "10x de R$ 249,99",
-        estoque: "Em estoque",
-        imagem: "imagens/produtos/motosserras/ms182.png"
-    }
-];
-
-
 /*==================================================
             CARREGAR PRODUTOS
 ==================================================*/
 
-async function carregarProdutos(){
+async function carregarProdutos() {
+  try {
+    // ajuste a URL se seu front não estiver na mesma origem
+    const API_BASE = "http://localhost:4000"; // ou "" se estiver no mesmo domínio/porta
+    const res = await fetch(`${API_BASE}/produtos`);
 
-    try{
-
-        /*
-            Futuramente será:
-
-            const resposta = await fetch("/api/produtos");
-
-            estado.produtos = await resposta.json();
-        */
-
-        estado.produtos = [...produtos];
-
-        estado.produtosFiltrados = [...estado.produtos];
-
-        ordenarProdutos();
-    
-        atualizarTotal();
-    
-        renderizarProdutos();
-    
-    }
-    
-    catch(erro){
-
-        console.error("Erro ao carregar produtos:", erro);
-
+    const json = await res.json();
+    if (!json.ok) {
+      throw new Error(json.erro || "Erro ao carregar produtos");
     }
 
+    const dados = json.data || [];
+
+    // Mapeia os dados da tabela 'produtos' para o formato esperado pelo front
+    estado.produtos = dados.map(p => ({
+      id: p.id,
+      categoria: p.categoria,
+      nome: p.nome,
+      codigo: p.codigo,
+      selo: p.selo || "",
+      preco: Number(p.preco),
+      parcela: p.parcela || "",     // opcional: se você criar esse campo no banco
+      estoque: p.estoque || "Em estoque",
+      imagem: p.imagem || "imagens/produto-sem-imagem.png"
+    }));
+
+    estado.produtosFiltrados = [...estado.produtos];
+
+    ordenarProdutos();
+    atualizarTotal();
+    renderizarProdutos();
+  } catch (erro) {
+    console.error("Erro ao carregar produtos:", erro);
+  }
 }
+
 /*==================================================
             TOTAL DE PRODUTOS
 ==================================================*/

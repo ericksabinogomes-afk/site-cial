@@ -86,221 +86,68 @@ automaticamente.
 */
 
 const produtos = [
-
-    /*==================================================
-                    MOTOSSERRAS
-    ==================================================*/
-
     {
-
-        id:1,
-
-        categoria:"motosserras",
-
-        nome:"MS 162",
-
-        codigo:"MS162",
-
-        selo:"NOVO",
-
-        preco:1299.90,
-
-        valor:1299.90,
-
-        parcela:"10x de R$ 129,99",
-
-        estoque:"Em estoque",
-
-        aplicacao:"Uso Doméstico",
-
-        destaque:"Lançamentos",
-
-        imagem:"imagens/produtos/motosserras/ms162.png"
-
+        id: 1,
+        categoria: "motosserras",
+        nome: "MS 162",
+        codigo: "MS162",
+        selo: "NOVO",
+        preco: 1299.90,
+        parcela: "10x de R$ 129,99",
+        estoque: "Em estoque",
+        imagem: "../pagina/imagem/sopradores.webp"
     },
 
     {
-
-        id:2,
-
-        categoria:"motosserras",
-
-        nome:"MS 170",
-
-        codigo:"MS170",
-
-        selo:"MAIS VENDIDA",
-
-        preco:1799.90,
-
-        valor:1799.90,
-
-        parcela:"10x de R$ 179,99",
-
-        estoque:"Em estoque",
-
-        aplicacao:"Uso Doméstico",
-
-        destaque:"Mais Vendidos",
-
-        imagem:"imagens/produtos/motosserras/ms170.png"
-
+        id: 2,
+        categoria: "motosserras",
+        nome: "MS 170",
+        codigo: "MS170",
+        selo: "MAIS VENDIDA",
+        preco: 1799.90,
+        parcela: "10x de R$ 179,99",
+        estoque: "Em estoque",
+        imagem: "imagens/produtos/motosserras/ms170.png"
     },
 
     {
-
-        id:3,
-
-        categoria:"motosserras",
-
-        nome:"MS 172",
-
-        codigo:"MS172",
-
-        selo:"NOVO",
-
-        preco:1999.90,
-
-        valor:1999.90,
-
-        parcela:"10x de R$ 199,99",
-
-        estoque:"Em estoque",
-
-        aplicacao:"Uso Doméstico",
-
-        destaque:"Lançamentos",
-
-        imagem:"imagens/produtos/motosserras/ms172.png"
-
+        id: 3,
+        categoria: "motosserras",
+        nome: "MS 172",
+        codigo: "MS172",
+        selo: "NOVO",
+        preco: 1999.90,
+        parcela: "10x de R$ 199,99",
+        estoque: "Em estoque",
+        imagem: "imagens/produtos/motosserras/ms172.png"
     },
 
     {
-
-        id:4,
-
-        categoria:"motosserras",
-
-        nome:"MS 180",
-
-        codigo:"MS180",
-
-        selo:"POPULAR",
-
-        preco:2299.90,
-
-        valor:2299.90,
-
-        parcela:"10x de R$ 229,99",
-
-        estoque:"Em estoque",
-
-        aplicacao:"Uso Doméstico",
-
-        destaque:"Mais Vendidos",
-
-        imagem:"imagens/produtos/motosserras/ms180.png"
-
+        id: 4,
+        categoria: "motosserras",
+        nome: "MS 180",
+        codigo: "MS180",
+        selo: "POPULAR",
+        preco: 2299.90,
+        parcela: "10x de R$ 229,99",
+        estoque: "Em estoque",
+        imagem: "imagens/produtos/motosserras/ms180.png"
     },
 
     {
-
-        id:5,
-
-        categoria:"motosserras",
-
-        nome:"MS 182",
-
-        codigo:"MS182",
-
-        selo:"NOVO",
-
-        preco:2499.90,
-
-        valor:2499.90,
-
-        parcela:"10x de R$ 249,99",
-
-        estoque:"Em estoque",
-
-        aplicacao:"Uso Doméstico",
-
-        destaque:"Lançamentos",
-
-        imagem:"imagens/produtos/motosserras/ms182.png"
-
-    },
-
+        id: 5,
+        categoria: "motosserras",
+        nome: "MS 182",
+        codigo: "MS182",
+        selo: "NOVO",
+        preco: 2499.90,
+        parcela: "10x de R$ 249,99",
+        estoque: "Em estoque",
+        imagem: "imagens/produtos/motosserras/ms182.png"
+    }
 ];
-/*==================================================
-                CONFIGURAÇÕES
-==================================================*/
-
-const CONFIG = {
-
-    moeda: "BRL",
-
-    locale: "pt-BR",
-
-    parcelas: 10
-
-};
 
 
-
-/*==================================================
-                ELEMENTOS
-==================================================*/
-
-const elementos = {
-
-    grid: document.getElementById("gridProdutos"),
-
-    pesquisa: document.getElementById("pesquisa"),
-
-    total: document.getElementById("totalProdutos"),
-
-    ordenacao: document.getElementById("ordenacao"),
-
-    categorias: document.querySelectorAll(".categorias li"),
-
-    atalhos: document.querySelectorAll(".atalho"),
-
-    filtroPreco: document.getElementById("filtroPreco"),
-
-    filtros: document.querySelectorAll(".filtros li")
-
-};
-
-
-
-/*==================================================
-                ESTADO
-==================================================*/
-
-const estado = {
-
-    produtos: [],
-
-    produtosFiltrados: [],
-
-    categoria: "todos",
-
-    pesquisa: "",
-
-    preco: "",
-
-    destaque: "",
-
-    aplicacao: "",
-
-    ordenacao: "recentes",
-
-    favoritos: [],
-
-    carrinho: []
-
-};
 /*==================================================
             CARREGAR PRODUTOS
 ==================================================*/
@@ -317,16 +164,18 @@ async function carregarProdutos(){
             estado.produtos = await resposta.json();
         */
 
-        estado.produtos = [];
+        estado.produtos = [...produtos];
 
         estado.produtosFiltrados = [...estado.produtos];
 
+        ordenarProdutos();
+    
         atualizarTotal();
-
+    
         renderizarProdutos();
-
+    
     }
-
+    
     catch(erro){
 
         console.error("Erro ao carregar produtos:", erro);
@@ -380,167 +229,120 @@ function formatarPreco(valor){
             CRIAR CARD
 ==================================================*/
 
-function criarCard(produto){
+function criarCard(produto) {
+    const favorito = estado.favoritos.includes(produto.id);
 
     return `
+        <article class="card-produto">
 
-    <article class="card-produto">
+            <div class="card-topo">
+                <span class="selo">
+                    ${produto.selo}
+                </span>
 
-        <div class="card-topo">
+                <button
+                    type="button"
+                    class="btn-favorito"
+                    data-id="${produto.id}"
+                    aria-label="Adicionar ${produto.nome} aos favoritos">
 
-            <span class="selo">
+                    <i class="${favorito ? "fa-solid" : "fa-regular"} fa-heart"></i>
+                </button>
+            </div>
 
-                ${produto.selo}
-
-            </span>
-
-          <button
-    class="btn-favorito"
-    data-id="${produto.id}">
-
-    <i class="${
-        estado.favoritos.includes(produto.id)
-            ? "fa-solid"
-            : "fa-regular"
-    } fa-heart"></i>
-
-</button>
-            <div class="card-imagem">
-
+            <div class="../imagem">
                 <img
                     src="${produto.imagem}"
-                    alt="${produto.nome}">
-
+                    alt="${produto.nome}"
+                    loading="lazy"
+                    onerror="this.src='imagens/produto-sem-imagem.png'">
             </div>
 
-        </div>
+            <div class="card-info">
 
-        <div class="card-info">
-
-            <span class="card-categoria">
-
-                ${produto.categoria}
-
-            </span>
-
-            <h3 class="card-titulo">
-
-                ${produto.nome}
-
-            </h3>
-
-            <div class="card-avaliacao">
-
-                ★★★★★
-
-            </div>
-
-            <div class="card-codigo">
-
-                Código: ${produto.codigo}
-
-            </div>
-
-            <div class="card-preco">
-
-                <span class="preco">
-
-                    ${formatarPreco(produto.preco)}
-
+                <span class="card-categoria">
+                    ${produto.categoria}
                 </span>
 
-                <span class="parcelamento">
+                <h3 class="card-titulo">
+                    ${produto.nome}
+                </h3>
 
-                    ${produto.parcela}
+                <div class="card-avaliacao" aria-label="5 estrelas">
+                    ★★★★★
+                </div>
 
-                </span>
+                <div class="card-codigo">
+                    Código: ${produto.codigo}
+                </div>
+
+                <div class="card-preco">
+                    <span class="preco">
+                        ${formatarPreco(produto.preco)}
+                    </span>
+
+                    <span class="parcelamento">
+                        ${produto.parcela}
+                    </span>
+                </div>
+
+                <div class="card-estoque">
+                    <i class="fa-solid fa-circle-check"></i>
+                    ${produto.estoque}
+                </div>
+
+                <div class="card-botoes">
+                    <button
+                        type="button"
+                        class="btn-ver"
+                        data-id="${produto.id}">
+                        Ver produto
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-carrinho"
+                        data-id="${produto.id}">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        Adicionar
+                    </button>
+                </div>
 
             </div>
-
-            <div class="card-estoque">
-
-                ✔ ${produto.estoque}
-
-            </div>
-
-            <div class="card-botoes">
-
-                <button
-                    class="btn-ver">
-
-                    Ver Produto
-
-                </button>
-
-                <button
-                    class="btn-carrinho"
-                    data-id="${produto.id}">
-
-                    Adicionar
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </article>
-
+        </article>
     `;
-
 }
+
 /*==================================================
             RENDERIZAR PRODUTOS
 ==================================================*/
 
-function renderizarProdutos(){
-
+function renderizarProdutos() {
     elementos.grid.innerHTML = "";
 
-
-
-    if(estado.produtosFiltrados.length === 0){
-
+    if (estado.produtosFiltrados.length === 0) {
         elementos.grid.innerHTML = `
-
             <div class="sem-produtos">
-
                 <i class="fa-solid fa-box-open"></i>
-
-                <h2>
-
-                    Nenhum produto encontrado
-
-                </h2>
-
+                <h2>Nenhum produto encontrado</h2>
                 <p>
-
                     Tente alterar os filtros ou realizar outra pesquisa.
-
                 </p>
-
             </div>
-
         `;
 
         atualizarTotal();
-
         return;
-
     }
 
-
-
-    estado.produtosFiltrados.forEach(produto=>{
-
-        elementos.grid.innerHTML += criarCard(produto);
-
+    estado.produtosFiltrados.forEach(produto => {
+        elementos.grid.insertAdjacentHTML(
+            "beforeend",
+            criarCard(produto)
+        );
     });
 
-
-
     atualizarTotal();
-
 }
 /*==================================================
             FILTRAR CATEGORIA
@@ -988,8 +790,6 @@ function iniciarSistema(){
     iniciarCarrinho();
 
 }
-
-
 
 document.addEventListener(
 

@@ -19,6 +19,10 @@
 
     <link rel="stylesheet"
     href="../pagina/pagina css/admin.css">
+    
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 </head>
 
@@ -525,7 +529,106 @@
 
             </section>
 
+            <!--==================================================
+                CRIAR CARD
+            ==================================================-->
+            <div id="modalProduto" class="modal-produto">
 
+                <div class="modal-conteudo">
+
+                    <div class="modal-topo">
+                        <h2>Cadastrar Produto</h2>
+
+                        <button
+                            type="button"
+                            id="fecharModalProduto"
+                            class="btn-fechar">
+                            &times;
+                        </button>
+                    </div>
+
+                    <form id="formProduto">
+
+                        <div class="form-group">
+                            <label for="nomeProduto">Nome do produto</label>
+                            <input
+                                type="text"
+                                id="nomeProduto"
+                                placeholder="Ex: MS 162"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="codigoProduto">Código</label>
+                            <input
+                                type="text"
+                                id="codigoProduto"
+                                placeholder="Ex: MS162"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="categoriaProduto">Categoria</label>
+                            <select id="categoriaProduto" required>
+                                <option value="">Selecione uma categoria</option>
+                                <option value="motosserras">Motosserras</option>
+                                <option value="rocadeiras">Roçadeiras</option>
+                                <option value="sopradores">Sopradores</option>
+                                <option value="lavadoras">Lavadoras</option>
+                                <option value="cortadores">Cortadores de Grama</option>
+                                <option value="acessorios">Acessórios</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="precoProduto">Preço</label>
+                            <input
+                                type="number"
+                                id="precoProduto"
+                                min="0"
+                                step="0.01"
+                                placeholder="1299.90"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="estoqueProduto">Estoque</label>
+                            <select id="estoqueProduto" required>
+                                <option value="Em estoque">Em estoque</option>
+                                <option value="Estoque baixo">Estoque baixo</option>
+                                <option value="Fora de estoque">Fora de estoque</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imagemProduto">Caminho da imagem</label>
+                            <input
+                                type="text"
+                                id="imagemProduto"
+                                placeholder="../pagina/imagens/produtos/ms162.png"
+                                required>
+                        </div>
+
+                        <div class="modal-acoes">
+                            <button
+                                type="button"
+                                id="cancelarProduto"
+                                class="btn-cancelar">
+                                Cancelar
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="btn-confirmar">
+                                Salvar Produto
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+</div>
 
             <!--==========================
                 CONFIGURAÇÕES
@@ -605,12 +708,11 @@
 
                     </div>
 
-                    <button class="btn-save">
-
+                    <button
+                        type="button"
+                        class="btn-save">
                         <i class="fa-solid fa-floppy-disk"></i>
-
                         Salvar Alterações
-
                     </button>
 
                 </form>

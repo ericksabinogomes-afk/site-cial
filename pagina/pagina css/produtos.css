@@ -1038,27 +1038,6 @@ ul{
                 CARD
 ==================================================*/
 
-.card-produto{
-
-    background:#FFFFFF;
-
-    border-radius:20px;
-
-    overflow:hidden;
-
-    box-shadow:0 12px 30px rgba(0,0,0,.08);
-
-    transition:.35s;
-
-    display:flex;
-
-    flex-direction:column;
-
-    border:1px solid #ECECEC;
-
-    position:relative;
-
-}
 
 .card-produto:hover{
 
@@ -1066,6 +1045,22 @@ ul{
 
     box-shadow:0 20px 40px rgba(0,0,0,.15);
 
+}
+
+.card-produto {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+    background: #ffffff;
+    border: 1px solid #ececec;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    transform: none;
+    transition:
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
 }
 
 
@@ -1194,10 +1189,10 @@ ul{
 
 }
 
-.card-produto:hover .card-imagem img{
-
-    transform:scale(1.08);
-
+.card-produto:hover {
+    transform: none;
+    border-color: rgba(245, 130, 32, 0.35);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.12);
 }
 
 

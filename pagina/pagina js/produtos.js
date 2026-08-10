@@ -394,14 +394,17 @@ function criarCard(produto){
 
             </span>
 
-            <button
-                class="btn-favorito"
-                data-id="${produto.id}">
+          <button
+    class="btn-favorito"
+    data-id="${produto.id}">
 
-                <i class="fa-regular fa-heart"></i>
+    <i class="${
+        estado.favoritos.includes(produto.id)
+            ? "fa-solid"
+            : "fa-regular"
+    } fa-heart"></i>
 
-            </button>
-
+</button>
             <div class="card-imagem">
 
                 <img

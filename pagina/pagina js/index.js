@@ -408,10 +408,27 @@ function iniciarBotaoWhatsapp(){
             SCROLL
 ==================================================*/
 
-window.addEventListener(
-
-    "scroll",
-
+ window.addEventListener(
+ "scroll",
     revelarSecoes
-
 );
+
+/*==================================================
+            INICIALIZAÇÃO DO SITE
+==================================================*/
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    iniciarModal();
+
+    iniciarWhatsapp();
+
+    iniciarBotaoWhatsapp();
+
+    iniciarHero();
+
+    iniciarMarcas();
+
+    revelarSecoes();
+
+});

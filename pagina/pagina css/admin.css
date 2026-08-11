@@ -86,7 +86,7 @@ body{
 
 .sidebar-logo img{
 
-    width: 90px;
+    width: 200px;
 
     margin-bottom: 15px;
 
@@ -945,3 +945,73 @@ tbody tr:hover{
   background: #fff;
 }
 
+.header-usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 6px;
+}
+
+.header-usuario > a#linkEntrar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #2B2B2B;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    transition: var(--transicao);
+    border: 1px solid transparent;
+}
+
+.header-usuario > a#linkEntrar:hover {
+    background: var(--laranja);
+    transform: translateY(-4px);
+}
+
+#usuarioLogado {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.header-usuario-nome {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0.9;
+}
+
+.header-usuario-btn {
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: #2B2B2B;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    transition: var(--transicao);
+    border: 1px solid rgba(255,255,255,.12);
+}
+
+.header-usuario-btn:hover {
+    background: var(--laranja);
+    border-color: var(--laranja);
+    transform: translateY(-3px);
+}
+
+.header-usuario-btn--admin {
+    background: var(--laranja);
+    border-color: var(--laranja);
+}
+
+.header-usuario-btn--admin:hover {
+    background: var(--laranja-hover);
+}

@@ -4,6 +4,7 @@ const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 const path = require('path');
 const multer = require('multer');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(cors());
@@ -182,7 +183,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // rota para upload de imagem
-app.post('/upload-imagem', upload.single('imagem'), (req, res) => {
+app.post('/upload-imagem',autenticarToken , upload.single('imagem'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ ok: false, erro: 'Nenhum arquivo enviado' });
   }
@@ -197,6 +198,25 @@ app.post('/upload-imagem', upload.single('imagem'), (req, res) => {
 
 // servir a pasta de uploads como arquivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+function autenticarToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.status(401).json({ ok: false, erro: 'Token não informado' });
+  }
+
+  const [, token] = authHeader.split(' '); // "Bearer token"
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.usuario = payload; // se você quiser acessar depois (id, tipo, etc.)
+    next();
+  } catch (err) {
+    return res.status(401).json({ ok: false, erro: 'Token inválido ou expirado' });
+  }
+}
 
 
 
@@ -224,7 +244,7 @@ app.get('/produtos', async (req, res) => {
 });
 
 // Listar todos (para o admin, inclusive inativos se quiser)
-app.get('/admin/produtos', async (req, res) => {
+app.get('/admin/produtos', autenticarToken , async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('produtos')
@@ -242,7 +262,7 @@ app.get('/admin/produtos', async (req, res) => {
 });
 
 // Criar produto (admin)
-app.post('/admin/produtos', async (req, res) => {
+app.post('/admin/produtos', autenticarToken , async (req, res) => {
   const {
     nome,
     codigo,
@@ -288,7 +308,7 @@ app.post('/admin/produtos', async (req, res) => {
 });
 
 // Atualizar produto (admin)
-app.put('/admin/produtos/:id', async (req, res) => {
+app.put('/admin/produtos/:id', autenticarToken ,  async (req, res) => {
   const produtoId = parseInt(req.params.id, 10);
   const {
     nome,
@@ -334,7 +354,7 @@ app.put('/admin/produtos/:id', async (req, res) => {
 });
 
 // Excluir produto (admin)
-app.delete('/admin/produtos/:id', async (req, res) => {
+app.delete('/admin/produtos/:id', autenticarToken , async (req, res) => {
   const produtoId = parseInt(req.params.id, 10);
 
   if (!produtoId) {
@@ -369,7 +389,6 @@ app.post('/login', async (req, res) => {
   }
 
   try {
-    // Remove tudo que não é número
     const cpfLimpo = identificador.replace(/\D/g, '');
     const ehCpf = cpfLimpo.length === 11 && !identificador.includes('@');
 
@@ -377,31 +396,28 @@ app.post('/login', async (req, res) => {
     let error;
 
     if (ehCpf) {
-      // LOGIN POR CPF
-
-      // tenta achar exatamente como está salvo no banco (formatado)
+      // LOGIN POR CPF (formatado e só números)
       let resultado = await supabase
         .from('usuarios')
         .select('*')
-        .eq('cpf', identificador)   // ex: 396.088.388-94
+        .eq('cpf', identificador)
         .limit(1);
 
       data = resultado.data;
       error = resultado.error;
 
-      // se não achou, tenta versão somente numeros
       if (!data || data.length === 0) {
         resultado = await supabase
           .from('usuarios')
           .select('*')
-          .eq('cpf', cpfLimpo)    
+          .eq('cpf', cpfLimpo)
           .limit(1);
 
         data = resultado.data;
         error = resultado.error;
       }
     } else {
-      // LOGIN POR E-MAIL 
+      // LOGIN POR E-MAIL
       const resultado = await supabase
         .from('usuarios')
         .select('*')
@@ -422,21 +438,36 @@ app.post('/login', async (req, res) => {
 
     const usuario = data[0];
 
-    // comparação simples sem hash
+    // comparação simples sem hash (como você já fazia)
     if (usuario.senha !== senha) {
       return res.status(401).json({ ok: false, erro: 'Senha inválida' });
     }
 
-    res.json({
-      ok: true,
-      usuario: {
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-        cpf: usuario.cpf,
-        telefone: usuario.telefone
-      }
-    });
+// ====== Gerar token JWT ======
+const token = jwt.sign(
+  {
+    id: usuario.id,
+    email: usuario.email,
+    tipo: usuario.tipo || null,      // Fisica / Juridica
+    perfil: usuario.perfil || 'cliente'   // admin / cliente
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: '7d' }
+);
+
+res.json({
+  ok: true,
+  token,
+  usuario: {
+    id: usuario.id,
+    nome: usuario.nome,
+    email: usuario.email,
+    cpf: usuario.cpf,
+    telefone: usuario.telefone,
+    tipo: usuario.tipo || null,           // Fisica / Juridica
+    perfil: usuario.perfil || 'cliente'   // admin / cliente
+  }
+});
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }

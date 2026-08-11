@@ -13,6 +13,15 @@ const formProduto = document.getElementById("formProduto");
 const fecharModalProduto = document.getElementById("fecharModalProduto");
 const cancelarProduto = document.getElementById("cancelarProduto");
 
+/*==================================================
+            AUTENTICAÇÃO DO ADMIN
+==================================================*/
+
+const token = localStorage.getItem("tokenCial");
+
+if (!token) {
+  window.location.href = "../login/login.html"; // ajuste o caminho conforme sua pasta de login
+}
 
 /*==================================================
             UPLOAD DE IMAGEM (DRAG & DROP)
@@ -85,7 +94,6 @@ function handleFile(file) {
   reader.readAsDataURL(file);
 }
 
-
 /*==================================================
                 FUNÇÕES
 ==================================================*/
@@ -143,7 +151,10 @@ if (btnLogout) {
       "Deseja realmente sair do painel administrativo?"
     );
     if (confirmar) {
-      window.location.href = "login.html";
+      // Limpa token e usuário
+      localStorage.removeItem("tokenCial");
+      localStorage.removeItem("usuarioCial");
+      window.location.href = "../login/login.html";
     }
   });
 }
@@ -177,15 +188,6 @@ function fecharModal() {
   formProduto.reset();
 }
 
-fecharModalProduto.addEventListener("click", fecharModal);
-cancelarProduto.addEventListener("click", fecharModal);
-
-modalProduto.addEventListener("click", event => {
-  if (event.target === modalProduto) {
-    fecharModal();
-  }
-});
-
 /*==================================================
                 PRODUTOS - VIA API
 ==================================================*/
@@ -197,7 +199,12 @@ const API_BASE = "http://localhost:4000";
 
 async function carregarProdutosAdmin() {
   try {
-    const res = await fetch(`${API_BASE}/admin/produtos`);
+    const res = await fetch(`${API_BASE}/admin/produtos`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
     const json = await res.json();
 
     if (!json.ok) {
@@ -215,7 +222,10 @@ async function carregarProdutosAdmin() {
 async function criarProduto(dados) {
   const res = await fetch(`${API_BASE}/admin/produtos`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify(dados)
   });
 
@@ -238,7 +248,10 @@ async function criarProduto(dados) {
 
 async function excluirProduto(id) {
   const res = await fetch(`${API_BASE}/admin/produtos/${id}`, {
-    method: "DELETE"
+    method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
   });
 
   const json = await res.json();
@@ -321,7 +334,6 @@ formProduto.addEventListener("submit", async event => {
   );
   const estoque = document.getElementById("estoqueProduto").value;
 
-  // Se ainda existir o campo de texto imagemProduto, usamos como fallback
   const imagemTexto = document.getElementById("imagemProduto")
     ? document.getElementById("imagemProduto").value.trim()
     : "";
@@ -329,13 +341,15 @@ formProduto.addEventListener("submit", async event => {
   let imagemUrl = imagemTexto;
 
   try {
-    // Se o usuário selecionou/arrastou uma imagem, faz upload
     if (arquivoSelecionado) {
       const formData = new FormData();
       formData.append("imagem", arquivoSelecionado);
 
       const resUpload = await fetch(`${API_BASE}/upload-imagem`, {
         method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
         body: formData
       });
 
@@ -344,7 +358,7 @@ formProduto.addEventListener("submit", async event => {
         throw new Error(jsonUpload.erro || "Erro no upload da imagem");
       }
 
-      imagemUrl = jsonUpload.url; // ex: /uploads/123456-nome.png
+      imagemUrl = jsonUpload.url;
     }
 
     const novoProduto = {
@@ -357,11 +371,10 @@ formProduto.addEventListener("submit", async event => {
     };
 
     await criarProduto(novoProduto);
-    await carregarProdutosAdmin(); // recarrega a tabela
+    await carregarProdutosAdmin();
     fecharModal();
     alert("Produto cadastrado com sucesso!");
 
-    // Reset da imagem após salvar
     arquivoSelecionado = null;
     if (previewImagem) {
       previewImagem.style.display = "none";
@@ -395,7 +408,7 @@ document.addEventListener("click", async event => {
 
   try {
     await excluirProduto(id);
-    await carregarProdutosAdmin(); // recarrega a tabela
+    await carregarProdutosAdmin();
   } catch (erro) {
     console.error(erro);
     alert("Erro ao excluir produto. Verifique o console.");
@@ -408,5 +421,5 @@ document.addEventListener("click", async event => {
 
 document.addEventListener("DOMContentLoaded", () => {
   mostrarSecao("dashboard");
-  carregarProdutosAdmin(); // carrega do back/Supabase
+  carregarProdutosAdmin();
 });

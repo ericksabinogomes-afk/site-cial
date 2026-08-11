@@ -94,35 +94,39 @@
         </nav>
 
         <div class="header-icons">
+        <a href="favoritos.html">
+            <i class="fa-regular fa-heart"></i>
+        </a>
 
-            <a
-                href="favoritos.html">
-
-                <i class="fa-regular fa-heart"></i>
-
-            </a>
-
-            <a
-                href="../cadastro/cadastro.html">
-
+        <!-- Área do usuário (dinâmica) -->
+        <div id="areaUsuarioHeader" style="display: flex; align-items: center; gap: 8px;">
+                <!-- Quando não logado -->
+                <a id="linkEntrar" href="../cadastro/login.html">
                 <i class="fa-regular fa-user"></i>
+                </a>
 
-            </a>
+                <!-- Quando logado (inicialmente oculto) -->
+                <div id="usuarioLogado" style="display: none; align-items: center; gap: 8px;">
+                <span id="nomeUsuario" style="font-size: 14px;"></span>
 
-            <a
-                href="carrinho.html"
-                class="cart">
+                <button id="btnAreaCliente" type="button" style="display: none;">
+                    Área do Cliente
+                </button>
 
+                <button id="btnAdmin" type="button" style="display: none;">
+                    Painel Admin
+                </button>
+
+                <button id="btnSair" type="button" style="display: none;">
+                    Sair
+                </button>
+                </div>
+            </div>
+
+            <a href="carrinho.html" class="cart">
                 <i class="fa-solid fa-cart-shopping"></i>
-
-                <span id="contadorCarrinho">
-
-                    0
-
-                </span>
-
+                <span id="contadorCarrinho">0</span>
             </a>
-
         </div>
 
     </div>
@@ -1246,7 +1250,8 @@
 
 </section>
         </div>
-<script src="../pagina/pagina js/index.js"></script>
+<script src="pagina js/index.js"></script>
+<script src="pagina js/index-usuarios.js"></script>
 
 </body>
 

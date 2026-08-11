@@ -94,30 +94,27 @@
         </nav>
 
         <div class="header-icons">
-        <a href="favoritos.html">
-            <i class="fa-regular fa-heart"></i>
-        </a>
+            <a href="favoritos.html">
+                <i class="fa-regular fa-heart"></i>
+            </a>
 
-        <!-- Área do usuário (dinâmica) -->
-        <div id="areaUsuarioHeader" style="display: flex; align-items: center; gap: 8px;">
-                <!-- Quando não logado -->
+            <div id="areaUsuarioHeader" class="header-usuario">
                 <a id="linkEntrar" href="../cadastro/login.html">
                 <i class="fa-regular fa-user"></i>
                 </a>
 
-                <!-- Quando logado (inicialmente oculto) -->
-                <div id="usuarioLogado" style="display: none; align-items: center; gap: 8px;">
-                <span id="nomeUsuario" style="font-size: 14px;"></span>
+                <div id="usuarioLogado" style="display: none;">
+                <span id="nomeUsuario" class="header-usuario-nome"></span>
 
-                <button id="btnAreaCliente" type="button" style="display: none;">
+                <button id="btnAreaCliente" type="button" class="header-usuario-btn" style="display: none;">
                     Área do Cliente
                 </button>
 
-                <button id="btnAdmin" type="button" style="display: none;">
+                <button id="btnAdmin" type="button" class="header-usuario-btn header-usuario-btn--admin" style="display: none;">
                     Painel Admin
                 </button>
 
-                <button id="btnSair" type="button" style="display: none;">
+                <button id="btnSair" type="button" class="header-usuario-btn" style="display: none;">
                     Sair
                 </button>
                 </div>
@@ -1278,7 +1275,7 @@
 </section>
         </div>
 <script src="pagina js/index.js"></script>
-<script src="pagina js/index-usuarios.js"></script>
+<script src="pagina js/header-usuario.js"></script>
 
 </body>
 

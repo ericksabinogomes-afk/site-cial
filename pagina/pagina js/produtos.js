@@ -697,8 +697,8 @@ function iniciarSistema(){
     carregarFavoritos();
 
     carregarCarrinho();
-
-    carregarProdutosDestaque();
+    
+    carregarProdutos();
 
     iniciarCategorias();
 

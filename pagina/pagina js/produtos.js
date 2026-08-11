@@ -75,18 +75,16 @@ const estado = {
 
 async function carregarProdutos() {
   try {
-    // ajuste a URL se seu front não estiver na mesma origem
-    const API_BASE = "http://localhost:4000"; // ou "" se estiver no mesmo domínio/porta
+    const API_BASE = "http://localhost:4000";
     const res = await fetch(`${API_BASE}/produtos`);
-
     const json = await res.json();
+
     if (!json.ok) {
       throw new Error(json.erro || "Erro ao carregar produtos");
     }
 
     const dados = json.data || [];
 
-    // Mapeia os dados da tabela 'produtos' para o formato esperado pelo front
     estado.produtos = dados.map(p => ({
       id: p.id,
       categoria: p.categoria,
@@ -94,13 +92,12 @@ async function carregarProdutos() {
       codigo: p.codigo,
       selo: p.selo || "",
       preco: Number(p.preco),
-      parcela: p.parcela || "",     // opcional: se você criar esse campo no banco
+      parcela: p.parcela || "",
       estoque: p.estoque || "Em estoque",
-      imagem: p.imagem || "imagens/produto-sem-imagem.png"
+      imagem: p.imagem || ""   // importante
     }));
 
     estado.produtosFiltrados = [...estado.produtos];
-
     ordenarProdutos();
     atualizarTotal();
     renderizarProdutos();
@@ -156,87 +153,85 @@ function formatarPreco(valor){
 ==================================================*/
 
 function criarCard(produto) {
-    const favorito = estado.favoritos.includes(produto.id);
+  const favorito = estado.favoritos.includes(produto.id);
 
-    return `
-        <article class="card-produto">
+  return `
+    <article class="card-produto">
+      <div class="card-topo">
+        ${produto.selo ? `
+          <span class="selo">
+            ${produto.selo}
+          </span>
+        ` : ""}
 
-            <div class="card-topo">
-                <span class="selo">
-                    ${produto.selo}
-                </span>
+        <button
+          type="button"
+          class="btn-favorito"
+          data-id="${produto.id}"
+          aria-label="Adicionar ${produto.nome} aos favoritos">
+          <i class="${favorito ? "fa-solid" : "fa-regular"} fa-heart"></i>
+        </button>
+      </div>
 
-                <button
-                    type="button"
-                    class="btn-favorito"
-                    data-id="${produto.id}"
-                    aria-label="Adicionar ${produto.nome} aos favoritos">
+      <div class="card-imagem">
+        <img
+          src="${produto.imagem || 'imagens/produto-sem-imagem.png'}"
+          alt="${produto.nome}"
+          loading="lazy"
+          onerror="this.src='imagens/produto-sem-imagem.png'">
+      </div>
 
-                    <i class="${favorito ? "fa-solid" : "fa-regular"} fa-heart"></i>
-                </button>
-            </div>
+      <div class="card-info">
+        <span class="card-categoria">
+          ${produto.categoria}
+        </span>
 
-            <div class="../imagem">
-                <img
-                    src="${produto.imagem}"
-                    alt="${produto.nome}"
-                    loading="lazy"
-                    onerror="this.src='imagens/produto-sem-imagem.png'">
-            </div>
+        <h3 class="card-titulo">
+          ${produto.nome}
+        </h3>
 
-            <div class="card-info">
+        <div class="card-avaliacao" aria-label="5 estrelas">
+          ★★★★★
+        </div>
 
-                <span class="card-categoria">
-                    ${produto.categoria}
-                </span>
+        <div class="card-codigo">
+          Código: ${produto.codigo}
+        </div>
 
-                <h3 class="card-titulo">
-                    ${produto.nome}
-                </h3>
+        <div class="card-preco">
+          <span class="preco">
+            ${formatarPreco(produto.preco)}
+          </span>
 
-                <div class="card-avaliacao" aria-label="5 estrelas">
-                    ★★★★★
-                </div>
+          <span class="parcelamento">
+            ${produto.parcela || ""}
+          </span>
+        </div>
 
-                <div class="card-codigo">
-                    Código: ${produto.codigo}
-                </div>
+        <div class="card-estoque">
+          <i class="fa-solid fa-circle-check"></i>
+          ${produto.estoque}
+        </div>
 
-                <div class="card-preco">
-                    <span class="preco">
-                        ${formatarPreco(produto.preco)}
-                    </span>
+        <div class="card-botoes">
+          <button
+            type="button"
+            class="btn-ver"
+            data-id="${produto.id}">
+            Ver produto
+          </button>
 
-                    <span class="parcelamento">
-                        ${produto.parcela}
-                    </span>
-                </div>
-
-                <div class="card-estoque">
-                    <i class="fa-solid fa-circle-check"></i>
-                    ${produto.estoque}
-                </div>
-
-                <div class="card-botoes">
-                    <button
-                        type="button"
-                        class="btn-ver"
-                        data-id="${produto.id}">
-                        Ver produto
-                    </button>
-
-                    <button
-                        type="button"
-                        class="btn-carrinho"
-                        data-id="${produto.id}">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        Adicionar
-                    </button>
-                </div>
-
-            </div>
-        </article>
-    `;
+          <button
+            type="button"
+            class="btn-carrinho"
+            data-id="${produto.id}">
+            <i class="fa-solid fa-cart-shopping"></i>
+            Adicionar
+          </button>
+        </div>
+      </div>
+    </article>
+  `;
 }
 
 /*==================================================

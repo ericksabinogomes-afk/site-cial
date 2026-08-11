@@ -913,3 +913,35 @@ tbody tr:hover{
     background: #e85f00;
 }
 
+
+
+/* ==========
+    PRODUTOS 
+   ========== */
+
+.drop-area {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 10px;
+  background: #fafafa;
+  transition: .3s;
+}
+
+.drop-area.ativo {
+  border-color: #F58220;
+  background: #fff3e6;
+}
+
+
+.produto-imagem-tabela {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  margin: auto;
+  background: #fff;
+}
+

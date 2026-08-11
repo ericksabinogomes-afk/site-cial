@@ -13,6 +13,79 @@ const formProduto = document.getElementById("formProduto");
 const fecharModalProduto = document.getElementById("fecharModalProduto");
 const cancelarProduto = document.getElementById("cancelarProduto");
 
+
+/*==================================================
+            UPLOAD DE IMAGEM (DRAG & DROP)
+==================================================*/
+
+const dropArea = document.getElementById("dropArea");
+const inputImagem = document.getElementById("arquivoImagem");
+const previewImagem = document.getElementById("previewImagem");
+
+// Arquivo selecionado 
+let arquivoSelecionado = null;
+
+// Clique na área abre o input file
+if (dropArea && inputImagem) {
+  dropArea.addEventListener("click", () => {
+    inputImagem.click();
+  });
+
+  // Quando escolhe arquivo pelo input
+  inputImagem.addEventListener("change", () => {
+    if (inputImagem.files && inputImagem.files[0]) {
+      handleFile(inputImagem.files[0]);
+    }
+  });
+
+  // Evita comportamento padrão do navegador
+  ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+    dropArea.addEventListener(eventName, e => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
+
+  // Estilo quando arrasta por cima
+  ["dragenter", "dragover"].forEach(eventName => {
+    dropArea.addEventListener(eventName, () => {
+      dropArea.classList.add("ativo");
+    });
+  });
+
+  ["dragleave", "drop"].forEach(eventName => {
+    dropArea.addEventListener(eventName, () => {
+      dropArea.classList.remove("ativo");
+    });
+  });
+
+  // Quando solta o arquivo na área
+  dropArea.addEventListener("drop", e => {
+    const arquivos = e.dataTransfer.files;
+    if (arquivos && arquivos[0]) {
+      handleFile(arquivos[0]);
+    }
+  });
+}
+
+function handleFile(file) {
+  if (!file.type.startsWith("image/")) {
+    alert("Envie somente imagens.");
+    return;
+  }
+
+  arquivoSelecionado = file;
+
+  // Preview
+  const reader = new FileReader();
+  reader.onload = () => {
+    previewImagem.src = reader.result;
+    previewImagem.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
+
 /*==================================================
                 FUNÇÕES
 ==================================================*/
@@ -247,22 +320,56 @@ formProduto.addEventListener("submit", async event => {
     document.getElementById("precoProduto").value
   );
   const estoque = document.getElementById("estoqueProduto").value;
-  const imagem = document.getElementById("imagemProduto").value.trim();
 
-  const novoProduto = {
-    nome,
-    codigo,
-    categoria,
-    preco,
-    estoque,
-    imagem
-  };
+  // Se ainda existir o campo de texto imagemProduto, usamos como fallback
+  const imagemTexto = document.getElementById("imagemProduto")
+    ? document.getElementById("imagemProduto").value.trim()
+    : "";
+
+  let imagemUrl = imagemTexto;
 
   try {
+    // Se o usuário selecionou/arrastou uma imagem, faz upload
+    if (arquivoSelecionado) {
+      const formData = new FormData();
+      formData.append("imagem", arquivoSelecionado);
+
+      const resUpload = await fetch(`${API_BASE}/upload-imagem`, {
+        method: "POST",
+        body: formData
+      });
+
+      const jsonUpload = await resUpload.json();
+      if (!jsonUpload.ok) {
+        throw new Error(jsonUpload.erro || "Erro no upload da imagem");
+      }
+
+      imagemUrl = jsonUpload.url; // ex: /uploads/123456-nome.png
+    }
+
+    const novoProduto = {
+      nome,
+      codigo,
+      categoria,
+      preco,
+      estoque,
+      imagem: imagemUrl
+    };
+
     await criarProduto(novoProduto);
     await carregarProdutosAdmin(); // recarrega a tabela
     fecharModal();
     alert("Produto cadastrado com sucesso!");
+
+    // Reset da imagem após salvar
+    arquivoSelecionado = null;
+    if (previewImagem) {
+      previewImagem.style.display = "none";
+      previewImagem.src = "";
+    }
+    if (inputImagem) {
+      inputImagem.value = "";
+    }
   } catch (erro) {
     console.error(erro);
     alert("Erro ao cadastrar produto. Verifique o console.");

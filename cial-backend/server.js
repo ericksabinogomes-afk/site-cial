@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
+const path = require('path');
+const multer = require('multer');
 
 const app = express();
 app.use(cors());
@@ -163,11 +165,40 @@ app.put('/meus-dados/:id', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 4000;
+/*==========================================================
+    UPLOAD DE IMAGENS (LOCAL)
+==========================================================*/
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'uploads')); // pasta uploads/
+  },
+  filename: (req, file, cb) => {
+    const nome = Date.now() + '-' + file.originalname;
+    cb(null, nome);
+  }
 });
+
+const upload = multer({ storage });
+
+// rota para upload de imagem
+app.post('/upload-imagem', upload.single('imagem'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ ok: false, erro: 'Nenhum arquivo enviado' });
+  }
+
+  const baseUrl = process.env.BASE_URL || "http://localhost:4000";
+
+  // URL pública completa
+  const url = `${baseUrl}/uploads/${req.file.filename}`;
+
+  res.json({ ok: true, url });
+});
+
+// servir a pasta de uploads como arquivos estáticos
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
 
 /*==========================================================
     ROTAS DE PRODUTOS
@@ -409,4 +440,12 @@ app.post('/login', async (req, res) => {
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }
+});
+
+
+
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
 });

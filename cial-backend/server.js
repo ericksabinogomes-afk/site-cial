@@ -243,7 +243,7 @@ app.get('/produtos', async (req, res) => {
   }
 });
 
-// Listar todos (para o admin, inclusive inativos se quiser)
+// Listar todos (para o admin)
 app.get('/admin/produtos', autenticarToken , async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -468,6 +468,7 @@ res.json({
     perfil: usuario.perfil || 'cliente'   // admin / cliente
   }
 });
+
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }

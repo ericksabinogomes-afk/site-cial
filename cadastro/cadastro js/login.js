@@ -70,6 +70,9 @@ async function realizarLogin(usuarioDigitado, senhaDigitada) {
 
     const result = await response.json();
 
+    console.log("result completo:", result);
+    console.log("token recebido:", result.token);
+    console.log("usuario recebido:", result.usuario);
     console.log("result do login:", result);
     console.log("response.ok:", response.ok);
 

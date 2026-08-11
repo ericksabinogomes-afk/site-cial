@@ -412,7 +412,203 @@ function iniciarBotaoWhatsapp(){
  "scroll",
     revelarSecoes
 );
+/*==================================================*
+* PRODUTOS DO BACKEND
+*==================================================*/
 
+const API_URL = "http://localhost:4000";
+
+
+async function carregarProdutosDestaque(){
+
+    const container =
+        document.getElementById("produtosDestaque");
+
+
+    if(!container){
+
+        return;
+
+    }
+
+
+    try{
+
+        const resposta =
+            await fetch(`${API_URL}/produtos`);
+
+
+        if(!resposta.ok){
+
+            throw new Error(
+                "Erro ao buscar produtos."
+            );
+
+        }
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if(
+            !resultado.ok ||
+            !Array.isArray(resultado.data)
+        ){
+
+            throw new Error(
+                "Resposta inválida da API."
+            );
+
+        }
+
+
+        const produtos =
+            resultado.data
+                .filter(produto => produto.destaque)
+                .slice(0, 4);
+
+
+        if(produtos.length === 0){
+
+            container.innerHTML = `
+
+                <div class="produtos-vazio">
+
+                    <i class="fa-solid fa-box-open"></i>
+
+                    <p>
+                        Nenhum produto em destaque no momento.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            produtos
+                .map(criarCardDestaque)
+                .join("");
+
+
+    }catch(erro){
+
+        console.error(
+            "Erro ao carregar produtos:",
+            erro
+        );
+
+
+        container.innerHTML = `
+
+            <div class="produtos-erro">
+
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+                <p>
+                    Não foi possível carregar os produtos.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/*==================================================*
+* CARD DE PRODUTO
+*==================================================*/
+
+function criarCardDestaque(produto){
+
+    const preco =
+        Number(produto.preco || 0)
+            .toLocaleString(
+                "pt-BR",
+                {
+                    style:"currency",
+                    currency:"BRL"
+                }
+            );
+
+
+    return `
+
+        <article class="produto-destaque-card">
+
+            <div class="produto-destaque-imagem">
+
+                <img
+                    src="${produto.imagem}"
+                    alt="${produto.nome}"
+                    loading="lazy">
+
+                ${
+                    produto.selo
+                    ?
+                    `<span class="produto-selo">
+                        ${produto.selo}
+                    </span>`
+                    :
+                    ""
+                }
+
+            </div>
+
+
+            <div class="produto-destaque-info">
+
+                <span class="produto-categoria">
+
+                    ${produto.categoria || ""}
+
+                </span>
+
+
+                <h3>
+
+                    ${produto.nome}
+
+                </h3>
+
+
+                <strong class="produto-preco">
+
+                    ${preco}
+
+                </strong>
+
+
+                <span class="produto-estoque">
+
+                    ${produto.estoque || "Consulte disponibilidade"}
+
+                </span>
+
+
+                <a
+                    href="produtos.html"
+                    class="btn-laranja">
+
+                    Ver Produto
+
+                </a>
+
+            </div>
+
+        </article>
+
+    `;
+
+}
 /*==================================================
             INICIALIZAÇÃO DO SITE
 ==================================================*/
@@ -430,5 +626,7 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarMarcas();
 
     revelarSecoes();
+
+    carregarProdutosDestaque();
 
 });

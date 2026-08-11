@@ -703,7 +703,7 @@ function iniciarSistema(){
 
     carregarCarrinho();
 
-    carregarProdutos();
+    carregarProdutosDestaque();
 
     iniciarCategorias();
 
@@ -722,5 +722,6 @@ document.addEventListener(
     "DOMContentLoaded",
 
     iniciarSistema
+
 
 );

@@ -26,15 +26,23 @@ if (!usuarioRaw || !token) {
 
 } else {
   // Logado
-  const usuario = JSON.parse(usuarioRaw);
+const usuario = JSON.parse(usuarioRaw);
 
-  if (nomeUsuarioSpan) {
+if (nomeUsuarioSpan) {
 
-    nomeUsuarioSpan.textContent = usuario.nome || usuario.email || "Usuário";
+  nomeUsuarioSpan.textContent = usuario.nome || usuario.email || "Usuário";
 
-  }
+}
 
-  const perfil = usuario.perfil || "cliente"; // 'admin' ou 'cliente'
+// Normalizar perfil: remover aspas extras, espaços etc.
+let perfil = usuario.perfil || "cliente";
+
+if (typeof perfil === "string") {
+
+  perfil = perfil.replace(/"/g, "").trim();
+
+}
+console.log("perfil normalizado:", perfil);
 
   // Esconde "Entrar" e mostra área do usuário
 
@@ -61,7 +69,7 @@ if (!usuarioRaw || !token) {
 
     btnAdmin.addEventListener("click", () => {
 
-      window.location.href = "../admin.html"; 
+      window.location.href = "../pagina/admin.html"; 
     });
   }
 

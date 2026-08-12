@@ -1740,3 +1740,80 @@ ul{
     }
 
 }
+/*==================================================*
+* USUÁRIO LOGADO
+*==================================================*/
+
+#usuarioLogado{
+
+    position:relative;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+}
+
+
+.header-usuario-nome{
+
+    color:#FFFFFF;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    max-width:120px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+}
+
+
+.header-usuario-btn{
+
+    border:none;
+
+    background:#222;
+
+    color:#FFFFFF;
+
+    padding:9px 14px;
+
+    border-radius:8px;
+
+    font-family:inherit;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+}
+
+
+.header-usuario-btn:hover{
+
+    background:#F58220;
+
+    transform:translateY(-2px);
+
+}
+
+
+.header-usuario-btn--admin{
+
+    background:#F58220;
+
+}

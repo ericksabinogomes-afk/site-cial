@@ -1740,3 +1740,24 @@ ul{
     }
 
 }
+/*==================================================*
+* AJUSTE DO ÍCONE DE USUÁRIO
+*==================================================*/
+
+.header-usuario > a {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-usuario > a i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: 1;
+    transform: translateY(15px);
+}

@@ -187,6 +187,21 @@ function fecharModal() {
   modalProduto.classList.remove("aberto");
   formProduto.reset();
 }
+/*==================================================
+        FECHAR MODAL DE PRODUTO
+==================================================*/
+
+if (fecharModalProduto) {
+    fecharModalProduto.addEventListener("click", () => {
+        fecharModal();
+    });
+}
+
+if (cancelarProduto) {
+    cancelarProduto.addEventListener("click", () => {
+        fecharModal();
+    });
+}
 
 /*==================================================
                 PRODUTOS - VIA API
@@ -334,6 +349,9 @@ formProduto.addEventListener("submit", async event => {
   );
   const estoque = document.getElementById("estoqueProduto").value;
 
+  const destaque =
+    document.getElementById("produtoDestaque").checked;
+
   const imagemTexto = document.getElementById("imagemProduto")
     ? document.getElementById("imagemProduto").value.trim()
     : "";
@@ -362,13 +380,22 @@ formProduto.addEventListener("submit", async event => {
     }
 
     const novoProduto = {
-      nome,
-      codigo,
-      categoria,
-      preco,
-      estoque,
-      imagem: imagemUrl
-    };
+
+    nome,
+
+    codigo,
+
+    categoria,
+
+    preco,
+
+    estoque,
+
+    imagem: imagemUrl,
+
+    destaque
+
+};
 
     await criarProduto(novoProduto);
     await carregarProdutosAdmin();

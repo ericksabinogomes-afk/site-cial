@@ -1015,3 +1015,114 @@ tbody tr:hover{
 .header-usuario-btn--admin:hover {
     background: var(--laranja-hover);
 }
+/*==================================================*
+* PRODUTO EM DESTAQUE
+*==================================================*/
+
+.destaque-produto{
+
+    margin-top:25px;
+
+    padding:20px;
+
+    background:#FFF8F2;
+
+    border:1px solid #F58220;
+
+    border-radius:14px;
+
+}
+
+
+.destaque-produto > label:first-child{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-bottom:14px;
+
+    color:#181818;
+
+    font-size:16px;
+
+    font-weight:700;
+
+}
+
+
+.destaque-produto > label:first-child i{
+
+    color:#F58220;
+
+}
+
+
+/*==================================================*
+* CHECKBOX
+*==================================================*/
+
+.checkbox-destaque{
+
+    display:flex !important;
+
+    align-items:center;
+
+    gap:10px;
+
+    width:100%;
+
+    margin:0 !important;
+
+    padding:12px 14px;
+
+    background:#FFFFFF;
+
+    border:1px solid #E5E5E5;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+
+.checkbox-destaque:hover{
+
+    border-color:#F58220;
+
+    background:#FFFDFC;
+
+}
+
+
+.checkbox-destaque input{
+
+    width:18px !important;
+
+    height:18px !important;
+
+    margin:0 !important;
+
+    accent-color:#F58220;
+
+    cursor:pointer;
+
+}
+
+
+.checkbox-destaque span{
+
+    margin:0;
+
+    color:#333333;
+
+    font-size:14px;
+
+    font-weight:500;
+
+}

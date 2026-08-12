@@ -572,15 +572,219 @@
 
                 <div class="form-group">
                     <label for="categoriaProduto">Categoria</label>
-                    <select id="categoriaProduto" required>
-                    <option value="">Selecione uma categoria</option>
-                    <option value="motosserras">Motosserras</option>
-                    <option value="rocadeiras">Roçadeiras</option>
-                    <option value="sopradores">Sopradores</option>
-                    <option value="lavadoras">Lavadoras</option>
-                    <option value="cortadores">Cortadores de Grama</option>
-                    <option value="acessorios">Acessórios</option>
-                    </select>
+                   <select id="categoriaProduto" required>
+
+    <option value="">
+        Selecione uma categoria
+    </option>
+
+
+    <!-- ==============================
+         STIHL
+    =============================== -->
+
+    <optgroup label="STIHL">
+
+        <option value="motosserras">
+            Motosserras
+        </option>
+
+        <option value="rocadeiras">
+            Roçadeiras
+        </option>
+
+        <option value="lavadoras">
+            Lavadoras de Alta Pressão
+        </option>
+
+        <option value="sopradores">
+            Sopradores
+        </option>
+
+        <option value="podadores">
+            Podadores
+        </option>
+
+        <option value="motobombas">
+            Motobombas
+        </option>
+
+        <option value="motocultivadores">
+            Motocultivadores
+        </option>
+
+        <option value="motores-estacionarios">
+            Motores Estacionários
+        </option>
+
+        <option value="geradores">
+            Geradores
+        </option>
+
+        <option value="cortadores-grama">
+            Cortadores de Grama
+        </option>
+
+        <option value="pulverizadores">
+            Pulverizadores
+        </option>
+
+        <option value="ferramentas-multifuncionais">
+            Ferramentas Multifuncionais
+        </option>
+
+        <option value="motopodas">
+            Motopodas
+        </option>
+
+        <option value="perfuradores">
+            Perfuradores
+        </option>
+
+        <option value="cortadores-disco">
+            Cortadores a Disco
+        </option>
+
+        <option value="colhedores">
+            Colhedores
+        </option>
+
+        <option value="tesouras-serrotes-poda">
+            Tesouras e Serrotes de Poda
+        </option>
+
+        <option value="ferramentas-florestais">
+            Ferramentas Florestais / Machados
+        </option>
+
+        <option value="aspiradores">
+            Aspiradores
+        </option>
+
+        <option value="baterias-carregadores">
+            Baterias e Carregadores
+        </option>
+
+        <option value="acessorios-stihl">
+            Acessórios STIHL
+        </option>
+
+        <option value="epi">
+            Equipamentos de Proteção
+        </option>
+
+    </optgroup>
+
+
+    <!-- ==============================
+         BOMBAS E IRRIGAÇÃO
+    =============================== -->
+
+    <optgroup label="Bombas e Irrigação">
+
+        <option value="bombas-centrifugas">
+            Bombas Centrífugas
+        </option>
+
+        <option value="bombas-perifericas">
+            Bombas Periféricas
+        </option>
+
+        <option value="bombas-submersas">
+            Bombas Submersas
+        </option>
+
+        <option value="bombas-submersiveis">
+            Bombas Submersíveis
+        </option>
+
+        <option value="bombas-autoaspirantes">
+            Bombas Autoaspirantes
+        </option>
+
+        <option value="bombas-injetoras">
+            Bombas Injetoras
+        </option>
+
+        <option value="motobombas-irrigacao">
+            Motobombas
+        </option>
+
+        <option value="bombas-piscina">
+            Bombas para Piscina
+        </option>
+
+        <option value="bombas-irrigacao">
+            Bombas para Irrigação
+        </option>
+
+        <option value="bombas-poco">
+            Bombas para Poços
+        </option>
+
+        <option value="bombas-drenagem">
+            Bombas para Drenagem
+        </option>
+
+        <option value="bombas-esgoto">
+            Bombas para Esgoto
+        </option>
+
+        <option value="pressurizadores">
+            Pressurizadores
+        </option>
+
+        <option value="sistemas-pressurizacao">
+            Sistemas de Pressurização
+        </option>
+
+        <option value="acessorios-bombas">
+            Acessórios para Bombas
+        </option>
+
+    </optgroup>
+
+    <option value="linha-bateria">
+    🔋 Linha a Bateria
+</option>
+
+<option value="linha-eletrica">
+    🔌 Linha Elétrica
+</option>
+
+<option value="aspiradores">
+    🧹 Aspiradores
+</option>
+
+<option value="pecas-reposicao">
+    ⚙️ Peças de Reposição
+</option>
+
+<option value="ferramentas-corte">
+    🛠️ Ferramentas de Corte
+</option>
+
+<option value="lubrificantes">
+    🛢️ Lubrificantes
+</option>
+
+<option value="combustiveis">
+    ⛽ Combustíveis
+</option>
+
+<option value="epis">
+    🦺 EPIs
+</option>
+
+<option value="acessorios">
+    🔧 Acessórios
+</option>
+
+    <option value="outros">
+        Outros
+    </option>
+
+</select>
                 </div>
 
                 <div class="form-group">
@@ -603,16 +807,28 @@
                     </select>
                 </div>
 
-                <!-- Se quiser manter um campo manual, deixe sem required -->
-                <!--
-                <div class="form-group">
-                    <label for="imagemProduto">Caminho da imagem (opcional)</label>
-                    <input
-                    type="text"
-                    id="imagemProduto"
-                    placeholder="../pagina/imagens/produtos/ms162.png">
-                </div>
-                -->
+                <!-- PRODUTO EM DESTAQUE -->
+
+<div class="form-group destaque-produto">
+
+    <label for="produtoDestaque">
+        <i class="fa-solid fa-star"></i>
+        Produto em destaque
+    </label>
+
+    <label class="checkbox-destaque">
+
+        <input
+            type="checkbox"
+            id="produtoDestaque">
+
+        <span>
+            Exibir este produto na página inicial
+        </span>
+
+    </label>
+
+</div>
 
                 <!-- NOVA ÁREA: upload com drag & drop -->
                 <div class="form-group">

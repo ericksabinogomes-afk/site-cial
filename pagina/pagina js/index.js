@@ -521,24 +521,12 @@ async function carregarProdutosDestaque(){
     }
 
 }
-
-
 /*==================================================*
-* CARD DE PRODUTO
+* CARD DE PRODUTO EM DESTAQUE
 *==================================================*/
 
-function criarCardDestaque(produto){
-
-    const preco =
-        Number(produto.preco || 0)
-            .toLocaleString(
-                "pt-BR",
-                {
-                    style:"currency",
-                    currency:"BRL"
-                }
-            );
-
+function criarCardDestaque(produto)
+{
 
     return `
 
@@ -549,7 +537,8 @@ function criarCardDestaque(produto){
                 <img
                     src="${produto.imagem}"
                     alt="${produto.nome}"
-                    loading="lazy">
+                    loading="lazy"
+                    onerror="this.src='imagem/produto-sem-imagem.png'">
 
                 ${
                     produto.selo
@@ -578,22 +567,7 @@ function criarCardDestaque(produto){
                     ${produto.nome}
 
                 </h3>
-
-
-                <strong class="produto-preco">
-
-                    ${preco}
-
-                </strong>
-
-
-                <span class="produto-estoque">
-
-                    ${produto.estoque || "Consulte disponibilidade"}
-
-                </span>
-
-
+                
                 <a
                     href="produtos.html"
                     class="btn-laranja">
@@ -609,6 +583,8 @@ function criarCardDestaque(produto){
     `;
 
 }
+
+
 /*==================================================
             INICIALIZAÇÃO DO SITE
 ==================================================*/

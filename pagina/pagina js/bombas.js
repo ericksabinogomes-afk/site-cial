@@ -109,33 +109,151 @@ async function carregarProdutos(){
 
     try{
 
+        console.log("🔄 Carregando produtos do backend...");
+
+        const resposta = await fetch(
+            "http://localhost:4000/produtos"
+        );
+
+        if(!resposta.ok){
+
+            throw new Error(
+                `Erro HTTP: ${resposta.status}`
+            );
+
+        }
+
+        const resultado = await resposta.json();
+
+        console.log(
+            "📦 Produtos recebidos:",
+            resultado
+        );
+
+
         /*
-        Futuramente:
+        ==========================================
+        O BACKEND RETORNA:
 
-        const resposta = await fetch("/api/bombas");
-
-        estado.produtos = await resposta.json();
+        {
+            ok: true,
+            data: [...]
+        }
+        ==========================================
         */
 
-        estado.produtos = [];
+        if(!resultado.ok){
 
-        estado.produtosFiltrados = [...estado.produtos];
+            throw new Error(
+                "Backend retornou erro."
+            );
+
+        }
+
+
+        estado.produtos = resultado.data || [];
+
+
+        /*
+        ==========================================
+        MOSTRAR SOMENTE PRODUTOS DE
+        BOMBAS E IRRIGAÇÃO
+        ==========================================
+        */
+
+    const categoriasBombas = [
+
+    "bombas-centrifugas",
+
+    "bombas-perifericas",
+
+    "bombas-submersas",
+
+    "bombas-submersiveis",
+
+    "bombas-autoaspirantes",
+
+    "bombas-injetoras",
+
+    "motobombas-irrigacao",
+
+    "bombas-piscina",
+
+    "bombas-irrigacao",
+
+    "bombas-poco",
+
+    "bombas-drenagem",
+
+    "bombas-esgoto",
+
+    "pressurizadores",
+
+    "sistemas-pressurizacao",
+
+    "acessorios-bombas"
+
+];
+
+        estado.produtos = estado.produtos.filter(
+
+            produto =>
+
+                categoriasBombas.includes(
+
+                    String(
+                        produto.categoria
+                    ).toLowerCase()
+
+                )
+
+        );
+
+
+        estado.produtosFiltrados = [
+
+            ...estado.produtos
+
+        ];
+
 
         atualizarTotal();
 
         renderizarProdutos();
+
+
+        console.log(
+            "✅ Produtos de bombas carregados:",
+            estado.produtos.length
+        );
 
     }
 
     catch(erro){
 
         console.error(
-
-            "Erro ao carregar produtos:",
-
+            "❌ Erro ao carregar produtos:",
             erro
-
         );
+
+
+        elementos.grid.innerHTML = `
+
+            <div class="sem-produtos">
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                <h2>
+                    Não foi possível carregar os produtos
+                </h2>
+
+                <p>
+                    Verifique se o servidor está funcionando.
+                </p>
+
+            </div>
+
+        `;
 
     }
 

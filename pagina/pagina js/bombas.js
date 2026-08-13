@@ -499,34 +499,45 @@ function filtrarProdutos(){
             produto.categoria === estado.categoria;
 
 
+const termoPesquisa =
+    estado.pesquisa
+        .trim()
+        .toLowerCase();
 
-        const pesquisaOk =
 
-            estado.pesquisa === ""
+const pesquisaOk =
 
-            ||
+    termoPesquisa === ""
 
-            produto.nome
+    ||
 
-                .toLowerCase()
+    String(produto.nome || "")
+        .toLowerCase()
+        .includes(termoPesquisa)
 
-                .includes(
+    ||
 
-                    estado.pesquisa.toLowerCase()
+    String(produto.codigo || "")
+        .toLowerCase()
+        .includes(termoPesquisa)
 
-                )
+    ||
 
-            ||
+    String(produto.categoria || "")
+        .toLowerCase()
+        .includes(termoPesquisa)
 
-            produto.marca
+    ||
 
-                .toLowerCase()
+    String(produto.marca || "")
+        .toLowerCase()
+        .includes(termoPesquisa)
 
-                .includes(
+    ||
 
-                    estado.pesquisa.toLowerCase()
-
-                );
+    String(produto.descricao || "")
+        .toLowerCase()
+        .includes(termoPesquisa);
 
 
 

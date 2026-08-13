@@ -363,14 +363,37 @@ function pesquisarProdutos(){
 
         const correspondePesquisa =
 
-            produto.nome.toLowerCase().includes(texto)
+    texto === ""
 
-            ||
+    ||
 
-            produto.codigo.toLowerCase().includes(texto);
+    String(produto.nome || "")
+        .toLowerCase()
+        .includes(texto)
 
+    ||
 
+    String(produto.codigo || "")
+        .toLowerCase()
+        .includes(texto)
 
+    ||
+
+    String(produto.categoria || "")
+        .toLowerCase()
+        .includes(texto)
+
+    ||
+
+    String(produto.marca || "")
+        .toLowerCase()
+        .includes(texto)
+
+    ||
+
+    String(produto.descricao || "")
+        .toLowerCase()
+        .includes(texto);
         return correspondeCategoria && correspondePesquisa;
 
     });

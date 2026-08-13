@@ -1126,3 +1126,126 @@ tbody tr:hover{
     font-weight:500;
 
 }
+/*==================================================
+        CAMPOS DINÂMICOS DO PRODUTO
+==================================================*/
+
+.informacoes-especificas{
+
+    margin-top:20px;
+
+}
+
+
+.campos-produto{
+
+    padding:20px;
+
+    margin-bottom:20px;
+
+    background:#fffaf5;
+
+    border:1px solid #ff7a00;
+
+    border-radius:14px;
+
+}
+
+
+.campo-titulo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:20px;
+
+}
+
+
+.campo-titulo > span{
+
+    font-size:28px;
+
+}
+
+
+.campo-titulo h3{
+
+    margin:0;
+
+    font-size:20px;
+
+}
+
+
+.campo-titulo p{
+
+    margin:4px 0 0;
+
+    color:#777;
+
+    font-size:13px;
+
+}
+
+
+.campos-produto textarea{
+
+    width:100%;
+
+    min-height:100px;
+
+    resize:vertical;
+
+    padding:14px;
+
+    border:1px solid #ddd;
+
+    border-radius:10px;
+
+    font-family:inherit;
+
+    font-size:14px;
+
+    box-sizing:border-box;
+
+}
+
+
+.campos-produto input,
+.campos-produto select{
+
+    width:100%;
+
+    box-sizing:border-box;
+
+}
+
+
+.campo-destaque{
+
+    padding:18px;
+
+    border-radius:14px;
+
+    background:#fffaf5;
+
+    border:1px solid #ffe0c7;
+
+}
+
+
+.campo-destaque small{
+
+    display:block;
+
+    margin-top:7px;
+
+    color:#777;
+
+    font-size:12px;
+
+}

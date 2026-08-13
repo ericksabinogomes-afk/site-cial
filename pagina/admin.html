@@ -787,6 +787,261 @@
 </select>
                 </div>
 
+                <!-- ==========================================
+     INFORMAÇÕES ESPECÍFICAS DO PRODUTO
+========================================== -->
+
+<div id="informacoesEspecificas" class="informacoes-especificas">
+
+    <!-- ==============================
+         STIHL
+    =============================== -->
+
+    <div
+        id="camposStihl"
+        class="campos-produto"
+        style="display:none;">
+
+        <div class="campo-titulo">
+            <span>🪚</span>
+            <div>
+                <h3>Informações STIHL</h3>
+                <p>Informações utilizadas na apresentação do produto.</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="descricaoStihl">
+                Pequena descrição
+            </label>
+
+            <textarea
+                id="descricaoStihl"
+                rows="4"
+                placeholder="Ex: Motosserra compacta, leve e ideal para trabalhos de jardinagem e uso doméstico."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="aplicacaoStihl">
+                Aplicação
+            </label>
+
+            <select id="aplicacaoStihl">
+
+                <option value="">
+                    Selecione uma aplicação
+                </option>
+
+                <option value="Uso Doméstico">
+                    Uso Doméstico
+                </option>
+
+                <option value="Uso Profissional">
+                    Uso Profissional
+                </option>
+
+                <option value="Jardinagem">
+                    Jardinagem
+                </option>
+
+                <option value="Agricultura">
+                    Agricultura
+                </option>
+
+                <option value="Paisagismo">
+                    Paisagismo
+                </option>
+
+            </select>
+        </div>
+
+    </div>
+
+
+    <!-- ==============================
+         BOMBAS
+    =============================== -->
+
+    <div
+        id="camposBombas"
+        class="campos-produto"
+        style="display:none;">
+
+        <div class="campo-titulo">
+            <span>💧</span>
+            <div>
+                <h3>Informações da Bomba</h3>
+                <p>Informações exibidas nos cards de Bombas e Irrigação.</p>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="marcaBomba">
+                Marca
+            </label>
+
+            <input
+                type="text"
+                id="marcaBomba"
+                placeholder="Ex: Ebara">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="potenciaBomba">
+                Potência
+            </label>
+
+            <select id="potenciaBomba">
+
+                <option value="">
+                    Selecione a potência
+                </option>
+
+                <option value="1/2 CV">
+                    1/2 CV
+                </option>
+
+                <option value="3/4 CV">
+                    3/4 CV
+                </option>
+
+                <option value="1 CV">
+                    1 CV
+                </option>
+
+                <option value="2 CV">
+                    2 CV
+                </option>
+
+                <option value="3 CV">
+                    3 CV
+                </option>
+
+                <option value="5 CV">
+                    5 CV
+                </option>
+
+                <option value="Acima de 5 CV">
+                    Acima de 5 CV
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="vazaoBomba">
+                Vazão
+            </label>
+
+            <input
+                type="text"
+                id="vazaoBomba"
+                placeholder="Ex: 2.000 L/h">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="aplicacaoBomba">
+                Aplicação
+            </label>
+
+            <select id="aplicacaoBomba">
+
+                <option value="">
+                    Selecione uma aplicação
+                </option>
+
+                <option value="Residencial">
+                    Residencial
+                </option>
+
+                <option value="Comercial">
+                    Comercial
+                </option>
+
+                <option value="Industrial">
+                    Industrial
+                </option>
+
+                <option value="Agrícola">
+                    Agrícola
+                </option>
+
+                <option value="Irrigação">
+                    Irrigação
+                </option>
+
+                <option value="Piscinas">
+                    Piscinas
+                </option>
+
+                <option value="Poços Artesianos">
+                    Poços Artesianos
+                </option>
+
+                <option value="Construção Civil">
+                    Construção Civil
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==============================
+         DESTAQUE
+    =============================== -->
+
+    <div class="form-group campo-destaque">
+
+        <label for="destaqueProduto">
+            ⭐ Destaque do produto
+        </label>
+
+        <select id="destaqueProduto">
+
+            <option value="">
+                Nenhum
+            </option>
+
+            <option value="promocoes">
+                Promoções
+            </option>
+
+            <option value="lancamentos">
+                Lançamentos
+            </option>
+
+            <option value="mais-vendidos">
+                Mais Vendidos
+            </option>
+
+            <option value="novidades">
+                Novidades
+            </option>
+
+        </select>
+
+        <small>
+            Opcional. Não é necessário selecionar um destaque para cadastrar o produto.
+        </small>
+
+    </div>
+
+</div>
+
                 <div class="form-group">
                     <label for="precoProduto">Preço</label>
                     <input

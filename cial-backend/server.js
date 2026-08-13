@@ -5,6 +5,7 @@ require('dotenv').config();
 const path = require('path');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 app.use(cors());
@@ -67,17 +68,22 @@ app.post('/cadastro', async (req, res) => {
   } = req.body;
 
   try {
+
+    // Gerar hash da senha
+    const saltRounds = 10;
+    const senhaHash = bcrypt.hashSync(senha, saltRounds);
+    
     // Inserir na tabela usuarios
     const { data: usuarios, error: usuarioError } = await supabase
       .from('usuarios')
       .insert([{
         nome,
         email,
-        senha,            // depois trocar por hash
+        senha: senhaHash,            // HASH
         cpf,
         telefone,
         whastapp: whatsapp, 
-        tipo: tipo_pessoa   // Fisica / Juridica, como você definir
+        tipo: tipo_pessoa   // Fisica / Juridica
       }])
       .select('id');        
 
@@ -438,8 +444,9 @@ app.post('/login', async (req, res) => {
 
     const usuario = data[0];
 
-    // comparação simples sem hash (como você já fazia)
-    if (usuario.senha !== senha) {
+    // Comparar senha digitada com o hash
+    const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+    if (!senhaCorreta) {
       return res.status(401).json({ ok: false, erro: 'Senha inválida' });
     }
 

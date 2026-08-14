@@ -902,6 +902,8 @@ async function iniciarSistema(){
     
     iniciarCategorias();
 
+    carregarProdutos();
+
     iniciarPesquisa();
 
     iniciarOrdenacao();

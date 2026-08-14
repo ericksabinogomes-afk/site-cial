@@ -384,6 +384,234 @@ app.delete('/admin/produtos/:id', autenticarToken , async (req, res) => {
 });
 
 /*==========================================================
+    FAVORITOS
+==========================================================*/
+
+// Listar favoritos do usuário logado
+app.get('/favoritos', autenticarToken, async (req, res) => {
+
+    const usuarioId = req.usuario.id;
+
+    try {
+
+        const { data, error } = await supabase
+
+            .from('favoritos')
+
+            .select(`
+                id,
+                produto_id,
+                created_at,
+                produtos (*)
+            `)
+
+            .eq('usuario_id', usuarioId)
+
+            .order('created_at', {
+                ascending: false
+            });
+
+
+        if (error) {
+
+            console.error(
+                'Erro ao buscar favoritos:',
+                error
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro: error.message
+            });
+
+        }
+
+
+        res.json({
+            ok: true,
+            data
+        });
+
+
+    } catch (err) {
+
+        console.error(
+            'Erro inesperado nos favoritos:',
+            err
+        );
+
+        res.status(500).json({
+            ok: false,
+            erro: err.message
+        });
+
+    }
+
+});
+
+
+// Adicionar produto aos favoritos
+app.post('/favoritos', autenticarToken, async (req, res) => {
+
+    const usuarioId = req.usuario.id;
+
+    const {
+        produto_id
+    } = req.body;
+
+
+    if (!produto_id) {
+
+        return res.status(400).json({
+            ok: false,
+            erro: 'Produto não informado'
+        });
+
+    }
+
+
+    try {
+
+        const { data, error } = await supabase
+
+            .from('favoritos')
+
+            .insert([{
+
+                usuario_id: usuarioId,
+
+                produto_id: Number(produto_id)
+
+            }])
+
+            .select();
+
+
+        if (error) {
+
+            // Produto já está favoritado
+            if (error.code === '23505') {
+
+                return res.status(409).json({
+                    ok: false,
+                    erro: 'Produto já está nos favoritos'
+                });
+
+            }
+
+
+            console.error(
+                'Erro ao adicionar favorito:',
+                error
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro: error.message
+            });
+
+        }
+
+
+        res.status(201).json({
+            ok: true,
+            data
+        });
+
+
+    } catch (err) {
+
+        console.error(
+            'Erro inesperado ao adicionar favorito:',
+            err
+        );
+
+        res.status(500).json({
+            ok: false,
+            erro: err.message
+        });
+
+    }
+
+});
+
+
+// Remover produto dos favoritos
+app.delete(
+    '/favoritos/:produto_id',
+    autenticarToken,
+    async (req, res) => {
+
+        const usuarioId = req.usuario.id;
+
+        const produtoId =
+            parseInt(
+                req.params.produto_id,
+                10
+            );
+
+
+        if (!produtoId) {
+
+            return res.status(400).json({
+                ok: false,
+                erro: 'ID do produto inválido'
+            });
+
+        }
+
+
+        try {
+
+            const { error } = await supabase
+
+                .from('favoritos')
+
+                .delete()
+
+                .eq('usuario_id', usuarioId)
+
+                .eq('produto_id', produtoId);
+
+
+            if (error) {
+
+                console.error(
+                    'Erro ao remover favorito:',
+                    error
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+
+            }
+
+
+            res.json({
+                ok: true
+            });
+
+
+        } catch (err) {
+
+            console.error(
+                'Erro inesperado ao remover favorito:',
+                err
+            );
+
+            res.status(500).json({
+                ok: false,
+                erro: err.message
+            });
+
+        }
+
+    }
+);
+
+/*==========================================================
     Login
 ==========================================================*/
 

@@ -497,87 +497,264 @@ function iniciarOrdenacao(){
 
 }
 /*==================================================
-                FAVORITOS
+                FAVORITOS - CONTA DO CLIENTE
 ==================================================*/
 
-function carregarFavoritos(){
+const API_FAVORITOS = "http://localhost:4000";
 
-    const favoritos = localStorage.getItem("favoritos");
 
-    if(favoritos){
+function obterToken(){
 
-        estado.favoritos = JSON.parse(favoritos);
+    return localStorage.getItem("tokenCial");
+
+}
+
+
+/*==================================================
+        CARREGAR FAVORITOS DO USUÁRIO
+==================================================*/
+
+async function carregarFavoritos(){
+
+    const token = obterToken();
+
+
+    // Usuário não está logado
+    if(!token){
+
+        estado.favoritos = [];
+
+        return;
+
+    }
+
+
+    try{
+
+        const resposta = await fetch(
+            `${API_FAVORITOS}/favoritos`,
+            {
+                headers:{
+                    "Authorization":
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+
+        if(resposta.status === 401){
+
+            localStorage.removeItem("tokenCial");
+            localStorage.removeItem("usuarioCial");
+
+            estado.favoritos = [];
+
+            return;
+
+        }
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if(!resultado.ok){
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar favoritos"
+            );
+
+        }
+
+
+        estado.favoritos =
+            (resultado.data || [])
+                .map(item =>
+                    Number(item.produto_id)
+                );
+
+
+    }catch(erro){
+
+        console.error(
+            "Erro ao carregar favoritos:",
+            erro
+        );
+
+        estado.favoritos = [];
 
     }
 
 }
 
 
-
-function salvarFavoritos(){
-
-    localStorage.setItem(
-
-        "favoritos",
-
-        JSON.stringify(estado.favoritos)
-
-    );
-
-}
 /*==================================================
-            ADICIONAR FAVORITO
+        ADICIONAR / REMOVER FAVORITO
 ==================================================*/
 
-function alternarFavorito(id){
+async function alternarFavorito(id){
 
-    const existe = estado.favoritos.includes(id);
+    const token = obterToken();
 
-    if(existe){
 
-        estado.favoritos = estado.favoritos.filter(
+    // NÃO LOGADO
+    if(!token){
 
-            favorito => favorito !== id
+        window.location.href =
+            "../cadastro/login.html";
 
+        return;
+
+    }
+
+
+    const existe =
+        estado.favoritos.includes(id);
+
+
+    try{
+
+        let resposta;
+
+
+        /*========================================
+                REMOVER FAVORITO
+        ========================================*/
+
+        if(existe){
+
+            resposta = await fetch(
+                `${API_FAVORITOS}/favoritos/${id}`,
+                {
+                    method:"DELETE",
+
+                    headers:{
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        }
+
+
+        /*========================================
+                ADICIONAR FAVORITO
+        ========================================*/
+
+        else{
+
+            resposta = await fetch(
+                `${API_FAVORITOS}/favoritos`,
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${token}`
+                    },
+
+                    body:JSON.stringify({
+
+                        produto_id:id
+
+                    })
+                }
+            );
+
+        }
+
+
+        if(resposta.status === 401){
+
+            localStorage.removeItem("tokenCial");
+            localStorage.removeItem("usuarioCial");
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return;
+
+        }
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if(!resultado.ok){
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao alterar favorito"
+            );
+
+        }
+
+
+        // Atualiza visualmente o coração
+        if(existe){
+
+            estado.favoritos =
+                estado.favoritos.filter(
+                    favorito => favorito !== id
+                );
+
+        }
+
+        else{
+
+            estado.favoritos.push(id);
+
+        }
+
+        renderizarProdutos();
+
+
+    }catch(erro){
+
+        console.error(
+            "Erro ao alterar favorito:",
+            erro
         );
 
     }
 
-    else{
-
-        estado.favoritos.push(id);
-
-    }
-
-    salvarFavoritos();
-
-    renderizarProdutos();
-
 }
+
+
 /*==================================================
             EVENTOS FAVORITOS
 ==================================================*/
 
 function iniciarFavoritos(){
 
-    document.addEventListener("click",(event)=>{
+    document.addEventListener(
+        "click",
+        event => {
 
-        const botao = event.target.closest(".btn-favorito");
+            const botao =
+                event.target.closest(
+                    ".btn-favorito"
+                );
 
-        if(!botao){
 
-            return;
+            if(!botao){
+
+                return;
+
+            }
+
+            alternarFavorito(
+                Number(botao.dataset.id)
+            );
 
         }
-
-        alternarFavorito(
-
-            Number(botao.dataset.id)
-
-        );
-
-    });
-
+    );
 }
 /*==================================================
                 CARRINHO
@@ -715,14 +892,14 @@ function iniciarCarrinho(){
                 INICIALIZAÇÃO
 ==================================================*/
 
-function iniciarSistema(){
+async function iniciarSistema(){
 
-    carregarFavoritos();
+    iniciarFavoritoHeader();
+
+    await carregarFavoritos();
 
     carregarCarrinho();
     
-    carregarProdutos();
-
     iniciarCategorias();
 
     iniciarPesquisa();
@@ -743,3 +920,48 @@ document.addEventListener(
 
 
 );
+
+/*==================================================
+        FAVORITOS DO HEADER
+==================================================*/
+
+function iniciarFavoritoHeader(){
+
+    const botao =
+        document.getElementById("btnFavoritosHeader");
+
+
+    if(!botao){
+
+        return;
+
+    }
+
+
+    botao.addEventListener("click", function(event){
+
+        event.preventDefault();
+
+
+        const token =
+            localStorage.getItem("tokenCial");
+
+
+        // NÃO ESTÁ LOGADO
+        if(!token){
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return;
+
+        }
+
+
+        // ESTÁ LOGADO
+
+
+   window.location.href = "../cadastro/area-cliente.html#favoritos";
+
+    });
+}

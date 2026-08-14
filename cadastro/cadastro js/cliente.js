@@ -359,3 +359,38 @@ document.addEventListener("DOMContentLoaded", () => {
     abrirSecao("inicio");
 
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const hash = window.location.hash.replace("#", "");
+
+    if (!hash) {
+        return;
+    }
+
+    const secao = document.getElementById(hash);
+    const botao = document.querySelector(
+        `.menu[data-secao="${hash}"]`
+    );
+
+    if (!secao || !botao) {
+        return;
+    }
+
+    // Remove a seção ativa atual
+    document.querySelectorAll(".secao").forEach(item => {
+        item.classList.remove("ativa");
+    });
+
+    // Remove o menu ativo atual
+    document.querySelectorAll(".menu").forEach(item => {
+        item.classList.remove("ativo");
+    });
+
+    // Ativa a seção indicada pelo hash
+    secao.classList.add("ativa");
+
+    // Ativa o botão correspondente
+    botao.classList.add("ativo");
+
+});

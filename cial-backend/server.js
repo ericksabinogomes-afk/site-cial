@@ -687,7 +687,7 @@ const token = jwt.sign(
     perfil: usuario.perfil || 'cliente'   // admin / cliente
   },
   process.env.JWT_SECRET,
-  { expiresIn: '7d' }
+  { expiresIn: '1d' }
 );
 
 res.json({

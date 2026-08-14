@@ -187,12 +187,113 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+const uploadMultiplas = multer({
+  storage
 
-// rota para upload de imagem
-app.post('/upload-imagem',autenticarToken , upload.single('imagem'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ ok: false, erro: 'Nenhum arquivo enviado' });
+});
+
+// ==========================================================
+// UPLOAD DE UMA IMAGEM
+// ==========================================================
+
+app.post(
+  '/upload-imagem',
+  autenticarToken,
+  upload.single('imagem'),
+  (req, res) => {
+
+    if (!req.file) {
+      return res.status(400).json({
+        ok: false,
+        erro: 'Nenhum arquivo enviado'
+      });
+    }
+
+    const baseUrl =
+      process.env.BASE_URL || 'http://localhost:4000';
+
+    const url =
+      `${baseUrl}/uploads/${req.file.filename}`;
+
+    res.json({
+      ok: true,
+      url
+    });
   }
+);
+
+
+// ==========================================================
+// UPLOAD DE MÚLTIPLAS IMAGENS
+// ==========================================================
+
+app.post(
+  '/upload-imagens',
+  autenticarToken,
+  uploadMultiplas.array('imagens', 10),
+  (req, res) => {
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        ok: false,
+        erro: 'Nenhuma imagem enviada'
+      });
+    }
+
+    const baseUrl =
+      process.env.BASE_URL || 'http://localhost:4000';
+
+    const urls = req.files.map(file => {
+      return `${baseUrl}/uploads/${file.filename}`;
+    });
+
+    res.json({
+      ok: true,
+      urls
+    });
+  }
+);
+
+
+// ==========================================================
+// SERVIR IMAGENS
+// ==========================================================
+
+app.use(
+  '/uploads',
+  express.static(path.join(__dirname, 'uploads'))
+);
+
+  // ==========================================================
+// UPLOAD DE MÚLTIPLAS IMAGENS
+// ==========================================================
+
+app.post(
+  '/upload-imagens',
+  autenticarToken,
+  uploadMultiplas.array('imagens', 10),
+  (req, res) => {
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        ok: false,
+        erro: 'Nenhuma imagem enviada'
+      });
+    }
+
+    const baseUrl =
+      process.env.BASE_URL || "http://localhost:4000";
+
+    const urls = req.files.map(file => {
+      return `${baseUrl}/uploads/${file.filename}`;
+    });
+
+    res.json({
+      ok: true,
+      urls
+    });
+  }
+);
 
   const baseUrl = process.env.BASE_URL || "http://localhost:4000";
 
@@ -200,7 +301,8 @@ app.post('/upload-imagem',autenticarToken , upload.single('imagem'), (req, res) 
   const url = `${baseUrl}/uploads/${req.file.filename}`;
 
   res.json({ ok: true, url });
-});
+
+
 
 // servir a pasta de uploads como arquivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -276,9 +378,10 @@ app.post('/admin/produtos', autenticarToken , async (req, res) => {
     preco,
     estoque,
     imagem,
+    imagens,
     selo,
     destaque
-  } = req.body;
+} = req.body;
 
   if (!nome || !codigo || !categoria || preco == null) {
     return res.status(400).json({
@@ -297,6 +400,7 @@ app.post('/admin/produtos', autenticarToken , async (req, res) => {
         preco: Number(preco),
         estoque: estoque || 'Em estoque',
         imagem: imagem || '',
+        imagens: Array.isArray(imagens) ? imagens : [],
         selo: selo || null,
         destaque: !!destaque,
         ativo: true

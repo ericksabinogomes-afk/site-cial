@@ -1086,28 +1086,39 @@
 </div>
 
                 <!-- NOVA ÁREA: upload com drag & drop -->
-                <div class="form-group">
-                    <label>Imagem do produto</label>
+               <div class="form-group">
 
-                    <div
-                    id="dropArea"
-                    class="drop-area"
-                    >
-                    <p>Arraste a imagem aqui ou clique para selecionar</p>
-                    <input
-                        type="file"
-                        id="arquivoImagem"
-                        accept="image/*"
-                        hidden
-                    >
-                    </div>
+    <label>Imagens do produto</label>
 
-                    <img
-                    id="previewImagem"
-                    alt="Prévia da imagem"
-                    style="max-width: 200px; margin-top: 10px; display: none;"
-                    >
-                </div>
+    <div
+        id="dropArea"
+        class="drop-area"
+    >
+
+        <p>
+            Arraste as imagens aqui ou clique para selecionar
+        </p>
+
+        <small>
+            Você pode selecionar várias fotos.
+        </small>
+
+        <input
+            type="file"
+            id="arquivoImagem"
+            accept="image/*"
+            multiple
+            hidden
+        >
+
+    </div>
+
+    <div
+        id="previewImagens"
+        class="preview-imagens"
+    ></div>
+
+</div>
 
                 <div class="modal-acoes">
                     <button

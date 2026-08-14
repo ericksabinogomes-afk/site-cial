@@ -2003,3 +2003,428 @@ footer .container {
     border:none;
 
 }
+/*==================================================
+        MODAL DO PRODUTO
+==================================================*/
+
+.modal-produto{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    padding:30px;
+
+    background:rgba(0,0,0,.65);
+
+    backdrop-filter:blur(5px);
+}
+
+.modal-produto.ativo{
+    display:flex;
+}
+
+.modal-produto-conteudo{
+    position:relative;
+
+    width:min(1100px, 95vw);
+    max-height:90vh;
+
+    overflow-y:auto;
+
+    background:#FFFFFF;
+    border-radius:22px;
+
+    box-shadow:0 25px 80px rgba(0,0,0,.30);
+
+    animation:abrirModalProduto .25s ease;
+}
+
+@keyframes abrirModalProduto{
+
+    from{
+        opacity:0;
+        transform:translateY(20px) scale(.97);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+
+}
+
+
+/*==================================================
+        BOTÃO FECHAR
+==================================================*/
+
+.modal-produto-fechar{
+
+    position:absolute;
+
+    top:18px;
+    right:18px;
+
+    z-index:5;
+
+    width:42px;
+    height:42px;
+
+    border:none;
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#FFFFFF;
+
+    color:#333;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+    box-shadow:0 3px 12px rgba(0,0,0,.15);
+
+    transition:.2s;
+}
+
+.modal-produto-fechar:hover{
+
+    background:#F58220;
+    color:#FFFFFF;
+
+    transform:rotate(90deg);
+}
+
+
+/*==================================================
+        CORPO
+==================================================*/
+
+.modal-produto-corpo{
+
+    display:grid;
+
+    grid-template-columns:1.05fr .95fr;
+
+    gap:45px;
+
+    padding:45px;
+}
+
+
+/*==================================================
+        GALERIA
+==================================================*/
+
+.modal-produto-galeria{
+
+    min-width:0;
+}
+
+.modal-produto-imagem-principal{
+
+    height:430px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:30px;
+
+    background:#F8F8F8;
+
+    border-radius:18px;
+
+    overflow:hidden;
+}
+
+.modal-produto-imagem-principal img{
+
+    width:100%;
+    height:100%;
+
+    object-fit:contain;
+
+    transition:.25s;
+}
+
+
+/*==================================================
+        MINIATURAS
+==================================================*/
+
+.modal-produto-miniaturas{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-top:15px;
+
+    overflow-x:auto;
+
+    padding-bottom:5px;
+}
+
+.modal-produto-miniatura{
+
+    flex:0 0 78px;
+
+    width:78px;
+    height:78px;
+
+    padding:5px;
+
+    border:2px solid #E5E5E5;
+
+    border-radius:10px;
+
+    background:#FFFFFF;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.modal-produto-miniatura:hover{
+
+    border-color:#F58220;
+}
+
+.modal-produto-miniatura.ativa{
+
+    border-color:#F58220;
+}
+
+.modal-produto-miniatura img{
+
+    width:100%;
+    height:100%;
+
+    object-fit:contain;
+}
+
+
+/*==================================================
+        INFORMAÇÕES
+==================================================*/
+
+.modal-produto-info{
+
+    display:flex;
+    flex-direction:column;
+
+    justify-content:center;
+}
+
+.modal-produto-categoria{
+
+    display:inline-block;
+
+    margin-bottom:10px;
+
+    color:#F58220;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:1px;
+}
+
+.modal-produto-info h2{
+
+    margin:0 0 15px;
+
+    color:#222;
+
+    font-size:32px;
+
+    line-height:1.2;
+}
+
+.modal-produto-codigo{
+
+    margin-bottom:22px;
+
+    color:#777;
+
+    font-size:13px;
+}
+
+.modal-produto-preco{
+
+    margin-bottom:12px;
+
+    color:#F58220;
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+.modal-produto-estoque{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    margin-bottom:25px;
+
+    color:#238636;
+
+    font-size:14px;
+
+    font-weight:600;
+}
+
+.modal-produto-descricao{
+
+    margin-bottom:30px;
+
+    color:#666;
+
+    font-size:15px;
+
+    line-height:1.7;
+}
+
+
+/*==================================================
+        BOTÕES
+==================================================*/
+
+.modal-produto-acoes{
+
+    display:flex;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+}
+
+.modal-btn-favorito,
+.modal-btn-carrinho{
+
+    min-height:48px;
+
+    padding:12px 20px;
+
+    border-radius:10px;
+
+    font-family:inherit;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.modal-btn-favorito{
+
+    border:2px solid #F58220;
+
+    background:#FFFFFF;
+
+    color:#F58220;
+}
+
+.modal-btn-favorito:hover{
+
+    background:#F58220;
+
+    color:#FFFFFF;
+}
+
+.modal-btn-carrinho{
+
+    border:2px solid #F58220;
+
+    background:#F58220;
+
+    color:#FFFFFF;
+}
+
+.modal-btn-carrinho:hover{
+
+    background:#D96D12;
+
+    border-color:#D96D12;
+
+    transform:translateY(-2px);
+}
+
+
+/*==================================================
+        RESPONSIVO
+==================================================*/
+
+@media(max-width:800px){
+
+    .modal-produto{
+
+        padding:15px;
+    }
+
+    .modal-produto-corpo{
+
+        grid-template-columns:1fr;
+
+        gap:25px;
+
+        padding:25px;
+    }
+
+    .modal-produto-imagem-principal{
+
+        height:300px;
+    }
+
+    .modal-produto-info h2{
+
+        font-size:25px;
+    }
+
+    .modal-produto-preco{
+
+        font-size:26px;
+    }
+}
+
+@media(max-width:500px){
+
+    .modal-produto-corpo{
+
+        padding:20px;
+    }
+
+    .modal-produto-imagem-principal{
+
+        height:240px;
+    }
+
+    .modal-produto-acoes{
+
+        flex-direction:column;
+    }
+
+    .modal-btn-favorito,
+    .modal-btn-carrinho{
+
+        width:100%;
+    }
+}

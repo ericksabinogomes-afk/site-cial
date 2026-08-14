@@ -888,6 +888,254 @@ function iniciarCarrinho(){
     });
 
 }
+
+/*==================================================
+        MODAL DO PRODUTO
+==================================================*/
+
+let produtoModalAtual = null;
+
+function abrirModalProduto(id){
+
+    const produto = estado.produtos.find(
+        item => item.id === id
+    );
+
+    if(!produto){
+        console.error("Produto não encontrado:", id);
+        return;
+    }
+
+    produtoModalAtual = produto;
+
+    const modal = document.getElementById("modalProduto");
+
+    const imagemPrincipal =
+        document.getElementById("modalImagemPrincipal");
+
+    const miniaturas =
+        document.getElementById("modalMiniaturas");
+
+    const categoria =
+        document.getElementById("modalCategoria");
+
+    const nome =
+        document.getElementById("modalNomeProduto");
+
+    const codigo =
+        document.getElementById("modalCodigoProduto");
+
+    const preco =
+        document.getElementById("modalPrecoProduto");
+
+    const estoque =
+        document.getElementById("modalEstoqueProduto");
+
+    const descricao =
+        document.getElementById("modalDescricaoProduto");
+
+
+    /*========================================
+            INFORMAÇÕES
+    ========================================*/
+
+    categoria.textContent =
+        produto.categoria || "";
+
+    nome.textContent =
+        produto.nome || "";
+
+    codigo.textContent =
+        `Código: ${produto.codigo || "Não informado"}`;
+
+    preco.textContent =
+        formatarPreco(produto.preco || 0);
+
+    estoque.innerHTML = `
+        <i class="fa-solid fa-circle-check"></i>
+        ${produto.estoque || "Em estoque"}
+    `;
+
+    descricao.textContent =
+        produto.descricao ||
+        "Entre em contato com a CIAL Asa Sul para mais informações sobre este produto.";
+
+
+    /*========================================
+            IMAGEM PRINCIPAL
+    ========================================*/
+
+    imagemPrincipal.src =
+        produto.imagem ||
+        "imagens/produto-sem-imagem.png";
+
+    imagemPrincipal.alt =
+        produto.nome || "Produto";
+
+
+    /*========================================
+            MINIATURAS
+    ========================================*/
+
+    miniaturas.innerHTML = "";
+
+    const imagens = [
+        produto.imagem || "imagens/produto-sem-imagem.png"
+    ];
+
+    imagens.forEach((imagem, indice) => {
+
+        const miniatura =
+            document.createElement("button");
+
+        miniatura.type = "button";
+
+        miniatura.className =
+            "modal-produto-miniatura" +
+            (indice === 0 ? " ativa" : "");
+
+        miniatura.innerHTML = `
+            <img
+                src="${imagem}"
+                alt="${produto.nome || "Produto"}"
+            >
+        `;
+
+        miniatura.addEventListener(
+            "click",
+            () => {
+
+                imagemPrincipal.src = imagem;
+
+                document
+                    .querySelectorAll(".modal-produto-miniatura")
+                    .forEach(item =>
+                        item.classList.remove("ativa")
+                    );
+
+                miniatura.classList.add("ativa");
+            }
+        );
+
+        miniaturas.appendChild(miniatura);
+
+    });
+
+
+    /*========================================
+            ABRIR MODAL
+    ========================================*/
+
+    modal.classList.add("ativo");
+
+    document.body.style.overflow = "hidden";
+}
+
+
+/*==================================================
+        FECHAR MODAL
+==================================================*/
+
+function fecharModalProduto(){
+
+    const modal =
+        document.getElementById("modalProduto");
+
+    modal.classList.remove("ativo");
+
+    document.body.style.overflow = "";
+
+    produtoModalAtual = null;
+}
+
+
+/*==================================================
+        EVENTO VER PRODUTO
+==================================================*/
+
+function iniciarModalProduto(){
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            const botao =
+                event.target.closest(".btn-ver");
+
+            if(!botao){
+                return;
+            }
+
+            const id =
+                Number(botao.dataset.id);
+
+            abrirModalProduto(id);
+
+        }
+    );
+
+
+    /* BOTÃO X */
+
+    const fechar =
+        document.getElementById("fecharModalProduto");
+
+    if(fechar){
+
+        fechar.addEventListener(
+            "click",
+            fecharModalProduto
+        );
+
+    }
+
+
+    /* CLICAR FORA DO CONTEÚDO */
+
+    const modal =
+        document.getElementById("modalProduto");
+
+    if(modal){
+
+        modal.addEventListener(
+            "click",
+            event => {
+
+                if(
+                    event.target === modal
+                ){
+
+                    fecharModalProduto();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* TECLA ESC */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if(
+                event.key === "Escape" &&
+                modal &&
+                modal.classList.contains("ativo")
+            ){
+
+                fecharModalProduto();
+
+            }
+
+        }
+    );
+
+}
+
 /*==================================================
                 INICIALIZAÇÃO
 ==================================================*/
@@ -911,6 +1159,8 @@ async function iniciarSistema(){
     iniciarFavoritos();
 
     iniciarCarrinho();
+
+   iniciarModalProduto();
 
 }
 

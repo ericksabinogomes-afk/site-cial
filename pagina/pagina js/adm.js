@@ -32,7 +32,7 @@ const inputImagem = document.getElementById("arquivoImagem");
 const previewImagem = document.getElementById("previewImagem");
 
 // Arquivo selecionado 
-let arquivoSelecionado = null;
+let arquivosSelecionados = [];
 
 // Clique na área abre o input file
 if (dropArea && inputImagem) {
@@ -40,12 +40,35 @@ if (dropArea && inputImagem) {
     inputImagem.click();
   });
 
-  // Quando escolhe arquivo pelo input
-  inputImagem.addEventListener("change", () => {
-    if (inputImagem.files && inputImagem.files[0]) {
-      handleFile(inputImagem.files[0]);
+ inputImagem.addEventListener("change", () => {
+
+    if (!inputImagem.files || inputImagem.files.length === 0) {
+        return;
     }
-  });
+
+    for (const novoArquivo of inputImagem.files) {
+
+        if (!novoArquivo.type.startsWith("image/")) {
+            continue;
+        }
+
+        const jaExiste = arquivosSelecionados.some(arquivo =>
+            arquivo.name === novoArquivo.name &&
+            arquivo.size === novoArquivo.size &&
+            arquivo.lastModified === novoArquivo.lastModified
+        );
+
+        if (!jaExiste) {
+            arquivosSelecionados.push(novoArquivo);
+        }
+    }
+
+    mostrarPreviews(arquivosSelecionados);
+
+    // Limpa somente o input.
+    // NÃO limpa arquivosSelecionados.
+    inputImagem.value = "";
+});
 
   // Evita comportamento padrão do navegador
   ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
@@ -69,29 +92,122 @@ if (dropArea && inputImagem) {
   });
 
   // Quando solta o arquivo na área
-  dropArea.addEventListener("drop", e => {
-    const arquivos = e.dataTransfer.files;
-    if (arquivos && arquivos[0]) {
-      handleFile(arquivos[0]);
+ dropArea.addEventListener("drop", e => {
+
+    const arquivos =
+        Array.from(e.dataTransfer.files);
+
+    if (!arquivos.length) {
+        return;
     }
-  });
+
+    arquivos.forEach(novoArquivo => {
+
+    if (!novoArquivo.type.startsWith("image/")) {
+        return;
+    }
+
+    const jaExiste = arquivosSelecionados.some(arquivo =>
+        arquivo.name === novoArquivo.name &&
+        arquivo.size === novoArquivo.size &&
+        arquivo.lastModified === novoArquivo.lastModified
+    );
+
+    if (!jaExiste) {
+        arquivosSelecionados.push(novoArquivo);
+    }
+
+});
+
+    mostrarPreviews(arquivosSelecionados);
+
+});
 }
 
-function handleFile(file) {
-  if (!file.type.startsWith("image/")) {
-    alert("Envie somente imagens.");
-    return;
-  }
+function mostrarPreviews(arquivos) {
 
-  arquivoSelecionado = file;
+    const container =
+        document.getElementById("previewImagens");
 
-  // Preview
-  const reader = new FileReader();
-  reader.onload = () => {
-    previewImagem.src = reader.result;
-    previewImagem.style.display = "block";
-  };
-  reader.readAsDataURL(file);
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+
+    arquivos.forEach((file, index) => {
+
+        if (!file.type.startsWith("image/")) {
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+
+            const wrapper =
+                document.createElement("div");
+
+            wrapper.className =
+                "preview-imagem-item";
+
+            if (index === 0) {
+                wrapper.classList.add("principal");
+            }
+
+            wrapper.innerHTML = `
+
+                <button
+                    type="button"
+                    class="preview-imagem-remover"
+                    title="Remover imagem"
+                >
+                    ×
+                </button>
+
+                <img
+                    src="${reader.result}"
+                    alt="Prévia ${index + 1}"
+                >
+
+                <span>
+                    ${
+                        index === 0
+                            ? "PRINCIPAL"
+                            : `FOTO ${index + 1}`
+                    }
+                </span>
+
+            `;
+
+            const botaoRemover =
+                wrapper.querySelector(
+                    ".preview-imagem-remover"
+                );
+
+            botaoRemover.addEventListener(
+                "click",
+                () => {
+
+                    arquivosSelecionados =
+                        arquivosSelecionados.filter(
+                            (_, i) => i !== index
+                        );
+
+                    mostrarPreviews(
+                        arquivosSelecionados
+                    );
+
+                }
+            );
+
+            container.appendChild(wrapper);
+
+        };
+
+        reader.readAsDataURL(file);
+
+    });
 }
 
 /*==================================================
@@ -444,27 +560,61 @@ formProduto.addEventListener("submit", async event => {
     ? document.getElementById("imagemProduto").value.trim()
     : "";
 
-  let imagemUrl = imagemTexto;
+let imagemUrl = imagemTexto;
+let imagensAdicionais = [];
 
-  try {
-    if (arquivoSelecionado) {
-      const formData = new FormData();
-      formData.append("imagem", arquivoSelecionado);
+try {
 
-      const resUpload = await fetch(`${API_BASE}/upload-imagem`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        },
-        body: formData
-      });
+    if (arquivosSelecionados.length > 0) {
 
-      const jsonUpload = await resUpload.json();
-      if (!jsonUpload.ok) {
-        throw new Error(jsonUpload.erro || "Erro no upload da imagem");
-      }
+        const formData = new FormData();
 
-      imagemUrl = jsonUpload.url;
+        arquivosSelecionados.forEach(file => {
+
+            formData.append("imagens", file);
+
+        });
+
+        const resUpload = await fetch(
+            `${API_BASE}/upload-imagens`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+
+                body: formData
+            }
+        );
+
+        const jsonUpload =
+            await resUpload.json();
+
+        if (!jsonUpload.ok) {
+
+            throw new Error(
+                jsonUpload.erro ||
+                "Erro no upload das imagens"
+            );
+
+        }
+
+        const urls =
+            jsonUpload.urls || [];
+
+        /*
+         * PRIMEIRA FOTO = PRINCIPAL
+         */
+        imagemUrl =
+            urls[0] || imagemTexto;
+
+        /*
+         * RESTANTE = FOTOS ADICIONAIS
+         */
+        imagensAdicionais =
+            urls.slice(1);
+
     }
 
     const novoProduto = {
@@ -479,7 +629,11 @@ formProduto.addEventListener("submit", async event => {
 
     estoque,
 
+    // FOTO PRINCIPAL
     imagem: imagemUrl,
+
+    // FOTOS ADICIONAIS
+    imagens: imagensAdicionais,
 
     destaque
 
@@ -490,11 +644,19 @@ formProduto.addEventListener("submit", async event => {
     fecharModal();
     alert("Produto cadastrado com sucesso!");
 
-    arquivoSelecionado = null;
-    if (previewImagem) {
-      previewImagem.style.display = "none";
-      previewImagem.src = "";
-    }
+    arquivosSelecionados = [];
+
+const previewContainer =
+    document.getElementById("previewImagens");
+
+if (previewContainer) {
+    previewContainer.innerHTML = "";
+}
+
+if (inputImagem) {
+    inputImagem.value = "";
+}
+
     if (inputImagem) {
       inputImagem.value = "";
     }

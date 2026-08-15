@@ -295,15 +295,6 @@ app.post(
   }
 );
 
-  const baseUrl = process.env.BASE_URL || "http://localhost:4000";
-
-  // URL pública completa
-  const url = `${baseUrl}/uploads/${req.file.filename}`;
-
-  res.json({ ok: true, url });
-
-
-
 // servir a pasta de uploads como arquivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

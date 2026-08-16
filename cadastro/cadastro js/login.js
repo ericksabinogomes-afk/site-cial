@@ -94,8 +94,11 @@ async function realizarLogin(usuarioDigitado, senhaDigitada) {
       return;
     }
 
-    localStorage.setItem("usuarioCial", JSON.stringify(usuarioLogado));
-    localStorage.setItem("tokenCial", token);
+    localStorage.setItem("tokenCial", result.token);
+    localStorage.setItem(
+      "usuarioCial",
+      JSON.stringify(result.usuario)
+    );
 
     // Redirecionar para o painel admin
     window.location.href = "../../pagina/index.html";

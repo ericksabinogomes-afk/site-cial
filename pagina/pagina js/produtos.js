@@ -86,15 +86,20 @@ async function carregarProdutos() {
     const dados = json.data || [];
 
     estado.produtos = dados.map(p => ({
-      id: p.id,
-      categoria: p.categoria,
-      nome: p.nome,
-      codigo: p.codigo,
-      selo: p.selo || "",
-      preco: Number(p.preco),
-      parcela: p.parcela || "",
-      estoque: p.estoque || "Em estoque",
-      imagem: p.imagem || ""   // importante
+    id: p.id,
+    categoria: p.categoria,
+    nome: p.nome,
+    codigo: p.codigo,
+    selo: p.selo || "",
+    preco: Number(p.preco),
+    parcela: p.parcela || "",
+    estoque: p.estoque || "Em estoque",
+
+    // Imagem principal
+    imagem: p.imagem || "",
+
+    // Array de imagens adicionais salvo no JSONB
+    imagens: Array.isArray(p.imagens) ? p.imagens : []
     }));
 
     estado.produtosFiltrados = [...estado.produtos];
@@ -105,6 +110,7 @@ async function carregarProdutos() {
     console.error("Erro ao carregar produtos:", erro);
   }
 }
+
 
 /*==================================================
             TOTAL DE PRODUTOS
@@ -961,32 +967,26 @@ function abrirModalProduto(id){
         "Entre em contato com a CIAL Asa Sul para mais informações sobre este produto.";
 
 
-    /*========================================
-            IMAGEM PRINCIPAL
-    ========================================*/
-
-    imagemPrincipal.src =
-        produto.imagem ||
-        "imagens/produto-sem-imagem.png";
-
-    imagemPrincipal.alt =
-        produto.nome || "Produto";
-
-
-    /*========================================
-            MINIATURAS
-    ========================================*/
-
-    miniaturas.innerHTML = "";
+/*========================================
+        GALERIA DE IMAGENS
+========================================*/
 
     const imagens = [
-        produto.imagem || "imagens/produto-sem-imagem.png"
-    ];
+        produto.imagem,
+        ...(Array.isArray(produto.imagens) ? produto.imagens : [])
+        ].filter(Boolean);
 
-    imagens.forEach((imagem, indice) => {
+        if (imagens.length === 0) {
+        imagens.push("imagens/produto-sem-imagem.png");
+        }
 
-        const miniatura =
-            document.createElement("button");
+        imagemPrincipal.src = imagens[0];
+        imagemPrincipal.alt = produto.nome || "Produto";
+
+        miniaturas.innerHTML = "";
+
+        imagens.forEach((imagem, indice) => {
+    const miniatura = document.createElement("button");
 
         miniatura.type = "button";
 
@@ -996,40 +996,34 @@ function abrirModalProduto(id){
 
         miniatura.innerHTML = `
             <img
-                src="${imagem}"
-                alt="${produto.nome || "Produto"}"
+            src="${imagem}"
+            alt="${produto.nome || "Produto"} — imagem ${indice + 1}"
             >
         `;
 
-        miniatura.addEventListener(
-            "click",
-            () => {
+        miniatura.addEventListener("click", () => {
+            imagemPrincipal.src = imagem;
 
-                imagemPrincipal.src = imagem;
+            miniaturas
+            .querySelectorAll(".modal-produto-miniatura")
+            .forEach((item) => {
+                item.classList.remove("ativa");
+            });
 
-                document
-                    .querySelectorAll(".modal-produto-miniatura")
-                    .forEach(item =>
-                        item.classList.remove("ativa")
-                    );
-
-                miniatura.classList.add("ativa");
-            }
-        );
+            miniatura.classList.add("ativa");
+        });
 
         miniaturas.appendChild(miniatura);
+        });
 
-    });
+/*========================================
+        ABRIR MODAL
+========================================*/
 
+        modal.classList.add("ativo");
 
-    /*========================================
-            ABRIR MODAL
-    ========================================*/
-
-    modal.classList.add("ativo");
-
-    document.body.style.overflow = "hidden";
-}
+        document.body.style.overflow = "hidden";
+    }
 
 
 /*==================================================
@@ -1217,3 +1211,8 @@ function iniciarFavoritoHeader(){
 
     });
 }
+
+
+
+
+

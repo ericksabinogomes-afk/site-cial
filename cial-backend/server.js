@@ -142,33 +142,54 @@ app.post('/cadastro', async (req, res) => {
     Atualizar meus dados
 ==========================================================*/
 
-app.put('/meus-dados/:id', async (req, res) => {
-  const usuarioId = parseInt(req.params.id, 10);
-  const { nome, telefone, cpf } = req.body;
+app.put("/meus-dados/:id", autenticarToken, async (req, res) => {
+  const usuarioId = Number(req.params.id);
+  const { nome, telefone } = req.body;
 
   if (!usuarioId) {
-    return res.status(400).json({ ok: false, erro: 'ID inválido' });
+    return res.status(400).json({
+      ok: false,
+      erro: "ID inválido"
+    });
+  }
+
+  // Cliente só pode editar a própria conta.
+  if (req.usuario.id !== usuarioId) {
+    return res.status(403).json({
+      ok: false,
+      erro: "Você não tem permissão para editar estes dados"
+    });
+  }
+
+  if (!nome) {
+    return res.status(400).json({
+      ok: false,
+      erro: "Nome é obrigatório"
+    });
   }
 
   try {
     const { error } = await supabase
-      .from('usuarios')
+      .from("usuarios")
       .update({
         nome,
-        telefone,
-        cpf
+        telefone
       })
-      .eq('id', usuarioId);
+      .eq("id", usuarioId);
 
     if (error) {
-      console.error('Erro ao atualizar usuario:', error);
-      return res.status(500).json({ ok: false, erro: error.message });
+      return res.status(500).json({
+        ok: false,
+        erro: error.message
+      });
     }
 
     return res.json({ ok: true });
   } catch (err) {
-    console.error('Erro inesperado no /meus-dados:', err);
-    return res.status(500).json({ ok: false, erro: err.message });
+    return res.status(500).json({
+      ok: false,
+      erro: err.message
+    });
   }
 });
 
@@ -310,7 +331,17 @@ function autenticarToken(req, res, next) {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuario = payload; // se você quiser acessar depois (id, tipo, etc.)
+    req.usuario = payload; // { id, email, tipo, perfil, ... }
+
+    // Se a rota for de admin, exige perfil === 'admin'
+    if (req.path.startsWith('/admin')) {
+      if (req.usuario.perfil !== 'admin') {
+        return res
+          .status(403)
+          .json({ ok: false, erro: 'Acesso negado: perfil não autorizado' });
+      }
+    }
+
     next();
   } catch (err) {
     return res.status(401).json({ ok: false, erro: 'Token inválido ou expirado' });
@@ -396,15 +427,17 @@ app.post('/admin/produtos', autenticarToken , async (req, res) => {
         destaque: !!destaque,
         ativo: true
       }])
-      .select('id');
+      .select("*")
+      .single();
+
 
     if (error) {
       return res.status(500).json({ ok: false, erro: error.message });
     }
 
-    res.status(201).json({ ok: true, data });
+    return res.status(201).json({ ok: true, data });
   } catch (err) {
-    res.status(500).json({ erro: err.message });
+    res.status(500).json({ ok: false, erro: err.message });
   }
 });
 
@@ -479,232 +512,117 @@ app.delete('/admin/produtos/:id', autenticarToken , async (req, res) => {
 });
 
 /*==========================================================
-    FAVORITOS
+  FAVORITOS
 ==========================================================*/
 
 // Listar favoritos do usuário logado
-app.get('/favoritos', autenticarToken, async (req, res) => {
+app.get("/favoritos", autenticarToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("favoritos")
+      .select("*")
+      .eq("usuario_id", req.usuario.id)
+      .order("created_at", { ascending: false });
 
-    const usuarioId = req.usuario.id;
-
-    try {
-
-        const { data, error } = await supabase
-
-            .from('favoritos')
-
-            .select(`
-                id,
-                produto_id,
-                created_at,
-                produtos (*)
-            `)
-
-            .eq('usuario_id', usuarioId)
-
-            .order('created_at', {
-                ascending: false
-            });
-
-
-        if (error) {
-
-            console.error(
-                'Erro ao buscar favoritos:',
-                error
-            );
-
-            return res.status(500).json({
-                ok: false,
-                erro: error.message
-            });
-
-        }
-
-
-        res.json({
-            ok: true,
-            data
-        });
-
-
-    } catch (err) {
-
-        console.error(
-            'Erro inesperado nos favoritos:',
-            err
-        );
-
-        res.status(500).json({
-            ok: false,
-            erro: err.message
-        });
-
+    if (error) {
+      return res.status(500).json({
+        ok: false,
+        erro: error.message
+      });
     }
 
+    return res.json({
+      ok: true,
+      data
+    });
+  } catch (err) {
+    return res.status(500).json({
+      ok: false,
+      erro: err.message
+    });
+  }
 });
 
+// Adicionar favorito
+app.post("/favoritos", autenticarToken, async (req, res) => {
+  const {
+    produto_nome,
+    produto_imagem,
+    produto_preco,
+    produto_slug
+  } = req.body;
 
-// Adicionar produto aos favoritos
-app.post('/favoritos', autenticarToken, async (req, res) => {
+  if (!produto_nome) {
+    return res.status(400).json({
+      ok: false,
+      erro: "Nome do produto é obrigatório"
+    });
+  }
 
-    const usuarioId = req.usuario.id;
+  try {
+    const { data, error } = await supabase
+      .from("favoritos")
+      .insert([{
+        usuario_id: req.usuario.id,
+        produto_nome,
+        produto_imagem: produto_imagem || null,
+        produto_preco: Number(produto_preco) || 0,
+        produto_slug: produto_slug || null
+      }])
+      .select();
 
-    const {
-        produto_id
-    } = req.body;
-
-
-    if (!produto_id) {
-
-        return res.status(400).json({
-            ok: false,
-            erro: 'Produto não informado'
-        });
-
+    if (error) {
+      return res.status(500).json({
+        ok: false,
+        erro: error.message
+      });
     }
 
-
-    try {
-
-        const { data, error } = await supabase
-
-            .from('favoritos')
-
-            .insert([{
-
-                usuario_id: usuarioId,
-
-                produto_id: Number(produto_id)
-
-            }])
-
-            .select();
-
-
-        if (error) {
-
-            // Produto já está favoritado
-            if (error.code === '23505') {
-
-                return res.status(409).json({
-                    ok: false,
-                    erro: 'Produto já está nos favoritos'
-                });
-
-            }
-
-
-            console.error(
-                'Erro ao adicionar favorito:',
-                error
-            );
-
-            return res.status(500).json({
-                ok: false,
-                erro: error.message
-            });
-
-        }
-
-
-        res.status(201).json({
-            ok: true,
-            data
-        });
-
-
-    } catch (err) {
-
-        console.error(
-            'Erro inesperado ao adicionar favorito:',
-            err
-        );
-
-        res.status(500).json({
-            ok: false,
-            erro: err.message
-        });
-
-    }
-
+    return res.status(201).json({
+      ok: true,
+      data
+    });
+  } catch (err) {
+    return res.status(500).json({
+      ok: false,
+      erro: err.message
+    });
+  }
 });
 
+// Remover favorito pelo ID do favorito
+app.delete("/favoritos/:id", autenticarToken, async (req, res) => {
+  const favoritoId = Number(req.params.id);
 
-// Remover produto dos favoritos
-app.delete(
-    '/favoritos/:produto_id',
-    autenticarToken,
-    async (req, res) => {
+  if (!favoritoId) {
+    return res.status(400).json({
+      ok: false,
+      erro: "ID do favorito inválido"
+    });
+  }
 
-        const usuarioId = req.usuario.id;
+  try {
+    const { error } = await supabase
+      .from("favoritos")
+      .delete()
+      .eq("id", favoritoId)
+      .eq("usuario_id", req.usuario.id);
 
-        const produtoId =
-            parseInt(
-                req.params.produto_id,
-                10
-            );
-
-
-        if (!produtoId) {
-
-            return res.status(400).json({
-                ok: false,
-                erro: 'ID do produto inválido'
-            });
-
-        }
-
-
-        try {
-
-            const { error } = await supabase
-
-                .from('favoritos')
-
-                .delete()
-
-                .eq('usuario_id', usuarioId)
-
-                .eq('produto_id', produtoId);
-
-
-            if (error) {
-
-                console.error(
-                    'Erro ao remover favorito:',
-                    error
-                );
-
-                return res.status(500).json({
-                    ok: false,
-                    erro: error.message
-                });
-
-            }
-
-
-            res.json({
-                ok: true
-            });
-
-
-        } catch (err) {
-
-            console.error(
-                'Erro inesperado ao remover favorito:',
-                err
-            );
-
-            res.status(500).json({
-                ok: false,
-                erro: err.message
-            });
-
-        }
-
+    if (error) {
+      return res.status(500).json({
+        ok: false,
+        erro: error.message
+      });
     }
-);
+
+    return res.json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({
+      ok: false,
+      erro: err.message
+    });
+  }
+});
 
 /*==========================================================
     Login
@@ -805,6 +723,92 @@ res.json({
 });
 
 
+
+/*==========================================================
+  PEDIDOS DO CLIENTE
+==========================================================*/
+
+app.get("/pedidos", autenticarToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("pedidos")
+      .select(`
+        *,
+        pedido_itens (
+          id,
+          produto_nome,
+          quantidade,
+          preco_unitario
+        )
+      `)
+      .eq("usuario_id", req.usuario.id)
+      .order("data_pedido", { ascending: false });
+
+    if (error) {
+      return res.status(500).json({
+        ok: false,
+        erro: error.message
+      });
+    }
+
+    return res.json({
+      ok: true,
+      data
+    });
+  } catch (err) {
+    return res.status(500).json({
+      ok: false,
+      erro: err.message
+    });
+  }
+});
+
+
+/*==========================================================
+  ORÇAMENTOS DO CLIENTE
+==========================================================*/
+
+app.get("/orcamentos", autenticarToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("orcamentos")
+      .select("*")
+      .eq("usuario_id", req.usuario.id)
+      .order("data_solicitacao", { ascending: false });
+
+    if (error) {
+      return res.status(500).json({
+        ok: false,
+        erro: error.message
+      });
+    }
+
+    return res.json({
+      ok: true,
+      data
+    });
+  } catch (err) {
+    return res.status(500).json({
+      ok: false,
+      erro: err.message
+    });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+/* ==============
+    SERVIDOR 
+    SEMPRE COLOCAR ATRAS DELE!!!
+   ==============*/
 
 const PORT = process.env.PORT || 4000;
 

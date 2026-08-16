@@ -931,3 +931,34 @@ td{
     background:#e35d00;
 
 }
+
+
+
+
+
+/* FAVORITOS FELIPE */
+
+.sem-resultados {
+  width: 100%;
+  padding: 32px 20px;
+  color: #6d7480;
+  text-align: left;
+}
+
+.sem-resultados .icone-vazio {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 32px;
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
+.sem-resultados p {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.sem-resultados small {
+  color: #8a919b;
+}

@@ -15,28 +15,34 @@ const btnGarantia = document.querySelectorAll(".btn-garantia");
 const btnSalvar = document.querySelector(".btn-salvar");
 const btnAlterarSenha = document.querySelector(".btn-alterar-senha");
 
-/* ===== NOVO: usuário logado ===== */
+/* ===== Usuário logado ===== */
 
 let usuarioAtual = null;
 
 function carregarUsuarioLogado() {
     const usuarioJSON = localStorage.getItem("usuarioCial");
+    const token = localStorage.getItem("tokenCial");
 
-    if (!usuarioJSON) {
-        // Não está logado -> volta para login
+    // Área protegida: precisa ter token e dados do usuário
+    if (!token || !usuarioJSON) {
+        localStorage.removeItem("tokenCial");
+        localStorage.removeItem("usuarioCial");
 
-        window.location.href = "../cadastro/login.html";
+        window.location.href = "login.html";
         return null;
     }
 
     try {
-        const usuario = JSON.parse(usuarioJSON);
-        return usuario;
+        
+        return JSON.parse(usuarioJSON);
 
-    } catch (e) {
-        console.error("Erro ao ler usuarioCial:", e);
+    } catch (erro) {
+        console.error("Erro ao ler usuarioCial:", erro);
+
+        localStorage.removeItem("tokenCial");
         localStorage.removeItem("usuarioCial");
-        window.location.href = "../cadastro/login.html";
+
+        window.location.href = "login.html";
         return null;
     }
 }
@@ -90,8 +96,13 @@ function atualizarInterfaceUsuario() {
 /* ===== Logout ===== */
 
 function fazerLogout() {
+    
     localStorage.removeItem("usuarioCial");
-    window.location.href = "../cadastro/login.html";
+  
+    localStorage.removeItem("tokenCial");
+    
+    window.location.href = "login.html";
+
 }
 
 
@@ -182,57 +193,229 @@ function iniciarCards() {
    PEDIDOS
 ===================================================== */
 
-function iniciarPedidos() {
+async function carregarPedidos() {
+  const lista = document.getElementById("listaPedidos");
 
-    btnDetalhes.forEach(botao => {
+  if (!lista) return;
 
-        botao.addEventListener("click", () => {
+  const token = localStorage.getItem("tokenCial");
 
-            alert("Em breve você poderá visualizar todos os detalhes deste pedido.");
-
-        });
-
+  try {
+    const response = await fetch("http://localhost:4000/pedidos", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
 
+    const resultado = await response.json();
+
+    if (!response.ok || !resultado.ok) {
+      throw new Error(resultado.erro || "Erro ao carregar pedidos");
+    }
+
+    const pedidos = resultado.data || [];
+
+    lista.innerHTML = "";
+
+    if (pedidos.length === 0) {
+      lista.innerHTML = `
+        <tr>
+          <td colspan="5">Nenhum pedido encontrado.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    pedidos.forEach((pedido) => {
+      const data = pedido.data_pedido || pedido.created_at;
+
+      const dataFormatada = data
+        ? new Date(`${data}T00:00:00`).toLocaleDateString("pt-BR")
+        : "-";
+
+      const valorFormatado = Number(pedido.valor || 0).toLocaleString(
+        "pt-BR",
+        {
+          style: "currency",
+          currency: "BRL"
+        }
+      );
+
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>#${pedido.numero || pedido.id}</td>
+        <td>${dataFormatada}</td>
+        <td>
+          <span class="status andamento">
+            ${pedido.status || "Em andamento"}
+          </span>
+        </td>
+        <td>${valorFormatado}</td>
+        <td>
+          <button
+            type="button"
+            class="btn-detalhes"
+            data-id="${pedido.id}"
+          >
+            Ver detalhes
+          </button>
+        </td>
+      `;
+
+      tr.querySelector(".btn-detalhes").addEventListener("click", () => {
+        const itens = pedido.pedido_itens || [];
+
+        if (itens.length === 0) {
+          alert("Este pedido ainda não possui itens cadastrados.");
+          return;
+        }
+
+        const textoItens = itens
+          .map((item) => {
+            return `${item.quantidade}x ${item.produto_nome} — ${Number(
+              item.preco_unitario
+            ).toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL"
+            })}`;
+          })
+          .join("\n");
+
+        alert(`Pedido #${pedido.numero || pedido.id}\n\n${textoItens}`);
+      });
+
+      lista.appendChild(tr);
+    });
+  } catch (erro) {
+    console.error("Erro ao carregar pedidos:", erro);
+
+    lista.innerHTML = `
+      <tr>
+        <td colspan="5">Não foi possível carregar os pedidos.</td>
+      </tr>
+    `;
+  }
 }
+
 /* =====================================================
    FAVORITOS
 ===================================================== */
 
-function iniciarFavoritos() {
+async function carregarFavoritos() {
+  const container = document.querySelector(".favoritos-grid");
 
-    btnVer.forEach(botao => {
+  if (!container) return;
 
-        botao.addEventListener("click", () => {
+  const token = localStorage.getItem("tokenCial");
 
-            alert("Página do produto em desenvolvimento.");
-
-        });
-
+  try {
+    const response = await fetch("http://localhost:4000/favoritos", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
 
-    btnRemover.forEach(botao => {
+    const resultado = await response.json();
 
-        botao.addEventListener("click", () => {
+    if (!response.ok || !resultado.ok) {
+      throw new Error(resultado.erro || "Erro ao buscar favoritos");
+    }
 
-            const confirmar = confirm("Deseja remover este produto dos favoritos?");
+    const favoritos = resultado.data || [];
 
-            if (confirmar) {
+    container.innerHTML = `
+      <div class="sem-resultados">
+        <span class="icone-vazio">❤️</span>
+        <p>Você ainda não possui favoritos.</p>
+        <small>
+          Quando você salvar um produto, ele aparecerá aqui.
+        </small>
+      </div>
+    `;
 
-                alert("Produto removido dos favoritos.");
+    favoritos.forEach((favorito) => {
+      const card = document.createElement("div");
 
+      card.className = "produto-favorito";
+
+      const precoFormatado = Number(
+        favorito.produto_preco || 0
+      ).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+
+      card.innerHTML = `
+        <img
+          src="${favorito.produto_imagem || "../pagina/imagem/produto-sem-imagem.png"}"
+          alt="${favorito.produto_nome || "Produto"}"
+        >
+
+        <h3>${favorito.produto_nome || "Produto"}</h3>
+
+        <p>${precoFormatado}</p>
+
+        <div class="acoes-favorito">
+          <button
+            type="button"
+            class="btn-remover"
+            data-id="${favorito.id}"
+          >
+            Remover
+          </button>
+        </div>
+      `;
+
+      const botaoRemover = card.querySelector(".btn-remover");
+
+      botaoRemover.addEventListener("click", async () => {
+        const confirmar = confirm(
+          "Deseja remover este produto dos favoritos?"
+        );
+
+        if (!confirmar) return;
+
+        try {
+          const resposta = await fetch(
+            `http://localhost:4000/favoritos/${favorito.id}`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
             }
+          );
 
-        });
+          const resultadoRemocao = await resposta.json();
 
+          if (!resposta.ok || !resultadoRemocao.ok) {
+            throw new Error(
+              resultadoRemocao.erro || "Erro ao remover favorito"
+            );
+          }
+
+          await carregarFavoritos();
+        } catch (erro) {
+          console.error("Erro ao remover favorito:", erro);
+          alert("Não foi possível remover o favorito.");
+        }
+      });
+
+      container.appendChild(card);
     });
-
+  } catch (erro) {
+    console.error("Erro ao carregar favoritos:", erro);
+    container.innerHTML = "<p>Não foi possível carregar seus favoritos.</p>";
+  }
 }
+
+
 /* =====================================================
    ORÇAMENTOS
 ===================================================== */
 
-function iniciarOrcamentos() {
+async function iniciarOrcamentos() {
 
     btnOrcamento.forEach(botao => {
 
@@ -267,55 +450,76 @@ function iniciarGarantias() {
 ===================================================== */
 
 function iniciarDados() {
-    if (!btnSalvar) return;
+  const formDados = document.getElementById("formDados");
 
-    btnSalvar.addEventListener("click", async (event) => {
-        event.preventDefault();
+  if (!formDados) return;
 
-        if (!usuarioAtual) {
-            alert("Usuário não encontrado na sessão.");
-            return;
+  formDados.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!usuarioAtual) {
+      alert("Usuário não encontrado na sessão.");
+      return;
+    }
+
+    const nome = document.getElementById("nome").value.trim();
+    const telefone = document.getElementById("telefone").value.trim();
+
+    if (!nome) {
+      alert("Informe seu nome.");
+      return;
+    }
+
+    const token = localStorage.getItem("tokenCial");
+
+    if (!token) {
+      alert("Sua sessão expirou. Faça login novamente.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:4000/meus-dados/${usuarioAtual.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            nome,
+            telefone
+          })
         }
+      );
 
-        const nome = document.getElementById("nome").value.trim();
-        const email = document.getElementById("email").value.trim(); // por enquanto só exibe
-        const telefone = document.getElementById("telefone").value.trim();
-        const cpf = document.getElementById("cpf").value.trim();
+      const result = await response.json();
 
-        if (!nome || !email) {
-            alert("Nome e email são obrigatórios.");
-            return;
-        }
+      if (!response.ok || !result.ok) {
+        alert(
+          "Erro ao salvar dados: " +
+          (result.erro || "tente novamente")
+        );
+        return;
+      }
 
-        try {
-            const response = await fetch(`http://localhost:4000/meus-dados/${usuarioAtual.id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ nome, telefone, cpf })
-            });
+      usuarioAtual.nome = nome;
+      usuarioAtual.telefone = telefone;
 
-            const result = await response.json();
+      localStorage.setItem(
+        "usuarioCial",
+        JSON.stringify(usuarioAtual)
+      );
 
-            if (!response.ok || !result.ok) {
-                alert("Erro ao salvar dados: " + (result.erro || "tente novamente"));
-                return;
-            }
+      atualizarInterfaceUsuario();
 
-            // Atualiza também o que está no localStorage
-            usuarioAtual.nome = nome;
-            usuarioAtual.telefone = telefone;
-            usuarioAtual.cpf = cpf;
-            localStorage.setItem("usuarioCial", JSON.stringify(usuarioAtual));
-
-            atualizarInterfaceUsuario();
-            alert("Dados atualizados com sucesso!");
-        } catch (error) {
-            console.error(error);
-            alert("Erro de conexão ao salvar dados.");
-        }
-    });
+      alert("Dados atualizados com sucesso!");
+    } catch (error) {
+      console.error("Erro ao atualizar dados:", error);
+      alert("Erro de conexão ao salvar dados.");
+    }
+  });
 }
 /* =====================================================
    SEGURANÇA
@@ -350,8 +554,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Inicializar o resto da página
     iniciarMenu();
     iniciarCards();
-    iniciarPedidos();
-    iniciarFavoritos();
+    carregarPedidos();
+    carregarFavoritos();
     iniciarOrcamentos();
     iniciarGarantias();
     iniciarDados();

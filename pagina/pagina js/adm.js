@@ -424,8 +424,15 @@ async function carregarProdutosAdmin() {
       }
     });
 
-    const json = await res.json();
+    if (res.status === 403) {
+      alert("Acesso negado: seu usuário não tem perfil de administrador.");
+      localStorage.removeItem("tokenCial");
+      localStorage.removeItem("usuarioCial");
+      window.location.href = "../login/login.html";
+      return;
+    }
 
+    const json = await res.json();
     if (!json.ok) {
       throw new Error(json.erro || "Erro ao carregar produtos");
     }
@@ -588,32 +595,28 @@ try {
             }
         );
 
-        const jsonUpload =
-            await resUpload.json();
+        const jsonUpload = await resUpload.json();
 
         if (!jsonUpload.ok) {
 
             throw new Error(
-                jsonUpload.erro ||
-                "Erro no upload das imagens"
+                jsonUpload.erro ||"Erro no upload das imagens"
             );
 
         }
 
-        const urls =
-            jsonUpload.urls || [];
+        const urls = jsonUpload.urls || [];
 
         /*
          * PRIMEIRA FOTO = PRINCIPAL
          */
-        imagemUrl =
-            urls[0] || imagemTexto;
+
+        imagemUrl = urls[0] || imagemTexto;
 
         /*
          * RESTANTE = FOTOS ADICIONAIS
          */
-        imagensAdicionais =
-            urls.slice(1);
+        imagensAdicionais = urls.slice(1);
 
     }
 

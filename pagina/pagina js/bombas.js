@@ -12,6 +12,23 @@ const CONFIG = {
 
 };
 
+const nomesCategoriasBombas = {
+  "bombas-centrifugas": "Bombas Centrífugas",
+  "bombas-perifericas": "Bombas Periféricas",
+  "bombas-submersas": "Bombas Submersas",
+  "bombas-submersiveis": "Bombas Submersíveis",
+  "bombas-autoaspirantes": "Bombas Autoaspirantes",
+  "bombas-injetoras": "Bombas Injetoras",
+  "bombas-motobombas-irrigacao": "Motobombas para Irrigação",
+  "bombas-piscina": "Bombas para Piscina",
+  "bombas-irrigacao": "Bombas para Irrigação",
+  "bombas-poco": "Bombas para Poço",
+  "bombas-drenagem": "Bombas para Drenagem",
+  "bombas-esgoto": "Bombas para Esgoto",
+  "bombas-pressurizadores": "Pressurizadores",
+  "bombas-sistemas-pressurizacao": "Sistemas de Pressurização",
+  "bombas-acessorios": "Acessórios para Bombas"
+};
 
 
 /*==================================================
@@ -330,7 +347,7 @@ function criarCard(produto){
 
                 <span class="card-categoria">
 
-                    ${produto.categoria}
+                    ${nomesCategoriasBombas[produto.categoria] || produto.categoria}
 
                 </span>
 

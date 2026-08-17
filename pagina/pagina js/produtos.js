@@ -85,7 +85,16 @@ async function carregarProdutos() {
 
     const dados = json.data || [];
 
-    estado.produtos = dados.map(p => ({
+    estado.produtos = dados
+  .filter(p => {
+    const categoria = String(p.categoria || "")
+      .trim()
+      .toLowerCase();
+
+    // produtos.html: remove qualquer categoria que comece com "bombas-"
+    return !categoria.startsWith("bombas-");
+  })
+  .map(p => ({
     id: p.id,
     categoria: p.categoria,
     nome: p.nome,

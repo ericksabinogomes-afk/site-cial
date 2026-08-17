@@ -328,93 +328,34 @@ let produtosAdmin = [];
 // Ajuste se sua API rodar em outra porta/origem
 const API_BASE = "http://localhost:4000"; 
 
-     /*==================================================
-        CAMPOS DINÂMICOS DO PRODUTO
+/*==================================================
+        CATEGORIAS DE BOMBAS
 ==================================================*/
 
 const categoriaProduto =
     document.getElementById("categoriaProduto");
 
-const camposStihl =
-    document.getElementById("camposStihl");
-
-const camposBombas =
-    document.getElementById("camposBombas");
 
 
-const categoriasBombas = [
-
-    "bombas-centrifugas",
-    "bombas-perifericas",
-    "bombas-submersas",
-    "bombas-submersiveis",
-    "bombas-autoaspirantes",
-    "bombas-injetoras",
-    "motobombas-irrigacao",
-    "bombas-piscina",
-    "bombas-irrigacao",
-    "bombas-poco",
-    "bombas-drenagem",
-    "bombas-esgoto",
-    "pressurizadores",
-    "sistemas-pressurizacao",
-    "acessorios-bombas"
-
-];
+const nomesCategoriasBombas = {
+  "bombas-centrifugas": "Bombas Centrífugas",
+  "bombas-perifericas": "Bombas Periféricas",
+  "bombas-submersas": "Bombas Submersas",
+  "bombas-submersiveis": "Bombas Submersíveis",
+  "bombas-autoaspirantes": "Bombas Autoaspirantes",
+  "bombas-injetoras": "Bombas Injetoras",
+  "bombas-motobombas-irrigacao": "Motobombas para Irrigação",
+  "bombas-piscina": "Bombas para Piscina",
+  "bombas-irrigacao": "Bombas para Irrigação",
+  "bombas-poco": "Bombas para Poço",
+  "bombas-drenagem": "Bombas para Drenagem",
+  "bombas-esgoto": "Bombas para Esgoto",
+  "bombas-pressurizadores": "Pressurizadores",
+  "bombas-sistemas-pressurizacao": "Sistemas de Pressurização",
+  "bombas-acessorios": "Acessórios para Bombas"
+};
 
 
-function atualizarCamposProduto(){
-
-    if(!categoriaProduto){
-
-        return;
-
-    }
-
-
-    const categoria =
-        categoriaProduto.value;
-
-
-    const ehBomba =
-        categoriasBombas.includes(categoria);
-
-
-    if(ehBomba){
-
-        camposBombas.style.display = "block";
-
-        camposStihl.style.display = "none";
-
-    }
-
-    else if(categoria !== ""){
-
-        camposBombas.style.display = "none";
-
-        camposStihl.style.display = "block";
-
-    }
-
-    else{
-
-        camposBombas.style.display = "none";
-
-        camposStihl.style.display = "none";
-
-    }
-
-}
-
-
-if(categoriaProduto){
-
-    categoriaProduto.addEventListener(
-        "change",
-        atualizarCamposProduto
-    );
-
-}
 
 async function carregarProdutosAdmin() {
   try {

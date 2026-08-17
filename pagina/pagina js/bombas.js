@@ -192,7 +192,7 @@ async function carregarProdutos(){
 
     "bombas-injetoras",
 
-    "motobombas-irrigacao",
+    "bombas-motobombas-irrigacao",
 
     "bombas-piscina",
 
@@ -204,11 +204,11 @@ async function carregarProdutos(){
 
     "bombas-esgoto",
 
-    "pressurizadores",
+    "bombas-pressurizadores",
 
-    "sistemas-pressurizacao",
+    "bombas-sistemas-pressurizacao",
 
-    "acessorios-bombas"
+    "bombas-acessorios"
 
 ];
 

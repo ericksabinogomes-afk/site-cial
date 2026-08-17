@@ -290,6 +290,20 @@ btnAdd.forEach(botao => {
     const textoBotao = botao.textContent.trim();
 
     if (textoBotao.includes("Novo Produto")) {
+      produtoEditandoId = null;
+      produtoEditando = null;
+
+      formProduto.reset();
+
+      arquivosSelecionados = [];
+
+      const previewContainer =
+        document.getElementById("previewImagens");
+
+      if (previewContainer) {
+        previewContainer.innerHTML = "";
+      }
+
       modalProduto.classList.add("aberto");
     }
 
@@ -302,7 +316,24 @@ btnAdd.forEach(botao => {
 function fecharModal() {
   modalProduto.classList.remove("aberto");
   formProduto.reset();
+
+  produtoEditandoId = null;
+  produtoEditando = null;
+
+  arquivosSelecionados = [];
+
+  const previewContainer =
+    document.getElementById("previewImagens");
+
+  if (previewContainer) {
+    previewContainer.innerHTML = "";
+  }
+
+  if (inputImagem) {
+    inputImagem.value = "";
+  }
 }
+
 /*==================================================
         FECHAR MODAL DE PRODUTO
 ==================================================*/
@@ -324,6 +355,10 @@ if (cancelarProduto) {
 ==================================================*/
 
 let produtosAdmin = [];
+
+
+let produtoEditandoId = null;
+let produtoEditando = null;
 
 // Ajuste se sua API rodar em outra porta/origem
 const API_BASE = "http://localhost:4000"; 
@@ -413,6 +448,25 @@ async function criarProduto(dados) {
   return json.data;
 }
 
+async function atualizarProduto(id, dados) {
+  const res = await fetch(`${API_BASE}/admin/produtos/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify(dados)
+  });
+
+  const json = await res.json();
+
+  if (!json.ok) {
+    throw new Error(json.erro || "Erro ao atualizar produto");
+  }
+
+  return json.data;
+}
+
 async function excluirProduto(id) {
   const res = await fetch(`${API_BASE}/admin/produtos/${id}`, {
     method: "DELETE",
@@ -472,8 +526,17 @@ function renderizarProdutos() {
       <td>
         <button
           type="button"
+          class="btn-editar-produto"
+          data-id="${produto.id}"
+          title="Configurar produto">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+
+        <button
+          type="button"
           class="btn-excluir-produto"
-          data-id="${produto.id}">
+          data-id="${produto.id}"
+          title="Excluir produto">
           <i class="fa-solid fa-trash"></i>
         </button>
       </td>
@@ -485,6 +548,40 @@ function renderizarProdutos() {
   if (totalProdutos) {
     totalProdutos.textContent = produtosAdmin.length;
   }
+}
+
+/* ============================
+    CONFIGURAÇÃO DOS PRODUTOS
+   ===========================*/
+
+function abrirEdicaoProduto(id) {
+  const produto = produtosAdmin.find(item => item.id === id);
+  
+
+  if (!produto) {
+    alert("Produto não encontrado.");
+    return;
+  }
+
+  produtoEditandoId = id;
+  produtoEditando = produto;
+
+  document.getElementById("nomeProduto").value =
+    produto.nome || "";
+
+  document.getElementById("categoriaProduto").value =
+    produto.categoria || "";
+
+  document.getElementById("precoProduto").value =
+    produto.preco || "";
+
+  document.getElementById("estoqueProduto").value =
+    produto.estoque || "";
+
+  document.getElementById("produtoDestaque").checked =
+    Boolean(produto.destaque);
+
+  modalProduto.classList.add("aberto");
 }
 
 /* Submit do formulário (criar produto) */
@@ -505,8 +602,13 @@ formProduto.addEventListener("submit", async event => {
     ? document.getElementById("imagemProduto").value.trim()
     : "";
 
-let imagemUrl = imagemTexto;
-let imagensAdicionais = [];
+let imagemUrl =
+  produtoEditando?.imagem || imagemTexto;
+
+let imagensAdicionais =
+  Array.isArray(produtoEditando?.imagens)
+    ? [...produtoEditando.imagens]
+    : [];
 
 try {
 
@@ -549,7 +651,7 @@ try {
          * PRIMEIRA FOTO = PRINCIPAL
          */
 
-        imagemUrl = urls[0] || imagemTexto;
+        imagemUrl = urls[0] || imagemUrl;
 
         /*
          * RESTANTE = FOTOS ADICIONAIS
@@ -578,27 +680,23 @@ try {
 
 };
 
-    await criarProduto(novoProduto);
+    if (produtoEditandoId) {
+      await atualizarProduto(produtoEditandoId, novoProduto);
+
+      alert("Produto atualizado com sucesso!");
+  } else {
+      await criarProduto(novoProduto);
+
+      alert("Produto cadastrado com sucesso!");
+   }
     await carregarProdutosAdmin();
+
+    produtoEditandoId = null;
+    produtoEditando = null;
+
     fecharModal();
-    alert("Produto cadastrado com sucesso!");
 
-    arquivosSelecionados = [];
 
-const previewContainer =
-    document.getElementById("previewImagens");
-
-if (previewContainer) {
-    previewContainer.innerHTML = "";
-}
-
-if (inputImagem) {
-    inputImagem.value = "";
-}
-
-    if (inputImagem) {
-      inputImagem.value = "";
-    }
   } catch (erro) {
     console.error(erro);
     alert("Erro ao cadastrar produto. Verifique o console.");
@@ -607,6 +705,13 @@ if (inputImagem) {
 
 /* Excluir produto */
 document.addEventListener("click", async event => {
+  const botaoEditar = event.target.closest(".btn-editar-produto");
+
+  if (botaoEditar) {
+    abrirEdicaoProduto(Number(botaoEditar.dataset.id));
+    return;
+  }
+
   const botaoExcluir = event.target.closest(".btn-excluir-produto");
   if (!botaoExcluir) {
     return;

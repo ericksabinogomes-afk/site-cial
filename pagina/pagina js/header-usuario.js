@@ -29,8 +29,11 @@ if (!usuarioRaw || !token) {
 const usuario = JSON.parse(usuarioRaw);
 
 if (nomeUsuarioSpan) {
+  
+  const nomeCompleto = (usuario.nome || "").trim();
+  const primeiroNome = nomeCompleto.split(/\s+/)[0];
 
-  nomeUsuarioSpan.textContent = usuario.nome || usuario.email || "Usuário";
+  nomeUsuarioSpan.textContent = primeiroNome || usuario.email || "asuário";
 
 }
 

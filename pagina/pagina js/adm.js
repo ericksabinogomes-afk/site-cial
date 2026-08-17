@@ -457,8 +457,6 @@ function renderizarProdutos() {
 
       <td>${produto.nome}</td>
 
-      <td>${produto.codigo}</td>
-
       <td>${produto.categoria}</td>
 
       <td>${formatarMoeda(produto.preco)}</td>
@@ -494,7 +492,6 @@ formProduto.addEventListener("submit", async event => {
   event.preventDefault();
 
   const nome = document.getElementById("nomeProduto").value.trim();
-  const codigo = document.getElementById("codigoProduto").value.trim();
   const categoria = document.getElementById("categoriaProduto").value;
   const preco = Number(
     document.getElementById("precoProduto").value
@@ -564,8 +561,6 @@ try {
     const novoProduto = {
 
     nome,
-
-    codigo,
 
     categoria,
 

@@ -223,12 +223,12 @@ app.post(
   upload.single('imagem'),
   (req, res) => {
 
-    if (!req.file) {
+  if (!req.file) {
       return res.status(400).json({
         ok: false,
         erro: 'Nenhum arquivo enviado'
       });
-    }
+  }
 
     const baseUrl =
       process.env.BASE_URL || 'http://localhost:4000';
@@ -312,7 +312,7 @@ app.post(
     res.json({
       ok: true,
       urls
-    });
+});
   }
 );
 
@@ -403,7 +403,7 @@ app.post('/admin/produtos', autenticarToken , async (req, res) => {
     imagens,
     selo,
     destaque
-} = req.body;
+  } = req.body;
 
   if (!nome || !codigo || !categoria || preco == null) {
     return res.status(400).json({
@@ -512,81 +512,81 @@ app.delete('/admin/produtos/:id', autenticarToken , async (req, res) => {
 });
 
 /*==========================================================
-  FAVORITOS
+    FAVORITOS
 ==========================================================*/
 
 // Listar favoritos do usuário logado
 app.get("/favoritos", autenticarToken, async (req, res) => {
-  try {
-    const { data, error } = await supabase
+    try {
+        const { data, error } = await supabase
       .from("favoritos")
       .select("*")
       .eq("usuario_id", req.usuario.id)
       .order("created_at", { ascending: false });
 
-    if (error) {
-      return res.status(500).json({
-        ok: false,
-        erro: error.message
-      });
-    }
+        if (error) {
+            return res.status(500).json({
+                ok: false,
+                erro: error.message
+            });
+        }
 
     return res.json({
-      ok: true,
-      data
-    });
-  } catch (err) {
+            ok: true,
+            data
+        });
+    } catch (err) {
     return res.status(500).json({
-      ok: false,
-      erro: err.message
-    });
+            ok: false,
+            erro: err.message
+        });
   }
 });
 
 // Adicionar favorito
 app.post("/favoritos", autenticarToken, async (req, res) => {
-  const {
+    const {
     produto_nome,
     produto_imagem,
     produto_preco,
     produto_slug
-  } = req.body;
+    } = req.body;
 
   if (!produto_nome) {
-    return res.status(400).json({
-      ok: false,
+        return res.status(400).json({
+            ok: false,
       erro: "Nome do produto é obrigatório"
-    });
-  }
+        });
+    }
 
-  try {
-    const { data, error } = await supabase
+    try {
+        const { data, error } = await supabase
       .from("favoritos")
-      .insert([{
+            .insert([{
         usuario_id: req.usuario.id,
         produto_nome,
         produto_imagem: produto_imagem || null,
         produto_preco: Number(produto_preco) || 0,
         produto_slug: produto_slug || null
-      }])
-      .select();
+            }])
+            .select();
 
-    if (error) {
-      return res.status(500).json({
-        ok: false,
-        erro: error.message
-      });
-    }
+        if (error) {
+            return res.status(500).json({
+                ok: false,
+                erro: error.message
+            });
+        }
 
     return res.status(201).json({
-      ok: true,
-      data
-    });
-  } catch (err) {
+            ok: true,
+            data
+        });
+    } catch (err) {
     return res.status(500).json({
-      ok: false,
-      erro: err.message
-    });
+            ok: false,
+            erro: err.message
+        });
   }
 });
 
@@ -595,33 +595,33 @@ app.delete("/favoritos/:id", autenticarToken, async (req, res) => {
   const favoritoId = Number(req.params.id);
 
   if (!favoritoId) {
-    return res.status(400).json({
-      ok: false,
+            return res.status(400).json({
+                ok: false,
       erro: "ID do favorito inválido"
-    });
-  }
+            });
+        }
 
-  try {
-    const { error } = await supabase
+        try {
+            const { error } = await supabase
       .from("favoritos")
-      .delete()
+                .delete()
       .eq("id", favoritoId)
       .eq("usuario_id", req.usuario.id);
 
-    if (error) {
-      return res.status(500).json({
-        ok: false,
-        erro: error.message
-      });
-    }
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+            }
 
     return res.json({ ok: true });
-  } catch (err) {
+        } catch (err) {
     return res.status(500).json({
-      ok: false,
-      erro: err.message
-    });
-  }
+                ok: false,
+                erro: err.message
+            });
+    }
 });
 
 /*==========================================================

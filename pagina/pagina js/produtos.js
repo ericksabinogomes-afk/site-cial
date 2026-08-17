@@ -98,7 +98,6 @@ async function carregarProdutos() {
     id: p.id,
     categoria: p.categoria,
     nome: p.nome,
-    codigo: p.codigo,
     selo: p.selo || "",
     preco: Number(p.preco),
     parcela: p.parcela || "",
@@ -206,11 +205,8 @@ function criarCard(produto) {
         </h3>
 
         <div class="card-avaliacao" aria-label="5 estrelas">
+        5/5
           ★★★★★
-        </div>
-
-        <div class="card-codigo">
-          Código: ${produto.codigo}
         </div>
 
         <div class="card-preco">
@@ -383,12 +379,6 @@ function pesquisarProdutos(){
     ||
 
     String(produto.nome || "")
-        .toLowerCase()
-        .includes(texto)
-
-    ||
-
-    String(produto.codigo || "")
         .toLowerCase()
         .includes(texto)
 
@@ -937,9 +927,6 @@ function abrirModalProduto(id){
     const nome =
         document.getElementById("modalNomeProduto");
 
-    const codigo =
-        document.getElementById("modalCodigoProduto");
-
     const preco =
         document.getElementById("modalPrecoProduto");
 
@@ -959,9 +946,6 @@ function abrirModalProduto(id){
 
     nome.textContent =
         produto.nome || "";
-
-    codigo.textContent =
-        `Código: ${produto.codigo || "Não informado"}`;
 
     preco.textContent =
         formatarPreco(produto.preco || 0);

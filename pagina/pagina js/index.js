@@ -250,15 +250,65 @@ function abrirWhatsappLoja(){
 
 function abrirWhatsappTecnico(){
 
-    fecharModal();
+    const modelo =
+        document.getElementById("modeloMaquina").value.trim();
+
+    const problema =
+        document.getElementById("problemaMaquina").value.trim();
+
+
+    /* ==========================================
+       VALIDAÇÃO
+    ========================================== */
+
+    if(!modelo){
+
+        alert("Por favor, informe o modelo da máquina.");
+
+        document.getElementById("modeloMaquina").focus();
+
+        return;
+
+    }
+
+
+    if(!problema){
+
+        alert("Por favor, descreva o problema da máquina.");
+
+        document.getElementById("problemaMaquina").focus();
+
+        return;
+
+    }
+
+
+    /* ==========================================
+       MENSAGEM PARA O TÉCNICO
+    ========================================== */
+
+    const mensagem =
+        `Olá! Gostaria de solicitar assistência técnica.
+
+Modelo da máquina: ${modelo}
+
+Problema: ${problema}`;
+
+
+    /* ==========================================
+       ABRE O WHATSAPP
+    ========================================== */
 
     const url =
+        `https://wa.me/${CONFIG.whatsappTecnico}?text=${encodeURIComponent(mensagem)}`;
 
-        `https://wa.me/${CONFIG.whatsappTecnico}`;
+
+    fecharModal();
 
     abrirLink(url);
 
 }
+
 /*==================================================
             EVENTOS WHATSAPP
 ==================================================*/
@@ -347,40 +397,82 @@ function iniciarHero(){
 
 }
 /*==================================================
-            MARCAS
+                MARCAS
 ==================================================*/
 
 function iniciarMarcas(){
 
     if(!elementos.marcas){
-
         return;
-
     }
 
-    let scroll = 0;
+    const slider = elementos.marcas;
 
-    setInterval(()=>{
+    // Evita iniciar duas vezes
+    if(slider.dataset.iniciado === "true"){
+        return;
+    }
 
-        scroll += 1;
+    slider.dataset.iniciado = "true";
 
-        elementos.marcas.scrollLeft = scroll;
+
+    // Guarda as marcas originais
+    const marcasOriginais = Array.from(
+        slider.querySelectorAll(".marca-card")
+    );
+
+
+    // Duplica as marcas
+    // Isso cria o efeito de carrossel infinito
+    marcasOriginais.forEach(marca => {
+
+        const clone = marca.cloneNode(true);
+
+        clone.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        slider.appendChild(clone);
+
+    });
+
+
+    // Velocidade do carrossel
+    let velocidade = 0.6;
+
+
+    function animarMarcas(){
+
+        slider.scrollLeft += velocidade;
+
+
+        /*
+        Quando chegarmos na metade do conteúdo,
+        voltamos para o começo.
+
+        Como as marcas estão duplicadas,
+        visualmente o usuário não percebe o salto.
+        */
 
         if(
-
-            scroll >=
-
-            elementos.marcas.scrollWidth -
-
-            elementos.marcas.clientWidth
-
+            slider.scrollLeft >=
+            slider.scrollWidth / 2
         ){
 
-            scroll = 0;
+            slider.scrollLeft = 0;
 
         }
 
-    },25);
+
+        requestAnimationFrame(
+            animarMarcas
+        );
+
+    }
+
+
+    animarMarcas();
 
 }
 /*==================================================
@@ -584,7 +676,104 @@ function criarCardDestaque(produto)
 
 }
 
+/*==================================================
+                CARROSSEL DE MARCAS
+==================================================*/
 
+function iniciarMarcas(){
+
+    const slider = document.querySelector(".marcas-slider");
+
+    if(!slider){
+        return;
+    }
+
+    // Evita iniciar duas vezes
+    if(slider.dataset.iniciado === "true"){
+        return;
+    }
+
+    slider.dataset.iniciado = "true";
+
+
+    // Pega as marcas que já existem no HTML
+    const marcas = Array.from(
+        slider.querySelectorAll(".marca-card")
+    );
+
+
+    if(marcas.length === 0){
+        return;
+    }
+
+
+    // Cria o trilho
+    const track = document.createElement("div");
+
+    track.className = "marcas-track";
+
+
+    // Coloca as marcas originais dentro do trilho
+    marcas.forEach(marca => {
+
+        track.appendChild(marca);
+
+    });
+
+
+    // Duplica as marcas para criar o loop infinito
+    marcas.forEach(marca => {
+
+        const clone = marca.cloneNode(true);
+
+        clone.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        track.appendChild(clone);
+
+    });
+
+
+    // Coloca o trilho dentro do slider
+    slider.appendChild(track);
+
+
+    // Animação
+    let posicao = 0;
+
+    const velocidade = 0.5;
+
+
+    function animar(){
+
+        posicao -= velocidade;
+
+
+        // Metade do trilho = conjunto original
+        const metade = track.scrollWidth / 2;
+
+
+        if(Math.abs(posicao) >= metade){
+
+            posicao = 0;
+
+        }
+
+
+        track.style.transform =
+            `translateX(${posicao}px)`;
+
+
+        requestAnimationFrame(animar);
+
+    }
+
+
+    animar();
+
+}
 /*==================================================
             INICIALIZAÇÃO DO SITE
 ==================================================*/

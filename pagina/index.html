@@ -349,6 +349,11 @@
 
     <div class="container">
 
+
+        <!--==================================
+                TÍTULO
+        ==================================-->
+
         <div class="section-title">
 
             <span>
@@ -356,6 +361,7 @@
                 STIHL
 
             </span>
+
 
             <h2>
 
@@ -366,10 +372,36 @@
             <p>
 
                 Conheça a linha completa de equipamentos STIHL para uso profissional e doméstico.
-
+                
             </p>
 
         </div>
+
+
+        <!--==================================
+                PRODUTOS DO BACKEND
+        ==================================-->
+
+        <div
+            class="produtos-destaque"
+            id="produtosDestaque">
+
+            <div class="produtos-loading">
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                <p>
+                    Carregando produtos...
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!--==================================
+                TEXTO STIHL
+        ==================================-->
 
         <div class="stihl-content">
 
@@ -426,10 +458,10 @@
             </div>
 
         </div>
-        
-        </div>
 
+    </div>
 
+</section>
         <!--==================================
                 PRODUTOS DO BACKEND
         ===================================-->
@@ -722,23 +754,54 @@
 
         <div class="modal-conteudo">
 
-            <p>
+    <p class="modal-descricao">
+        Preencha as informações abaixo para que nosso técnico possa entender melhor o seu equipamento.
+    </p>
 
-                Clique no botão abaixo para falar diretamente com um técnico especializado pelo WhatsApp.
+    <div class="campo-assistencia">
 
-            </p>
+        <label for="modeloMaquina">
+            Modelo da máquina
+        </label>
 
-            <button
-                id="btnWhatsappTecnico"
-                class="btn-whatsapp">
+        <input
+            type="text"
+            id="modeloMaquina"
+            placeholder="Ex.: STIHL MS 170"
+            autocomplete="off">
 
-                <i class="fa-brands fa-whatsapp"></i>
+        <small>
+            Informe o modelo que está na etiqueta da máquina.
+        </small>
 
-                Falar com o Técnico
+    </div>
 
-            </button>
 
-        </div>
+    <div class="campo-assistencia">
+
+        <label for="problemaMaquina">
+            Qual é o problema?
+        </label>
+
+        <textarea
+            id="problemaMaquina"
+            rows="5"
+            placeholder="Descreva o problema da máquina..."></textarea>
+
+    </div>
+
+
+    <button
+        id="btnWhatsappTecnico"
+        class="btn-whatsapp">
+
+        <i class="fa-brands fa-whatsapp"></i>
+
+        Falar com o Técnico
+
+    </button>
+
+</div>
 
     </div>
 

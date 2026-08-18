@@ -1782,36 +1782,148 @@ ul{
 
     border-radius:24px;
 
-    padding:45px;
+    padding:40px;
 
     position:relative;
 
     box-shadow:
-
-        0 30px 80px rgba(0,0,0,.30);
+        0 25px 70px rgba(0,0,0,.28);
 
     animation:modalEntrada .35s ease;
 
-}
-@keyframes modalEntrada{
-
-    from{
-
-        opacity:0;
-
-        transform:translateY(40px);
-
-    }
-
-    to{
-
-        opacity:1;
-
-        transform:translateY(0);
-
-    }
+    overflow:hidden;
 
 }
+
+.modal-box::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    height:5px;
+
+    background:var(--laranja);
+
+}
+
+/*==================================================
+        CAMPOS DA ASSISTÊNCIA TÉCNICA
+==================================================*/
+
+.modal-conteudo{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+
+.modal-descricao{
+    color:var(--cinza);
+    font-size:14px;
+    line-height:1.5;
+    margin-bottom:5px;
+}
+
+
+.campo-assistencia{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+
+.campo-assistencia label{
+
+    font-size:14px;
+
+    font-weight:700;
+
+    color:var(--preto);
+
+}
+
+
+.campo-assistencia input,
+.campo-assistencia textarea{
+
+    width:100%;
+
+    padding:14px 16px;
+
+    border:1px solid var(--borda);
+
+    border-radius:10px;
+
+    background:#FFFFFF;
+
+    color:var(--preto);
+
+    font-family:inherit;
+
+    font-size:14px;
+
+    outline:none;
+
+    transition:
+        border-color .25s ease,
+        box-shadow .25s ease;
+
+}
+
+
+.campo-assistencia input{
+
+    height:48px;
+
+}
+
+
+.campo-assistencia textarea{
+
+    min-height:120px;
+
+    resize:vertical;
+
+}
+
+
+.campo-assistencia input::placeholder,
+.campo-assistencia textarea::placeholder{
+
+    color:#A0A0A0;
+
+}
+
+
+.campo-assistencia input:focus,
+.campo-assistencia textarea:focus{
+
+    border-color:var(--laranja);
+
+    box-shadow:
+        0 0 0 3px rgba(245,130,32,.12);
+
+}
+
+
+.campo-assistencia small{
+
+    font-size:11px;
+
+    color:var(--cinza);
+
+    line-height:1.4;
+
+}
+
+
 .btn-whatsapp{
 
     width:100%;
@@ -1966,17 +2078,52 @@ ul{
 
 }
 
+
+/*==================================================
+                ÁREA DO CARROSSEL
+==================================================*/
+
 .marcas-slider{
 
-    display:grid;
+    width:100%;
 
-    grid-template-columns:repeat(4,1fr);
+    overflow:hidden;
 
-    gap:30px;
+    padding:10px 5px 25px;
 
 }
 
-.marca-card{
+
+/*==================================================
+                TRILHO
+==================================================*/
+
+.marcas-track{
+
+    display:flex;
+
+    flex-direction:row;
+
+    flex-wrap:nowrap;
+
+    gap:30px;
+
+    width:max-content;
+
+    will-change:transform;
+
+}
+
+
+/*==================================================
+                CARD
+==================================================*/
+
+.marcas-track .marca-card{
+
+    flex:0 0 280px;
+
+    width:280px;
 
     height:170px;
 
@@ -1986,7 +2133,9 @@ ul{
 
     align-items:center;
 
-    background:#FFF;
+    flex-shrink:0;
+
+    background:#FFFFFF;
 
     border-radius:20px;
 
@@ -1994,27 +2143,58 @@ ul{
 
     box-shadow:var(--sombra-pequena);
 
-    transition:var(--transicao);
+    transition:
+        transform .35s ease,
+        border-color .35s ease,
+        box-shadow .35s ease;
 
 }
 
-.marca-card:hover{
 
-    transform:translateY(-8px);
+/*==================================================
+                HOVER
+==================================================*/
+
+.marcas-track .marca-card:hover{
+
+    transform:translateY(-8px) scale(1.02);
 
     border-color:var(--laranja);
 
+    box-shadow:var(--sombra-media);
+
 }
 
-.marca-card img{
+
+/*==================================================
+                LOGO
+==================================================*/
+
+.marcas-track .marca-card img{
+
+    width:auto;
 
     max-width:160px;
 
     max-height:80px;
 
-    transition:.35s;
+    object-fit:contain;
+
+    transition:.35s ease;
 
 }
+
+
+.marcas-track .marca-card:hover img{
+
+    transform:scale(1.08);
+
+}
+
+
+/*==================================================
+                HOVER LOGO
+==================================================*/
 
 .marca-card:hover img{
 
@@ -2613,18 +2793,6 @@ ul{
     }
 
 }
-
-
-@media(max-width:900px){
-
-    .produtos-destaque{
-
-        grid-template-columns:repeat(2,1fr);
-
-    }
-
-}
-
 
 @media(max-width:576px){
 

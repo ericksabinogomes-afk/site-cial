@@ -488,27 +488,49 @@ app.put('/admin/produtos/:id', autenticarToken ,  async (req, res) => {
 });
 
 // Excluir produto (admin)
-app.delete('/admin/produtos/:id', autenticarToken , async (req, res) => {
-  const produtoId = parseInt(req.params.id, 10);
+app.delete("/favoritos/:produto_id", autenticarToken, async (req, res) => {
 
-  if (!produtoId) {
-    return res.status(400).json({ ok: false, erro: 'ID inválido' });
-  }
+    const produtoId = Number(req.params.produto_id);
 
-  try {
-    const { error } = await supabase
-      .from('produtos')
-      .delete()
-      .eq('id', produtoId);
+    if (!produtoId) {
 
-    if (error) {
-      return res.status(500).json({ ok: false, erro: error.message });
+        return res.status(400).json({
+            ok: false,
+            erro: "ID do produto inválido"
+        });
+
     }
 
-    res.json({ ok: true });
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
-  }
+    try {
+
+        const { error } = await supabase
+            .from("favoritos")
+            .delete()
+            .eq("produto_id", produtoId)
+            .eq("usuario_id", req.usuario.id);
+
+        if (error) {
+
+            return res.status(500).json({
+                ok: false,
+                erro: error.message
+            });
+
+        }
+
+        return res.json({
+            ok: true
+        });
+
+    } catch (err) {
+
+        return res.status(500).json({
+            ok: false,
+            erro: err.message
+        });
+
+    }
+
 });
 
 /*==========================================================
@@ -518,11 +540,20 @@ app.delete('/admin/produtos/:id', autenticarToken , async (req, res) => {
 // Listar favoritos do usuário logado
 app.get("/favoritos", autenticarToken, async (req, res) => {
     try {
+
+      const usuarioId = req.usuario.id;
+
         const { data, error } = await supabase
-      .from("favoritos")
-      .select("*")
-      .eq("usuario_id", req.usuario.id)
-      .order("created_at", { ascending: false });
+    .from('favoritos')
+    .select(`
+        id,
+        produto_id,
+        created_at
+    `)
+    .eq('usuario_id', usuarioId)
+    .order('created_at', {
+        ascending: false
+    });
 
         if (error) {
             return res.status(500).json({
@@ -545,83 +576,49 @@ app.get("/favoritos", autenticarToken, async (req, res) => {
 
 // Adicionar favorito
 app.post("/favoritos", autenticarToken, async (req, res) => {
-    const {
-    produto_nome,
-    produto_imagem,
-    produto_preco,
-    produto_slug
-    } = req.body;
 
-  if (!produto_nome) {
+    const { produto_id } = req.body;
+
+    if (!produto_id) {
         return res.status(400).json({
             ok: false,
-      erro: "Nome do produto é obrigatório"
+            erro: "Produto não informado"
         });
     }
 
     try {
+
         const { data, error } = await supabase
-      .from("favoritos")
+            .from("favoritos")
             .insert([{
-        usuario_id: req.usuario.id,
-        produto_nome,
-        produto_imagem: produto_imagem || null,
-        produto_preco: Number(produto_preco) || 0,
-        produto_slug: produto_slug || null
+                usuario_id: req.usuario.id,
+                produto_id: Number(produto_id)
             }])
             .select();
 
         if (error) {
+
             return res.status(500).json({
                 ok: false,
                 erro: error.message
             });
+
         }
 
-    return res.status(201).json({
+        return res.status(201).json({
             ok: true,
             data
         });
+
     } catch (err) {
-    return res.status(500).json({
+
+        return res.status(500).json({
             ok: false,
             erro: err.message
         });
-  }
-});
 
-// Remover favorito pelo ID do favorito
-app.delete("/favoritos/:id", autenticarToken, async (req, res) => {
-  const favoritoId = Number(req.params.id);
-
-  if (!favoritoId) {
-            return res.status(400).json({
-                ok: false,
-      erro: "ID do favorito inválido"
-            });
-        }
-
-        try {
-            const { error } = await supabase
-      .from("favoritos")
-                .delete()
-      .eq("id", favoritoId)
-      .eq("usuario_id", req.usuario.id);
-
-            if (error) {
-                return res.status(500).json({
-                    ok: false,
-                    erro: error.message
-                });
-            }
-
-    return res.json({ ok: true });
-        } catch (err) {
-    return res.status(500).json({
-                ok: false,
-                erro: err.message
-            });
     }
+
 });
 
 /*==========================================================
@@ -794,6 +791,16 @@ app.get("/orcamentos", autenticarToken, async (req, res) => {
     });
   }
 });
+
+
+
+
+
+
+
+
+
+
 
 
 

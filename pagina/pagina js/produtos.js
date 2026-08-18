@@ -95,7 +95,7 @@ async function carregarProdutos() {
     return !categoria.startsWith("bombas-");
   })
   .map(p => ({
-    id: p.id,
+    id: Number(p.id),
     categoria: p.categoria,
     nome: p.nome,
     selo: p.selo || "",

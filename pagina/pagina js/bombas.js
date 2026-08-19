@@ -1012,25 +1012,40 @@ async function alternarFavorito(id){
         window.location.href =
             "../cadastro/login.html";
 
-        return;
-
+       
+            return;
     }
-
+    
 
     const existe =
-        estado.favoritos.includes(id);
+        estado.favoritos.includes(
+            Number(id)
+        );
 
+    let resposta;
 
     try{
 
-        const resposta =
-            await fetch(
+        if(existe){
+
+            resposta = await fetch(
+                `${API_FAVORITOS}/favoritos/${id}`,
+                {
+                    method: "DELETE",
+
+                    headers:{
+                        Authorization:
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        }else{
+
+            resposta = await fetch(
                 `${API_FAVORITOS}/favoritos`,
                 {
-                    method:
-                        existe
-                            ? "DELETE"
-                            : "POST",
+                    method: "POST",
 
                     headers:{
                         "Content-Type":
@@ -1041,20 +1056,23 @@ async function alternarFavorito(id){
                     },
 
                     body: JSON.stringify({
-
-                        produto_id:id
-
+                        produto_id: Number(id)
+             
+                    
                     })
 
                 }
             );
 
+        }
 
         const resultado =
             await resposta.json();
 
-
-        if(!resposta.ok || !resultado.ok){
+        if(
+            !resposta.ok ||
+            !resultado.ok
+        ){
 
             throw new Error(
                 resultado.erro ||
@@ -1069,20 +1087,26 @@ async function alternarFavorito(id){
             estado.favoritos =
                 estado.favoritos.filter(
                     favorito =>
-                        favorito !== id
+                        Number(favorito) !==
+                        Number(id)
                 );
 
-        }
-        else{
+        }else{
 
-            estado.favoritos.push(id);
-
+            estado.favoritos.push(
+                Number(id)
+            );
         }
+
 
 
         atualizarFavoritoHeader();
 
         renderizarProdutos();
+
+        console.log(
+            "✅ Favorito atualizado com sucesso!"
+        );
 
     }
     catch(erro){

@@ -1115,6 +1115,13 @@ ul{
 
 }
 
+.btn-favorito.ativo i{
+    color:#E53935 !important;
+}
+
+.btn-favorito.ativo:hover i{
+    color:#E53935 !important;
+}
 
 
 /*==================================================

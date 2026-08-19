@@ -313,6 +313,9 @@ function formatarPreco(valor){
 
 function criarCard(produto){
 
+    const favorito =
+        estado.favoritos.includes(Number(produto.id));
+
     return `
 
         <article class="card-produto">
@@ -320,36 +323,37 @@ function criarCard(produto){
             <div class="card-topo">
 
                 <span class="selo">
-
-                    ${produto.selo}
-
+                    ${produto.selo || ""}
                 </span>
 
                 <button
-                    class="btn-favorito"
-                    data-id="${produto.id}">
+                    class="btn-favorito ${favorito ? "ativo" : ""}"
+                    data-id="${produto.id}"
+                    aria-label="Favoritar produto">
 
-                    <i class="fa-regular fa-heart"></i>
+                    <i class="${favorito ? "fa-solid" : "fa-regular"} fa-heart"></i>
 
                 </button>
 
                 <div class="card-imagem">
 
                     <img
-                        src="${produto.imagem}"
+                        src="${produto.imagem || "../pagina/imagem/produto-sem-imagem.webp"}"
                         alt="${produto.nome}">
 
                 </div>
 
             </div>
 
+
             <div class="card-info">
 
                 <span class="card-categoria">
 
-                    ${nomesCategoriasBombas[produto.categoria] || produto.categoria}
+                    ${nomesCategoriasBombas[produto.categoria] || "BOMBAS E IRRIGAÇÃO"}
 
                 </span>
+
 
                 <h3 class="card-titulo">
 
@@ -357,63 +361,69 @@ function criarCard(produto){
 
                 </h3>
 
+
                 <div class="card-especificacoes">
 
-                    <span>
-
+                 
+                <span>
                         <strong>Marca:</strong>
-
-                        ${produto.marca}
+                        ${produto.marca || "—"}
 
                     </span>
 
                     <span>
 
                         <strong>Potência:</strong>
-
-                        ${produto.potencia}
+                        ${produto.potencia || "—"}
 
                     </span>
 
                     <span>
 
                         <strong>Vazão:</strong>
-
-                        ${produto.vazao}
+                        ${produto.vazao || "—"}
 
                     </span>
 
                     <span>
 
                         <strong>Aplicação:</strong>
-
-                        ${produto.aplicacao}
-
+                        ${produto.aplicacao || "—"}
                     </span>
 
                 </div>
+
+
+                <div class="card-avaliacao">
+
+                    <span>5/5</span>
+
+                    <span class="estrelas">
+                        ★★★★★
+                    </span>
+
+                </div>
+
 
                 <div class="card-preco">
 
                     <span class="preco">
 
-                        ${formatarPreco(produto.preco)}
-
-                    </span>
-
-                    <span class="parcelamento">
-
-                        ${produto.parcelamento}
+                        ${formatarPreco(Number(produto.preco) || 0)}
 
                     </span>
 
                 </div>
+
 
                 <div class="card-estoque">
 
-                    ✔ ${produto.estoque}
+                    <i class="fa-solid fa-circle-check"></i>
+
+                    ${produto.estoque || "Em estoque"}
 
                 </div>
+
 
                 <div class="card-botoes">
 
@@ -421,13 +431,16 @@ function criarCard(produto){
                         class="btn-ver"
                         data-id="${produto.id}">
 
-                        Ver Produto
+                        Ver produto
 
                     </button>
+
 
                     <button
                         class="btn-carrinho"
                         data-id="${produto.id}">
+
+                        <i class="fa-solid fa-cart-shopping"></i>
 
                         Adicionar
 
@@ -1272,6 +1285,507 @@ function iniciarCarrinho(){
     });
 
 }
+
+/*==================================================
+            MODAL DO PRODUTO
+==================================================*/
+
+let produtoModalAtual = null;
+
+function abrirModalProduto(id){
+
+    const produto = estado.produtos.find(
+        item => Number(item.id) === Number(id)
+    );
+
+
+    if(!produto){
+
+        console.error(
+            "Produto não encontrado:",
+            id
+        );
+
+        return;
+
+    }
+
+
+    produtoModalAtual = produto;
+
+
+    const modal =
+        document.getElementById("modalProduto");
+
+    const imagemPrincipal =
+        document.getElementById(
+            "modalImagemPrincipal"
+        );
+
+    const miniaturas =
+        document.getElementById(
+            "modalMiniaturas"
+        );
+
+    const categoria =
+        document.getElementById(
+            "modalCategoria"
+        );
+
+    const nome =
+        document.getElementById(
+            "modalNomeProduto"
+        );
+
+    const codigo =
+        document.getElementById(
+            "modalCodigoProduto"
+        );
+
+    const preco =
+        document.getElementById(
+            "modalPrecoProduto"
+        );
+
+    const estoque =
+        document.getElementById(
+            "modalEstoqueProduto"
+        );
+
+    const descricao =
+        document.getElementById(
+            "modalDescricaoProduto"
+        );
+
+    const especificacoes =
+        document.getElementById(
+            "modalEspecificacoesBomba"
+        );
+
+
+    /*========================================
+            INFORMAÇÕES PRINCIPAIS
+    ========================================*/
+
+    categoria.textContent =
+        nomesCategoriasBombas[
+            produto.categoria
+        ] ||
+        produto.categoria ||
+        "Bombas e Irrigação";
+
+
+    nome.textContent =
+        produto.nome || "";
+
+
+    codigo.textContent =
+        produto.codigo
+            ? `Código: ${produto.codigo}`
+            : "";
+
+
+    preco.textContent =
+        formatarPreco(
+            Number(produto.preco) || 0
+        );
+
+
+    estoque.innerHTML = `
+
+        <i class="fa-solid fa-circle-check"></i>
+
+        ${produto.estoque || "Em estoque"}
+
+    `;
+
+
+    /*========================================
+        ESPECIFICAÇÕES DA BOMBA
+    ========================================*/
+
+    especificacoes.innerHTML = `
+
+        <div class="modal-especificacao">
+
+            <strong>Marca</strong>
+
+            <span>
+                ${produto.marca || "—"}
+            </span>
+
+        </div>
+
+
+        <div class="modal-especificacao">
+
+            <strong>Potência</strong>
+
+            <span>
+                ${produto.potencia || "—"}
+            </span>
+
+        </div>
+
+
+        <div class="modal-especificacao">
+
+            <strong>Vazão</strong>
+
+            <span>
+                ${produto.vazao || "—"}
+            </span>
+
+        </div>
+
+
+        <div class="modal-especificacao">
+
+            <strong>Aplicação</strong>
+
+            <span>
+                ${produto.aplicacao || "—"}
+            </span>
+
+        </div>
+
+    `;
+
+
+    /*========================================
+            DESCRIÇÃO
+    ========================================*/
+
+    descricao.textContent =
+        produto.descricao ||
+        "Entre em contato com a CIAL Asa Sul para mais informações sobre este produto.";
+
+
+    /*========================================
+            GALERIA DE IMAGENS
+    ========================================*/
+
+    const imagens = [
+
+        produto.imagem,
+
+        ...(Array.isArray(produto.imagens)
+            ? produto.imagens
+            : [])
+
+    ].filter(Boolean);
+
+
+    if(imagens.length === 0){
+
+        imagens.push(
+            "imagens/produto-sem-imagem.png"
+        );
+
+    }
+
+
+    imagemPrincipal.src =
+        imagens[0];
+
+    imagemPrincipal.alt =
+        produto.nome || "Produto";
+
+
+    miniaturas.innerHTML = "";
+
+
+    imagens.forEach(
+        (imagem, indice) => {
+
+            const miniatura =
+                document.createElement(
+                    "button"
+                );
+
+
+            miniatura.type =
+                "button";
+
+
+            miniatura.className =
+                "modal-produto-miniatura" +
+                (
+                    indice === 0
+                        ? " ativa"
+                        : ""
+                );
+
+
+            miniatura.innerHTML = `
+
+                <img
+                    src="${imagem}"
+                    alt="${produto.nome || "Produto"} — imagem ${indice + 1}">
+
+            `;
+
+
+            miniatura.addEventListener(
+                "click",
+                () => {
+
+                    imagemPrincipal.src =
+                        imagem;
+
+
+                    miniaturas
+                        .querySelectorAll(
+                            ".modal-produto-miniatura"
+                        )
+                        .forEach(
+                            item =>
+                                item.classList.remove(
+                                    "ativa"
+                                )
+                        );
+
+
+                    miniatura.classList.add(
+                        "ativa"
+                    );
+
+                }
+            );
+
+
+            miniaturas.appendChild(
+                miniatura
+            );
+
+        }
+    );
+
+
+    /*========================================
+            ABRIR
+    ========================================*/
+
+    modal.classList.add("ativo");
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+
+/*==================================================
+            FECHAR MODAL
+==================================================*/
+
+function fecharModalProduto(){
+
+    const modal =
+        document.getElementById(
+            "modalProduto"
+        );
+
+
+    if(!modal){
+
+        return;
+
+    }
+
+
+    modal.classList.remove(
+        "ativo"
+    );
+
+
+    document.body.style.overflow =
+        "";
+
+
+    produtoModalAtual =
+        null;
+
+}
+
+
+
+/*==================================================
+            EVENTOS DO MODAL
+==================================================*/
+
+function iniciarModalProduto(){
+
+
+    /* BOTÃO VER PRODUTO */
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            const botao =
+                event.target.closest(
+                    ".btn-ver"
+                );
+
+
+            if(!botao){
+
+                return;
+
+            }
+
+
+            const id =
+                Number(
+                    botao.dataset.id
+                );
+
+
+            abrirModalProduto(id);
+
+        }
+    );
+
+
+
+    /* BOTÃO X */
+
+    const fechar =
+        document.getElementById(
+            "fecharModalProduto"
+        );
+
+
+    if(fechar){
+
+        fechar.addEventListener(
+            "click",
+            fecharModalProduto
+        );
+
+    }
+
+
+
+    /* CLICAR FORA */
+
+    const modal =
+        document.getElementById(
+            "modalProduto"
+        );
+
+
+    if(modal){
+
+        modal.addEventListener(
+            "click",
+            event => {
+
+                if(
+                    event.target === modal
+                ){
+
+                    fecharModalProduto();
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    /* ESC */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if(
+                event.key === "Escape" &&
+                modal &&
+                modal.classList.contains(
+                    "ativo"
+                )
+            ){
+
+                fecharModalProduto();
+
+            }
+
+        }
+    );
+
+
+
+    /* FAVORITAR PELO MODAL */
+
+    const btnFavoritar =
+        document.getElementById(
+            "modalFavoritarProduto"
+        );
+
+
+    if(btnFavoritar){
+
+        btnFavoritar.addEventListener(
+            "click",
+            () => {
+
+                if(
+                    produtoModalAtual
+                ){
+
+                    alternarFavorito(
+                        Number(
+                            produtoModalAtual.id
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    /* ADICIONAR AO CARRINHO PELO MODAL */
+
+    const btnCarrinho =
+        document.getElementById(
+            "modalAdicionarCarrinho"
+        );
+
+
+    if(btnCarrinho){
+
+        btnCarrinho.addEventListener(
+            "click",
+            () => {
+
+                if(
+                    produtoModalAtual
+                ){
+
+                    adicionarCarrinho(
+                        Number(
+                            produtoModalAtual.id
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+}
+
 /*==================================================
                 INICIALIZAÇÃO
 ==================================================*/
@@ -1288,8 +1802,6 @@ function iniciarSistema(){
 
     iniciarPesquisa();
 
-    iniciarPreco();
-
     iniciarMarcas();
 
     iniciarAplicacao();
@@ -1301,6 +1813,8 @@ function iniciarSistema(){
     iniciarFavoritos();
 
     iniciarCarrinho();
+
+    iniciarModalProduto();
 
 }
 

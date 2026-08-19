@@ -116,6 +116,7 @@ async function carregarProdutos() {
     ordenarProdutos();
     atualizarTotal();
     renderizarProdutos();
+    abrirProdutoDaUrl();
   } catch (erro) {
     console.error("Erro ao carregar produtos:", erro);
   }
@@ -551,18 +552,76 @@ async function carregarFavoritos() {
         estado.favoritos = (resultado.data || [])
             .map(item => Number(item.produto_id));
 
+            console.log("🔥 FAVORITOS VINDOS DO BANCO:", resultado.data);
+console.log("🔥 IDS DOS FAVORITOS:", estado.favoritos);
+
     } catch (erro) {
         console.error("Erro ao carregar favoritos:", erro);
         estado.favoritos = [];
     }
 }
 
+function atualizarFavoritoHeader() {
+
+    const botao =
+        document.getElementById("btnFavoritosHeader");
+
+    if (!botao) return;
+
+    const icone =
+        botao.querySelector("i");
+
+    const contador =
+        document.getElementById("contadorFavoritos");
+
+    const quantidade =
+        estado.favoritos.length;
+
+    const temFavoritos =
+        quantidade > 0;
+
+    /* CORAÇÃO */
+
+    if (icone) {
+
+        icone.classList.toggle(
+            "fa-solid",
+            temFavoritos
+        );
+
+        icone.classList.toggle(
+            "fa-regular",
+            !temFavoritos
+        );
+
+        icone.style.color =
+            temFavoritos
+                ? "#E53935"
+                : "";
+    }
+
+    /* CONTADOR */
+
+    if (contador) {
+
+        contador.textContent =
+            quantidade;
+
+        contador.style.display =
+            quantidade > 0
+                ? "flex"
+                : "none";
+    }
+}
 
 /*==================================================
         ADICIONAR / REMOVER FAVORITO
 ==================================================*/
 
-async function alternarFavorito(id){
+    async function alternarFavorito(id){
+
+    console.log("❤️ FAVORITO CLICADO - ID:", id);
+    console.log("⭐ FAVORITOS ATUAIS:", estado.favoritos);
 
     const token = obterToken();
 
@@ -585,8 +644,7 @@ async function alternarFavorito(id){
     try{
 
         let resposta;
-
-
+ 
         /*========================================
                 REMOVER FAVORITO
         ========================================*/
@@ -682,7 +740,7 @@ async function alternarFavorito(id){
         }
 
         renderizarProdutos();
-
+        atualizarFavoritoHeader();
 
     }catch(erro){
 
@@ -826,6 +884,38 @@ function iniciarCarrinho() {
     atualizarContadorCarrinho();
 }
 
+/*==================================================
+        ABRIR PRODUTO PELA URL
+==================================================*/
+
+function abrirProdutoDaUrl() {
+
+    const parametros = new URLSearchParams(
+        window.location.search
+    );
+
+    const id = Number(
+        parametros.get("produto")
+    );
+
+    if (!id) {
+        return;
+    }
+
+    const produto = estado.produtos.find(
+        item => Number(item.id) === id
+    );
+
+    if (!produto) {
+        console.error(
+            "Produto da URL não encontrado:",
+            id
+        );
+        return;
+    }
+
+    abrirModalProduto(id);
+}
 
 /*==================================================
         MODAL DO PRODUTO
@@ -1065,6 +1155,8 @@ async function iniciarSistema(){
     iniciarFavoritoHeader();
 
     await carregarFavoritos();
+
+    atualizarFavoritoHeader();
 
     obterCarrinho();
 

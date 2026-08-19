@@ -357,6 +357,41 @@ ul{
     transform:translateY(-4px);
 
 }
+
+/*==================================================
+        CONTADOR DE FAVORITOS
+==================================================*/
+
+#btnFavoritosHeader{
+    position:relative;
+}
+
+#contadorFavoritos{
+
+    position:absolute;
+
+    top:-6px;
+    right:-6px;
+
+    width:22px;
+    height:22px;
+
+    border-radius:50%;
+
+    background:#E53935;
+    color:#FFFFFF;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:11px;
+    font-weight:700;
+
+    border:2px solid #171717;
+
+}
+
 .cart span{
 
     position:absolute;

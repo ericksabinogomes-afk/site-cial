@@ -303,111 +303,280 @@ async function carregarPedidos() {
 ===================================================== */
 
 async function carregarFavoritos() {
-  const container = document.querySelector(".favoritos-grid");
 
-  if (!container) return;
+    const container = document.querySelector(".favoritos-grid");
 
-  const token = localStorage.getItem("tokenCial");
+    if (!container) return;
 
-  try {
-    const response = await fetch("http://localhost:4000/favoritos", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const token = localStorage.getItem("tokenCial");
 
-    const resultado = await response.json();
-
-    if (!response.ok || !resultado.ok) {
-      throw new Error(resultado.erro || "Erro ao buscar favoritos");
+    if (!token) {
+        container.innerHTML = `
+            <div class="sem-resultados">
+                <span class="icone-vazio">❤️</span>
+                <p>Faça login para visualizar seus favoritos.</p>
+            </div>
+        `;
+        return;
     }
 
-    const favoritos = resultado.data || [];
+    try {
 
-    container.innerHTML = `
-      <div class="sem-resultados">
-        <span class="icone-vazio">❤️</span>
-        <p>Você ainda não possui favoritos.</p>
-        <small>
-          Quando você salvar um produto, ele aparecerá aqui.
-        </small>
-      </div>
-    `;
-
-    favoritos.forEach((favorito) => {
-      const card = document.createElement("div");
-
-      card.className = "produto-favorito";
-
-      const precoFormatado = Number(
-        favorito.produto_preco || 0
-      ).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-      });
-
-      card.innerHTML = `
-        <img
-          src="${favorito.produto_imagem || "../pagina/imagem/produto-sem-imagem.png"}"
-          alt="${favorito.produto_nome || "Produto"}"
-        >
-
-        <h3>${favorito.produto_nome || "Produto"}</h3>
-
-        <p>${precoFormatado}</p>
-
-        <div class="acoes-favorito">
-          <button
-            type="button"
-            class="btn-remover"
-            data-id="${favorito.id}"
-          >
-            Remover
-          </button>
-        </div>
-      `;
-
-      const botaoRemover = card.querySelector(".btn-remover");
-
-      botaoRemover.addEventListener("click", async () => {
-        const confirmar = confirm(
-          "Deseja remover este produto dos favoritos?"
+        const response = await fetch(
+            "http://localhost:4000/favoritos",
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
         );
 
-        if (!confirmar) return;
+        const resultado = await response.json();
 
-        try {
-          const resposta = await fetch(
-            `http://localhost:4000/favoritos/${favorito.id}`,
-            {
-              method: "DELETE",
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            }
-          );
-
-          const resultadoRemocao = await resposta.json();
-
-          if (!resposta.ok || !resultadoRemocao.ok) {
+        if (!response.ok || !resultado.ok) {
             throw new Error(
-              resultadoRemocao.erro || "Erro ao remover favorito"
+                resultado.erro || "Erro ao buscar favoritos"
             );
-          }
-
-          await carregarFavoritos();
-        } catch (erro) {
-          console.error("Erro ao remover favorito:", erro);
-          alert("Não foi possível remover o favorito.");
         }
-      });
 
-      container.appendChild(card);
-    });
-  } catch (erro) {
-    console.error("Erro ao carregar favoritos:", erro);
-    container.innerHTML = "<p>Não foi possível carregar seus favoritos.</p>";
-  }
+        const favoritos = resultado.data || [];
+
+        const tituloFavoritos = document.querySelector("#favoritos h2");
+
+if (tituloFavoritos) {
+
+    let contador = tituloFavoritos.querySelector(
+        ".contador-favoritos"
+    );
+
+    if (!contador) {
+
+        contador = document.createElement("span");
+
+        contador.className =
+            "contador-favoritos";
+
+        tituloFavoritos.appendChild(contador);
+    }
+
+    contador.textContent =
+        favoritos.length;
+}
+
+        /* ==========================================
+           NENHUM FAVORITO
+        ========================================== */
+
+        if (favoritos.length === 0) {
+
+            container.innerHTML = `
+                <div class="sem-resultados">
+                    <span class="icone-vazio">❤️</span>
+
+                    <p>
+                        Você ainda não possui favoritos.
+                    </p>
+
+                    <small>
+                        Quando você salvar um produto,
+                        ele aparecerá aqui.
+                    </small>
+                </div>
+            `;
+
+            return;
+        }
+
+        /* ==========================================
+           LIMPAR CONTAINER
+        ========================================== */
+
+        container.innerHTML = "";
+
+        /* ==========================================
+           CRIAR CARDS
+        ========================================== */
+
+        favoritos.forEach((favorito) => {
+
+            const card = document.createElement("div");
+
+            card.className = "produto-favorito";
+
+            const precoFormatado = Number(
+                favorito.produto_preco || 0
+            ).toLocaleString(
+                "pt-BR",
+                {
+                    style: "currency",
+                    currency: "BRL"
+                }
+            );
+
+            card.innerHTML = `
+                <div class="imagem-favorito">
+                    <img
+                        src="${
+                            favorito.produto_imagem ||
+                            "../pagina/imagem/produto-sem-imagem.png"
+                        }"
+                        alt="${
+                            favorito.produto_nome ||
+                            "Produto"
+                        }"
+                    >
+                </div>
+
+                <div class="info-favorito">
+
+                    <h3>
+                        ${
+                            favorito.produto_nome ||
+                            "Produto"
+                        }
+                    </h3>
+
+                    <p class="preco-favorito">
+                        ${precoFormatado}
+                    </p>
+
+                    <div class="acoes-favorito">
+
+                       <button
+                           type="button"
+                           class="btn-ver-produto"
+                           data-produto-id="${favorito.produto_id}"
+                       >
+
+                           🛍️ Ver produto
+                         </button>
+
+                         <button
+                         type="button"
+                         class="btn-remover"
+                        data-id="${favorito.id}"
+
+                                                >
+
+                        ❤️ Remover dos favoritos
+
+                       </button>
+
+                </div>
+                </div>
+            `;
+
+            /* ======================================
+               BOTÃO REMOVER
+            ====================================== */
+
+            const botaoRemover =
+                card.querySelector(".btn-remover");
+
+                const botaoVerProduto =
+                card.querySelector(".btn-ver-produto");
+
+                botaoVerProduto.addEventListener("click", () => {
+
+               const produtoId =
+                botaoVerProduto.dataset.produtoId;
+
+                window.location.href =
+                `../pagina/produtos.html?produto=${produtoId}`;
+
+});
+
+            botaoRemover.addEventListener(
+                "click",
+                async () => {
+
+                    const confirmar = confirm(
+                        "Deseja remover este produto dos favoritos?"
+                    );
+
+                    if (!confirmar) return;
+
+                    try {
+
+                        botaoRemover.disabled = true;
+
+                        botaoRemover.textContent =
+                            "Removendo...";
+
+                        const resposta = await fetch(
+                            `http://localhost:4000/favoritos/${favorito.produto_id}`,
+                            {
+                                method: "DELETE",
+
+                                headers: {
+                                    Authorization:
+                                        `Bearer ${token}`
+                                }
+                            }
+                        );
+
+                        const resultadoRemocao =
+                            await resposta.json();
+
+                        if (
+                            !resposta.ok ||
+                            !resultadoRemocao.ok
+                        ) {
+                            throw new Error(
+                                resultadoRemocao.erro ||
+                                "Erro ao remover favorito"
+                            );
+                        }
+
+                        /* Atualiza a lista */
+
+                        await carregarFavoritos();
+
+                    } catch (erro) {
+
+                        console.error(
+                            "Erro ao remover favorito:",
+                            erro
+                        );
+
+                        botaoRemover.disabled = false;
+
+                        botaoRemover.textContent =
+                            "❤️ Remover dos favoritos";
+
+                        alert(
+                            "Não foi possível remover o favorito."
+                        );
+                    }
+
+                }
+            );
+
+            container.appendChild(card);
+
+        });
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar favoritos:",
+            erro
+        );
+
+        container.innerHTML = `
+            <div class="sem-resultados">
+                <span class="icone-vazio">⚠️</span>
+
+                <p>
+                    Não foi possível carregar seus favoritos.
+                </p>
+
+                <small>
+                    Tente atualizar a página.
+                </small>
+            </div>
+        `;
+    }
 }
 
 

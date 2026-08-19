@@ -775,10 +775,180 @@ function iniciarMarcas(){
 
 }
 /*==================================================
+        FAVORITOS DO HEADER
+==================================================*/
+
+const API_FAVORITOS = "http://localhost:4000";
+
+async function atualizarFavoritoHeader(){
+
+    const botao =
+        document.getElementById("btnFavoritosHeader");
+
+    if(!botao){
+        return;
+    }
+
+    const icone =
+        botao.querySelector("i");
+
+    const contador =
+        document.getElementById("contadorFavoritos");
+
+    const token =
+        localStorage.getItem("tokenCial");
+
+    /* SEM LOGIN */
+
+    if(!token){
+
+        if(icone){
+
+            icone.classList.remove("fa-solid");
+
+            icone.classList.add("fa-regular");
+
+            icone.style.color = "";
+        }
+
+        if(contador){
+
+            contador.textContent = "0";
+
+            contador.style.display = "none";
+        }
+
+        return;
+    }
+
+    try{
+
+        const resposta =
+            await fetch(
+                `${API_FAVORITOS}/favoritos`,
+                {
+                    headers:{
+                        Authorization:
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        const resultado =
+            await resposta.json();
+
+        if(
+            !resposta.ok ||
+            !resultado.ok
+        ){
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar favoritos"
+            );
+        }
+
+        const favoritos =
+            resultado.data || [];
+
+        const quantidade =
+            favoritos.length;
+
+        const temFavoritos =
+            quantidade > 0;
+
+        /* CORAÇÃO */
+
+        if(icone){
+
+            icone.classList.toggle(
+                "fa-solid",
+                temFavoritos
+            );
+
+            icone.classList.toggle(
+                "fa-regular",
+                !temFavoritos
+            );
+
+            icone.style.color =
+                temFavoritos
+                    ? "#E53935"
+                    : "";
+        }
+
+        /* CONTADOR */
+
+        if(contador){
+
+            contador.textContent =
+                quantidade;
+
+            contador.style.display =
+                temFavoritos
+                    ? "flex"
+                    : "none";
+        }
+
+    }catch(erro){
+
+        console.error(
+            "Erro ao carregar favoritos do header:",
+            erro
+        );
+
+    }
+}
+
+
+/*==================================================
+        CLIQUE NO FAVORITO
+==================================================*/
+
+function iniciarFavoritoHeader(){
+
+    const botao =
+        document.getElementById(
+            "btnFavoritosHeader"
+        );
+
+    if(!botao){
+        return;
+    }
+
+    botao.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+            const token =
+                localStorage.getItem(
+                    "tokenCial"
+                );
+
+            if(!token){
+
+                window.location.href =
+                    "../cadastro/login.html";
+
+                return;
+            }
+
+            window.location.href =
+                "../cadastro/area-cliente.html#favoritos";
+
+        }
+    );
+}
+
+/*==================================================
             INICIALIZAÇÃO DO SITE
 ==================================================*/
 
 document.addEventListener("DOMContentLoaded", () => {
+     
+    atualizarFavoritoHeader();
 
     iniciarModal();
 

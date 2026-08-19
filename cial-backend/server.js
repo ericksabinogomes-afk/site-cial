@@ -539,47 +539,66 @@ app.delete("/favoritos/:produto_id", autenticarToken, async (req, res) => {
 
 // Listar favoritos do usuário logado
 app.get("/favoritos", autenticarToken, async (req, res) => {
+
     try {
 
-      const usuarioId = req.usuario.id;
+        const usuarioId = req.usuario.id;
 
         const { data, error } = await supabase
-    .from('favoritos')
-    .select(`
-        id,
-        produto_id,
-        created_at
-    `)
-    .eq('usuario_id', usuarioId)
-    .order('created_at', {
-        ascending: false
-    });
+            .from("favoritos")
+            .select(`
+                id,
+                produto_id,
+                produto_nome,
+                produto_imagem,
+                produto_preco,
+                produto_slug,
+                created_at
+            `)
+            .eq("usuario_id", usuarioId)
+            .order("created_at", {
+                ascending: false
+            });
 
         if (error) {
+
+            console.error(
+                "Erro ao buscar favoritos:",
+                error
+            );
+
             return res.status(500).json({
                 ok: false,
                 erro: error.message
             });
         }
 
-    return res.json({
+        return res.json({
             ok: true,
-            data
+            data: data || []
         });
+
     } catch (err) {
-    return res.status(500).json({
+
+        console.error(
+            "Erro inesperado ao buscar favoritos:",
+            err
+        );
+
+        return res.status(500).json({
             ok: false,
             erro: err.message
         });
-  }
+    }
 });
 
 // Adicionar favorito
 app.post("/favoritos", autenticarToken, async (req, res) => {
 
-    const { produto_id } = req.body;
+    console.log("🔥🔥🔥 ROTA FAVORITOS NOVA FOI CHAMADA 🔥🔥🔥");
+    const produtoId = Number(req.body.produto_id);
 
-    if (!produto_id) {
+    if (!produtoId) {
         return res.status(400).json({
             ok: false,
             erro: "Produto não informado"
@@ -588,21 +607,46 @@ app.post("/favoritos", autenticarToken, async (req, res) => {
 
     try {
 
+        // Buscar o produto
+        const { data: produto, error: produtoError } = await supabase
+            .from("produtos")
+            .select("id, nome, imagem, preco")
+            .eq("id", produtoId)
+            .single();
+
+        if (produtoError || !produto) {
+            return res.status(404).json({
+                ok: false,
+                erro: "Produto não encontrado"
+            });
+        }
+
+        // TESTE
+        console.log("========== TESTE FAVORITO ==========");
+        console.log("BODY RECEBIDO:", req.body);
+        console.log("PRODUTO ENCONTRADO:", produto);
+        console.log("====================================");
+
+        // Salvar favorito
         const { data, error } = await supabase
             .from("favoritos")
             .insert([{
                 usuario_id: req.usuario.id,
-                produto_id: Number(produto_id)
+                produto_id: produto.id,
+                produto_nome: produto.nome,
+                produto_imagem: produto.imagem || null,
+                produto_preco: Number(produto.preco) || 0
             }])
             .select();
 
         if (error) {
+            console.error("Erro ao adicionar favorito:", error);
 
             return res.status(500).json({
                 ok: false,
                 erro: error.message
-            });
-
+        
+              });
         }
 
         return res.status(201).json({
@@ -612,13 +656,15 @@ app.post("/favoritos", autenticarToken, async (req, res) => {
 
     } catch (err) {
 
+        console.error("Erro inesperado ao adicionar favorito:", err);
+
         return res.status(500).json({
             ok: false,
             erro: err.message
-        });
-
-    }
-
+     
+          });
+   
+        }
 });
 
 /*==========================================================

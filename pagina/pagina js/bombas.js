@@ -857,81 +857,290 @@ function iniciarOrdenacao(){
                 FAVORITOS
 ==================================================*/
 
-function carregarFavoritos(){
+const API_FAVORITOS = "http://localhost:4000";
 
-    const favoritos = localStorage.getItem("favoritos");
+async function carregarFavoritos(){
 
-    if(favoritos){
+    const token =
+        localStorage.getItem("tokenCial");
 
-        estado.favoritos = JSON.parse(favoritos);
+    if(!token){
+
+        estado.favoritos = [];
+
+        atualizarFavoritoHeader();
+
+        return;
+    }
+
+    try{
+
+        const resposta =
+            await fetch(
+                `${API_FAVORITOS}/favoritos`,
+                {
+                    headers:{
+                        Authorization:
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        const resultado =
+            await resposta.json();
+
+        if(!resposta.ok || !resultado.ok){
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar favoritos"
+            );
+
+        }
+
+        estado.favoritos =
+            (resultado.data || [])
+                .map(item => Number(
+                    item.produto_id ??
+                    item.id
+                ));
+
+        atualizarFavoritoHeader();
+
+        renderizarProdutos();
+
+    }
+    catch(erro){
+
+        console.error(
+            "❌ Erro ao carregar favoritos:",
+            erro
+        );
+
+        estado.favoritos = [];
+
+        atualizarFavoritoHeader();
 
     }
 
 }
 
 
+function atualizarFavoritoHeader(){
 
-function salvarFavoritos(){
+    const botao =
+        document.getElementById(
+            "btnFavoritosHeader"
+        );
 
-    localStorage.setItem(
+    if(!botao) return;
 
-        "favoritos",
+    const icone =
+        botao.querySelector("i");
 
-        JSON.stringify(estado.favoritos)
+    const contador =
+        document.getElementById(
+            "contadorFavoritos"
+        );
 
-    );
+    const quantidade =
+        estado.favoritos.length;
+
+    const temFavoritos =
+        quantidade > 0;
+
+
+    /* CORAÇÃO */
+
+    if(icone){
+
+        icone.classList.toggle(
+            "fa-solid",
+            temFavoritos
+        );
+
+        icone.classList.toggle(
+            "fa-regular",
+            !temFavoritos
+        );
+
+        icone.style.color =
+            temFavoritos
+                ? "#E53935"
+                : "";
+
+    }
+
+
+    /* CONTADOR */
+
+    if(contador){
+
+        contador.textContent =
+            quantidade;
+
+        contador.style.display =
+            temFavoritos
+                ? "flex"
+                : "none";
+
+    }
 
 }
 
 
+async function alternarFavorito(id){
 
-function alternarFavorito(id){
+    const token =
+        localStorage.getItem("tokenCial");
 
-    const existe = estado.favoritos.includes(id);
+    if(!token){
 
-    if(existe){
+        window.location.href =
+            "../cadastro/login.html";
 
-        estado.favoritos = estado.favoritos.filter(
+        return;
 
-            favorito=>favorito!==id
+    }
 
+
+    const existe =
+        estado.favoritos.includes(id);
+
+
+    try{
+
+        const resposta =
+            await fetch(
+                `${API_FAVORITOS}/favoritos`,
+                {
+                    method:
+                        existe
+                            ? "DELETE"
+                            : "POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json",
+
+                        Authorization:
+                            `Bearer ${token}`
+                    },
+
+                    body: JSON.stringify({
+
+                        produto_id:id
+
+                    })
+
+                }
+            );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if(!resposta.ok || !resultado.ok){
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao alterar favorito"
+            );
+
+        }
+
+
+        if(existe){
+
+            estado.favoritos =
+                estado.favoritos.filter(
+                    favorito =>
+                        favorito !== id
+                );
+
+        }
+        else{
+
+            estado.favoritos.push(id);
+
+        }
+
+
+        atualizarFavoritoHeader();
+
+        renderizarProdutos();
+
+    }
+    catch(erro){
+
+        console.error(
+            "❌ Erro ao alterar favorito:",
+            erro
         );
 
     }
 
-    else{
-
-        estado.favoritos.push(id);
-
-    }
-
-    salvarFavoritos();
-
-    renderizarProdutos();
-
 }
-
 
 
 function iniciarFavoritos(){
 
-    document.addEventListener("click",(event)=>{
+    document.addEventListener(
+        "click",
+        event => {
 
-        const botao = event.target.closest(".btn-favorito");
+            const botao =
+                event.target.closest(
+                    ".btn-favorito"
+                );
 
-        if(!botao){
+            if(!botao) return;
 
-            return;
+            alternarFavorito(
+                Number(
+                    botao.dataset.id
+                )
+            );
 
         }
+    );
 
-        alternarFavorito(
 
-            Number(botao.dataset.id)
-
+    const botaoHeader =
+        document.getElementById(
+            "btnFavoritosHeader"
         );
 
-    });
+    if(botaoHeader){
+
+        botaoHeader.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                const token =
+                    localStorage.getItem(
+                        "tokenCial"
+                    );
+
+                if(!token){
+
+                    window.location.href =
+                        "../cadastro/login.html";
+
+                    return;
+
+                }
+
+                window.location.href =
+                    "../cadastro/area-cliente.html#favoritos";
+
+            }
+        );
+
+    }
 
 }
 /*==================================================

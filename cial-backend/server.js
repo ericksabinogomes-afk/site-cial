@@ -405,19 +405,19 @@ app.post('/admin/produtos', autenticarToken , async (req, res) => {
     destaque
   } = req.body;
 
-  if (!nome || !codigo || !categoria || preco == null) {
+  if (!nome || !categoria || preco == null) {
     return res.status(400).json({
       ok: false,
-      erro: 'Informe nome, código, categoria e preço'
+      erro: 'Informe nome, categoria e preço'
     });
-  }
+}
 
   try {
     const { data, error } = await supabase
       .from('produtos')
       .insert([{
         nome,
-        codigo,
+        codigo: codigo || `CIAL-${Date.now()}`,
         categoria,
         preco: Number(preco),
         estoque: estoque || 'Em estoque',

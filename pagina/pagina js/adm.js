@@ -370,7 +370,102 @@ const API_BASE = "http://localhost:4000";
 const categoriaProduto =
     document.getElementById("categoriaProduto");
 
+/*==================================================
+        CAMPOS ESPECÍFICOS DO PRODUTO
+==================================================*/
 
+const camposStihl =
+    document.getElementById("camposStihl");
+
+const camposBombas =
+    document.getElementById("camposBombas");
+
+
+const categoriasStihl = [
+
+    "motosserras",
+    "rocadeiras",
+    "lavadoras",
+    "sopradores",
+    "podadores",
+    "motobombas",
+    "motocultivadores",
+    "motores-estacionarios",
+    "geradores",
+    "cortadores-grama",
+    "pulverizadores",
+    "ferramentas-multifuncionais",
+    "motopodas",
+    "perfuradores",
+    "cortadores-disco",
+    "colhedores",
+    "tesouras-serrotes-poda",
+    "ferramentas-florestais",
+    "aspiradores",
+    "baterias-carregadores",
+    "acessorios-stihl",
+    "epi"
+
+];
+
+
+const categoriasBombas = [
+
+    "bombas-centrifugas",
+    "bombas-perifericas",
+    "bombas-submersas",
+    "bombas-submersiveis",
+    "bombas-autoaspirantes",
+    "bombas-injetoras",
+    "motobombas-irrigacao",
+    "bombas-piscina",
+    "bombas-irrigacao",
+    "bombas-poco",
+    "bombas-drenagem",
+    "bombas-esgoto",
+    "pressurizadores",
+    "sistemas-pressurizacao",
+    "acessorios-bombas"
+
+];
+
+
+function atualizarCamposEspecificos(){
+
+    const categoria =
+        categoriaProduto.value;
+
+
+    if(camposStihl){
+
+        camposStihl.style.display =
+            categoriasStihl.includes(categoria)
+                ? "block"
+                : "none";
+
+    }
+
+
+    if(camposBombas){
+
+        camposBombas.style.display =
+            categoriasBombas.includes(categoria)
+                ? "block"
+                : "none";
+
+    }
+
+}
+
+
+if(categoriaProduto){
+
+    categoriaProduto.addEventListener(
+        "change",
+        atualizarCamposEspecificos
+    );
+
+}
 
 const nomesCategoriasBombas = {
   "bombas-centrifugas": "Bombas Centrífugas",
@@ -597,6 +692,29 @@ formProduto.addEventListener("submit", async event => {
 
   const destaque =
     document.getElementById("produtoDestaque").checked;
+
+    /*========================================
+    INFORMAÇÕES ESPECÍFICAS
+========================================*/
+
+const descricaoStihl =
+    document.getElementById("descricaoStihl")?.value.trim() || "";
+
+const aplicacaoStihl =
+    document.getElementById("aplicacaoStihl")?.value || "";
+
+
+const marcaBomba =
+    document.getElementById("marcaBomba")?.value.trim() || "";
+
+const potenciaBomba =
+    document.getElementById("potenciaBomba")?.value || "";
+
+const vazaoBomba =
+    document.getElementById("vazaoBomba")?.value.trim() || "";
+
+const aplicacaoBomba =
+    document.getElementById("aplicacaoBomba")?.value || "";
 
   const imagemTexto = document.getElementById("imagemProduto")
     ? document.getElementById("imagemProduto").value.trim()

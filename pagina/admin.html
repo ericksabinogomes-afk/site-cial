@@ -16,9 +16,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet"
-    href="../pagina/pagina css/admin.css">
     
     <link
     rel="stylesheet"
@@ -41,7 +38,7 @@
             <a href="index.html"
             class="logo">
 
-            <img src="../pagina/imagem/logo1.webp" alt="Logo CIAL">
+            <img src="imagem/logo1.webp" alt="Logo CIAL">
 
         </a>
 
@@ -431,45 +428,44 @@
             ==========================-->
 
             <section id="clientes" class="admin-section">
-
                 <div class="section-header">
+                    <div>
+                        <h2>Controle de Usuários</h2>
+                        <p>Visualize os usuários e gerencie seus perfis.</p>
+                    </div>
 
-                    <h2>Clientes</h2>
-
+                    <button
+                        type="button"
+                        id="btnAtualizarUsuarios"
+                        class="btn-add"
+                    >
+                        <i class="fa-solid fa-rotate"></i>
+                        Atualizar
+                    </button>
                 </div>
 
                 <div class="table-container">
-
                     <table>
-
                         <thead>
-
                             <tr>
-
                                 <th>Nome</th>
-
                                 <th>Email</th>
-
                                 <th>Telefone</th>
-
-                                <th>Cidade</th>
-
-                                <th>Pedidos</th>
-
-                                <th>Ações</th>
-
+                                <th>Tipo</th>
+                                <th>Perfil</th>
+                                <th>Cadastro</th>
                             </tr>
-
                         </thead>
 
                         <tbody id="listaClientes">
-
+                            <tr>
+                                <td colspan="6">
+                                    Selecione Clientes para carregar os usuários.
+                                </td>
+                            </tr>
                         </tbody>
-
                     </table>
-
                 </div>
-
             </section>
 
 
@@ -1240,7 +1236,7 @@
 
 
 
-<script src="../pagina/pagina js/adm.js"></script>
+<script src="pagina js/adm.js"></script>
 
 </body>
 

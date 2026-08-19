@@ -83,7 +83,8 @@ app.post('/cadastro', async (req, res) => {
         cpf,
         telefone,
         whastapp: whatsapp, 
-        tipo: tipo_pessoa   // Fisica / Juridica
+        tipo: tipo_pessoa,   // Fisica / Juridica
+        perfil: "cliente"
       }])
       .select('id');        
 
@@ -280,74 +281,88 @@ app.post(
 // SERVIR IMAGENS
 // ==========================================================
 
-app.use(
-  '/uploads',
-  express.static(path.join(__dirname, 'uploads'))
-);
-
-  // ==========================================================
-// UPLOAD DE MÚLTIPLAS IMAGENS
-// ==========================================================
-
-app.post(
-  '/upload-imagens',
-  autenticarToken,
-  uploadMultiplas.array('imagens', 10),
-  (req, res) => {
-
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({
-        ok: false,
-        erro: 'Nenhuma imagem enviada'
-      });
-    }
-
-    const baseUrl =
-      process.env.BASE_URL || "http://localhost:4000";
-
-    const urls = req.files.map(file => {
-      return `${baseUrl}/uploads/${file.filename}`;
-    });
-
-    res.json({
-      ok: true,
-      urls
-});
-  }
-);
-
 // servir a pasta de uploads como arquivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
+
+
+
+
 function autenticarToken(req, res, next) {
-  const authHeader = req.headers.authorization;
+    const authHeader = req.headers.authorization || "";
 
-  if (!authHeader) {
-    return res.status(401).json({ ok: false, erro: 'Token não informado' });
-  }
-
-  const [, token] = authHeader.split(' '); // "Bearer token"
-
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuario = payload; // { id, email, tipo, perfil, ... }
-
-    // Se a rota for de admin, exige perfil === 'admin'
-    if (req.path.startsWith('/admin')) {
-      if (req.usuario.perfil !== 'admin') {
-        return res
-          .status(403)
-          .json({ ok: false, erro: 'Acesso negado: perfil não autorizado' });
-      }
+    if (!authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({
+            ok: false,
+            erro: "Token não informado"
+        });
     }
 
-    next();
-  } catch (err) {
-    return res.status(401).json({ ok: false, erro: 'Token inválido ou expirado' });
-  }
+    const token = authHeader.substring(7);
+
+    try {
+        const payload = jwt.verify(
+            token,
+            process.env.JWT_SECRET
+        );
+
+        req.usuario = payload;
+
+        next();
+    } catch (err) {
+        return res.status(401).json({
+            ok: false,
+            erro: "Token inválido ou expirado"
+        });
+    }
 }
 
+
+
+async function exigirAdmin(req, res, next) {
+    try {
+        const usuarioId = Number(req.usuario.id);
+
+        if (!Number.isInteger(usuarioId)) {
+            return res.status(401).json({
+                ok: false,
+                erro: "Usuário inválido"
+            });
+        }
+
+        const { data: usuario, error } = await supabase
+            .from("usuarios")
+            .select("id, perfil")
+            .eq("id", usuarioId)
+            .single();
+
+        if (error || !usuario) {
+            return res.status(401).json({
+                ok: false,
+                erro: "Usuário não encontrado"
+            });
+        }
+
+        if (usuario.perfil !== "admin") {
+            return res.status(403).json({
+                ok: false,
+                erro: "Acesso permitido somente para administradores"
+            });
+        }
+
+        req.usuarioAtual = usuario;
+
+        next();
+    } catch (err) {
+        console.error("Erro ao validar administrador:", err);
+
+        return res.status(500).json({
+            ok: false,
+            erro: "Erro ao validar permissão"
+        });
+    }
+}
 
 
 /*==========================================================
@@ -374,7 +389,11 @@ app.get('/produtos', async (req, res) => {
 });
 
 // Listar todos (para o admin)
-app.get('/admin/produtos', autenticarToken , async (req, res) => {
+app.get(
+    "/admin/produtos",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('produtos')
@@ -392,7 +411,11 @@ app.get('/admin/produtos', autenticarToken , async (req, res) => {
 });
 
 // Criar produto (admin)
-app.post('/admin/produtos', autenticarToken , async (req, res) => {
+app.post(
+    "/admin/produtos",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
   const {
     nome,
     codigo,
@@ -442,7 +465,11 @@ app.post('/admin/produtos', autenticarToken , async (req, res) => {
 });
 
 // Atualizar produto (admin)
-app.put('/admin/produtos/:id', autenticarToken ,  async (req, res) => {
+app.put(
+    "/admin/produtos/:id",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
   const produtoId = parseInt(req.params.id, 10);
   const {
     nome,
@@ -487,7 +514,7 @@ app.put('/admin/produtos/:id', autenticarToken ,  async (req, res) => {
   }
 });
 
-// Excluir produto (admin)
+// Remover favorito do usuário
 app.delete("/favoritos/:produto_id", autenticarToken, async (req, res) => {
 
     const produtoId = Number(req.params.produto_id);
@@ -839,6 +866,141 @@ app.get("/orcamentos", autenticarToken, async (req, res) => {
 });
 
 
+
+
+
+/*==========================================================
+    CONTROLE DE USUÁRIOS
+==========================================================*/
+
+
+// Listar usuários
+
+app.get(
+    "/admin/usuarios",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
+        try {
+            const { data, error } = await supabase
+                .from("usuarios")
+                .select(`
+                    id,
+                    nome,
+                    email,
+                    cpf,
+                    telefone,
+                    tipo,
+                    perfil,
+                    created_at
+                `)
+                .order("created_at", {
+                    ascending: false
+                });
+
+            if (error) {
+                console.error(
+                    "Erro ao listar usuários:",
+                    error
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+            }
+
+            return res.json({
+                ok: true,
+                data: data || []
+            });
+        } catch (err) {
+            console.error(err);
+
+            return res.status(500).json({
+                ok: false,
+                erro: "Erro interno ao listar usuários"
+            });
+        }
+    }
+);
+
+// TROCAR DE PERFIL
+
+
+app.patch(
+    "/admin/usuarios/:id/perfil",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
+        try {
+            const usuarioId = Number(req.params.id);
+            const { perfil } = req.body;
+
+            if (!Number.isInteger(usuarioId)) {
+                return res.status(400).json({
+                    ok: false,
+                    erro: "ID de usuário inválido"
+                });
+            }
+
+            if (!["cliente", "admin"].includes(perfil)) {
+                return res.status(400).json({
+                    ok: false,
+                    erro: "Perfil deve ser cliente ou admin"
+                });
+            }
+
+            if (
+                Number(req.usuario.id) === usuarioId
+            ) {
+                return res.status(400).json({
+                    ok: false,
+                    erro: "Você não pode alterar o próprio perfil"
+                });
+            }
+
+            const { data, error } = await supabase
+                .from("usuarios")
+                .update({
+                    perfil
+                })
+                .eq("id", usuarioId)
+                .select(`
+                    id,
+                    nome,
+                    email,
+                    perfil
+                `)
+                .single();
+
+            if (error) {
+                console.error(
+                    "Erro ao alterar perfil:",
+                    error
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+            }
+
+            return res.json({
+                ok: true,
+                mensagem: "Perfil atualizado com sucesso",
+                data
+            });
+        } catch (err) {
+            console.error(err);
+
+            return res.status(500).json({
+                ok: false,
+                erro: "Erro interno ao alterar perfil"
+            });
+        }
+    }
+);
 
 
 

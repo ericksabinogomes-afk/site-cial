@@ -7,7 +7,8 @@ const sections = document.querySelectorAll(".admin-section");
 const btnLogout = document.querySelector(".logout");
 const btnSave = document.querySelector(".btn-save");
 const btnAdd = document.querySelectorAll(".btn-add");
-
+const listaClientes = document.getElementById("listaClientes");
+const btnAtualizarUsuarios =document.getElementById("btnAtualizarUsuarios");
 const modalProduto = document.getElementById("modalProduto");
 const formProduto = document.getElementById("formProduto");
 const fecharModalProduto = document.getElementById("fecharModalProduto");
@@ -20,7 +21,7 @@ const cancelarProduto = document.getElementById("cancelarProduto");
 const token = localStorage.getItem("tokenCial");
 
 if (!token) {
-  window.location.href = "../login/login.html"; // ajuste o caminho conforme sua pasta de login
+  window.location.href = "../cadastro/login.html"; // ajuste o caminho conforme sua pasta de login
 }
 
 /*==================================================
@@ -254,11 +255,20 @@ function mostrarSecao(nomeSecao) {
 ==================================================*/
 
 menuItems.forEach(item => {
-  item.addEventListener("click", () => {
-    const secao = item.dataset.section;
-    if (!secao) return;
-    mostrarSecao(secao);
-  });
+    item.addEventListener("click", () => {
+        const secao =
+            item.dataset.section;
+
+        if (!secao) {
+            return;
+        }
+
+        mostrarSecao(secao);
+
+        if (secao === "clientes") {
+            carregarUsuarios();
+        }
+    });
 });
 
 if (btnLogout) {
@@ -270,7 +280,7 @@ if (btnLogout) {
       // Limpa token e usuário
       localStorage.removeItem("tokenCial");
       localStorage.removeItem("usuarioCial");
-      window.location.href = "../login/login.html";
+      window.location.href = "../cadastro/login.html";
     }
   });
 }
@@ -854,11 +864,297 @@ document.addEventListener("click", async event => {
   }
 });
 
+
+/*==================================================
+        CONTROLE DE USUÁRIOS
+==================================================*/
+
+function escaparHTML(valor) {
+    return String(valor ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function formatarData(data) {
+    if (!data) {
+        return "-";
+    }
+
+    return new Date(data).toLocaleDateString(
+        "pt-BR"
+    );
+}
+
+async function carregarUsuarios() {
+    if (!listaClientes) {
+        return;
+    }
+
+    const tokenAtual =
+        localStorage.getItem("tokenCial");
+
+    if (!tokenAtual) {
+        listaClientes.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    Sessão não encontrada.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    listaClientes.innerHTML = `
+        <tr>
+            <td colspan="6">
+                Carregando usuários...
+            </td>
+        </tr>
+    `;
+
+    try {
+        const resposta = await fetch(
+            `${API_BASE}/admin/usuarios`,
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${tokenAtual}`
+                }
+            }
+        );
+
+        const resultado = await resposta.json();
+
+        if (resposta.status === 401) {
+            localStorage.removeItem("tokenCial");
+            localStorage.removeItem("usuarioCial");
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return;
+        }
+
+        if (resposta.status === 403) {
+            throw new Error(
+                "Acesso negado: usuário sem perfil admin."
+            );
+        }
+
+        if (!resposta.ok || !resultado.ok) {
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar usuários"
+            );
+        }
+
+        renderizarUsuarios(resultado.data || []);
+    } catch (erro) {
+        console.error(
+            "Erro ao carregar usuários:",
+            erro
+        );
+
+        listaClientes.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    ${escaparHTML(erro.message)}
+                </td>
+            </tr>
+        `;
+    }
+}
+
+function renderizarUsuarios(usuarios) {
+    if (!listaClientes) {
+        return;
+    }
+
+    if (usuarios.length === 0) {
+        listaClientes.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    Nenhum usuário encontrado.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    listaClientes.innerHTML = usuarios.map(usuario => {
+        const perfil =
+            usuario.perfil === "admin"
+                ? "admin"
+                : "cliente";
+
+        return `
+            <tr>
+                <td>
+                    ${escaparHTML(usuario.nome)}
+                </td>
+
+                <td>
+                    ${escaparHTML(usuario.email)}
+                </td>
+
+                <td>
+                    ${escaparHTML(
+                        usuario.telefone || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escaparHTML(
+                        usuario.tipo || "-"
+                    )}
+                </td>
+
+                <td>
+                    <select
+                        class="select-perfil"
+                        data-id="${usuario.id}"
+                        data-perfil-atual="${perfil}"
+                    >
+                        <option
+                            value="cliente"
+                            ${perfil === "cliente"
+                                ? "selected"
+                                : ""}
+                        >
+                            Cliente
+                        </option>
+
+                        <option
+                            value="admin"
+                            ${perfil === "admin"
+                                ? "selected"
+                                : ""}
+                        >
+                            Admin
+                        </option>
+                    </select>
+                </td>
+
+                <td>
+                    ${formatarData(
+                        usuario.created_at
+                    )}
+                </td>
+            </tr>
+        `;
+    }).join("");
+}
+
+async function alterarPerfil(
+    usuarioId,
+    novoPerfil,
+    select
+) {
+    const tokenAtual =
+        localStorage.getItem("tokenCial");
+
+    const confirmou = window.confirm(
+        `Alterar o perfil para "${novoPerfil}"?`
+    );
+
+    if (!confirmou) {
+        select.value =
+            select.dataset.perfilAtual;
+
+        return;
+    }
+
+    select.disabled = true;
+
+    try {
+        const resposta = await fetch(
+            `${API_BASE}/admin/usuarios/${usuarioId}/perfil`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type":
+                        "application/json",
+
+                    Authorization:
+                        `Bearer ${tokenAtual}`
+                },
+                body: JSON.stringify({
+                    perfil: novoPerfil
+                })
+            }
+        );
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok || !resultado.ok) {
+            throw new Error(
+                resultado.erro ||
+                "Erro ao alterar perfil"
+            );
+        }
+
+        select.dataset.perfilAtual =
+            novoPerfil;
+
+        alert(
+            "Perfil alterado com sucesso."
+        );
+    } catch (erro) {
+        console.error(
+            "Erro ao alterar perfil:",
+            erro
+        );
+
+        select.value =
+            select.dataset.perfilAtual;
+
+        alert(erro.message);
+    } finally {
+        select.disabled = false;
+    }
+}
+
+
+listaClientes?.addEventListener(
+    "change",
+    event => {
+        const select =
+            event.target.closest(".select-perfil");
+
+        if (!select) {
+            return;
+        }
+
+        alterarPerfil(
+            Number(select.dataset.id),
+            select.value,
+            select
+        );
+    }
+);
+
+btnAtualizarUsuarios?.addEventListener(
+    "click",
+    carregarUsuarios
+);
+
+
+
+
+
 /*==================================================
                 INICIALIZAÇÃO
 ==================================================*/
 
-document.addEventListener("DOMContentLoaded", () => {
-  mostrarSecao("dashboard");
-  carregarProdutosAdmin();
-});
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        mostrarSecao("dashboard");
+        carregarProdutosAdmin();
+    }
+);

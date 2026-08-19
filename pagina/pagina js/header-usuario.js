@@ -90,3 +90,47 @@ console.log("perfil normalizado:", perfil);
     });
   }
 }
+
+//  Contador do Carrinho
+
+function atualizarContadorCarrinho() {
+    const contador = document.getElementById(
+        "contadorCarrinho"
+    );
+
+    if (!contador) {
+        return;
+    }
+
+    try {
+        const dados = localStorage.getItem(
+            "cial_carrinho"
+        );
+
+        const carrinho = dados
+            ? JSON.parse(dados)
+            : [];
+
+        const quantidade = Array.isArray(carrinho)
+            ? carrinho.reduce((total, produto) => {
+                return total + Number(
+                    produto.quantidade || 0
+                );
+            }, 0)
+            : 0;
+
+        contador.textContent = quantidade;
+    } catch (erro) {
+        console.error(
+            "Erro ao atualizar contador do carrinho:",
+            erro
+        );
+
+        contador.textContent = "0";
+    }
+}
+
+document.addEventListener(
+    "DOMContentLoaded",
+    atualizarContadorCarrinho
+);

@@ -108,6 +108,8 @@ async function carregarProdutos() {
 
     // Array de imagens adicionais salvo no JSONB
     imagens: Array.isArray(p.imagens) ? p.imagens : []
+        ? p.imagens
+        : []
     }));
 
     estado.produtosFiltrados = [...estado.produtos];
@@ -519,78 +521,40 @@ function obterToken(){
         CARREGAR FAVORITOS DO USUÁRIO
 ==================================================*/
 
-async function carregarFavoritos(){
-
+async function carregarFavoritos() {
     const token = obterToken();
 
-
-    // Usuário não está logado
-    if(!token){
-
+    if (!token) {
         estado.favoritos = [];
-
         return;
-
     }
 
-
-    try{
-
+    try {
         const resposta = await fetch(
             `${API_FAVORITOS}/favoritos`,
             {
-                headers:{
-                    "Authorization":
-                        `Bearer ${token}`
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
             }
         );
 
+        const resultado = await resposta.json();
 
-        if(resposta.status === 401){
-
-            localStorage.removeItem("tokenCial");
-            localStorage.removeItem("usuarioCial");
-
-            estado.favoritos = [];
-
-            return;
-
-        }
-
-
-        const resultado =
-            await resposta.json();
-
-
-        if(!resultado.ok){
-
+        if (!resposta.ok || !resultado.ok) {
             throw new Error(
                 resultado.erro ||
                 "Erro ao carregar favoritos"
             );
-
         }
 
+        estado.favoritos = (resultado.data || [])
+            .map(item => Number(item.produto_id));
 
-        estado.favoritos =
-            (resultado.data || [])
-                .map(item =>
-                    Number(item.produto_id)
-                );
-
-
-    }catch(erro){
-
-        console.error(
-            "Erro ao carregar favoritos:",
-            erro
-        );
-
+    } catch (erro) {
+        console.error("Erro ao carregar favoritos:", erro);
         estado.favoritos = [];
-
     }
-
 }
 
 
@@ -761,138 +725,107 @@ function iniciarFavoritos(){
         }
     );
 }
+
+
 /*==================================================
                 CARRINHO
 ==================================================*/
 
-function carregarCarrinho(){
+const CHAVE_CARRINHO = "cial_carrinho";
 
-    const carrinho = localStorage.getItem("carrinho");
+function obterCarrinho() {
+    try {
+        const dados = localStorage.getItem(CHAVE_CARRINHO);
 
-    if(carrinho){
-
-        estado.carrinho = JSON.parse(carrinho);
-
-    }
-
-}
-
-
-
-function salvarCarrinho(){
-
-    localStorage.setItem(
-
-        "carrinho",
-
-        JSON.stringify(estado.carrinho)
-
-    );
-
-}
-/*==================================================
-            ADICIONAR AO CARRINHO
-==================================================*/
-
-function adicionarCarrinho(id){
-
-    const item = estado.carrinho.find(
-
-        produto => produto.id === id
-
-    );
-
-
-
-    if(item){
-
-        item.quantidade++;
-
-    }
-
-    else{
-
-        estado.carrinho.push({
-
-            id,
-
-            quantidade:1
-
-        });
-
-    }
-
-
-
-    salvarCarrinho();
-
-    atualizarCarrinho();
-
-}
-/*==================================================
-            CONTADOR CARRINHO
-==================================================*/
-
-function atualizarCarrinho(){
-
-    const quantidade = estado.carrinho.reduce(
-
-        (total,item)=> total + item.quantidade,
-
-        0
-
-    );
-
-
-
-    const contador = document.getElementById(
-
-        "contadorCarrinho"
-
-    );
-
-
-
-    if(contador){
-
-        contador.textContent = quantidade;
-
-    }
-
-}
-/*==================================================
-            EVENTOS CARRINHO
-==================================================*/
-
-function iniciarCarrinho(){
-
-    document.addEventListener("click",(event)=>{
-
-        const botao = event.target.closest(
-
-            ".btn-carrinho"
-
-        );
-
-
-
-        if(!botao){
-
-            return;
-
+        if (!dados) {
+            return [];
         }
 
+        const carrinho = JSON.parse(dados);
 
+        return Array.isArray(carrinho)
+            ? carrinho
+            : [];
+    } catch (erro) {
+        console.error("Erro ao carregar carrinho:", erro);
+        return [];
+    }
+}
 
-        adicionarCarrinho(
+function salvarCarrinho(carrinho) {
+    localStorage.setItem(
+        CHAVE_CARRINHO,
+        JSON.stringify(carrinho)
+    );
+}
 
-            Number(botao.dataset.id)
+function adicionarAoCarrinho(produto) {
+    const carrinho = obterCarrinho();
 
+    const itemExistente = carrinho.find(
+        item => Number(item.id) === Number(produto.id)
+    );
+
+    if (itemExistente) {
+        itemExistente.quantidade++;
+    } else {
+        carrinho.push({
+            id: Number(produto.id),
+            nome: produto.nome,
+            preco: Number(produto.preco),
+            imagem: produto.imagem || "",
+            quantidade: 1
+        });
+    }
+
+    salvarCarrinho(carrinho);
+    atualizarContadorCarrinho();
+
+    alert(`${produto.nome} foi adicionado ao carrinho.`);
+}
+
+function atualizarContadorCarrinho() {
+    const carrinho = obterCarrinho();
+
+    const quantidade = carrinho.reduce(
+        (total, item) => total + Number(item.quantidade || 0),
+        0
+    );
+
+    const contador = document.getElementById(
+        "contadorCarrinho"
+    );
+
+    if (contador) {
+        contador.textContent = quantidade;
+    }
+}
+
+function iniciarCarrinho() {
+    document.addEventListener("click", event => {
+        const botao = event.target.closest(".btn-carrinho");
+
+        if (!botao) {
+            return;
+        }
+
+        const id = Number(botao.dataset.id);
+
+        const produto = estado.produtos.find(
+            item => Number(item.id) === id
         );
 
+        if (!produto) {
+            console.error("Produto não encontrado:", id);
+            return;
+        }
+
+        adicionarAoCarrinho(produto);
     });
 
+    atualizarContadorCarrinho();
 }
+
 
 /*==================================================
         MODAL DO PRODUTO
@@ -1133,8 +1066,8 @@ async function iniciarSistema(){
 
     await carregarFavoritos();
 
-    carregarCarrinho();
-    
+    obterCarrinho();
+
     iniciarCategorias();
 
     carregarProdutos();
@@ -1159,6 +1092,30 @@ document.addEventListener(
 
 
 );
+function aumentarQuantidade(index) {
+    if (!carrinho[index]) {
+        return;
+    }
+
+    carrinho[index].quantidade++;
+    salvarCarrinho();
+    renderizarCarrinho();
+}
+function diminuirQuantidade(index) {
+    if (!carrinho[index]) {
+        return;
+    }
+
+    if (carrinho[index].quantidade > 1) {
+        carrinho[index].quantidade--;
+    } else {
+        carrinho.splice(index, 1);
+    }
+
+    salvarCarrinho();
+    renderizarCarrinho();
+}
+
 
 /*==================================================
         FAVORITOS DO HEADER

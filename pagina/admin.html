@@ -528,887 +528,1289 @@
 
             </section>
 
-            <!--==================================================
-                CRIAR CARD
-            ==================================================-->
-            <div id="modalProduto" class="modal-produto">
-            <div class="modal-conteudo">
+           <!-- ==================================================
+     NOVO CADASTRO DE PRODUTO
+================================================== -->
 
-                <div class="modal-topo">
-                <h2>Cadastrar Produto</h2>
+<div id="modalProduto" class="modal-produto">
+
+    <div class="cadastro-produto">
+
+        <!-- =========================
+             CABEÇALHO
+        ========================== -->
+
+        <div class="cadastro-topo">
+
+            <div>
+                <button
+                    type="button"
+                    id="voltarProdutos"
+                    class="btn-voltar-produtos">
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                    Voltar para Produtos
+
+                </button>
+
+                <h2>Novo Produto</h2>
+
+                <p>
+                    Cadastre um novo produto na loja.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                id="fecharModalProduto"
+                class="btn-fechar">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             ETAPAS
+        ========================== -->
+
+        <div class="etapas-produto">
+
+            <div
+                class="etapa-produto ativa"
+                data-etapa="1">
+
+                <span class="numero-etapa">1</span>
+
+                <div>
+                    <strong>Informações</strong>
+                    <small>Dados básicos</small>
+                </div>
+
+            </div>
+
+
+            <div class="linha-etapa"></div>
+
+
+            <div
+                class="etapa-produto"
+                data-etapa="2">
+
+                <span class="numero-etapa">2</span>
+
+                <div>
+                    <strong>Fotos</strong>
+                    <small>Imagens do produto</small>
+                </div>
+
+            </div>
+
+
+            <div class="linha-etapa"></div>
+
+
+            <div
+                class="etapa-produto"
+                data-etapa="3">
+
+                <span class="numero-etapa">3</span>
+
+                <div>
+                    <strong>Estoque</strong>
+                    <small>Preço e estoque</small>
+                </div>
+
+            </div>
+
+
+            <div class="linha-etapa"></div>
+
+
+            <div
+                class="etapa-produto"
+                data-etapa="4">
+
+                <span class="numero-etapa">4</span>
+
+                <div>
+                    <strong>Especificações</strong>
+                    <small>Detalhes do produto</small>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             CONTEÚDO DO CADASTRO
+        ========================== -->
+
+        <form id="formProduto">
+
+            <!-- =================================
+                 ETAPA 1
+                 INFORMAÇÕES BÁSICAS
+            ================================== -->
+
+            <section
+                class="etapa-conteudo ativa"
+                data-conteudo="1">
+
+                <div class="cadastro-grid">
+
+                    <!-- FORMULÁRIO -->
+
+                    <div class="cadastro-formulario">
+
+                        <div class="titulo-secao">
+
+                            <span class="icone-secao">
+                                <i class="fa-solid fa-box"></i>
+                            </span>
+
+                            <div>
+
+                                <h3>Informações básicas</h3>
+
+                                <p>
+                                    Informe os principais dados do produto.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- NOME -->
+
+                        <div class="form-group">
+
+                            <label for="nomeProduto">
+                                Nome do produto
+                            </label>
+
+                            <input
+                                type="text"
+                                id="nomeProduto"
+                                placeholder="Ex: STIHL MS 170"
+                                autocomplete="off"
+                                required>
+
+                        </div>
+
+
+                        <!-- CATEGORIA -->
+
+                        <div class="form-group">
+
+                            <label for="categoriaProduto">
+                                Categoria
+                            </label>
+
+                            <select
+                                id="categoriaProduto"
+                                required>
+
+                                <option value="">
+                                    Selecione uma categoria
+                                </option>
+
+                                <optgroup label="STIHL">
+
+                                    <option value="motosserras">
+                                        Motosserras
+                                    </option>
+
+                                    <option value="rocadeiras">
+                                        Roçadeiras
+                                    </option>
+
+                                    <option value="lavadoras">
+                                        Lavadoras de Alta Pressão
+                                    </option>
+
+                                    <option value="sopradores">
+                                        Sopradores
+                                    </option>
+
+                                    <option value="podadores">
+                                        Podadores
+                                    </option>
+
+                                    <option value="motobombas">
+                                        Motobombas
+                                    </option>
+
+                                    <option value="motocultivadores">
+                                        Motocultivadores
+                                    </option>
+
+                                    <option value="motores-estacionarios">
+                                        Motores Estacionários
+                                    </option>
+
+                                    <option value="geradores">
+                                        Geradores
+                                    </option>
+
+                                    <option value="cortadores-grama">
+                                        Cortadores de Grama
+                                    </option>
+
+                                    <option value="pulverizadores">
+                                        Pulverizadores
+                                    </option>
+
+                                    <option value="ferramentas-multifuncionais">
+                                        Ferramentas Multifuncionais
+                                    </option>
+
+                                    <option value="motopodas">
+                                        Motopodas
+                                    </option>
+
+                                    <option value="perfuradores">
+                                        Perfuradores
+                                    </option>
+
+                                    <option value="cortadores-disco">
+                                        Cortadores a Disco
+                                    </option>
+
+                                    <option value="colhedores">
+                                        Colhedores
+                                    </option>
+
+                                    <option value="tesouras-serrotes-poda">
+                                        Tesouras e Serrotes de Poda
+                                    </option>
+
+                                    <option value="ferramentas-florestais">
+                                        Ferramentas Florestais / Machados
+                                    </option>
+
+                                    <option value="aspiradores">
+                                        Aspiradores
+                                    </option>
+
+                                    <option value="baterias-carregadores">
+                                        Baterias e Carregadores
+                                    </option>
+
+                                    <option value="acessorios-stihl">
+                                        Acessórios STIHL
+                                    </option>
+
+                                    <option value="epi">
+                                        Equipamentos de Proteção
+                                    </option>
+
+                                </optgroup>
+
+
+                                <optgroup label="Bombas e Irrigação">
+
+                                    <option value="bombas-centrifugas">
+                                        Bombas Centrífugas
+                                    </option>
+
+                                    <option value="bombas-perifericas">
+                                        Bombas Periféricas
+                                    </option>
+
+                                    <option value="bombas-submersas">
+                                        Bombas Submersas
+                                    </option>
+
+                                    <option value="bombas-submersiveis">
+                                        Bombas Submersíveis
+                                    </option>
+
+                                    <option value="bombas-autoaspirantes">
+                                        Bombas Autoaspirantes
+                                    </option>
+
+                                    <option value="bombas-injetoras">
+                                        Bombas Injetoras
+                                    </option>
+
+                                    <option value="motobombas-irrigacao">
+                                        Motobombas
+                                    </option>
+
+                                    <option value="bombas-piscina">
+                                        Bombas para Piscina
+                                    </option>
+
+                                    <option value="bombas-irrigacao">
+                                        Bombas para Irrigação
+                                    </option>
+
+                                    <option value="bombas-poco">
+                                        Bombas para Poços
+                                    </option>
+
+                                    <option value="bombas-drenagem">
+                                        Bombas para Drenagem
+                                    </option>
+
+                                    <option value="bombas-esgoto">
+                                        Bombas para Esgoto
+                                    </option>
+
+                                    <option value="pressurizadores">
+                                        Pressurizadores
+                                    </option>
+
+                                    <option value="sistemas-pressurizacao">
+                                        Sistemas de Pressurização
+                                    </option>
+
+                                    <option value="acessorios-bombas">
+                                        Acessórios para Bombas
+                                    </option>
+
+                                    <option value="aspersores">
+                                        Aspersores
+                                    </option>
+
+                                    <option value="microaspersores">
+                                        Microaspersores
+                                    </option>
+
+                                    <option value="gotejamento">
+                                        Gotejamento
+                                    </option>
+
+                                    <option value="mangueiras-irrigacao">
+                                        Mangueiras de Irrigação
+                                    </option>
+
+                                    <option value="tubos-irrigacao">
+                                        Tubos para Irrigação
+                                    </option>
+
+                                    <option value="conexoes-irrigacao">
+                                        Conexões para Irrigação
+                                    </option>
+
+                                    <option value="filtros-irrigacao">
+                                        Filtros de Irrigação
+                                    </option>
+
+                                    <option value="valvulas-irrigacao">
+                                        Válvulas de Irrigação
+                                    </option>
+
+                                    <option value="acessorios-irrigacao">
+                                        Acessórios de Irrigação
+                                    </option>
+
+                                </optgroup>
+
+
+                                <option value="linha-bateria">
+                                    🔋 Linha a Bateria
+                                </option>
+
+                                <option value="linha-eletrica">
+                                    🔌 Linha Elétrica
+                                </option>
+
+                                <option value="pecas-reposicao">
+                                    ⚙️ Peças de Reposição
+                                </option>
+
+                                <option value="ferramentas-corte">
+                                    🛠️ Ferramentas de Corte
+                                </option>
+
+                                <option value="lubrificantes">
+                                    🛢️ Lubrificantes
+                                </option>
+
+                                <option value="combustiveis">
+                                    ⛽ Combustíveis
+                                </option>
+
+                                <option value="epis">
+                                    🦺 EPIs
+                                </option>
+
+                                <option value="acessorios">
+                                    🔧 Acessórios
+                                </option>
+
+                                <option value="outros">
+                                    Outros
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- MARCA + SKU -->
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="marcaProduto">
+                                    Marca
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="marcaProduto"
+                                    placeholder="Ex: STIHL">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="skuProduto">
+                                    Código / SKU
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="skuProduto"
+                                    placeholder="Ex: MS170">
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- DESCRIÇÃO -->
+
+                        <div class="form-group">
+
+                            <label for="descricaoProduto">
+                                Descrição
+                            </label>
+
+                            <textarea
+                                id="descricaoProduto"
+                                rows="5"
+                                placeholder="Descreva o produto..."
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- APLICAÇÃO -->
+
+                        <div class="form-group">
+
+                            <label for="funcaoProduto">
+                                Aplicação / Função
+                            </label>
+
+                            <textarea
+                                id="funcaoProduto"
+                                rows="4"
+                                placeholder="Para que serve este produto?"
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PREVIEW -->
+
+                    <aside class="preview-produto">
+
+                        <div class="preview-titulo">
+
+                            <span>
+                                <i class="fa-solid fa-eye"></i>
+                            </span>
+
+                            <div>
+
+                                <h3>Visualização</h3>
+
+                                <p>
+                                    Prévia do produto na loja
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="preview-card">
+
+                            <div class="preview-imagem">
+
+                                <span class="preview-sem-imagem">
+                                    <i class="fa-solid fa-image"></i>
+                                    <small>Sem imagem</small>
+                                </span>
+
+                            </div>
+
+
+                            <div class="preview-info">
+
+                                <span
+                                    id="previewCategoria"
+                                    class="preview-categoria">
+                                    Categoria
+                                </span>
+
+                                <h3 id="previewNome">
+                                    Nome do produto
+                                </h3>
+
+                                <p id="previewDescricao">
+                                    A descrição do produto aparecerá aqui.
+                                </p>
+
+                                <strong id="previewPreco">
+                                    R$ 0,00
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </aside>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================
+                 ETAPA 2
+                 FOTOS
+            ================================== -->
+
+            <section
+                class="etapa-conteudo"
+                data-conteudo="2">
+
+                <div class="titulo-secao">
+
+                    <span class="icone-secao">
+                        <i class="fa-solid fa-images"></i>
+                    </span>
+
+                    <div>
+
+                        <h3>Fotos do produto</h3>
+
+                        <p>
+                            Adicione as imagens que serão exibidas na loja.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="dropArea"
+                    class="drop-area">
+
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                    <h3>
+                        Arraste suas imagens aqui
+                    </h3>
+
+                    <p>
+                        ou clique para selecionar
+                    </p>
+
+                    <small>
+                        Você pode selecionar várias imagens.
+                    </small>
+
+                    <input
+                        type="file"
+                        id="arquivoImagem"
+                        accept="image/*"
+                        multiple
+                        hidden>
+
+                </div>
+
+
+                <div
+                    id="previewImagens"
+                    class="preview-imagens">
+                </div>
+
+            </section>
+
+
+            <!-- =================================
+                 ETAPA 3
+                 ESTOQUE
+            ================================== -->
+
+            <section
+                class="etapa-conteudo"
+                data-conteudo="3">
+
+                <div class="titulo-secao">
+
+                    <span class="icone-secao">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                    </span>
+
+                    <div>
+
+                        <h3>Venda e estoque</h3>
+
+                        <p>
+                            Configure o preço e a disponibilidade.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="precoProduto">
+                            Preço
+                        </label>
+
+                        <input
+                            type="number"
+                            id="precoProduto"
+                            min="0"
+                            step="0.01"
+                            placeholder="1299.90"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="estoqueProduto">
+                            Estoque
+                        </label>
+
+                        <select
+                            id="estoqueProduto"
+                            required>
+
+                            <option value="Em estoque">
+                                Em estoque
+                            </option>
+
+                            <option value="Estoque baixo">
+                                Estoque baixo
+                            </option>
+
+                            <option value="Fora de estoque">
+                                Fora de estoque
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="destaque-produto">
+
+                    <div>
+
+                        <h3>
+                            <i class="fa-solid fa-star"></i>
+                            Produto em destaque
+                        </h3>
+
+                        <p>
+                            Exibir este produto na página inicial.
+                        </p>
+
+                    </div>
+
+
+                    <label class="checkbox-destaque">
+
+                        <input
+                            type="checkbox"
+                            id="produtoDestaque">
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================
+                 ETAPA 4
+                 ESPECIFICAÇÕES
+            ================================== -->
+
+            <section
+                class="etapa-conteudo"
+                data-conteudo="4">
+
+                <div class="titulo-secao">
+
+                    <span class="icone-secao">
+                        <i class="fa-solid fa-sliders"></i>
+                    </span>
+
+                    <div>
+
+                        <h3>Especificações</h3>
+
+                        <p>
+                            Configure os detalhes específicos do produto.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STIHL -->
+
+                <div
+                    id="camposStihl"
+                    class="campos-produto"
+                    style="display:none;">
+
+                    <div class="campo-titulo">
+
+                        <span>🪚</span>
+
+                        <div>
+
+                            <h3>Informações STIHL</h3>
+
+                            <p>
+                                Especificações do produto STIHL.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="descricaoStihl">
+                            Pequena descrição
+                        </label>
+
+                        <textarea
+                            id="descricaoStihl"
+                            rows="4"
+                            placeholder="Descrição curta do produto."
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="aplicacaoStihl">
+                            Aplicação
+                        </label>
+
+                        <select id="aplicacaoStihl">
+
+                            <option value="">
+                                Selecione uma aplicação
+                            </option>
+
+                            <option value="Uso Doméstico">
+                                Uso Doméstico
+                            </option>
+
+                            <option value="Uso Profissional">
+                                Uso Profissional
+                            </option>
+
+                            <option value="Jardinagem">
+                                Jardinagem
+                            </option>
+
+                            <option value="Agricultura">
+                                Agricultura
+                            </option>
+
+                            <option value="Paisagismo">
+                                Paisagismo
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BOMBAS -->
+
+                <div
+                    id="camposBombas"
+                    class="campos-produto"
+                    style="display:none;">
+
+                    <div class="campo-titulo">
+
+                        <span>💧</span>
+
+                        <div>
+
+                            <h3>Informações da bomba</h3>
+
+                            <p>
+                                Especificações da bomba.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="marcaBomba">
+                                Marca
+                            </label>
+
+                            <input
+                                type="text"
+                                id="marcaBomba"
+                                placeholder="Ex: Ebara">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="potenciaBomba">
+                                Potência
+                            </label>
+
+                            <select id="potenciaBomba">
+
+                                <option value="">
+                                    Selecione a potência
+                                </option>
+
+                                <option value="1/2 CV">
+                                    1/2 CV
+                                </option>
+
+                                <option value="3/4 CV">
+                                    3/4 CV
+                                </option>
+
+                                <option value="1 CV">
+                                    1 CV
+                                </option>
+
+                                <option value="2 CV">
+                                    2 CV
+                                </option>
+
+                                <option value="3 CV">
+                                    3 CV
+                                </option>
+
+                                <option value="5 CV">
+                                    5 CV
+                                </option>
+
+                                <option value="Acima de 5 CV">
+                                    Acima de 5 CV
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="vazaoBomba">
+                                Vazão
+                            </label>
+
+                            <input
+                                type="text"
+                                id="vazaoBomba"
+                                placeholder="Ex: 2.000 L/h">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="aplicacaoBomba">
+                                Aplicação
+                            </label>
+
+                            <select id="aplicacaoBomba">
+
+                                <option value="">
+                                    Selecione uma aplicação
+                                </option>
+
+                                <option value="Residencial">
+                                    Residencial
+                                </option>
+
+                                <option value="Comercial">
+                                    Comercial
+                                </option>
+
+                                <option value="Industrial">
+                                    Industrial
+                                </option>
+
+                                <option value="Agrícola">
+                                    Agrícola
+                                </option>
+
+                                <option value="Irrigação">
+                                    Irrigação
+                                </option>
+
+                                <option value="Piscinas">
+                                    Piscinas
+                                </option>
+
+                                <option value="Poços Artesianos">
+                                    Poços Artesianos
+                                </option>
+
+                                <option value="Construção Civil">
+                                    Construção Civil
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- IRRIGAÇÃO -->
+
+                <div
+                    id="camposIrrigacao"
+                    class="campos-produto"
+                    style="display:none;">
+
+                    <div class="campo-titulo">
+
+                        <span>🌱</span>
+
+                        <div>
+
+                            <h3>Informações de irrigação</h3>
+
+                            <p>
+                                Especificações do produto de irrigação.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="marcaIrrigacao">
+                                Marca
+                            </label>
+
+                            <input
+                                type="text"
+                                id="marcaIrrigacao"
+                                placeholder="Ex: Rain Bird">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="tipoIrrigacao">
+                                Tipo
+                            </label>
+
+                            <select id="tipoIrrigacao">
+
+                                <option value="">
+                                    Selecione o tipo
+                                </option>
+
+                                <option value="Aspersor">
+                                    Aspersor
+                                </option>
+
+                                <option value="Microaspersor">
+                                    Microaspersor
+                                </option>
+
+                                <option value="Gotejamento">
+                                    Gotejamento
+                                </option>
+
+                                <option value="Mangueira de Irrigação">
+                                    Mangueira de Irrigação
+                                </option>
+
+                                <option value="Tubo de Irrigação">
+                                    Tubo de Irrigação
+                                </option>
+
+                                <option value="Filtro de Irrigação">
+                                    Filtro de Irrigação
+                                </option>
+
+                                <option value="Válvula de Irrigação">
+                                    Válvula de Irrigação
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="vazaoIrrigacao">
+                                Vazão
+                            </label>
+
+                            <input
+                                type="text"
+                                id="vazaoIrrigacao"
+                                placeholder="Ex: 1.200 L/h">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="alcanceIrrigacao">
+                                Alcance
+                            </label>
+
+                            <input
+                                type="text"
+                                id="alcanceIrrigacao"
+                                placeholder="Ex: 12 metros">
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="diametroIrrigacao">
+                                Diâmetro
+                            </label>
+
+                            <input
+                                type="text"
+                                id="diametroIrrigacao"
+                                placeholder="Ex: 1/2 polegada">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="aplicacaoIrrigacao">
+                                Aplicação
+                            </label>
+
+                            <select id="aplicacaoIrrigacao">
+
+                                <option value="">
+                                    Selecione uma aplicação
+                                </option>
+
+                                <option value="Residencial">
+                                    Residencial
+                                </option>
+
+                                <option value="Jardinagem">
+                                    Jardinagem
+                                </option>
+
+                                <option value="Agrícola">
+                                    Agrícola
+                                </option>
+
+                                <option value="Paisagismo">
+                                    Paisagismo
+                                </option>
+
+                                <option value="Hortas">
+                                    Hortas
+                                </option>
+
+                                <option value="Estufas">
+                                    Estufas
+                                </option>
+
+                                <option value="Uso Profissional">
+                                    Uso Profissional
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="descricaoIrrigacao">
+                            Pequena descrição
+                        </label>
+
+                        <textarea
+                            id="descricaoIrrigacao"
+                            rows="4"
+                            placeholder="Descrição curta do produto."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CATEGORIA SEM CAMPOS ESPECÍFICOS -->
+
+                <div
+                    id="semEspecificacoes"
+                    class="sem-especificacoes">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <div>
+
+                        <strong>
+                            Nenhuma especificação específica
+                        </strong>
+
+                        <p>
+                            Selecione uma categoria para carregar
+                            os campos correspondentes.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================
+                 RODAPÉ DO CADASTRO
+            ================================== -->
+
+            <div class="cadastro-acoes">
 
                 <button
                     type="button"
-                    id="fecharModalProduto"
-                    class="btn-fechar">
-                    &times;
+                    id="salvarRascunho"
+                    class="btn-rascunho">
+
+                    <i class="fa-regular fa-floppy-disk"></i>
+
+                    Salvar rascunho
+
                 </button>
-                </div>
 
-                <form id="formProduto">
-                <div class="form-group">
-                    <label for="nomeProduto">Nome do produto</label>
-                    <input
-                    type="text"
-                    id="nomeProduto"
-                    placeholder="Ex: MS 162"
-                    required>
-                </div>
 
-                <div class="form-group">
-                    <label for="categoriaProduto">Categoria</label>
-                   <select id="categoriaProduto" required>
-
-    <option value="">
-        Selecione uma categoria
-    </option>
-
-
-    <!-- ==============================
-         STIHL
-    =============================== -->
-
-    <optgroup label="STIHL">
-
-        <option value="motosserras">
-            Motosserras
-        </option>
-
-        <option value="rocadeiras">
-            Roçadeiras
-        </option>
-
-        <option value="lavadoras">
-            Lavadoras de Alta Pressão
-        </option>
-
-        <option value="sopradores">
-            Sopradores
-        </option>
-
-        <option value="podadores">
-            Podadores
-        </option>
-
-        <option value="motobombas">
-            Motobombas
-        </option>
-
-        <option value="motocultivadores">
-            Motocultivadores
-        </option>
-
-        <option value="motores-estacionarios">
-            Motores Estacionários
-        </option>
-
-        <option value="geradores">
-            Geradores
-        </option>
-
-        <option value="cortadores-grama">
-            Cortadores de Grama
-        </option>
-
-        <option value="pulverizadores">
-            Pulverizadores
-        </option>
-
-        <option value="ferramentas-multifuncionais">
-            Ferramentas Multifuncionais
-        </option>
-
-        <option value="motopodas">
-            Motopodas
-        </option>
-
-        <option value="perfuradores">
-            Perfuradores
-        </option>
-
-        <option value="cortadores-disco">
-            Cortadores a Disco
-        </option>
-
-        <option value="colhedores">
-            Colhedores
-        </option>
-
-        <option value="tesouras-serrotes-poda">
-            Tesouras e Serrotes de Poda
-        </option>
-
-        <option value="ferramentas-florestais">
-            Ferramentas Florestais / Machados
-        </option>
-
-        <option value="aspiradores">
-            Aspiradores
-        </option>
-
-        <option value="baterias-carregadores">
-            Baterias e Carregadores
-        </option>
-
-        <option value="acessorios-stihl">
-            Acessórios STIHL
-        </option>
-
-        <option value="epi">
-            Equipamentos de Proteção
-        </option>
-
-    </optgroup>
-
-
-    <!-- ==============================
-         BOMBAS E IRRIGAÇÃO
-    =============================== -->
-
-    <optgroup label="Bombas e Irrigação">
-
-        <option value="bombas-centrifugas">
-            Bombas Centrífugas
-        </option>
-
-        <option value="bombas-perifericas">
-            Bombas Periféricas
-        </option>
-
-        <option value="bombas-submersas">
-            Bombas Submersas
-        </option>
-
-        <option value="bombas-submersiveis">
-            Bombas Submersíveis
-        </option>
-
-        <option value="bombas-autoaspirantes">
-            Bombas Autoaspirantes
-        </option>
-
-        <option value="bombas-injetoras">
-            Bombas Injetoras
-        </option>
-
-        <option value="motobombas-irrigacao">
-            Motobombas
-        </option>
-
-        <option value="bombas-piscina">
-            Bombas para Piscina
-        </option>
-
-        <option value="bombas-irrigacao">
-            Bombas para Irrigação
-        </option>
-
-        <option value="bombas-poco">
-            Bombas para Poços
-        </option>
-
-        <option value="bombas-drenagem">
-            Bombas para Drenagem
-        </option>
-
-        <option value="bombas-esgoto">
-            Bombas para Esgoto
-        </option>
-
-        <option value="pressurizadores">
-            Pressurizadores
-        </option>
-
-        <option value="sistemas-pressurizacao">
-            Sistemas de Pressurização
-        </option>
-
-        <option value="acessorios-bombas">
-            Acessórios para Bombas
-        </option>
-
-    </optgroup>
-
-    <!-- ==============================
-     IRRIGAÇÃO
-    ============================== -->
-
-     <option value="aspersores">
-            Aspersores
-     </option>
-
-     <option value="microaspersores">
-           Microaspersores
-      </option>
-
-    <option value="gotejamento">
-           Gotejamento
-    </option>
-
-    <option value="mangueiras-irrigacao">
-          Mangueiras de Irrigação
-    </option>
-
-    <option value="tubos-irrigacao">
-          Tubos para Irrigação
-    </option>
-
-    <option value="conexoes-irrigacao">
-          Conexões para Irrigação
-    </option>
-
-    <option value="filtros-irrigacao">
-          Filtros de Irrigação
-    </option>
-
-    <option value="valvulas-irrigacao">
-          Válvulas de Irrigação
-    </option>
-
-    <option value="acessorios-irrigacao">
-          Acessórios de Irrigação
-    </option>
-
-    <option value="linha-bateria">
-    🔋 Linha a Bateria
-</option>
-
-<option value="linha-eletrica">
-    🔌 Linha Elétrica
-</option>
-
-<option value="aspiradores">
-    🧹 Aspiradores
-</option>
-
-<option value="pecas-reposicao">
-    ⚙️ Peças de Reposição
-</option>
-
-<option value="ferramentas-corte">
-    🛠️ Ferramentas de Corte
-</option>
-
-<option value="lubrificantes">
-    🛢️ Lubrificantes
-</option>
-
-<option value="combustiveis">
-    ⛽ Combustíveis
-</option>
-
-<option value="epis">
-    🦺 EPIs
-</option>
-
-<option value="acessorios">
-    🔧 Acessórios
-</option>
-
-    <option value="outros">
-        Outros
-    </option>
-
-</select>
-
-<!-- ==========================================
-     INFORMAÇÕES GERAIS DO PRODUTO
-========================================== -->
-
-<div class="informacoes-gerais-produto">
-
-    <div class="campo-titulo">
-
-        <span>📝</span>
-
-        <div>
-
-            <h3>Informações do Produto</h3>
-
-            <p>
-                Essas informações serão utilizadas
-                na apresentação do produto no site.
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div class="form-group">
-
-        <label for="descricaoProduto">
-            Descrição do produto
-        </label>
-
-        <textarea
-            id="descricaoProduto"
-            rows="4"
-            placeholder="Ex: Produto compacto, resistente e desenvolvido para facilitar o trabalho no dia a dia."
-        ></textarea>
-
-    </div>
-
-
-    <div class="form-group">
-
-        <label for="funcaoProduto">
-            Função / Aplicação
-        </label>
-
-        <textarea
-            id="funcaoProduto"
-            rows="4"
-            placeholder="Ex: Indicado para jardinagem, limpeza, manutenção e uso profissional."
-        ></textarea>
-
-    </div>
-
-</div>
-
-</div>
-                
-                
-<!-- ==========================================
-     INFORMAÇÕES ESPECÍFICAS DO PRODUTO
-========================================== -->
-
-<div id="informacoesEspecificas" class="informacoes-especificas">
-
-    <!-- ==============================
-         STIHL
-    =============================== -->
-
-    <div
-        id="camposStihl"
-        class="campos-produto"
-        style="display:none;">
-
-        <div class="campo-titulo">
-            <span>🪚</span>
-            <div>
-                <h3>Informações STIHL</h3>
-                <p>Informações utilizadas na apresentação do produto.</p>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="descricaoStihl">
-                Pequena descrição
-            </label>
-
-            <textarea
-                id="descricaoStihl"
-                rows="4"
-                placeholder="Ex: Motosserra compacta, leve e ideal para trabalhos de jardinagem e uso doméstico."></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="aplicacaoStihl">
-                Aplicação
-            </label>
-
-            <select id="aplicacaoStihl">
-
-                <option value="">
-                    Selecione uma aplicação
-                </option>
-
-                <option value="Uso Doméstico">
-                    Uso Doméstico
-                </option>
-
-                <option value="Uso Profissional">
-                    Uso Profissional
-                </option>
-
-                <option value="Jardinagem">
-                    Jardinagem
-                </option>
-
-                <option value="Agricultura">
-                    Agricultura
-                </option>
-
-                <option value="Paisagismo">
-                    Paisagismo
-                </option>
-
-            </select>
-        </div>
-
-    </div>
-
-
-    <!-- ==============================
-         BOMBAS
-    =============================== -->
-
-    <div
-        id="camposBombas"
-        class="campos-produto"
-        style="display:none;">
-
-        <div class="campo-titulo">
-            <span>💧</span>
-            <div>
-                <h3>Informações da Bomba</h3>
-                <p>Informações exibidas nos cards de Bombas e Irrigação.</p>
-            </div>
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="marcaBomba">
-                Marca
-            </label>
-
-            <input
-                type="text"
-                id="marcaBomba"
-                placeholder="Ex: Ebara">
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="potenciaBomba">
-                Potência
-            </label>
-
-            <select id="potenciaBomba">
-
-                <option value="">
-                    Selecione a potência
-                </option>
-
-                <option value="1/2 CV">
-                    1/2 CV
-                </option>
-
-                <option value="3/4 CV">
-                    3/4 CV
-                </option>
-
-                <option value="1 CV">
-                    1 CV
-                </option>
-
-                <option value="2 CV">
-                    2 CV
-                </option>
-
-                <option value="3 CV">
-                    3 CV
-                </option>
-
-                <option value="5 CV">
-                    5 CV
-                </option>
-
-                <option value="Acima de 5 CV">
-                    Acima de 5 CV
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="vazaoBomba">
-                Vazão
-            </label>
-
-            <input
-                type="text"
-                id="vazaoBomba"
-                placeholder="Ex: 2.000 L/h">
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="aplicacaoBomba">
-                Aplicação
-            </label>
-
-            <select id="aplicacaoBomba">
-
-                <option value="">
-                    Selecione uma aplicação
-                </option>
-
-                <option value="Residencial">
-                    Residencial
-                </option>
-
-                <option value="Comercial">
-                    Comercial
-                </option>
-
-                <option value="Industrial">
-                    Industrial
-                </option>
-
-                <option value="Agrícola">
-                    Agrícola
-                </option>
-
-                <option value="Irrigação">
-                    Irrigação
-                </option>
-
-                <option value="Piscinas">
-                    Piscinas
-                </option>
-
-                <option value="Poços Artesianos">
-                    Poços Artesianos
-                </option>
-
-                <option value="Construção Civil">
-                    Construção Civil
-                </option>
-
-            </select>
-
-        </div>
-
-    </div>
-
-    <!-- ==============================
-         IRRIGAÇÃO
-    =============================== -->
-
-    <div
-        id="camposIrrigacao"
-        class="campos-produto"
-        style="display:none;">
-
-        <div class="campo-titulo">
-
-            <span>🌱</span>
-
-            <div>
-
-                <h3>Informações de Irrigação</h3>
-
-                <p>
-                    Informações utilizadas na apresentação
-                    dos produtos de irrigação.
-                </p>
-
-            </div>
-
-        </div>
-
-       <div class="form-group">
-
-    <label for="marcaIrrigacao">
-        Marca
-    </label>
-
-    <input
-        type="text"
-        id="marcaIrrigacao"
-        placeholder="Ex: Rain Bird">
-
-</div>
-
-
-<div class="form-group">
-
-    <label for="tipoIrrigacao">
-        Tipo de Irrigação
-    </label>
-
-    <select id="tipoIrrigacao">
-
-        <option value="">
-            Selecione o tipo
-        </option>
-
-        <option value="Aspersor">
-            Aspersor
-        </option>
-
-        <option value="Microaspersor">
-            Microaspersor
-        </option>
-
-        <option value="Gotejamento">
-            Gotejamento
-        </option>
-
-        <option value="Mangueira de Irrigação">
-            Mangueira de Irrigação
-        </option>
-
-        <option value="Tubo de Irrigação">
-            Tubo de Irrigação
-        </option>
-
-        <option value="Filtro de Irrigação">
-            Filtro de Irrigação
-        </option>
-
-        <option value="Válvula de Irrigação">
-            Válvula de Irrigação
-        </option>
-
-        <option value="Acessório de Irrigação">
-            Acessório de Irrigação
-        </option>
-
-    </select>
-
-</div>
-
-
-<div class="form-group">
-
-    <label for="vazaoIrrigacao">
-        Vazão
-    </label>
-
-    <input
-        type="text"
-        id="vazaoIrrigacao"
-        placeholder="Ex: 1.200 L/h">
-
-</div>
-
-
-<div class="form-group">
-
-    <label for="alcanceIrrigacao">
-        Alcance
-    </label>
-
-    <input
-        type="text"
-        id="alcanceIrrigacao"
-        placeholder="Ex: 12 metros">
-
-</div>
-
-
-<div class="form-group">
-
-    <label for="diametroIrrigacao">
-        Diâmetro
-    </label>
-
-    <input
-        type="text"
-        id="diametroIrrigacao"
-        placeholder="Ex: 1/2 polegada">
-
-</div>
-
-
-<div class="form-group">
-
-    <label for="aplicacaoIrrigacao">
-        Aplicação
-    </label>
-
-    <select id="aplicacaoIrrigacao">
-
-        <option value="">
-            Selecione uma aplicação
-        </option>
-
-        <option value="Residencial">
-            Residencial
-        </option>
-
-        <option value="Jardinagem">
-            Jardinagem
-        </option>
-
-        <option value="Agrícola">
-            Agrícola
-        </option>
-
-        <option value="Paisagismo">
-            Paisagismo
-        </option>
-
-        <option value="Hortas">
-            Hortas
-        </option>
-
-        <option value="Estufas">
-            Estufas
-        </option>
-
-        <option value="Uso Profissional">
-            Uso Profissional
-        </option>
-
-    </select>
-
-</div>
-
-
-<div class="form-group">
-
-    <label for="descricaoIrrigacao">
-        Pequena descrição
-    </label>
-
-    <textarea
-        id="descricaoIrrigacao"
-        rows="4"
-        placeholder="Ex: Sistema de irrigação indicado para jardins e áreas agrícolas."></textarea>
-
-</div>
-
-    </div>
-
-    <!-- ==============================
-         DESTAQUE
-    =============================== -->
-
-    <div class="form-group campo-destaque">
-
-        <label for="destaqueProduto">
-            ⭐ Destaque do produto
-        </label>
-
-        <select id="destaqueProduto">
-
-            <option value="">
-                Nenhum
-            </option>
-
-            <option value="promocoes">
-                Promoções
-            </option>
-
-            <option value="lancamentos">
-                Lançamentos
-            </option>
-
-            <option value="mais-vendidos">
-                Mais Vendidos
-            </option>
-
-            <option value="novidades">
-                Novidades
-            </option>
-
-        </select>
-
-        <small>
-            Opcional. Não é necessário selecionar um destaque para cadastrar o produto.
-        </small>
-
-    </div>
-
-</div>
-
-                <div class="form-group">
-                    <label for="precoProduto">Preço</label>
-                    <input
-                    type="number"
-                    id="precoProduto"
-                    min="0"
-                    step="0.01"
-                    placeholder="1299.90"
-                    required>
-                </div>
-
-                <div class="form-group">
-                    <label for="estoqueProduto">Estoque</label>
-                    <select id="estoqueProduto" required>
-                    <option value="Em estoque">Em estoque</option>
-                    <option value="Estoque baixo">Estoque baixo</option>
-                    <option value="Fora de estoque">Fora de estoque</option>
-                    </select>
-                </div>
-
-                <!-- PRODUTO EM DESTAQUE -->
-
-<div class="form-group destaque-produto">
-
-    <label for="produtoDestaque">
-        <i class="fa-solid fa-star"></i>
-        Produto em destaque
-    </label>
-
-    <label class="checkbox-destaque">
-
-        <input
-            type="checkbox"
-            id="produtoDestaque">
-
-        <span>
-            Exibir este produto na página inicial
-        </span>
-
-    </label>
-
-</div>
-
-                <!-- NOVA ÁREA: upload com drag & drop -->
-               <div class="form-group">
-
-    <label>Imagens do produto</label>
-
-    <div
-        id="dropArea"
-        class="drop-area"
-    >
-
-        <p>
-            Arraste as imagens aqui ou clique para selecionar
-        </p>
-
-        <small>
-            Você pode selecionar várias fotos.
-        </small>
-
-        <input
-            type="file"
-            id="arquivoImagem"
-            accept="image/*"
-            multiple
-            hidden
-        >
-
-    </div>
-
-    <div
-        id="previewImagens"
-        class="preview-imagens"
-    ></div>
-
-</div>
-
-                <div class="modal-acoes">
-                    <button
-                    type="button"
-                    id="cancelarProduto"
-                    class="btn-cancelar">
-                    Cancelar
-                    </button>
+                <div class="acoes-navegacao">
 
                     <button
-                    type="submit"
-                    class="btn-confirmar">
-                    Salvar Produto
+                        type="button"
+                        id="btnAnterior"
+                        class="btn-cancelar">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Voltar
+
                     </button>
+
+
+                    <button
+                        type="button"
+                        id="btnProximo"
+                        class="btn-confirmar">
+
+                        Continuar
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        id="btnPublicarProduto"
+                        class="btn-confirmar"
+                        style="display:none;">
+
+                        <i class="fa-solid fa-rocket"></i>
+
+                        Publicar produto
+
+                    </button>
+
                 </div>
-                </form>
+
             </div>
-            </div>
+
+        </form>
+
 
             <!--==========================
                 CONFIGURAÇÕES

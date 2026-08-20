@@ -873,167 +873,371 @@ tbody tr:last-child td{
 
 }
 
-
 /* ==================================================
-   MODAL DE PRODUTO
+   NOVO CADASTRO DE PRODUTO
 ================================================== */
 
-.modal-produto{
-
+#modalProduto{
     position:fixed;
-
     inset:0;
+    z-index:9999;
 
     display:none;
-
     align-items:center;
-
     justify-content:center;
 
     padding:25px;
 
-    background:rgba(0,0,0,.65);
-
-    z-index:3000;
-
-    backdrop-filter:blur(4px);
-
+    background:rgba(0,0,0,.68);
+    backdrop-filter:blur(5px);
 }
 
-
-.modal-produto.aberto{
-
+#modalProduto.aberto{
     display:flex;
-
 }
 
 
 /* ==================================================
-   CONTEÚDO DO MODAL
+   CAIXA PRINCIPAL
 ================================================== */
 
-.modal-conteudo{
-
+#modalProduto .cadastro-produto{
     width:100%;
+    max-width:1100px;
+    max-height:94vh;
 
-    max-width:700px;
+    display:flex;
+    flex-direction:column;
 
-    max-height:90vh;
-
-    overflow-y:auto;
-
-    padding:30px;
+    overflow:hidden;
 
     background:var(--branco);
 
     border:1px solid #F3C59D;
+    border-radius:20px;
 
-    border-radius:18px;
-
-    box-shadow:0 20px 60px rgba(0,0,0,.25);
-
-}
-
-
-.modal-conteudo::-webkit-scrollbar{
-
-    width:8px;
-
-}
-
-
-.modal-conteudo::-webkit-scrollbar-thumb{
-
-    background:#CCCCCC;
-
-    border-radius:10px;
-
+    box-shadow:0 25px 80px rgba(0,0,0,.28);
 }
 
 
 /* ==================================================
-   TOPO DO MODAL
+   CABEÇALHO
 ================================================== */
 
-.modal-topo{
-
+.cadastro-topo{
     display:flex;
-
     align-items:center;
-
     justify-content:space-between;
 
     gap:20px;
 
-    margin-bottom:28px;
+    padding:24px 30px;
 
+    border-bottom:1px solid var(--borda);
+
+    background:var(--branco);
 }
 
-
-.modal-topo h2{
+.cadastro-topo h2{
+    margin-top:10px;
 
     color:var(--preto);
 
-    font-size:24px;
-
+    font-size:25px;
     font-weight:800;
+}
 
+.cadastro-topo p{
+    margin-top:5px;
+
+    color:var(--texto-suave);
+
+    font-size:12px;
 }
 
 
-.btn-fechar{
+/* VOLTAR PARA PRODUTOS */
 
+.btn-voltar-produtos{
+    display:inline-flex;
+    align-items:center;
+
+    gap:8px;
+
+    padding:0;
+
+    border:0;
+    background:transparent;
+
+    color:var(--laranja);
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:12px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.btn-voltar-produtos:hover{
+    color:var(--laranja-escuro);
+
+    transform:translateX(-3px);
+}
+
+
+/* ==================================================
+   BOTÃO FECHAR
+================================================== */
+
+#modalProduto .btn-fechar{
     width:40px;
-
     height:40px;
 
     display:flex;
-
     align-items:center;
-
     justify-content:center;
 
     flex-shrink:0;
 
     border:0;
-
     border-radius:50%;
 
     background:var(--vermelho);
-
     color:var(--branco);
 
     font-size:24px;
 
-    line-height:1;
-
     cursor:pointer;
 
     transition:.2s ease;
-
 }
 
-
-.btn-fechar:hover{
-
+#modalProduto .btn-fechar:hover{
     transform:rotate(90deg) scale(1.05);
-
 }
 
 
 /* ==================================================
-   FORMULÁRIOS
+   ETAPAS
 ================================================== */
 
-.form-group{
+.etapas-produto{
+    display:flex;
+    align-items:center;
 
-    margin-bottom:20px;
+    padding:20px 30px;
 
+    background:#FAFAFA;
+
+    border-bottom:1px solid var(--borda);
+
+    overflow-x:auto;
+}
+
+.etapa-produto{
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+
+    flex-shrink:0;
+
+    color:#999999;
+
+    transition:.25s ease;
+}
+
+.numero-etapa{
+    width:34px;
+    height:34px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:2px solid #D8D8D8;
+    border-radius:50%;
+
+    background:var(--branco);
+
+    color:#999999;
+
+    font-size:12px;
+    font-weight:800;
+
+    transition:.25s ease;
+}
+
+.etapa-produto strong{
+    display:block;
+
+    font-size:11px;
+    font-weight:800;
+}
+
+.etapa-produto small{
+    display:block;
+
+    margin-top:2px;
+
+    color:#999999;
+
+    font-size:9px;
+}
+
+.etapa-produto.ativa{
+    color:var(--laranja);
+}
+
+.etapa-produto.ativa .numero-etapa{
+    border-color:var(--laranja);
+
+    background:var(--laranja);
+
+    color:var(--branco);
+
+    box-shadow:0 4px 12px rgba(245,130,32,.25);
+}
+
+.etapa-produto.ativa small{
+    color:var(--texto-suave);
+}
+
+.linha-etapa{
+    flex:1;
+
+    min-width:25px;
+
+    height:2px;
+
+    margin:0 15px;
+
+    background:#E2E2E2;
 }
 
 
-.form-group label{
+/* ==================================================
+   FORMULÁRIO
+================================================== */
 
+#modalProduto #formProduto{
+    flex:1;
+
+    min-height:0;
+
+    display:flex;
+    flex-direction:column;
+
+    overflow:hidden;
+}
+
+
+/* ==================================================
+   CONTEÚDO DAS ETAPAS
+================================================== */
+
+.etapa-conteudo{
+    display:none;
+
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:30px;
+}
+
+.etapa-conteudo.ativa{
+    display:block;
+}
+
+
+/* ==================================================
+   TÍTULO DAS SEÇÕES
+================================================== */
+
+.titulo-secao{
+    display:flex;
+    align-items:flex-start;
+
+    gap:12px;
+
+    margin-bottom:25px;
+}
+
+.icone-secao{
+    width:42px;
+    height:42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
+    border-radius:11px;
+
+    background:#FFF3E8;
+
+    color:var(--laranja);
+
+    font-size:17px;
+}
+
+.titulo-secao h3{
+    color:var(--preto);
+
+    font-size:18px;
+    font-weight:800;
+}
+
+.titulo-secao p{
+    margin-top:4px;
+
+    color:var(--texto-suave);
+
+    font-size:11px;
+}
+
+
+/* ==================================================
+   GRID DA PRIMEIRA ETAPA
+================================================== */
+
+.cadastro-grid{
+    display:grid;
+
+    grid-template-columns:minmax(0,1fr) 330px;
+
+    gap:35px;
+
+    align-items:start;
+}
+
+.cadastro-formulario{
+    min-width:0;
+}
+
+.form-row{
+    display:grid;
+
+    grid-template-columns:repeat(2,minmax(0,1fr));
+
+    gap:18px;
+}
+
+
+/* ==================================================
+   CAMPOS DO FORMULÁRIO
+================================================== */
+
+.cadastro-formulario .form-group{
+    margin-bottom:20px;
+}
+
+.cadastro-formulario .form-group label{
     display:block;
 
     margin-bottom:8px;
@@ -1041,17 +1245,12 @@ tbody tr:last-child td{
     color:var(--texto);
 
     font-size:13px;
-
     font-weight:700;
-
 }
 
-
-.form-group input,
-.form-group select,
-.form-group textarea,
-.settings-form input{
-
+.cadastro-formulario .form-group input,
+.cadastro-formulario .form-group select,
+.cadastro-formulario .form-group textarea{
     width:100%;
 
     min-height:48px;
@@ -1059,10 +1258,9 @@ tbody tr:last-child td{
     padding:12px 14px;
 
     border:1px solid #DCDCDC;
-
     border-radius:10px;
 
-    background:#FFFFFF;
+    background:var(--branco);
 
     color:var(--texto);
 
@@ -1073,252 +1271,184 @@ tbody tr:last-child td{
     outline:none;
 
     transition:.2s ease;
-
 }
 
-
-.form-group textarea{
-
+.cadastro-formulario .form-group textarea{
     min-height:110px;
 
     resize:vertical;
-
 }
 
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus,
-.settings-form input:focus{
-
+.cadastro-formulario .form-group input:focus,
+.cadastro-formulario .form-group select:focus,
+.cadastro-formulario .form-group textarea:focus{
     border-color:var(--laranja);
 
     box-shadow:0 0 0 3px rgba(245,130,32,.10);
-
 }
 
 
 /* ==================================================
-   INFORMAÇÕES ESPECÍFICAS
+   PREVIEW DO PRODUTO
 ================================================== */
 
-.informacoes-especificas{
+.preview-produto{
+    position:sticky;
 
-    margin-bottom:20px;
-
-}
-
-
-.campos-produto{
+    top:0;
 
     padding:20px;
 
-    margin-bottom:20px;
+    border:1px solid var(--borda);
+    border-radius:15px;
 
-    border:1px solid #F3CBAE;
-
-    border-radius:14px;
-
-    background:#FFF9F4;
-
+    background:#FAFAFA;
 }
 
-
-.campo-titulo{
-
+.preview-titulo{
     display:flex;
-
-    align-items:flex-start;
-
-    gap:12px;
-
-    margin-bottom:20px;
-
-}
-
-
-.campo-titulo > span{
-
-    font-size:25px;
-
-}
-
-
-.campo-titulo h3{
-
-    color:var(--preto);
-
-    font-size:16px;
-
-    font-weight:800;
-
-}
-
-
-.campo-titulo p{
-
-    margin-top:4px;
-
-    color:var(--texto-suave);
-
-    font-size:11px;
-
-    line-height:1.5;
-
-}
-
-
-/* ==================================================
-   DESTAQUE
-================================================== */
-
-.campo-destaque{
-
-    padding:20px;
-
-    border:1px solid #F3CBAE;
-
-    border-radius:14px;
-
-    background:#FFF9F4;
-
-}
-
-
-.campo-destaque label{
-
-    color:var(--preto);
-
-}
-
-
-.campo-destaque label:first-child{
-
-    font-size:15px;
-
-}
-
-
-.campo-destaque select{
-
-    margin-top:4px;
-
-}
-
-
-.campo-destaque small{
-
-    display:block;
-
-    margin-top:7px;
-
-    color:#888888;
-
-    font-size:11px;
-
-    line-height:1.5;
-
-}
-
-
-/* ==================================================
-   PRODUTO EM DESTAQUE
-================================================== */
-
-.destaque-produto{
-
-    padding:20px;
-
-    border:1px solid #F3CBAE;
-
-    border-radius:14px;
-
-    background:#FFF9F4;
-
-}
-
-
-.destaque-produto > label:first-child{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:9px;
-
-    color:var(--preto);
-
-    font-size:15px;
-
-}
-
-
-.destaque-produto > label:first-child i{
-
-    color:var(--laranja);
-
-}
-
-
-.checkbox-destaque{
-
-    display:flex !important;
-
     align-items:center;
 
     gap:10px;
 
-    min-height:45px;
+    margin-bottom:18px;
+}
 
-    padding:10px 12px;
+.preview-titulo > span{
+    width:36px;
+    height:36px;
 
-    margin-top:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-    border:1px solid #DDDDDD;
+    border-radius:9px;
 
-    border-radius:10px;
+    background:#FFF3E8;
+
+    color:var(--laranja);
+}
+
+.preview-titulo h3{
+    color:var(--preto);
+
+    font-size:14px;
+    font-weight:800;
+}
+
+.preview-titulo p{
+    margin-top:2px;
+
+    color:var(--texto-suave);
+
+    font-size:10px;
+}
+
+.preview-card{
+    overflow:hidden;
+
+    border:1px solid var(--borda);
+    border-radius:13px;
 
     background:var(--branco);
 
-    cursor:pointer;
-
+    box-shadow:0 4px 15px rgba(0,0,0,.04);
 }
 
+.preview-imagem{
+    height:220px;
 
-.checkbox-destaque input{
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-    width:18px;
+    background:#F7F7F7;
 
-    height:18px;
+    border-bottom:1px solid var(--borda);
+}
 
-    min-height:auto;
+.preview-sem-imagem{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
 
-    accent-color:var(--laranja);
+    gap:8px;
 
+    color:#B5B5B5;
+}
+
+.preview-sem-imagem i{
+    font-size:38px;
+}
+
+.preview-sem-imagem small{
+    font-size:10px;
+}
+
+.preview-info{
+    padding:18px;
+}
+
+.preview-categoria{
+    display:inline-block;
+
+    margin-bottom:8px;
+
+    color:var(--laranja);
+
+    font-size:9px;
+    font-weight:800;
+
+    text-transform:uppercase;
+}
+
+.preview-info h3{
+    color:var(--preto);
+
+    font-size:15px;
+    font-weight:800;
+
+    line-height:1.35;
+}
+
+.preview-info p{
+    margin-top:8px;
+
+    color:var(--texto-suave);
+
+    font-size:10px;
+
+    line-height:1.5;
+}
+
+.preview-info strong{
+    display:block;
+
+    margin-top:15px;
+
+    color:var(--laranja);
+
+    font-size:19px;
+    font-weight:800;
 }
 
 
 /* ==================================================
-   UPLOAD
+   UPLOAD DE IMAGENS
 ================================================== */
 
 .drop-area{
-
-    min-height:130px;
+    min-height:240px;
 
     display:flex;
-
     flex-direction:column;
-
     align-items:center;
-
     justify-content:center;
 
-    padding:25px;
+    padding:30px;
 
-    border:2px dashed #CFCFCF;
-
-    border-radius:12px;
+    border:2px dashed #D4D4D4;
+    border-radius:15px;
 
     background:#FCFCFC;
 
@@ -1327,806 +1457,391 @@ tbody tr:last-child td{
     cursor:pointer;
 
     transition:.25s ease;
-
 }
 
+.drop-area > i{
+    margin-bottom:15px;
 
-.drop-area:hover,
-.drop-area.ativo{
+    color:var(--laranja);
 
-    border-color:var(--laranja);
-
-    background:#FFF8F1;
-
+    font-size:42px;
 }
 
+.drop-area h3{
+    color:var(--preto);
+
+    font-size:16px;
+    font-weight:800;
+}
 
 .drop-area p{
+    margin-top:7px;
 
-    color:#666666;
+    color:var(--laranja);
 
-    font-size:13px;
-
+    font-size:12px;
+    font-weight:700;
 }
 
-
 .drop-area small{
-
-    margin-top:5px;
+    margin-top:8px;
 
     color:#999999;
 
-    font-size:11px;
+    font-size:10px;
+}
 
+.drop-area:hover,
+.drop-area.ativo{
+    border-color:var(--laranja);
+
+    background:#FFF8F1;
 }
 
 
 /* ==================================================
-   PREVIEW DAS IMAGENS
+   MINIATURAS
 ================================================== */
 
 .preview-imagens{
-
     display:grid;
 
     grid-template-columns:
-        repeat(auto-fill,minmax(110px,1fr));
+        repeat(auto-fill,minmax(130px,1fr));
 
-    gap:12px;
+    gap:15px;
 
-    margin-top:15px;
-
+    margin-top:20px;
 }
 
-
 .preview-imagem-item{
-
     position:relative;
 
-    height:110px;
+    height:130px;
 
     padding:7px;
 
     border:1px solid var(--borda);
-
-    border-radius:10px;
+    border-radius:11px;
 
     background:#FAFAFA;
 
     overflow:hidden;
-
 }
-
 
 .preview-imagem-item.principal{
-
     border:2px solid var(--laranja);
 
+    box-shadow:0 4px 12px rgba(245,130,32,.15);
 }
 
-
 .preview-imagem-item img{
-
     width:100%;
-
     height:100%;
 
     object-fit:contain;
-
 }
 
-
 .preview-imagem-item span{
-
     position:absolute;
 
-    left:5px;
+    left:6px;
+    bottom:6px;
 
-    bottom:5px;
-
-    padding:4px 6px;
+    padding:4px 7px;
 
     border-radius:5px;
 
     background:var(--laranja);
-
     color:var(--branco);
 
     font-size:8px;
-
     font-weight:800;
-
 }
 
-
 .preview-imagem-remover{
-
     position:absolute;
 
-    right:5px;
+    top:6px;
+    right:6px;
 
-    top:5px;
-
-    width:25px;
-
-    height:25px;
+    width:27px;
+    height:27px;
 
     display:flex;
-
     align-items:center;
-
     justify-content:center;
 
     border:0;
-
     border-radius:50%;
 
     background:var(--vermelho);
-
     color:var(--branco);
-
-    font-size:16px;
 
     cursor:pointer;
 
     z-index:2;
-
 }
 
 
 /* ==================================================
-   AÇÕES DO MODAL
+   CAMPOS ESPECÍFICOS
 ================================================== */
 
-.modal-acoes{
-
-    display:flex;
-
-    justify-content:flex-end;
-
-    gap:12px;
-
-    padding-top:10px;
-
-    margin-top:10px;
-
-    border-top:1px solid var(--borda);
-
-}
-
-
-.btn-cancelar,
-.btn-confirmar{
-
-    min-height:45px;
-
-    padding:0 22px;
-
-    border-radius:9px;
-
-    font-family:"Montserrat",sans-serif;
-
-    font-size:13px;
-
-    font-weight:800;
-
-    cursor:pointer;
-
-    transition:.2s ease;
-
-}
-
-
-.btn-cancelar{
-
-    border:0;
-
-    background:#EEEEEE;
-
-    color:#555555;
-
-}
-
-
-.btn-cancelar:hover{
-
-    background:#DDDDDD;
-
-}
-
-
-.btn-confirmar{
-
-    border:0;
-
-    background:var(--laranja);
-
-    color:var(--branco);
-
-}
-
-
-.btn-confirmar:hover{
-
-    background:var(--laranja-escuro);
-
-    transform:translateY(-2px);
-
-    box-shadow:0 6px 16px rgba(245,130,32,.22);
-
-}
-
-
-/* ==================================================
-   CONFIGURAÇÕES
-================================================== */
-
-.settings-form{
-
-    max-width:800px;
-
-    padding:28px;
-
-    background:var(--branco);
-
-    border:1px solid var(--borda);
-
-    border-radius:16px;
-
-    box-shadow:0 6px 20px rgba(0,0,0,.05);
-
-}
-
-
-.btn-save{
-
-    min-height:46px;
-
-    display:inline-flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:9px;
-
-    padding:0 20px;
-
-    border:0;
-
-    border-radius:9px;
-
-    background:var(--laranja);
-
-    color:var(--branco);
-
-    font-family:"Montserrat",sans-serif;
-
-    font-size:13px;
-
-    font-weight:800;
-
-    cursor:pointer;
-
-    transition:.2s ease;
-
-}
-
-
-.btn-save:hover{
-
-    background:var(--laranja-escuro);
-
-    transform:translateY(-2px);
-
-}
-
-
-/* ==================================================
-   FOOTER
-================================================== */
-
-.admin-footer{
-
-    min-height:65px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:15px 30px;
-
-    background:var(--branco);
-
-    border-top:1px solid var(--borda);
-
-}
-
-
-.admin-footer p{
-
-    color:#777777;
-
-    font-size:12px;
-
-}
-
-
-/* ==================================================
-   RESPONSIVO — TABLET
-================================================== */
-
-@media(max-width:1000px){
-
-    .sidebar{
-
-        width:210px;
-
-    }
-
-
-    .admin-content{
-
-        width:calc(100% - 210px);
-
-        margin-left:210px;
-
-    }
-
-
-    .admin-header{
-
-        padding:22px 25px;
-
-    }
-
-
-    .admin-main{
-
-        padding:30px 25px 40px;
-
-    }
-
-
-    .menu-item{
-
-        font-size:12px;
-
-        padding:0 12px;
-
-    }
-
-}
-
-
-/* ==================================================
-   RESPONSIVO — CELULAR
-================================================== */
-
-@media(max-width:700px){
-
-    .admin-container{
-
-        display:block;
-
-    }
-
-
-    .sidebar{
-
-        position:relative;
-
-        width:100%;
-
-        height:auto;
-
-        border-right:0;
-
-        border-bottom:3px solid var(--laranja);
-
-    }
-
-
-    .sidebar-logo{
-
-        padding:18px;
-
-    }
-
-
-    .sidebar-logo img{
-
-        width:120px;
-
-    }
-
-
-    .sidebar-logo h2{
-
-        margin-top:8px;
-
-        font-size:14px;
-
-    }
-
-
-    .sidebar-menu{
-
-        display:grid;
-
-        grid-template-columns:
-            repeat(2,1fr);
-
-        gap:6px;
-
-        padding:10px;
-
-    }
-
-
-    .menu-item{
-
-        min-height:42px;
-
-        justify-content:center;
-
-        padding:0 8px;
-
-        font-size:11px;
-
-        border-left:0;
-
-    }
-
-
-    .menu-item i{
-
-        width:auto;
-
-        font-size:13px;
-
-    }
-
-
-    .admin-content{
-
-        width:100%;
-
-        margin-left:0;
-
-    }
-
-
-    .admin-header{
-
-        min-height:auto;
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-        padding:25px 18px;
-
-    }
-
-
-    .header-title h1{
-
-        font-size:24px;
-
-    }
-
-
-    .header-user{
-
-        align-self:flex-end;
-
-    }
-
-
-    .admin-main{
-
-        padding:25px 15px 35px;
-
-    }
-
-
-    .section-header{
-
-        align-items:flex-start;
-
-        flex-direction:column;
-
-    }
-
-
-    .section-header h2{
-
-        font-size:23px;
-
-    }
-
-
-    .btn-add{
-
-        width:100%;
-
-    }
-
-
-    .cards{
-
-        grid-template-columns:1fr 1fr;
-
-    }
-
-
-    .modal-produto{
-
-        padding:10px;
-
-    }
-
-
-    .modal-conteudo{
-
-        max-height:94vh;
-
-        padding:22px;
-
-        border-radius:14px;
-
-    }
-
-
-    .modal-acoes{
-
-        flex-direction:column-reverse;
-
-    }
-
-
-    .btn-cancelar,
-    .btn-confirmar{
-
-        width:100%;
-
-    }
-
-}
-
-
-/* ==================================================
-   RESPONSIVO — CELULAR PEQUENO
-================================================== */
-
-@media(max-width:450px){
-
-    .cards{
-
-        grid-template-columns:1fr;
-
-    }
-
-
-    .header-user{
-
-        align-self:flex-start;
-
-    }
-
-
-    .header-user i{
-
-        font-size:30px;
-
-    }
-
-
-    .modal-topo h2{
-
-        font-size:20px;
-
-    }
-
-
-    .campo-titulo{
-
-        gap:8px;
-
-    }
-
-
-    .preview-imagens{
-
-        grid-template-columns:
-            repeat(2,1fr);
-
-    }
-
-}
-/* ==================================================
-   CAMPOS DE IRRIGAÇÃO
-================================================== */
-
-#camposIrrigacao{
-
-    display:none;
-
-    width:100%;
-
-    margin-top:20px;
-
+.campos-produto{
     padding:20px;
 
-    background:#FFF9F4;
+    margin-bottom:20px;
 
     border:1px solid #F3CBAE;
-
     border-radius:14px;
 
+    background:#FFF9F4;
 }
 
-
-/* Título */
-
-#camposIrrigacao .campo-titulo{
-
+.campo-titulo{
     display:flex;
-
     align-items:flex-start;
 
     gap:12px;
 
-    margin-bottom:22px;
-
+    margin-bottom:20px;
 }
 
-
-#camposIrrigacao .campo-titulo span{
-
-    font-size:26px;
-
-    line-height:1;
-
+.campo-titulo > span{
+    font-size:25px;
 }
 
+.campo-titulo h3{
+    color:var(--preto);
 
-#camposIrrigacao .campo-titulo h3{
-
-    margin:0;
-
-    color:#111111;
-
-    font-size:17px;
-
+    font-size:16px;
     font-weight:800;
-
 }
 
+.campo-titulo p{
+    margin-top:4px;
 
-#camposIrrigacao .campo-titulo p{
-
-    margin-top:5px;
-
-    color:#777777;
+    color:var(--texto-suave);
 
     font-size:11px;
 
     line-height:1.5;
-
-}
-
-
-/* Campos */
-
-#camposIrrigacao .form-group{
-
-    width:100%;
-
-    margin-bottom:18px;
-
-}
-
-
-#camposIrrigacao .form-group label{
-
-    display:block;
-
-    margin-bottom:7px;
-
-    color:#292929;
-
-    font-size:13px;
-
-    font-weight:700;
-
-}
-
-
-#camposIrrigacao input,
-#camposIrrigacao select,
-#camposIrrigacao textarea{
-
-    width:100%;
-
-    min-height:46px;
-
-    padding:11px 13px;
-
-    border:1px solid #D8D8D8;
-
-    border-radius:9px;
-
-    background:#FFFFFF;
-
-    color:#292929;
-
-    font-family:"Montserrat",sans-serif;
-
-    font-size:13px;
-
-    outline:none;
-
-    transition:.2s ease;
-
-}
-
-
-#camposIrrigacao textarea{
-
-    min-height:100px;
-
-    resize:vertical;
-
-}
-
-
-#camposIrrigacao input:focus,
-#camposIrrigacao select:focus,
-#camposIrrigacao textarea:focus{
-
-    border-color:#F58220;
-
-    box-shadow:0 0 0 3px rgba(245,130,32,.10);
-
 }
 
 
 /* ==================================================
-   MODAL — AJUSTE DE LARGURA
+   DESTAQUE
 ================================================== */
 
-.modal-conteudo{
+.destaque-produto{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 
-    width:100%;
+    gap:20px;
 
-    max-width:700px;
+    padding:20px;
 
-    max-height:90vh;
+    border:1px solid #F3CBAE;
+    border-radius:14px;
 
-    overflow-y:auto;
+    background:#FFF9F4;
+}
 
+.destaque-produto h3{
+    color:var(--preto);
+
+    font-size:14px;
+    font-weight:800;
+}
+
+.destaque-produto h3 i{
+    margin-right:6px;
+
+    color:var(--laranja);
+}
+
+.destaque-produto p{
+    margin-top:5px;
+
+    color:var(--texto-suave);
+
+    font-size:10px;
+}
+
+.checkbox-destaque{
+    display:flex;
+
+    align-items:center;
+
+    cursor:pointer;
+}
+
+.checkbox-destaque input{
+    width:20px;
+    height:20px;
+
+    accent-color:var(--laranja);
+
+    cursor:pointer;
 }
 
 
-/* Evita os campos estourarem o modal */
+/* ==================================================
+   SEM ESPECIFICAÇÕES
+================================================== */
 
-.modal-conteudo *{
+.sem-especificacoes{
+    display:flex;
+    align-items:flex-start;
 
-    max-width:100%;
+    gap:15px;
 
+    padding:22px;
+
+    border:1px dashed #D8D8D8;
+    border-radius:14px;
+
+    background:#FAFAFA;
+
+    color:#777777;
+}
+
+.sem-especificacoes > i{
+    margin-top:2px;
+
+    color:var(--laranja);
+
+    font-size:18px;
+}
+
+.sem-especificacoes strong{
+    display:block;
+
+    color:var(--preto);
+
+    font-size:12px;
+}
+
+.sem-especificacoes p{
+    margin-top:5px;
+
+    font-size:10px;
+
+    line-height:1.5;
 }
 
 
-.modal-conteudo input,
-.modal-conteudo select,
-.modal-conteudo textarea{
+/* ==================================================
+   RODAPÉ / AÇÕES
+================================================== */
 
-    box-sizing:border-box;
+.cadastro-acoes{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 
+    gap:15px;
+
+    padding:18px 30px;
+
+    border-top:1px solid var(--borda);
+
+    background:#FAFAFA;
+}
+
+.acoes-navegacao{
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+}
+
+.btn-rascunho,
+.cadastro-acoes .btn-cancelar,
+.cadastro-acoes .btn-confirmar{
+    min-height:44px;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:8px;
+
+    padding:0 18px;
+
+    border-radius:9px;
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:12px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.btn-rascunho{
+    border:1px solid #D8D8D8;
+
+    background:var(--branco);
+
+    color:#666666;
+}
+
+.btn-rascunho:hover{
+    border-color:var(--laranja);
+
+    color:var(--laranja);
+
+    background:#FFF8F1;
+}
+
+.cadastro-acoes .btn-cancelar{
+    border:1px solid #D8D8D8;
+
+    background:var(--branco);
+
+    color:#666666;
+}
+
+.cadastro-acoes .btn-cancelar:hover{
+    background:#EEEEEE;
+}
+
+.cadastro-acoes .btn-confirmar{
+    border:0;
+
+    background:var(--laranja);
+
+    color:var(--branco);
+
+    box-shadow:0 4px 12px rgba(245,130,32,.18);
+}
+
+.cadastro-acoes .btn-confirmar:hover{
+    background:var(--laranja-escuro);
+
+    transform:translateY(-2px);
+
+    box-shadow:0 7px 18px rgba(245,130,32,.25);
+}
+
+
+/* ==================================================
+   SCROLL
+================================================== */
+
+#modalProduto .etapa-conteudo::-webkit-scrollbar{
+    width:7px;
+}
+
+#modalProduto .etapa-conteudo::-webkit-scrollbar-thumb{
+    background:#D0D0D0;
+
+    border-radius:10px;
 }
 
 
@@ -2134,208 +1849,108 @@ tbody tr:last-child td{
    RESPONSIVO
 ================================================== */
 
-@media(max-width:700px){
+@media(max-width:900px){
 
-    #camposIrrigacao{
+    #modalProduto .cadastro-produto{
+        max-width:95vw;
+    }
 
-        padding:16px;
+    .cadastro-grid{
+        grid-template-columns:1fr;
+    }
 
+    .preview-produto{
+        position:static;
     }
 
 }
-/* ==================================================
-   CORREÇÃO DEFINITIVA DO MODAL DE CADASTRO
-================================================== */
-
-#modalProduto{
-    position:fixed !important;
-    inset:0 !important;
-
-    display:none;
-
-    align-items:center;
-    justify-content:center;
-
-    padding:20px;
-
-    background:rgba(0,0,0,.65);
-
-    z-index:9999;
-}
-
-#modalProduto.aberto{
-    display:flex !important;
-}
-
-
-/* Caixa */
-
-#modalProduto .modal-conteudo{
-
-    position:relative;
-
-    display:block !important;
-
-    width:100% !important;
-
-    max-width:650px !important;
-
-    max-height:90vh;
-
-    overflow-y:auto;
-
-    padding:30px !important;
-
-    margin:0 !important;
-
-    background:#FFFFFF;
-
-    border:1px solid #F58220;
-
-    border-radius:18px;
-
-    box-shadow:0 20px 60px rgba(0,0,0,.30);
-
-}
-
-
-/* Formulário inteiro em coluna */
-
-#modalProduto #formProduto{
-
-    display:block !important;
-
-    width:100% !important;
-
-}
-
-
-/* Todos os grupos ocupam a largura */
-
-#modalProduto #formProduto > .form-group{
-
-    display:flex !important;
-
-    flex-direction:column !important;
-
-    width:100% !important;
-
-    margin-bottom:20px;
-
-}
-
-
-/* Campos */
-
-#modalProduto input,
-#modalProduto select,
-#modalProduto textarea{
-
-    width:100% !important;
-
-    max-width:100% !important;
-
-    box-sizing:border-box !important;
-
-}
-
-
-/* Informações específicas */
-
-#modalProduto #informacoesEspecificas{
-
-    display:block;
-
-    width:100%;
-
-}
-
-
-/* Bombas / STIHL / Irrigação */
-
-#modalProduto .campos-produto{
-
-    display:block;
-
-    width:100%;
-
-    box-sizing:border-box;
-
-}
-
-
-/* Destaque */
-
-#modalProduto .campo-destaque,
-#modalProduto .destaque-produto{
-
-    display:block;
-
-    width:100%;
-
-    box-sizing:border-box;
-
-}
-
-
-/* Upload */
-
-#modalProduto .drop-area{
-
-    width:100%;
-
-    box-sizing:border-box;
-
-}
-
-
-/* Ações */
-
-#modalProduto .modal-acoes{
-
-    display:flex !important;
-
-    align-items:center;
-
-    justify-content:flex-end;
-
-    gap:12px;
-
-    width:100%;
-
-    box-sizing:border-box;
-
-}
-
-
-/* Responsivo */
 
 @media(max-width:700px){
 
     #modalProduto{
-
         padding:10px;
-
     }
 
-    #modalProduto .modal-conteudo{
+    #modalProduto .cadastro-produto{
+        max-height:96vh;
 
-        max-height:95vh;
-
-        padding:20px !important;
-
+        border-radius:15px;
     }
 
-    #modalProduto .modal-acoes{
+    .cadastro-topo{
+        padding:20px;
+    }
+
+    .cadastro-topo h2{
+        font-size:21px;
+    }
+
+    .etapas-produto{
+        padding:15px 20px;
+    }
+
+    .etapa-produto strong{
+        font-size:9px;
+    }
+
+    .etapa-produto small{
+        display:none;
+    }
+
+    .linha-etapa{
+        margin:0 8px;
+
+        min-width:15px;
+    }
+
+    .etapa-conteudo{
+        padding:22px 20px;
+    }
+
+    .form-row{
+        grid-template-columns:1fr;
+    }
+
+    .cadastro-acoes{
+        padding:15px 20px;
 
         flex-direction:column;
-
+        align-items:stretch;
     }
 
-    #modalProduto .modal-acoes button{
-
+    .acoes-navegacao{
         width:100%;
+    }
 
+    .acoes-navegacao button{
+        flex:1;
+    }
+
+    .btn-rascunho{
+        width:100%;
+    }
+
+}
+
+@media(max-width:450px){
+
+    .numero-etapa{
+        width:30px;
+        height:30px;
+
+        font-size:10px;
+    }
+
+    .etapa-produto strong{
+        font-size:8px;
+    }
+
+    .titulo-secao h3{
+        font-size:16px;
+    }
+
+    .preview-imagens{
+        grid-template-columns:repeat(2,1fr);
     }
 
 }

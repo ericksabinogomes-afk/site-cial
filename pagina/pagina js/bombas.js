@@ -30,6 +30,17 @@ const nomesCategoriasBombas = {
   "bombas-acessorios": "Acessórios para Bombas"
 };
 
+const nomesCategoriasIrrigacao = {
+    "aspersores": "Aspersores",
+    "microaspersores": "Microaspersores",
+    "gotejamento": "Gotejamento",
+    "mangueiras-irrigacao": "Mangueiras de Irrigação",
+    "tubos-irrigacao": "Tubos para Irrigação",
+    "conexoes-irrigacao": "Conexões de Irrigação",
+    "filtros-irrigacao": "Filtros de Irrigação",
+    "valvulas-irrigacao": "Válvulas de Irrigação",
+    "acessorios-irrigacao": "Acessórios de Irrigação"
+};
 
 /*==================================================
                     ELEMENTOS
@@ -214,12 +225,28 @@ async function carregarProdutos(){
 
 ];
 
+const categoriasIrrigacao = [
+    "aspersores",
+    "microaspersores",
+    "gotejamento",
+    "mangueiras-irrigacao",
+    "tubos-irrigacao",
+    "conexoes-irrigacao",
+    "filtros-irrigacao",
+    "valvulas-irrigacao",
+    "acessorios-irrigacao"
+];
+
+const categoriasBombasIrrigacao = [
+    ...categoriasBombas,
+    ...categoriasIrrigacao
+];
+
         estado.produtos = estado.produtos.filter(
 
             produto =>
 
-                categoriasBombas.includes(
-
+               categoriasBombasIrrigacao.includes(
                     String(
                         produto.categoria
                     ).toLowerCase()
@@ -318,6 +345,11 @@ function criarCard(produto){
     const favorito =
         estado.favoritos.includes(Number(produto.id));
 
+    const nomeCategoria =
+        nomesCategoriasBombas[produto.categoria] ||
+        nomesCategoriasIrrigacao[produto.categoria] ||
+        "BOMBAS E IRRIGAÇÃO";
+
     return `
 
         <article class="card-produto">
@@ -352,7 +384,7 @@ function criarCard(produto){
 
                 <span class="card-categoria">
 
-                    ${nomesCategoriasBombas[produto.categoria] || "BOMBAS E IRRIGAÇÃO"}
+                    
 
                 </span>
 
@@ -456,7 +488,11 @@ function criarCard(produto){
 
     `;
 
+
+
 }
+
+
 /*==================================================
             RENDERIZAR PRODUTOS
 ==================================================*/

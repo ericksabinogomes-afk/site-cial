@@ -494,65 +494,173 @@ app.post(
 
 // Atualizar produto (admin)
 app.put(
-    "/admin/produtos/:id",
-    autenticarToken,
-    exigirAdmin,
-    async (req, res) => {
-  const produtoId = parseInt(req.params.id, 10);
-  const {
-    nome,
-    codigo,
-    categoria,
-    preco,
-    estoque,
-    imagem,
-    imagens,
-    selo,
-    destaque,
-    descricao,
-    funcao,
-    marcaIrrigacao,
-    tipoIrrigacao
-} = req.body;
+  "/admin/produtos/:id",
+  autenticarToken,
+  exigirAdmin,
+  async (req, res) => {
+    const produtoId = Number.parseInt(req.params.id, 10);
 
-  if (!produtoId) {
-    return res.status(400).json({ ok: false, erro: 'ID inválido' });
-  }
+    const {
+      nome,
+      codigo,
+      categoria,
+      preco,
+      estoque,
+      imagem,
+      imagens,
+      selo,
+      destaque,
+      ativo,
+      descricao,
+      funcao,
+      descricaoStihl,
+      aplicacaoStihl,
+      marcaBomba,
+      potenciaBomba,
+      vazaoBomba,
+      aplicacaoBomba,
+      marcaIrrigacao,
+      tipoIrrigacao
+    } = req.body;
 
-  const dadosAtualizacao = {};
-  if (nome !== undefined) dadosAtualizacao.nome = nome;
-  if (codigo !== undefined) dadosAtualizacao.codigo = codigo;
-  if (categoria !== undefined) dadosAtualizacao.categoria = categoria;
-  if (preco !== undefined) dadosAtualizacao.preco = Number(preco);
-  if (estoque !== undefined) dadosAtualizacao.estoque = estoque;
-  if (imagem !== undefined) dadosAtualizacao.imagem = imagem;
-  if (selo !== undefined) dadosAtualizacao.selo = selo;
-  if (destaque !== undefined) dadosAtualizacao.destaque = !!destaque;
-  if (ativo !== undefined) dadosAtualizacao.ativo = !!ativo;
-
-  if (descricao !== undefined) {
-    dadosAtualizacao.descricao = descricao;
-}
-
-if (funcao !== undefined) {
-    dadosAtualizacao.funcao = funcao;
-}
-
-  try {
-    const { error } = await supabase
-      .from('produtos')
-      .update(dadosAtualizacao)
-      .eq('id', produtoId);
-
-    if (error) {
-      return res.status(500).json({ ok: false, erro: error.message });
+    if (!Number.isInteger(produtoId) || produtoId <= 0) {
+      return res.status(400).json({
+        ok: false,
+        erro: "ID inválido"
+      });
     }
 
-    res.json({ ok: true });
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
+    const dadosAtualizacao = {};
+
+    if (nome !== undefined) {
+      dadosAtualizacao.nome = nome;
+    }
+
+    if (codigo !== undefined) {
+      dadosAtualizacao.codigo = codigo;
+    }
+
+    if (categoria !== undefined) {
+      dadosAtualizacao.categoria = categoria;
+    }
+
+    if (preco !== undefined) {
+      const precoNumerico = Number(preco);
+
+      if (!Number.isFinite(precoNumerico)) {
+        return res.status(400).json({
+          ok: false,
+          erro: "Preço inválido"
+        });
+      }
+
+      dadosAtualizacao.preco = precoNumerico;
+    }
+
+    if (estoque !== undefined) {
+      dadosAtualizacao.estoque = estoque;
+    }
+
+    if (imagem !== undefined) {
+      dadosAtualizacao.imagem = imagem;
+    }
+
+    if (imagens !== undefined) {
+      dadosAtualizacao.imagens = Array.isArray(imagens)
+        ? imagens
+        : [];
+    }
+
+    if (selo !== undefined) {
+      dadosAtualizacao.selo = selo;
+    }
+
+    if (destaque !== undefined) {
+      dadosAtualizacao.destaque = Boolean(destaque);
+    }
+
+    if (ativo !== undefined) {
+      dadosAtualizacao.ativo = Boolean(ativo);
+    }
+
+    if (descricao !== undefined) {
+      dadosAtualizacao.descricao = descricao;
+    }
+
+    if (funcao !== undefined) {
+      dadosAtualizacao.funcao = funcao;
+    }
+
+    if (descricaoStihl !== undefined) {
+      dadosAtualizacao.descricao_stihl = descricaoStihl;
+    }
+
+    if (aplicacaoStihl !== undefined) {
+      dadosAtualizacao.aplicacao_stihl = aplicacaoStihl;
+    }
+
+    if (marcaBomba !== undefined) {
+      dadosAtualizacao.marca_bomba = marcaBomba;
+    }
+
+    if (potenciaBomba !== undefined) {
+      dadosAtualizacao.potencia_bomba = potenciaBomba;
+    }
+
+    if (vazaoBomba !== undefined) {
+      dadosAtualizacao.vazao_bomba = vazaoBomba;
+    }
+
+    if (aplicacaoBomba !== undefined) {
+      dadosAtualizacao.aplicacao_bomba = aplicacaoBomba;
+    }
+
+    if (marcaIrrigacao !== undefined) {
+      dadosAtualizacao.marca_irrigacao = marcaIrrigacao;
+    }
+
+    if (tipoIrrigacao !== undefined) {
+      dadosAtualizacao.tipo_irrigacao = tipoIrrigacao;
+    }
+
+    if (Object.keys(dadosAtualizacao).length === 0) {
+      return res.status(400).json({
+        ok: false,
+        erro: "Nenhum campo informado para atualização"
+      });
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("produtos")
+        .update(dadosAtualizacao)
+        .eq("id", produtoId)
+        .select("*")
+        .single();
+
+      if (error) {
+        console.error("Erro ao atualizar produto:", error);
+
+        return res.status(500).json({
+          ok: false,
+          erro: error.message
+        });
+      }
+
+      return res.json({
+        ok: true,
+        data
+      });
+    } catch (err) {
+      console.error("Erro inesperado ao atualizar produto:", err);
+
+      return res.status(500).json({
+        ok: false,
+        erro: err.message
+      });
+    }
   }
-});
+);
 
 // Remover favorito do usuário
 app.delete("/favoritos/:produto_id", autenticarToken, async (req, res) => {

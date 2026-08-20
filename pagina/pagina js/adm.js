@@ -30,7 +30,7 @@ if (!token) {
 
 const dropArea = document.getElementById("dropArea");
 const inputImagem = document.getElementById("arquivoImagem");
-const previewImagem = document.getElementById("previewImagem");
+const previewImagem = document.getElementById("previewImagens");
 
 // Arquivo selecionado 
 let arquivosSelecionados = [];
@@ -390,11 +390,9 @@ const camposStihl =
 const camposBombas =
     document.getElementById("camposBombas");
 
-const camposIrrigacao =
-    document.getElementById("camposIrrigacao");
-
 
 const categoriasStihl = [
+
     "motosserras",
     "rocadeiras",
     "lavadoras",
@@ -416,13 +414,13 @@ const categoriasStihl = [
     "aspiradores",
     "baterias-carregadores",
     "acessorios-stihl",
-  
     "epi"
+
 ];
 
 
-
 const categoriasBombas = [
+
     "bombas-centrifugas",
     "bombas-perifericas",
     "bombas-submersas",
@@ -438,21 +436,7 @@ const categoriasBombas = [
     "pressurizadores",
     "sistemas-pressurizacao",
     "acessorios-bombas"
-];
 
-
-const categoriasIrrigacao = [
-    "bombas-irrigacao",
-    "motobombas-irrigacao",
-    "aspersores",
-    "microaspersores",
-    "gotejamento",
-    "mangueiras-irrigacao",
-    "tubos-irrigacao",
-    "conexoes-irrigacao",
-    "filtros-irrigacao",
-    "valvulas-irrigacao",
-    "acessorios-irrigacao"
 ];
 
 
@@ -481,17 +465,8 @@ function atualizarCamposEspecificos(){
 
     }
 
-
-    if(camposIrrigacao){
-
-        camposIrrigacao.style.display =
-            categoriasIrrigacao.includes(categoria)
-                ? "block"
-                : "none";
-
-    }
-
 }
+
 
 if(categoriaProduto){
 
@@ -708,8 +683,8 @@ function abrirEdicaoProduto(id) {
   document.getElementById("estoqueProduto").value =
     produto.estoque || "";
 
-  document.getElementById("destaqueProduto").value =
-    produto.selo || "";
+  document.getElementById("produtoDestaque").checked =
+    Boolean(produto.destaque);
 
   modalProduto.classList.add("aberto");
 }
@@ -725,8 +700,8 @@ formProduto.addEventListener("submit", async event => {
   );
   const estoque = document.getElementById("estoqueProduto").value;
 
- const selo =
-    document.getElementById("destaqueProduto")?.value || "";
+  const destaque =
+    document.getElementById("produtoDestaque").checked;
 
     /*========================================
     INFORMAÇÕES ESPECÍFICAS
@@ -750,12 +725,6 @@ const vazaoBomba =
 
 const aplicacaoBomba =
     document.getElementById("aplicacaoBomba")?.value || "";
-
-  const marcaIrrigacao =
-    document.getElementById("marcaIrrigacao")?.value.trim() || "";
-
-const tipoIrrigacao =
-    document.getElementById("tipoIrrigacao")?.value || "";
 
   const imagemTexto = document.getElementById("imagemProduto")
     ? document.getElementById("imagemProduto").value.trim()
@@ -819,7 +788,7 @@ try {
 
     }
 
-   const novoProduto = {
+    const novoProduto = {
 
     nome,
 
@@ -829,27 +798,14 @@ try {
 
     estoque,
 
-
+    // FOTO PRINCIPAL
     imagem: imagemUrl,
 
-
+    // FOTOS ADICIONAIS
     imagens: imagensAdicionais,
 
-    selo,
-    destaque: selo !== "",
+    destaque
 
-    descricao: document.getElementById("descricaoProduto")?.value.trim() || "",
-    funcao: document.getElementById("funcaoProduto")?.value.trim() || "",
-
-    descricaoStihl,
-    aplicacaoStihl,
-
-    marcaBomba,
-    potenciaBomba,
-    vazaoBomba,
-    aplicacaoBomba,
-    marcaIrrigacao,
-    tipoIrrigacao
 };
 
     if (produtoEditandoId) {

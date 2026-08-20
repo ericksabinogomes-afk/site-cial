@@ -69,6 +69,8 @@ const estado = {
 
     categoria: "todos",
 
+    destaque: "",
+
     pesquisa: "",
 
     preco: "",
@@ -529,6 +531,12 @@ function filtrarProdutos(){
             produto.categoria === estado.categoria;
 
 
+const destaqueOk =
+    estado.destaque === ""
+    ||
+    String(produto.selo || "").toLowerCase() ===
+        estado.destaque.toLowerCase();
+
 const termoPesquisa =
     estado.pesquisa
         .trim()
@@ -617,6 +625,10 @@ const pesquisaOk =
 
             &&
 
+            destaqueOk
+
+            &&
+
             pesquisaOk
 
             &&
@@ -681,6 +693,80 @@ function iniciarCategorias(){
     });
 
 }
+
+/*==================================================
+                ATALHOS
+==================================================*/
+
+function iniciarAtalhos(){
+
+    elementos.atalhos.forEach(botao => {
+
+        botao.addEventListener("click", () => {
+
+            elementos.atalhos.forEach(b => {
+                b.classList.remove("ativo");
+            });
+
+            botao.classList.add("ativo");
+
+            const texto =
+                botao.textContent.trim();
+
+            estado.destaque = "";
+            estado.categoria = "todos";
+
+
+            if(texto === "Promoções"){
+
+                estado.destaque = "promocoes";
+
+            }
+
+
+            else if(texto === "Lançamentos"){
+
+                estado.destaque = "lancamentos";
+
+            }
+
+
+            else if(texto === "Mais Vendidos"){
+
+                estado.destaque = "mais-vendidos";
+
+            }
+
+
+            else if(texto === "Novidades"){
+
+                estado.destaque = "novidades";
+
+            }
+
+
+            else if(texto === "Irrigação"){
+
+                estado.categoria = "irrigacao";
+
+            }
+
+
+            else if(texto === "Bombas Residenciais"){
+
+                estado.categoria = "bombas-residenciais";
+
+            }
+
+
+            filtrarProdutos();
+
+        });
+
+    });
+
+}
+
 /*==================================================
             CATEGORIAS
 ==================================================*/
@@ -1839,6 +1925,8 @@ function iniciarSistema(){
     iniciarCarrinho();
 
     iniciarModalProduto();
+
+    iniciarAtalhos();
 
 }
 

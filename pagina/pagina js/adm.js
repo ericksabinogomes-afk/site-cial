@@ -390,9 +390,11 @@ const camposStihl =
 const camposBombas =
     document.getElementById("camposBombas");
 
+const camposIrrigacao =
+    document.getElementById("camposIrrigacao");
+
 
 const categoriasStihl = [
-
     "motosserras",
     "rocadeiras",
     "lavadoras",
@@ -414,13 +416,13 @@ const categoriasStihl = [
     "aspiradores",
     "baterias-carregadores",
     "acessorios-stihl",
+  
     "epi"
-
 ];
 
 
-const categoriasBombas = [
 
+const categoriasBombas = [
     "bombas-centrifugas",
     "bombas-perifericas",
     "bombas-submersas",
@@ -436,7 +438,21 @@ const categoriasBombas = [
     "pressurizadores",
     "sistemas-pressurizacao",
     "acessorios-bombas"
+];
 
+
+const categoriasIrrigacao = [
+    "bombas-irrigacao",
+    "motobombas-irrigacao",
+    "aspersores",
+    "microaspersores",
+    "gotejamento",
+    "mangueiras-irrigacao",
+    "tubos-irrigacao",
+    "conexoes-irrigacao",
+    "filtros-irrigacao",
+    "valvulas-irrigacao",
+    "acessorios-irrigacao"
 ];
 
 
@@ -465,8 +481,17 @@ function atualizarCamposEspecificos(){
 
     }
 
-}
 
+    if(camposIrrigacao){
+
+        camposIrrigacao.style.display =
+            categoriasIrrigacao.includes(categoria)
+                ? "block"
+                : "none";
+
+    }
+
+}
 
 if(categoriaProduto){
 
@@ -683,8 +708,8 @@ function abrirEdicaoProduto(id) {
   document.getElementById("estoqueProduto").value =
     produto.estoque || "";
 
-  document.getElementById("produtoDestaque").checked =
-    Boolean(produto.destaque);
+  document.getElementById("destaqueProduto").value =
+    produto.selo || "";
 
   modalProduto.classList.add("aberto");
 }
@@ -700,8 +725,8 @@ formProduto.addEventListener("submit", async event => {
   );
   const estoque = document.getElementById("estoqueProduto").value;
 
-  const destaque =
-    document.getElementById("produtoDestaque").checked;
+ const selo =
+    document.getElementById("destaqueProduto")?.value || "";
 
     /*========================================
     INFORMAÇÕES ESPECÍFICAS
@@ -788,7 +813,7 @@ try {
 
     }
 
-    const novoProduto = {
+   const novoProduto = {
 
     nome,
 
@@ -798,13 +823,15 @@ try {
 
     estoque,
 
-    // FOTO PRINCIPAL
+
     imagem: imagemUrl,
 
-    // FOTOS ADICIONAIS
+
     imagens: imagensAdicionais,
 
-    destaque
+    selo,
+
+    destaque: selo !== ""
 
 };
 

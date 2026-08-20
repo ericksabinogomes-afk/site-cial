@@ -729,6 +729,46 @@
 
     </optgroup>
 
+    <!-- ==============================
+     IRRIGAÇÃO
+    ============================== -->
+
+     <option value="aspersores">
+            Aspersores
+     </option>
+
+     <option value="microaspersores">
+           Microaspersores
+      </option>
+
+    <option value="gotejamento">
+           Gotejamento
+    </option>
+
+    <option value="mangueiras-irrigacao">
+          Mangueiras de Irrigação
+    </option>
+
+    <option value="tubos-irrigacao">
+          Tubos para Irrigação
+    </option>
+
+    <option value="conexoes-irrigacao">
+          Conexões para Irrigação
+    </option>
+
+    <option value="filtros-irrigacao">
+          Filtros de Irrigação
+    </option>
+
+    <option value="valvulas-irrigacao">
+          Válvulas de Irrigação
+    </option>
+
+    <option value="acessorios-irrigacao">
+          Acessórios de Irrigação
+    </option>
+
     <option value="linha-bateria">
     🔋 Linha a Bateria
 </option>
@@ -770,9 +810,66 @@
     </option>
 
 </select>
-                </div>
 
-                <!-- ==========================================
+<!-- ==========================================
+     INFORMAÇÕES GERAIS DO PRODUTO
+========================================== -->
+
+<div class="informacoes-gerais-produto">
+
+    <div class="campo-titulo">
+
+        <span>📝</span>
+
+        <div>
+
+            <h3>Informações do Produto</h3>
+
+            <p>
+                Essas informações serão utilizadas
+                na apresentação do produto no site.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="descricaoProduto">
+            Descrição do produto
+        </label>
+
+        <textarea
+            id="descricaoProduto"
+            rows="4"
+            placeholder="Ex: Produto compacto, resistente e desenvolvido para facilitar o trabalho no dia a dia."
+        ></textarea>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="funcaoProduto">
+            Função / Aplicação
+        </label>
+
+        <textarea
+            id="funcaoProduto"
+            rows="4"
+            placeholder="Ex: Indicado para jardinagem, limpeza, manutenção e uso profissional."
+        ></textarea>
+
+    </div>
+
+</div>
+
+</div>
+                
+                
+<!-- ==========================================
      INFORMAÇÕES ESPECÍFICAS DO PRODUTO
 ========================================== -->
 
@@ -984,6 +1081,196 @@
 
     </div>
 
+    <!-- ==============================
+         IRRIGAÇÃO
+    =============================== -->
+
+    <div
+        id="camposIrrigacao"
+        class="campos-produto"
+        style="display:none;">
+
+        <div class="campo-titulo">
+
+            <span>🌱</span>
+
+            <div>
+
+                <h3>Informações de Irrigação</h3>
+
+                <p>
+                    Informações utilizadas na apresentação
+                    dos produtos de irrigação.
+                </p>
+
+            </div>
+
+        </div>
+
+       <div class="form-group">
+
+    <label for="marcaIrrigacao">
+        Marca
+    </label>
+
+    <input
+        type="text"
+        id="marcaIrrigacao"
+        placeholder="Ex: Rain Bird">
+
+</div>
+
+
+<div class="form-group">
+
+    <label for="tipoIrrigacao">
+        Tipo de Irrigação
+    </label>
+
+    <select id="tipoIrrigacao">
+
+        <option value="">
+            Selecione o tipo
+        </option>
+
+        <option value="Aspersor">
+            Aspersor
+        </option>
+
+        <option value="Microaspersor">
+            Microaspersor
+        </option>
+
+        <option value="Gotejamento">
+            Gotejamento
+        </option>
+
+        <option value="Mangueira de Irrigação">
+            Mangueira de Irrigação
+        </option>
+
+        <option value="Tubo de Irrigação">
+            Tubo de Irrigação
+        </option>
+
+        <option value="Filtro de Irrigação">
+            Filtro de Irrigação
+        </option>
+
+        <option value="Válvula de Irrigação">
+            Válvula de Irrigação
+        </option>
+
+        <option value="Acessório de Irrigação">
+            Acessório de Irrigação
+        </option>
+
+    </select>
+
+</div>
+
+
+<div class="form-group">
+
+    <label for="vazaoIrrigacao">
+        Vazão
+    </label>
+
+    <input
+        type="text"
+        id="vazaoIrrigacao"
+        placeholder="Ex: 1.200 L/h">
+
+</div>
+
+
+<div class="form-group">
+
+    <label for="alcanceIrrigacao">
+        Alcance
+    </label>
+
+    <input
+        type="text"
+        id="alcanceIrrigacao"
+        placeholder="Ex: 12 metros">
+
+</div>
+
+
+<div class="form-group">
+
+    <label for="diametroIrrigacao">
+        Diâmetro
+    </label>
+
+    <input
+        type="text"
+        id="diametroIrrigacao"
+        placeholder="Ex: 1/2 polegada">
+
+</div>
+
+
+<div class="form-group">
+
+    <label for="aplicacaoIrrigacao">
+        Aplicação
+    </label>
+
+    <select id="aplicacaoIrrigacao">
+
+        <option value="">
+            Selecione uma aplicação
+        </option>
+
+        <option value="Residencial">
+            Residencial
+        </option>
+
+        <option value="Jardinagem">
+            Jardinagem
+        </option>
+
+        <option value="Agrícola">
+            Agrícola
+        </option>
+
+        <option value="Paisagismo">
+            Paisagismo
+        </option>
+
+        <option value="Hortas">
+            Hortas
+        </option>
+
+        <option value="Estufas">
+            Estufas
+        </option>
+
+        <option value="Uso Profissional">
+            Uso Profissional
+        </option>
+
+    </select>
+
+</div>
+
+
+<div class="form-group">
+
+    <label for="descricaoIrrigacao">
+        Pequena descrição
+    </label>
+
+    <textarea
+        id="descricaoIrrigacao"
+        rows="4"
+        placeholder="Ex: Sistema de irrigação indicado para jardins e áreas agrícolas."></textarea>
+
+</div>
+
+    </div>
 
     <!-- ==============================
          DESTAQUE

@@ -1947,3 +1947,395 @@ tbody tr:last-child td{
     }
 
 }
+/* ==================================================
+   CAMPOS DE IRRIGAÇÃO
+================================================== */
+
+#camposIrrigacao{
+
+    display:none;
+
+    width:100%;
+
+    margin-top:20px;
+
+    padding:20px;
+
+    background:#FFF9F4;
+
+    border:1px solid #F3CBAE;
+
+    border-radius:14px;
+
+}
+
+
+/* Título */
+
+#camposIrrigacao .campo-titulo{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:12px;
+
+    margin-bottom:22px;
+
+}
+
+
+#camposIrrigacao .campo-titulo span{
+
+    font-size:26px;
+
+    line-height:1;
+
+}
+
+
+#camposIrrigacao .campo-titulo h3{
+
+    margin:0;
+
+    color:#111111;
+
+    font-size:17px;
+
+    font-weight:800;
+
+}
+
+
+#camposIrrigacao .campo-titulo p{
+
+    margin-top:5px;
+
+    color:#777777;
+
+    font-size:11px;
+
+    line-height:1.5;
+
+}
+
+
+/* Campos */
+
+#camposIrrigacao .form-group{
+
+    width:100%;
+
+    margin-bottom:18px;
+
+}
+
+
+#camposIrrigacao .form-group label{
+
+    display:block;
+
+    margin-bottom:7px;
+
+    color:#292929;
+
+    font-size:13px;
+
+    font-weight:700;
+
+}
+
+
+#camposIrrigacao input,
+#camposIrrigacao select,
+#camposIrrigacao textarea{
+
+    width:100%;
+
+    min-height:46px;
+
+    padding:11px 13px;
+
+    border:1px solid #D8D8D8;
+
+    border-radius:9px;
+
+    background:#FFFFFF;
+
+    color:#292929;
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:13px;
+
+    outline:none;
+
+    transition:.2s ease;
+
+}
+
+
+#camposIrrigacao textarea{
+
+    min-height:100px;
+
+    resize:vertical;
+
+}
+
+
+#camposIrrigacao input:focus,
+#camposIrrigacao select:focus,
+#camposIrrigacao textarea:focus{
+
+    border-color:#F58220;
+
+    box-shadow:0 0 0 3px rgba(245,130,32,.10);
+
+}
+
+
+/* ==================================================
+   MODAL — AJUSTE DE LARGURA
+================================================== */
+
+.modal-conteudo{
+
+    width:100%;
+
+    max-width:700px;
+
+    max-height:90vh;
+
+    overflow-y:auto;
+
+}
+
+
+/* Evita os campos estourarem o modal */
+
+.modal-conteudo *{
+
+    max-width:100%;
+
+}
+
+
+.modal-conteudo input,
+.modal-conteudo select,
+.modal-conteudo textarea{
+
+    box-sizing:border-box;
+
+}
+
+
+/* ==================================================
+   RESPONSIVO
+================================================== */
+
+@media(max-width:700px){
+
+    #camposIrrigacao{
+
+        padding:16px;
+
+    }
+
+}
+/* ==================================================
+   CORREÇÃO DEFINITIVA DO MODAL DE CADASTRO
+================================================== */
+
+#modalProduto{
+    position:fixed !important;
+    inset:0 !important;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    background:rgba(0,0,0,.65);
+
+    z-index:9999;
+}
+
+#modalProduto.aberto{
+    display:flex !important;
+}
+
+
+/* Caixa */
+
+#modalProduto .modal-conteudo{
+
+    position:relative;
+
+    display:block !important;
+
+    width:100% !important;
+
+    max-width:650px !important;
+
+    max-height:90vh;
+
+    overflow-y:auto;
+
+    padding:30px !important;
+
+    margin:0 !important;
+
+    background:#FFFFFF;
+
+    border:1px solid #F58220;
+
+    border-radius:18px;
+
+    box-shadow:0 20px 60px rgba(0,0,0,.30);
+
+}
+
+
+/* Formulário inteiro em coluna */
+
+#modalProduto #formProduto{
+
+    display:block !important;
+
+    width:100% !important;
+
+}
+
+
+/* Todos os grupos ocupam a largura */
+
+#modalProduto #formProduto > .form-group{
+
+    display:flex !important;
+
+    flex-direction:column !important;
+
+    width:100% !important;
+
+    margin-bottom:20px;
+
+}
+
+
+/* Campos */
+
+#modalProduto input,
+#modalProduto select,
+#modalProduto textarea{
+
+    width:100% !important;
+
+    max-width:100% !important;
+
+    box-sizing:border-box !important;
+
+}
+
+
+/* Informações específicas */
+
+#modalProduto #informacoesEspecificas{
+
+    display:block;
+
+    width:100%;
+
+}
+
+
+/* Bombas / STIHL / Irrigação */
+
+#modalProduto .campos-produto{
+
+    display:block;
+
+    width:100%;
+
+    box-sizing:border-box;
+
+}
+
+
+/* Destaque */
+
+#modalProduto .campo-destaque,
+#modalProduto .destaque-produto{
+
+    display:block;
+
+    width:100%;
+
+    box-sizing:border-box;
+
+}
+
+
+/* Upload */
+
+#modalProduto .drop-area{
+
+    width:100%;
+
+    box-sizing:border-box;
+
+}
+
+
+/* Ações */
+
+#modalProduto .modal-acoes{
+
+    display:flex !important;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+    gap:12px;
+
+    width:100%;
+
+    box-sizing:border-box;
+
+}
+
+
+/* Responsivo */
+
+@media(max-width:700px){
+
+    #modalProduto{
+
+        padding:10px;
+
+    }
+
+    #modalProduto .modal-conteudo{
+
+        max-height:95vh;
+
+        padding:20px !important;
+
+    }
+
+    #modalProduto .modal-acoes{
+
+        flex-direction:column;
+
+    }
+
+    #modalProduto .modal-acoes button{
+
+        width:100%;
+
+    }
+
+}

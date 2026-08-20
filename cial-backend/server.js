@@ -436,9 +436,9 @@ app.post(
 }
 
   try {
-    const { data, error } = await supabase
-      .from('produtos')
-      .insert([{
+ const { data, error } = await supabase
+    .from('produtos')
+    .insert([{
         nome,
         codigo: codigo || `CIAL-${Date.now()}`,
         categoria,
@@ -448,10 +448,12 @@ app.post(
         imagens: Array.isArray(imagens) ? imagens : [],
         selo: selo || null,
         destaque: !!destaque,
-        ativo: true
-      }])
-      .select("*")
-      .single();
+        ativo: true,
+        descricao: descricao || "",
+        funcao: funcao || ""
+    }])
+    .select("*")
+    .single();
 
 
     if (error) {
@@ -478,10 +480,12 @@ app.put(
     preco,
     estoque,
     imagem,
+    imagens,
     selo,
     destaque,
-    ativo
-  } = req.body;
+    descricao,
+    funcao
+} = req.body;
 
   if (!produtoId) {
     return res.status(400).json({ ok: false, erro: 'ID inválido' });
@@ -497,6 +501,14 @@ app.put(
   if (selo !== undefined) dadosAtualizacao.selo = selo;
   if (destaque !== undefined) dadosAtualizacao.destaque = !!destaque;
   if (ativo !== undefined) dadosAtualizacao.ativo = !!ativo;
+
+  if (descricao !== undefined) {
+    dadosAtualizacao.descricao = descricao;
+}
+
+if (funcao !== undefined) {
+    dadosAtualizacao.funcao = funcao;
+}
 
   try {
     const { error } = await supabase

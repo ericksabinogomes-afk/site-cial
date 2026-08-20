@@ -751,6 +751,12 @@ const vazaoBomba =
 const aplicacaoBomba =
     document.getElementById("aplicacaoBomba")?.value || "";
 
+  const marcaIrrigacao =
+    document.getElementById("marcaIrrigacao")?.value.trim() || "";
+
+const tipoIrrigacao =
+    document.getElementById("tipoIrrigacao")?.value || "";
+
   const imagemTexto = document.getElementById("imagemProduto")
     ? document.getElementById("imagemProduto").value.trim()
     : "";
@@ -830,9 +836,20 @@ try {
     imagens: imagensAdicionais,
 
     selo,
+    destaque: selo !== "",
 
-    destaque: selo !== ""
+    descricao: document.getElementById("descricaoProduto")?.value.trim() || "",
+    funcao: document.getElementById("funcaoProduto")?.value.trim() || "",
 
+    descricaoStihl,
+    aplicacaoStihl,
+
+    marcaBomba,
+    potenciaBomba,
+    vazaoBomba,
+    aplicacaoBomba,
+    marcaIrrigacao,
+    tipoIrrigacao
 };
 
     if (produtoEditandoId) {

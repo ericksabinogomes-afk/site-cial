@@ -416,7 +416,8 @@ app.post(
     autenticarToken,
     exigirAdmin,
     async (req, res) => {
-  const {
+
+ const {
     nome,
     codigo,
     categoria,
@@ -425,8 +426,22 @@ app.post(
     imagem,
     imagens,
     selo,
-    destaque
-  } = req.body;
+    destaque,
+
+    descricao,
+    funcao,
+
+    descricaoStihl,
+    aplicacaoStihl,
+
+    marcaBomba,
+    potenciaBomba,
+    vazaoBomba,
+    aplicacaoBomba,
+
+    marcaIrrigacao,
+    tipoIrrigacao
+} = req.body;
 
   if (!nome || !categoria || preco == null) {
     return res.status(400).json({
@@ -449,8 +464,19 @@ app.post(
         selo: selo || null,
         destaque: !!destaque,
         ativo: true,
-        descricao: descricao || "",
-        funcao: funcao || ""
+       descricao: descricao || "",
+       funcao: funcao || "",
+
+      descricao_stihl: descricaoStihl || "",
+      aplicacao_stihl: aplicacaoStihl || "",
+
+      marca_bomba: marcaBomba || "",
+      potencia_bomba: potenciaBomba || "",
+      vazao_bomba: vazaoBomba || "",
+      aplicacao_bomba: aplicacaoBomba || "",
+
+      marca_irrigacao: marcaIrrigacao || "",
+      tipo_irrigacao: tipoIrrigacao || ""
     }])
     .select("*")
     .single();
@@ -484,7 +510,9 @@ app.put(
     selo,
     destaque,
     descricao,
-    funcao
+    funcao,
+    marcaIrrigacao,
+    tipoIrrigacao
 } = req.body;
 
   if (!produtoId) {

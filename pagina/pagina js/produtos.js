@@ -96,21 +96,80 @@ async function carregarProdutos() {
   })
   .map(p => ({
     id: Number(p.id),
-    categoria: p.categoria,
-    nome: p.nome,
+
+    categoria: p.categoria || "",
+
+    nome: p.nome || "",
+
     selo: p.selo || "",
-    preco: Number(p.preco),
+
+    preco: Number(p.preco) || 0,
+
     parcela: p.parcela || "",
+
     estoque: p.estoque || "Em estoque",
 
-    // Imagem principal
+    descricao: p.descricao || "",
+
+    funcao: p.funcao || "",
+
+
+    /*========================================
+            IMAGEM PRINCIPAL
+    ========================================*/
+
     imagem: p.imagem || "",
 
-    // Array de imagens adicionais salvo no JSONB
-    imagens: Array.isArray(p.imagens) ? p.imagens : []
-        ? p.imagens
-        : []
-    }));
+
+    /*========================================
+            IMAGENS ADICIONAIS
+    ========================================*/
+
+    imagens:
+        Array.isArray(p.imagens)
+            ? p.imagens
+            : [],
+
+
+    /*========================================
+            STIHL
+    ========================================*/
+
+    descricaoStihl:
+        p.descricao_stihl || "",
+
+    aplicacaoStihl:
+        p.aplicacao_stihl || "",
+
+
+    /*========================================
+            BOMBAS
+    ========================================*/
+
+    marcaBomba:
+        p.marca_bomba || "",
+
+    potenciaBomba:
+        p.potencia_bomba || "",
+
+    vazaoBomba:
+        p.vazao_bomba || "",
+
+    aplicacaoBomba:
+        p.aplicacao_bomba || "",
+
+
+    /*========================================
+            IRRIGAÇÃO
+    ========================================*/
+
+    marcaIrrigacao:
+        p.marca_irrigacao || "",
+
+    tipoIrrigacao:
+        p.tipo_irrigacao || ""
+
+}));
 
     estado.produtosFiltrados = [...estado.produtos];
     ordenarProdutos();
@@ -919,9 +978,11 @@ function abrirProdutoDaUrl() {
 
 /*==================================================
         MODAL DO PRODUTO
+        MODAL INTELIGENTE POR CATEGORIA
 ==================================================*/
 
 let produtoModalAtual = null;
+
 
 function abrirModalProduto(id){
 
@@ -929,117 +990,467 @@ function abrirModalProduto(id){
         item => item.id === id
     );
 
+
     if(!produto){
-        console.error("Produto não encontrado:", id);
+
+        console.error(
+            "Produto não encontrado:",
+            id
+        );
+
         return;
+
     }
+
 
     produtoModalAtual = produto;
 
-    const modal = document.getElementById("modalProduto");
+
+    /*========================================
+                ELEMENTOS
+    ========================================*/
+
+    const modal =
+        document.getElementById("modalProduto");
+
 
     const imagemPrincipal =
-        document.getElementById("modalImagemPrincipal");
+        document.getElementById(
+            "modalImagemPrincipal"
+        );
+
 
     const miniaturas =
-        document.getElementById("modalMiniaturas");
+        document.getElementById(
+            "modalMiniaturas"
+        );
+
 
     const categoria =
-        document.getElementById("modalCategoria");
+        document.getElementById(
+            "modalCategoria"
+        );
+
 
     const nome =
-        document.getElementById("modalNomeProduto");
+        document.getElementById(
+            "modalNomeProduto"
+        );
+
 
     const preco =
-        document.getElementById("modalPrecoProduto");
+        document.getElementById(
+            "modalPrecoProduto"
+        );
+
 
     const estoque =
-        document.getElementById("modalEstoqueProduto");
+        document.getElementById(
+            "modalEstoqueProduto"
+        );
+
 
     const descricao =
-        document.getElementById("modalDescricaoProduto");
+        document.getElementById(
+            "modalDescricaoProduto"
+        );
 
 
     /*========================================
-            INFORMAÇÕES
+            INFORMAÇÕES PRINCIPAIS
     ========================================*/
 
     categoria.textContent =
         produto.categoria || "";
 
+
     nome.textContent =
         produto.nome || "";
 
+
     preco.textContent =
-        formatarPreco(produto.preco || 0);
+        formatarPreco(
+            produto.preco || 0
+        );
+
 
     estoque.innerHTML = `
         <i class="fa-solid fa-circle-check"></i>
         ${produto.estoque || "Em estoque"}
     `;
 
+
     descricao.textContent =
         produto.descricao ||
+        produto.funcao ||
         "Entre em contato com a CIAL Asa Sul para mais informações sobre este produto.";
 
 
-/*========================================
-        GALERIA DE IMAGENS
-========================================*/
+    /*========================================
+        ESPECIFICAÇÕES INTELIGENTES
+    ========================================*/
+
+    const especificacoes =
+        obterEspecificacoesProduto(
+            produto
+        );
+
+
+    renderizarEspecificacoesModal(
+        especificacoes
+    );
+
+
+    /*========================================
+            GALERIA DE IMAGENS
+    ========================================*/
 
     const imagens = [
+
         produto.imagem,
-        ...(Array.isArray(produto.imagens) ? produto.imagens : [])
-        ].filter(Boolean);
 
-        if (imagens.length === 0) {
-        imagens.push("imagens/produto-sem-imagem.png");
-        }
+        ...(Array.isArray(produto.imagens)
+            ? produto.imagens
+            : [])
 
-        imagemPrincipal.src = imagens[0];
-        imagemPrincipal.alt = produto.nome || "Produto";
+    ].filter(Boolean);
 
-        miniaturas.innerHTML = "";
 
-        imagens.forEach((imagem, indice) => {
-    const miniatura = document.createElement("button");
+    if(imagens.length === 0){
 
-        miniatura.type = "button";
+        imagens.push(
+            "imagens/produto-sem-imagem.png"
+        );
 
-        miniatura.className =
-            "modal-produto-miniatura" +
-            (indice === 0 ? " ativa" : "");
-
-        miniatura.innerHTML = `
-            <img
-            src="${imagem}"
-            alt="${produto.nome || "Produto"} — imagem ${indice + 1}"
-            >
-        `;
-
-        miniatura.addEventListener("click", () => {
-            imagemPrincipal.src = imagem;
-
-            miniaturas
-            .querySelectorAll(".modal-produto-miniatura")
-            .forEach((item) => {
-                item.classList.remove("ativa");
-            });
-
-            miniatura.classList.add("ativa");
-        });
-
-        miniaturas.appendChild(miniatura);
-        });
-
-/*========================================
-        ABRIR MODAL
-========================================*/
-
-        modal.classList.add("ativo");
-
-        document.body.style.overflow = "hidden";
     }
+
+
+    imagemPrincipal.src =
+        imagens[0];
+
+
+    imagemPrincipal.alt =
+        produto.nome || "Produto";
+
+
+    miniaturas.innerHTML = "";
+
+
+    imagens.forEach(
+        (imagem, indice) => {
+
+            const miniatura =
+                document.createElement(
+                    "button"
+                );
+
+
+            miniatura.type =
+                "button";
+
+
+            miniatura.className =
+                "modal-produto-miniatura" +
+                (
+                    indice === 0
+                        ? " ativa"
+                        : ""
+                );
+
+
+            miniatura.innerHTML = `
+                <img
+                    src="${imagem}"
+                    alt="${produto.nome || "Produto"} — imagem ${indice + 1}"
+                >
+            `;
+
+
+            miniatura.addEventListener(
+                "click",
+                () => {
+
+                    imagemPrincipal.src =
+                        imagem;
+
+
+                    miniaturas
+                        .querySelectorAll(
+                            ".modal-produto-miniatura"
+                        )
+                        .forEach(
+                            item =>
+                                item.classList.remove(
+                                    "ativa"
+                                )
+                        );
+
+
+                    miniatura.classList.add(
+                        "ativa"
+                    );
+
+                }
+            );
+
+
+            miniaturas.appendChild(
+                miniatura
+            );
+
+        }
+    );
+
+
+    /*========================================
+                ABRIR MODAL
+    ========================================*/
+
+    modal.classList.add(
+        "ativo"
+    );
+
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+/*==================================================
+        ESPECIFICAÇÕES POR CATEGORIA
+==================================================*/
+
+function obterEspecificacoesProduto(
+    produto
+){
+
+    const especificacoes = [];
+
+
+    const categoria =
+        String(
+            produto.categoria || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    /*========================================
+                    STIHL
+    ========================================*/
+
+    if(
+        categoria.includes("stihl") ||
+        categoria.includes("motosserra") ||
+        categoria.includes("rocadeira") ||
+        categoria.includes("soprador") ||
+        categoria.includes("lavajato")
+    ){
+
+        adicionarEspecificacao(
+            especificacoes,
+            "Descrição",
+            produto.descricaoStihl
+        );
+
+
+        adicionarEspecificacao(
+            especificacoes,
+            "Aplicação",
+            produto.aplicacaoStihl
+        );
+
+    }
+
+
+    /*========================================
+                    BOMBAS
+    ========================================*/
+
+    if(
+        categoria.includes("bomba")
+    ){
+
+        adicionarEspecificacao(
+            especificacoes,
+            "Marca",
+            produto.marcaBomba
+        );
+
+
+        adicionarEspecificacao(
+            especificacoes,
+            "Potência",
+            produto.potenciaBomba
+        );
+
+
+        adicionarEspecificacao(
+            especificacoes,
+            "Vazão",
+            produto.vazaoBomba
+        );
+
+
+        adicionarEspecificacao(
+            especificacoes,
+            "Aplicação",
+            produto.aplicacaoBomba
+        );
+
+    }
+
+
+    /*========================================
+                  IRRIGAÇÃO
+    ========================================*/
+
+    if(
+        categoria.includes("irrig")
+    ){
+
+        adicionarEspecificacao(
+            especificacoes,
+            "Marca",
+            produto.marcaIrrigacao
+        );
+
+
+        adicionarEspecificacao(
+            especificacoes,
+            "Tipo",
+            produto.tipoIrrigacao
+        );
+
+    }
+
+
+    return especificacoes;
+
+}
+
+
+/*==================================================
+        ADICIONAR ESPECIFICAÇÃO
+==================================================*/
+
+function adicionarEspecificacao(
+    lista,
+    nome,
+    valor
+){
+
+    if(
+        valor === undefined ||
+        valor === null ||
+        String(valor).trim() === ""
+    ){
+
+        return;
+
+    }
+
+
+    lista.push({
+
+        nome,
+
+        valor:
+            String(valor).trim()
+
+    });
+
+}
+
+
+/*==================================================
+        RENDERIZAR ESPECIFICAÇÕES
+==================================================*/
+
+function renderizarEspecificacoesModal(
+    especificacoes
+){
+
+    const container =
+        document.getElementById(
+            "modalEspecificacoes"
+        );
+
+
+    if(!container){
+
+        console.warn(
+            "Container #modalEspecificacoes não encontrado no modal."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !especificacoes ||
+        especificacoes.length === 0
+    ){
+
+        container.innerHTML = "";
+
+        container.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    container.innerHTML = `
+
+        <div class="modal-especificacoes-titulo">
+
+            <i class="fa-solid fa-list-check"></i>
+
+            Especificações
+
+        </div>
+
+
+        <div class="modal-especificacoes-lista">
+
+            ${especificacoes
+                .map(
+                    item => `
+
+                    <div class="modal-especificacao">
+
+                        <span class="modal-especificacao-nome">
+
+                            ${item.nome}
+
+                        </span>
+
+
+                        <span class="modal-especificacao-valor">
+
+                            ${item.valor}
+
+                        </span>
+
+                    </div>
+
+                `
+                )
+                .join("")}
+
+        </div>
+
+    `;
+
+
+    container.style.display =
+        "";
+
+}
 
 
 /*==================================================

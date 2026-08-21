@@ -435,12 +435,23 @@ const categoriaProduto =
         CAMPOS ESPECÍFICOS DO PRODUTO
 ==================================================*/
 
+/*==================================================
+        CAMPOS ESPECÍFICOS DO PRODUTO
+==================================================*/
+
 const camposStihl =
     document.getElementById("camposStihl");
 
 const camposBombas =
     document.getElementById("camposBombas");
 
+const camposIrrigacao =
+    document.getElementById("camposIrrigacao");
+
+
+/*==================================================
+        CATEGORIAS STIHL
+==================================================*/
 
 const categoriasStihl = [
 
@@ -470,6 +481,10 @@ const categoriasStihl = [
 ];
 
 
+/*==================================================
+        CATEGORIAS BOMBAS
+==================================================*/
+
 const categoriasBombas = [
 
     "bombas-centrifugas",
@@ -491,11 +506,35 @@ const categoriasBombas = [
 ];
 
 
+/*==================================================
+        CATEGORIAS IRRIGAÇÃO
+==================================================*/
+
+const categoriasIrrigacao = [
+
+    "aspersores",
+    "microaspersores",
+    "gotejamento",
+    "mangueiras-irrigacao",
+    "tubos-irrigacao",
+    "conexoes-irrigacao",
+    "filtros-irrigacao",
+    "valvulas-irrigacao"
+
+];
+
+
+/*==================================================
+        ATUALIZAR CAMPOS ESPECÍFICOS
+==================================================*/
+
 function atualizarCamposEspecificos(){
 
     const categoria =
         categoriaProduto.value;
 
+
+    /* STIHL */
 
     if(camposStihl){
 
@@ -507,6 +546,8 @@ function atualizarCamposEspecificos(){
     }
 
 
+    /* BOMBAS */
+
     if(camposBombas){
 
         camposBombas.style.display =
@@ -516,8 +557,24 @@ function atualizarCamposEspecificos(){
 
     }
 
+
+    /* IRRIGAÇÃO */
+
+    if(camposIrrigacao){
+
+        camposIrrigacao.style.display =
+            categoriasIrrigacao.includes(categoria)
+                ? "block"
+                : "none";
+
+    }
+
 }
 
+
+/*==================================================
+        EVENTO DA CATEGORIA
+==================================================*/
 
 if(categoriaProduto){
 
@@ -527,6 +584,12 @@ if(categoriaProduto){
     );
 
 }
+/*==================================================
+    INICIALIZAR CAMPOS ESPECÍFICOS
+==================================================*/
+
+atualizarCamposEspecificos();
+
 
 const nomesCategoriasBombas = {
   "bombas-centrifugas": "Bombas Centrífugas",
@@ -953,31 +1016,44 @@ formProduto.addEventListener("submit", async event => {
     INFORMAÇÕES ESPECÍFICAS
 ========================================*/
 
+/*========================================
+    INFORMAÇÕES ESPECÍFICAS
+========================================*/
+
+/* STIHL */
+
 const descricaoStihl =
     document.getElementById("descricaoStihl")?.value.trim() || "";
 
 const aplicacaoStihl =
-    document.getElementById("aplicacaoStihl")?.value || "";
+    document.getElementById("aplicacaoStihl")?.value.trim() || "";
 
+
+/* BOMBAS */
 
 const marcaBomba =
     document.getElementById("marcaBomba")?.value.trim() || "";
 
 const potenciaBomba =
-    document.getElementById("potenciaBomba")?.value || "";
+    document.getElementById("potenciaBomba")?.value.trim() || "";
 
 const vazaoBomba =
     document.getElementById("vazaoBomba")?.value.trim() || "";
 
 const aplicacaoBomba =
-    document.getElementById("aplicacaoBomba")?.value || "";
+    document.getElementById("aplicacaoBomba")?.value.trim() || "";
 
-  const imagemTexto = document.getElementById("imagemProduto")
-    ? document.getElementById("imagemProduto").value.trim()
-    : "";
+
+/* IRRIGAÇÃO */
+
+const marcaIrrigacao =
+    document.getElementById("marcaIrrigacao")?.value.trim() || "";
+
+const tipoIrrigacao =
+    document.getElementById("tipoIrrigacao")?.value.trim() || "";
 
 let imagemUrl =
-  produtoEditando?.imagem || imagemTexto;
+  produtoEditando?.imagem || "";
 
 let imagensAdicionais =
   Array.isArray(produtoEditando?.imagens)
@@ -1059,16 +1135,50 @@ try {
     .value
     .trim();
 
-    const dados = {
+   const dados = {
+
     nome,
+
     codigo,
+
     categoria,
+
     preco,
+
     estoque,
+
     imagem: imagemUrl,
+
     imagens: imagensAdicionais,
-    destaque
-    };
+
+    destaque,
+
+
+    /* STIHL */
+
+    descricaoStihl,
+
+    aplicacaoStihl,
+
+
+    /* BOMBAS */
+
+    marcaBomba,
+
+    potenciaBomba,
+
+    vazaoBomba,
+
+    aplicacaoBomba,
+
+
+    /* IRRIGAÇÃO */
+
+    marcaIrrigacao,
+
+    tipoIrrigacao
+
+};
 
     if (produtoEditandoId) {
       await atualizarProduto(produtoEditandoId, dados);
@@ -1098,6 +1208,317 @@ try {
     );
     }
 });
+
+/*==================================================
+                SALVAR RASCUNHO
+==================================================*/
+
+const btnSalvarRascunho =
+    document.getElementById("salvarRascunho");
+
+if(btnSalvarRascunho){
+
+    btnSalvarRascunho.addEventListener(
+        "click",
+        () => {
+
+            const rascunho = {
+
+                nome:
+                    document
+                        .getElementById("nomeProduto")
+                        ?.value
+                        .trim() || "",
+
+                codigo:
+                    document
+                        .getElementById("skuProduto")
+                        ?.value
+                        .trim() || "",
+
+                categoria:
+                    document
+                        .getElementById("categoriaProduto")
+                        ?.value || "",
+
+                preco:
+                    document
+                        .getElementById("precoProduto")
+                        ?.value || "",
+
+                estoque:
+                    document
+                        .getElementById("estoqueProduto")
+                        ?.value || "",
+
+                descricao:
+                    document
+                        .getElementById("descricaoProduto")
+                        ?.value
+                        .trim() || "",
+
+                destaque:
+                    document
+                        .getElementById("produtoDestaque")
+                        ?.checked || false,
+
+                descricaoStihl:
+                    document
+                        .getElementById("descricaoStihl")
+                        ?.value
+                        .trim() || "",
+
+                aplicacaoStihl:
+                    document
+                        .getElementById("aplicacaoStihl")
+                        ?.value
+                        .trim() || "",
+
+                marcaBomba:
+                    document
+                        .getElementById("marcaBomba")
+                        ?.value
+                        .trim() || "",
+
+                potenciaBomba:
+                    document
+                        .getElementById("potenciaBomba")
+                        ?.value
+                        .trim() || "",
+
+                vazaoBomba:
+                    document
+                        .getElementById("vazaoBomba")
+                        ?.value
+                        .trim() || "",
+
+                aplicacaoBomba:
+                    document
+                        .getElementById("aplicacaoBomba")
+                        ?.value
+                        .trim() || "",
+
+                marcaIrrigacao:
+                    document
+                        .getElementById("marcaIrrigacao")
+                        ?.value
+                        .trim() || "",
+
+                tipoIrrigacao:
+                    document
+                        .getElementById("tipoIrrigacao")
+                        ?.value
+                        .trim() || "",
+
+                etapa:
+                    etapaAtualProduto
+            };
+
+            localStorage.setItem(
+                "produtoRascunho",
+                JSON.stringify(rascunho)
+            );
+
+            alert(
+                "Rascunho salvo com sucesso!"
+            );
+
+        }
+    );
+
+}
+
+/*==================================================
+            CARREGAR RASCUNHO
+==================================================*/
+
+function carregarRascunho() {
+
+    const salvo =
+        localStorage.getItem("produtoRascunho");
+
+    if (!salvo) {
+        return false;
+    }
+
+    try {
+
+        const rascunho =
+            JSON.parse(salvo);
+
+
+        const preencher = (id, valor) => {
+
+            const campo =
+                document.getElementById(id);
+
+            if (campo && valor !== undefined) {
+                campo.value = valor;
+            }
+
+        };
+
+
+        preencher(
+            "nomeProduto",
+            rascunho.nome
+        );
+
+        preencher(
+            "skuProduto",
+            rascunho.codigo
+        );
+
+        preencher(
+            "categoriaProduto",
+            rascunho.categoria
+        );
+
+        preencher(
+            "precoProduto",
+            rascunho.preco
+        );
+
+        preencher(
+            "estoqueProduto",
+            rascunho.estoque
+        );
+
+        preencher(
+            "descricaoProduto",
+            rascunho.descricao
+        );
+
+
+        const destaque =
+            document.getElementById(
+                "produtoDestaque"
+            );
+
+        if (destaque) {
+
+            destaque.checked =
+                Boolean(rascunho.destaque);
+
+        }
+
+
+        /* STIHL */
+
+        preencher(
+            "descricaoStihl",
+            rascunho.descricaoStihl
+        );
+
+        preencher(
+            "aplicacaoStihl",
+            rascunho.aplicacaoStihl
+        );
+
+
+        /* BOMBAS */
+
+        preencher(
+            "marcaBomba",
+            rascunho.marcaBomba
+        );
+
+        preencher(
+            "potenciaBomba",
+            rascunho.potenciaBomba
+        );
+
+        preencher(
+            "vazaoBomba",
+            rascunho.vazaoBomba
+        );
+
+        preencher(
+            "aplicacaoBomba",
+            rascunho.aplicacaoBomba
+        );
+
+
+        /* IRRIGAÇÃO */
+
+        preencher(
+            "marcaIrrigacao",
+            rascunho.marcaIrrigacao
+        );
+
+        preencher(
+            "tipoIrrigacao",
+            rascunho.tipoIrrigacao
+        );
+
+
+        /* Atualiza campos da categoria */
+
+        atualizarCamposEspecificos();
+
+
+        /* Atualiza prévia */
+
+        atualizarPreviewProduto();
+
+
+        /* Volta para a etapa salva */
+
+        const etapa =
+            Number(rascunho.etapa) || 1;
+
+        mostrarEtapaProduto(
+            etapa
+        );
+
+
+        return true;
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar rascunho:",
+            erro
+        );
+
+        return false;
+
+    }
+
+}
+
+/*==================================================
+        BOTÃO CONTINUAR RASCUNHO
+==================================================*/
+
+const btnContinuarRascunho =
+    document.getElementById("continuarRascunho");
+
+if (btnContinuarRascunho) {
+
+    btnContinuarRascunho.addEventListener(
+        "click",
+        () => {
+
+            const carregou =
+                carregarRascunho();
+
+            if (!carregou) {
+
+                alert(
+                    "Não existe nenhum rascunho salvo."
+                );
+
+                return;
+            }
+
+            modalProduto.classList.add("aberto");
+
+        }
+    );
+
+}
 
 /* Excluir produto */
 document.addEventListener("click", async event => {

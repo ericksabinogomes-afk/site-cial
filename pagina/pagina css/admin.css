@@ -1799,6 +1799,75 @@ tbody tr:last-child td{
     background:#FFF8F1;
 }
 
+/* ==================================================
+   BOTÃO RASCUNHO — TOPO DO MODAL
+================================================== */
+
+.acoes-topo-produto{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.btn-rascunho-topo{
+    display:inline-flex;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:7px;
+
+    height:40px;
+
+    padding:0 16px;
+
+    border:1px solid #F58220;
+
+    border-radius:10px;
+
+    background:#FFF8F1;
+
+    color:#F58220;
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:11px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        border-color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.btn-rascunho-topo i{
+    font-size:13px;
+}
+
+.btn-rascunho-topo:hover{
+    background:#F58220;
+
+    color:#FFFFFF;
+
+    border-color:#F58220;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 6px 15px rgba(245,130,32,.22);
+}
+
+.btn-rascunho-topo:active{
+    transform:translateY(0);
+
+    box-shadow:none;
+}
+
 .cadastro-acoes .btn-cancelar{
     border:1px solid #D8D8D8;
 
@@ -1951,6 +2020,851 @@ tbody tr:last-child td{
 
     .preview-imagens{
         grid-template-columns:repeat(2,1fr);
+    }
+
+}
+/* ============================================================
+   NOVO VISUAL — ETAPAS 2, 3 E 4 DO CADASTRO DE PRODUTO
+   ============================================================ */
+
+
+/* ============================================================
+   BASE DAS ETAPAS
+   ============================================================ */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"],
+#modalProduto .etapa-conteudo[data-conteudo="3"],
+#modalProduto .etapa-conteudo[data-conteudo="4"]{
+    padding:34px 38px;
+    background:#FFFFFF;
+}
+
+
+/* ============================================================
+   TÍTULO DAS ETAPAS
+   ============================================================ */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .titulo-secao,
+#modalProduto .etapa-conteudo[data-conteudo="3"] .titulo-secao,
+#modalProduto .etapa-conteudo[data-conteudo="4"] .titulo-secao{
+    margin-bottom:28px;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .icone-secao,
+#modalProduto .etapa-conteudo[data-conteudo="3"] .icone-secao,
+#modalProduto .etapa-conteudo[data-conteudo="4"] .icone-secao{
+    width:46px;
+    height:46px;
+
+    border-radius:13px;
+
+    background:#FFF4E9;
+
+    color:var(--laranja);
+
+    font-size:18px;
+
+    box-shadow:
+        0 4px 12px rgba(245,130,32,.08);
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .titulo-secao h3,
+#modalProduto .etapa-conteudo[data-conteudo="3"] .titulo-secao h3,
+#modalProduto .etapa-conteudo[data-conteudo="4"] .titulo-secao h3{
+    font-size:20px;
+    letter-spacing:-.2px;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .titulo-secao p,
+#modalProduto .etapa-conteudo[data-conteudo="3"] .titulo-secao p,
+#modalProduto .etapa-conteudo[data-conteudo="4"] .titulo-secao p{
+    font-size:12px;
+}
+
+
+/* ============================================================
+   ETAPA 2 — FOTOS
+   ============================================================ */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"]{
+    max-width:100%;
+}
+
+
+/* ÁREA DE UPLOAD */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area{
+    position:relative;
+
+    min-height:285px;
+
+    padding:45px 30px;
+
+    border:2px dashed #E4E4E4;
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #FFFFFF 0%,
+            #FCFCFC 100%
+        );
+
+    box-shadow:
+        0 4px 18px rgba(0,0,0,.025);
+
+    transition:
+        border-color .25s ease,
+        background .25s ease,
+        box-shadow .25s ease,
+        transform .25s ease;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area:hover,
+#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area.ativo{
+    border-color:var(--laranja);
+
+    background:#FFF9F4;
+
+    box-shadow:
+        0 8px 25px rgba(245,130,32,.10);
+
+    transform:translateY(-1px);
+}
+
+
+/* ÍCONE DO UPLOAD */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area > i{
+    width:72px;
+    height:72px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin:0 0 20px;
+
+    border-radius:20px;
+
+    background:#FFF1E3;
+
+    color:var(--laranja);
+
+    font-size:28px;
+
+    box-shadow:
+        0 6px 18px rgba(245,130,32,.08);
+}
+
+
+/* TEXTO DO UPLOAD */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area h3{
+    font-size:17px;
+    font-weight:800;
+
+    color:var(--preto);
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area p{
+    margin-top:9px;
+
+    font-size:12px;
+    font-weight:700;
+
+    color:var(--laranja);
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area small{
+    margin-top:10px;
+
+    font-size:11px;
+
+    color:#999999;
+}
+
+
+/* ============================================================
+   GALERIA DE FOTOS
+   ============================================================ */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagens{
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fill,minmax(165px,1fr));
+
+    gap:18px;
+
+    margin-top:24px;
+}
+
+
+/* CARD DA IMAGEM */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item{
+    position:relative;
+
+    height:165px;
+
+    padding:8px;
+
+    border:1px solid #E6E6E6;
+    border-radius:14px;
+
+    background:#FFFFFF;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 4px 14px rgba(0,0,0,.04);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item:hover{
+    transform:translateY(-3px);
+
+    border-color:#DADADA;
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.08);
+}
+
+
+/* FOTO PRINCIPAL */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item.principal{
+    border:2px solid var(--laranja);
+
+    box-shadow:
+        0 8px 22px rgba(245,130,32,.15);
+}
+
+
+/* IMAGEM */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item img{
+    width:100%;
+    height:100%;
+
+    object-fit:contain;
+
+    border-radius:9px;
+}
+
+
+/* ETIQUETA PRINCIPAL */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item span{
+    left:9px;
+    bottom:9px;
+
+    padding:5px 9px;
+
+    border-radius:7px;
+
+    background:var(--laranja);
+
+    font-size:9px;
+    font-weight:800;
+
+    box-shadow:
+        0 3px 8px rgba(245,130,32,.20);
+}
+
+
+/* BOTÃO REMOVER */
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-remover{
+    top:9px;
+    right:9px;
+
+    width:29px;
+    height:29px;
+
+    background:#FFFFFF;
+
+    color:var(--vermelho);
+
+    border:1px solid #E8E8E8;
+
+    box-shadow:
+        0 3px 10px rgba(0,0,0,.10);
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-remover:hover{
+    background:var(--vermelho);
+
+    color:#FFFFFF;
+
+    transform:scale(1.08);
+}
+
+
+/* ============================================================
+   ETAPA 3 — VENDA E ESTOQUE
+   ============================================================ */
+
+#modalProduto .etapa-conteudo[data-conteudo="3"]{
+    max-width:900px;
+
+    margin:0 auto;
+
+    width:100%;
+}
+
+
+/* GRID DOS CAMPOS */
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .form-row{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:22px;
+
+    margin-bottom:22px;
+}
+
+
+/* CARD DOS CAMPOS */
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group{
+    margin-bottom:0;
+
+    padding:22px;
+
+    border:1px solid #E8E8E8;
+    border-radius:16px;
+
+    background:#FFFFFF;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,.035);
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group:focus-within{
+    border-color:#F5C89E;
+
+    box-shadow:
+        0 6px 20px rgba(245,130,32,.08);
+}
+
+
+/* LABEL */
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group label{
+    display:block;
+
+    margin-bottom:10px;
+
+    color:var(--preto);
+
+    font-size:12px;
+    font-weight:800;
+}
+
+
+/* INPUTS */
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group input,
+#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group select{
+    width:100%;
+
+    min-height:52px;
+
+    padding:13px 15px;
+
+    border:1px solid #DEDEDE;
+    border-radius:11px;
+
+    background:#FAFAFA;
+
+    color:var(--texto);
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:13px;
+
+    outline:none;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group input:focus,
+#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group select:focus{
+    border-color:var(--laranja);
+
+    background:#FFFFFF;
+
+    box-shadow:
+        0 0 0 3px rgba(245,130,32,.10);
+}
+
+
+/* PREÇO */
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] #precoProduto{
+    font-size:16px;
+    font-weight:700;
+}
+
+
+/* ============================================================
+   PRODUTO EM DESTAQUE
+   ============================================================ */
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .destaque-produto{
+    display:flex;
+
+    align-items:center;
+    justify-content:space-between;
+
+    gap:25px;
+
+    margin-top:6px;
+
+    padding:22px 24px;
+
+    border:1px solid #F1D4BA;
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #FFF9F4 0%,
+            #FFFFFF 100%
+        );
+
+    box-shadow:
+        0 5px 18px rgba(245,130,32,.05);
+}
+
+
+/* TÍTULO */
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .destaque-produto h3{
+    font-size:14px;
+    font-weight:800;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .destaque-produto h3 i{
+    margin-right:7px;
+
+    color:var(--laranja);
+}
+
+
+/* DESCRIÇÃO */
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .destaque-produto p{
+    margin-top:6px;
+
+    color:var(--texto-suave);
+
+    font-size:11px;
+}
+
+
+/* ============================================================
+   TOGGLE MODERNO
+   ============================================================ */
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque{
+    position:relative;
+
+    width:52px;
+    height:30px;
+
+    flex-shrink:0;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque input{
+    position:absolute;
+
+    opacity:0;
+
+    width:0;
+    height:0;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque span{
+    position:absolute;
+    inset:0;
+
+    border-radius:30px;
+
+    background:#D8D8D8;
+
+    cursor:pointer;
+
+    transition:.25s ease;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque span::before{
+    content:"";
+
+    position:absolute;
+
+    width:22px;
+    height:22px;
+
+    left:4px;
+    top:4px;
+
+    border-radius:50%;
+
+    background:#FFFFFF;
+
+    box-shadow:
+        0 2px 5px rgba(0,0,0,.15);
+
+    transition:.25s ease;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque input:checked + span{
+    background:var(--laranja);
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque input:checked + span::before{
+    transform:translateX(22px);
+}
+
+
+/* ============================================================
+   ETAPA 4 — ESPECIFICAÇÕES
+   ============================================================ */
+
+#modalProduto .etapa-conteudo[data-conteudo="4"]{
+    max-width:950px;
+
+    margin:0 auto;
+
+    width:100%;
+}
+
+
+/* CARDS DE ESPECIFICAÇÕES */
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .campos-produto{
+    padding:26px;
+
+    margin-bottom:20px;
+
+    border:1px solid #E5E5E5;
+    border-radius:17px;
+
+    background:#FFFFFF;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,.035);
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .campos-produto:hover{
+    border-color:#E1DAD4;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.055);
+}
+
+
+/* CABEÇALHO DO CARD */
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .campo-titulo{
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    margin-bottom:24px;
+
+    padding-bottom:18px;
+
+    border-bottom:1px solid #EEEEEE;
+}
+
+
+/* ÍCONE / EMOJI */
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .campo-titulo > span{
+    width:46px;
+    height:46px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
+    border-radius:13px;
+
+    background:#FFF3E8;
+
+    font-size:22px;
+
+    box-shadow:
+        0 4px 12px rgba(245,130,32,.07);
+}
+
+
+/* TÍTULO */
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .campo-titulo h3{
+    font-size:16px;
+
+    font-weight:800;
+}
+
+
+/* DESCRIÇÃO */
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .campo-titulo p{
+    margin-top:4px;
+
+    color:var(--texto-suave);
+
+    font-size:11px;
+}
+
+
+/* FORMULÁRIOS DOS CARDS */
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group{
+    margin-bottom:18px;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group:last-child{
+    margin-bottom:0;
+}
+
+
+/* LABELS */
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group label{
+    display:block;
+
+    margin-bottom:8px;
+
+    color:var(--texto);
+
+    font-size:12px;
+    font-weight:800;
+}
+
+
+/* INPUTS E SELECTS */
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group input,
+#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group select,
+#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group textarea{
+    width:100%;
+
+    min-height:48px;
+
+    padding:12px 14px;
+
+    border:1px solid #DEDEDE;
+    border-radius:10px;
+
+    background:#FAFAFA;
+
+    color:var(--texto);
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:12px;
+
+    outline:none;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group textarea{
+    min-height:105px;
+
+    resize:vertical;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group input:focus,
+#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group select:focus,
+#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group textarea:focus{
+    border-color:var(--laranja);
+
+    background:#FFFFFF;
+
+    box-shadow:
+        0 0 0 3px rgba(245,130,32,.10);
+}
+
+
+/* GRID DAS ESPECIFICAÇÕES */
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .form-row{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:18px;
+
+    margin-bottom:18px;
+}
+
+
+/* ============================================================
+   SEM ESPECIFICAÇÕES
+   ============================================================ */
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .sem-especificacoes{
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:24px;
+
+    border:1px dashed #D8D8D8;
+    border-radius:16px;
+
+    background:#FAFAFA;
+
+    box-shadow:none;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .sem-especificacoes > i{
+    width:40px;
+    height:40px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
+    margin:0;
+
+    border-radius:11px;
+
+    background:#FFF3E8;
+
+    color:var(--laranja);
+
+    font-size:16px;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .sem-especificacoes strong{
+    font-size:12px;
+    font-weight:800;
+}
+
+#modalProduto .etapa-conteudo[data-conteudo="4"] .sem-especificacoes p{
+    margin-top:5px;
+
+    color:#888888;
+
+    font-size:10px;
+}
+
+
+/* ============================================================
+   RESPONSIVO — NOVAS ETAPAS
+   ============================================================ */
+
+@media(max-width:800px){
+
+    #modalProduto .etapa-conteudo[data-conteudo="2"],
+    #modalProduto .etapa-conteudo[data-conteudo="3"],
+    #modalProduto .etapa-conteudo[data-conteudo="4"]{
+        padding:25px 22px;
+    }
+
+    #modalProduto .etapa-conteudo[data-conteudo="3"] .form-row,
+    #modalProduto .etapa-conteudo[data-conteudo="4"] .form-row{
+        grid-template-columns:1fr;
+    }
+
+}
+
+
+@media(max-width:600px){
+
+    #modalProduto .etapa-conteudo[data-conteudo="2"],
+    #modalProduto .etapa-conteudo[data-conteudo="3"],
+    #modalProduto .etapa-conteudo[data-conteudo="4"]{
+        padding:22px 18px;
+    }
+
+    #modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area{
+        min-height:240px;
+
+        padding:30px 20px;
+    }
+
+    #modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagens{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+
+        gap:12px;
+    }
+
+    #modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item{
+        height:145px;
+    }
+
+    #modalProduto .etapa-conteudo[data-conteudo="3"] .destaque-produto{
+        align-items:flex-start;
+    }
+
+    #modalProduto .etapa-conteudo[data-conteudo="4"] .campos-produto{
+        padding:20px;
+    }
+
+}
+
+
+@media(max-width:450px){
+
+    #modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagens{
+        grid-template-columns:1fr 1fr;
+    }
+
+    #modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item{
+        height:125px;
+    }
+
+    #modalProduto .etapa-conteudo[data-conteudo="3"] .form-group{
+        padding:18px;
+    }
+
+    #modalProduto .etapa-conteudo[data-conteudo="4"] .campo-titulo{
+        align-items:flex-start;
     }
 
 }

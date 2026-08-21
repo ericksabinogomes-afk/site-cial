@@ -181,8 +181,19 @@ async function carregarProdutos(){
         }
 
 
-        estado.produtos = resultado.data || [];
+       estado.produtos = (resultado.data || []).map(p => ({
 
+    ...p,
+
+    marcaBomba: p.marca_bomba || "",
+    potenciaBomba: p.potencia_bomba || "",
+    vazaoBomba: p.vazao_bomba || "",
+    aplicacaoBomba: p.aplicacao_bomba || "",
+
+    marcaIrrigacao: p.marca_irrigacao || "",
+    tipoIrrigacao: p.tipo_irrigacao || ""
+
+}));
 
         /*
         ==========================================
@@ -336,6 +347,11 @@ function formatarPreco(valor){
     );
 
 }
+
+/*==================================================
+                CRIAR CARD
+==================================================*/
+
 /*==================================================
                 CRIAR CARD
 ==================================================*/
@@ -345,110 +361,191 @@ function criarCard(produto){
     const favorito =
         estado.favoritos.includes(Number(produto.id));
 
+
     const nomeCategoria =
         nomesCategoriasBombas[produto.categoria] ||
         nomesCategoriasIrrigacao[produto.categoria] ||
+        produto.categoria ||
         "BOMBAS E IRRIGAÇÃO";
+
+
+    /*==================================================
+        ESPECIFICAÇÕES DINÂMICAS
+    ==================================================*/
+
+    const especificacoes = [];
+
+
+    if(produto.marca){
+
+        especificacoes.push(`
+            <span>
+                <strong>Marca:</strong>
+                ${produto.marca}
+            </span>
+        `);
+
+    }
+
+
+    if(produto.potencia){
+
+        especificacoes.push(`
+            <span>
+                <strong>Potência:</strong>
+                ${produto.potencia}
+            </span>
+        `);
+
+    }
+
+
+    if(produto.vazao){
+
+        especificacoes.push(`
+            <span>
+                <strong>Vazão:</strong>
+                ${produto.vazao}
+            </span>
+        `);
+
+    }
+
+
+    if(produto.aplicacao){
+
+        especificacoes.push(`
+            <span>
+                <strong>Aplicação:</strong>
+                ${produto.aplicacao}
+            </span>
+        `);
+
+    }
+
 
     return `
 
         <article class="card-produto">
 
+
+            <!-- TOPO -->
+
             <div class="card-topo">
 
-                <span class="selo">
-                    ${produto.selo || ""}
-                </span>
+
+                ${produto.selo ? `
+
+                    <span class="selo">
+                        ${produto.selo}
+                    </span>
+
+                ` : ""}
+
 
                 <button
+                    type="button"
                     class="btn-favorito ${favorito ? "ativo" : ""}"
                     data-id="${produto.id}"
-                    aria-label="Favoritar produto">
+                    aria-label="Adicionar ${produto.nome} aos favoritos">
 
-                    <i class="${favorito ? "fa-solid" : "fa-regular"} fa-heart"></i>
+                    <i class="${
+                        favorito
+                            ? "fa-solid"
+                            : "fa-regular"
+                    } fa-heart"></i>
 
                 </button>
 
-                <div class="card-imagem">
-
-                    <img
-                        src="${produto.imagem || "../pagina/imagem/produto-sem-imagem.webp"}"
-                        alt="${produto.nome}">
-
-                </div>
 
             </div>
 
 
+            <!-- IMAGEM -->
+
+            <div class="card-imagem">
+
+                <img
+                    src="${
+                        produto.imagem ||
+                        "imagens/produto-sem-imagem.png"
+                    }"
+                    alt="${produto.nome || "Produto"}"
+                    loading="lazy"
+                    onerror="this.src='imagens/produto-sem-imagem.png'">
+
+            </div>
+
+
+            <!-- INFORMAÇÕES -->
+
             <div class="card-info">
+
 
                 <span class="card-categoria">
 
-                    
+                    ${nomeCategoria}
 
                 </span>
 
 
                 <h3 class="card-titulo">
 
-                    ${produto.nome}
+                    ${produto.nome || "Produto"}
 
                 </h3>
 
 
-                <div class="card-especificacoes">
+                ${
+                    especificacoes.length
+                        ? `
 
-                 
-                <span>
-                        <strong>Marca:</strong>
-                        ${produto.marca || "—"}
+                            <div class="card-especificacoes">
 
-                    </span>
+                                ${especificacoes.join("")}
 
-                    <span>
+                            </div>
 
-                        <strong>Potência:</strong>
-                        ${produto.potencia || "—"}
+                        `
+                        : ""
+                }
 
-                    </span>
 
-                    <span>
+                <!-- AVALIAÇÃO -->
 
-                        <strong>Vazão:</strong>
-                        ${produto.vazao || "—"}
+                <div
+                    class="card-avaliacao"
+                    aria-label="5 estrelas">
 
-                    </span>
-
-                    <span>
-
-                        <strong>Aplicação:</strong>
-                        ${produto.aplicacao || "—"}
-                    </span>
+                    5/5
+                    ★★★★★
 
                 </div>
 
 
-                <div class="card-avaliacao">
-
-                    <span>5/5</span>
-
-                    <span class="estrelas">
-                        ★★★★★
-                    </span>
-
-                </div>
-
+                <!-- PREÇO -->
 
                 <div class="card-preco">
 
                     <span class="preco">
 
-                        ${formatarPreco(Number(produto.preco) || 0)}
+                        ${formatarPreco(
+                            Number(produto.preco) || 0
+                        )}
+
+                    </span>
+
+
+                    <span class="parcelamento">
+
+                        ${produto.parcela || ""}
 
                     </span>
 
                 </div>
 
+
+                <!-- ESTOQUE -->
 
                 <div class="card-estoque">
 
@@ -459,9 +556,13 @@ function criarCard(produto){
                 </div>
 
 
+                <!-- BOTÕES -->
+
                 <div class="card-botoes">
 
+
                     <button
+                        type="button"
                         class="btn-ver"
                         data-id="${produto.id}">
 
@@ -471,6 +572,7 @@ function criarCard(produto){
 
 
                     <button
+                        type="button"
                         class="btn-carrinho"
                         data-id="${produto.id}">
 
@@ -480,15 +582,16 @@ function criarCard(produto){
 
                     </button>
 
+
                 </div>
 
+
             </div>
+
 
         </article>
 
     `;
-
-
 
 }
 
@@ -1433,10 +1536,13 @@ function iniciarCarrinho(){
 }
 
 /*==================================================
-            MODAL DO PRODUTO
+        MODAL DO PRODUTO
+        MESMA ESTRUTURA DO MODAL DE PRODUTOS
+        COM DADOS ESPECÍFICOS DE BOMBAS
 ==================================================*/
 
 let produtoModalAtual = null;
+
 
 function abrirModalProduto(id){
 
@@ -1460,82 +1566,122 @@ function abrirModalProduto(id){
     produtoModalAtual = produto;
 
 
+    /*========================================
+                ELEMENTOS DO MODAL
+    ========================================*/
+
     const modal =
-        document.getElementById("modalProduto");
+        document.getElementById(
+            "modalProduto"
+        );
+
 
     const imagemPrincipal =
         document.getElementById(
             "modalImagemPrincipal"
         );
 
+
     const miniaturas =
         document.getElementById(
             "modalMiniaturas"
         );
+
 
     const categoria =
         document.getElementById(
             "modalCategoria"
         );
 
+
     const nome =
         document.getElementById(
             "modalNomeProduto"
         );
+
 
     const codigo =
         document.getElementById(
             "modalCodigoProduto"
         );
 
+
     const preco =
         document.getElementById(
             "modalPrecoProduto"
         );
+
 
     const estoque =
         document.getElementById(
             "modalEstoqueProduto"
         );
 
+
     const descricao =
         document.getElementById(
             "modalDescricaoProduto"
         );
 
-    const especificacoes =
-        document.getElementById(
-            "modalEspecificacoesBomba"
-        );
-
 
     /*========================================
-            INFORMAÇÕES PRINCIPAIS
+              CATEGORIA
     ========================================*/
 
     categoria.textContent =
+
         nomesCategoriasBombas[
             produto.categoria
         ] ||
+
+        nomesCategoriasIrrigacao[
+            produto.categoria
+        ] ||
+
         produto.categoria ||
+
         "Bombas e Irrigação";
 
+
+    /*========================================
+              NOME
+    ========================================*/
 
     nome.textContent =
         produto.nome || "";
 
 
-    codigo.textContent =
-        produto.codigo
-            ? `Código: ${produto.codigo}`
-            : "";
+    /*========================================
+              CÓDIGO
+    ========================================*/
 
+    if(codigo){
+
+        codigo.textContent =
+
+            produto.codigo
+
+                ? `Código: ${produto.codigo}`
+
+                : "";
+
+    }
+
+
+    /*========================================
+              PREÇO
+    ========================================*/
 
     preco.textContent =
+
         formatarPreco(
             Number(produto.preco) || 0
         );
 
+
+    /*========================================
+              ESTOQUE
+    ========================================*/
 
     estoque.innerHTML = `
 
@@ -1547,68 +1693,36 @@ function abrirModalProduto(id){
 
 
     /*========================================
-        ESPECIFICAÇÕES DA BOMBA
-    ========================================*/
-
-    especificacoes.innerHTML = `
-
-        <div class="modal-especificacao">
-
-            <strong>Marca</strong>
-
-            <span>
-                ${produto.marca || "—"}
-            </span>
-
-        </div>
-
-
-        <div class="modal-especificacao">
-
-            <strong>Potência</strong>
-
-            <span>
-                ${produto.potencia || "—"}
-            </span>
-
-        </div>
-
-
-        <div class="modal-especificacao">
-
-            <strong>Vazão</strong>
-
-            <span>
-                ${produto.vazao || "—"}
-            </span>
-
-        </div>
-
-
-        <div class="modal-especificacao">
-
-            <strong>Aplicação</strong>
-
-            <span>
-                ${produto.aplicacao || "—"}
-            </span>
-
-        </div>
-
-    `;
-
-
-    /*========================================
-            DESCRIÇÃO
+              DESCRIÇÃO
     ========================================*/
 
     descricao.textContent =
+
         produto.descricao ||
+
+        produto.funcao ||
+
         "Entre em contato com a CIAL Asa Sul para mais informações sobre este produto.";
 
 
     /*========================================
-            GALERIA DE IMAGENS
+        ESPECIFICAÇÕES DE BOMBAS / IRRIGAÇÃO
+    ========================================*/
+
+    const especificacoes =
+
+        obterEspecificacoesProduto(
+            produto
+        );
+
+
+    renderizarEspecificacoesModal(
+        especificacoes
+    );
+
+
+    /*========================================
+              GALERIA DE IMAGENS
     ========================================*/
 
     const imagens = [
@@ -1616,7 +1730,9 @@ function abrirModalProduto(id){
         produto.imagem,
 
         ...(Array.isArray(produto.imagens)
+
             ? produto.imagens
+
             : [])
 
     ].filter(Boolean);
@@ -1631,12 +1747,21 @@ function abrirModalProduto(id){
     }
 
 
+    /*========================================
+              IMAGEM PRINCIPAL
+    ========================================*/
+
     imagemPrincipal.src =
         imagens[0];
+
 
     imagemPrincipal.alt =
         produto.nome || "Produto";
 
+
+    /*========================================
+              MINIATURAS
+    ========================================*/
 
     miniaturas.innerHTML = "";
 
@@ -1655,10 +1780,14 @@ function abrirModalProduto(id){
 
 
             miniatura.className =
+
                 "modal-produto-miniatura" +
+
                 (
                     indice === 0
+
                         ? " ativa"
+
                         : ""
                 );
 
@@ -1667,7 +1796,13 @@ function abrirModalProduto(id){
 
                 <img
                     src="${imagem}"
-                    alt="${produto.nome || "Produto"} — imagem ${indice + 1}">
+                    alt="${
+                        produto.nome ||
+                        "Produto"
+                    } — imagem ${
+                        indice + 1
+                    }"
+                >
 
             `;
 
@@ -1686,6 +1821,7 @@ function abrirModalProduto(id){
                         )
                         .forEach(
                             item =>
+
                                 item.classList.remove(
                                     "ativa"
                                 )
@@ -1709,17 +1845,334 @@ function abrirModalProduto(id){
 
 
     /*========================================
-            ABRIR
+              ABRIR MODAL
     ========================================*/
 
-    modal.classList.add("ativo");
+    modal.classList.add(
+        "ativo"
+    );
+
 
     document.body.style.overflow =
         "hidden";
 
 }
 
+/*==================================================
+        ESPECIFICAÇÕES POR CATEGORIA
+==================================================*/
 
+function obterEspecificacoesProduto(
+    produto
+){
+
+    const especificacoes = [];
+
+
+    const categoria =
+
+        String(
+            produto.categoria || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    /*========================================
+                    STIHL
+    ========================================*/
+
+    if(
+
+        categoria.includes("stihl") ||
+
+        categoria.includes("motosserra") ||
+
+        categoria.includes("rocadeira") ||
+
+        categoria.includes("soprador") ||
+
+        categoria.includes("lavajato")
+
+    ){
+
+        adicionarEspecificacao(
+
+            especificacoes,
+
+            "Descrição",
+
+            produto.descricaoStihl ||
+            produto.descricao
+
+        );
+
+
+        adicionarEspecificacao(
+
+            especificacoes,
+
+            "Aplicação",
+
+            produto.aplicacaoStihl ||
+            produto.aplicacao
+
+        );
+
+    }
+
+
+    /*========================================
+                    BOMBAS
+    ========================================*/
+
+    if(
+
+        categoria.includes("bomba")
+
+    ){
+
+        adicionarEspecificacao(
+
+            especificacoes,
+
+            "Marca",
+
+            produto.marcaBomba ||
+            produto.marca
+
+        );
+
+
+        adicionarEspecificacao(
+
+            especificacoes,
+
+            "Potência",
+
+            produto.potenciaBomba ||
+            produto.potencia
+
+        );
+
+
+        adicionarEspecificacao(
+
+            especificacoes,
+
+            "Vazão",
+
+            produto.vazaoBomba ||
+            produto.vazao
+
+        );
+
+
+        adicionarEspecificacao(
+
+            especificacoes,
+
+            "Aplicação",
+
+            produto.aplicacaoBomba ||
+            produto.aplicacao
+
+        );
+
+    }
+
+
+    /*========================================
+                  IRRIGAÇÃO
+    ========================================*/
+
+    if(
+
+        categoria.includes("irrig")
+
+    ){
+
+        adicionarEspecificacao(
+
+            especificacoes,
+
+            "Marca",
+
+            produto.marcaIrrigacao ||
+            produto.marca
+
+        );
+
+
+        adicionarEspecificacao(
+
+            especificacoes,
+
+            "Tipo",
+
+            produto.tipoIrrigacao ||
+            produto.tipo
+
+        );
+
+
+        adicionarEspecificacao(
+
+            especificacoes,
+
+            "Aplicação",
+
+            produto.aplicacaoIrrigacao ||
+            produto.aplicacao
+
+        );
+
+    }
+
+
+    return especificacoes;
+
+}
+
+
+/*==================================================
+        ADICIONAR ESPECIFICAÇÃO
+==================================================*/
+
+function adicionarEspecificacao(
+
+    lista,
+
+    nome,
+
+    valor
+
+){
+
+    if(
+
+        valor === undefined ||
+
+        valor === null ||
+
+        String(valor).trim() === ""
+
+    ){
+
+        return;
+
+    }
+
+
+    lista.push({
+
+        nome,
+
+        valor:
+            String(valor).trim()
+
+    });
+
+}
+
+
+/*==================================================
+        RENDERIZAR ESPECIFICAÇÕES
+==================================================*/
+
+function renderizarEspecificacoesModal(
+
+    especificacoes
+
+){
+
+    const container =
+
+        document.getElementById(
+            "modalEspecificacoes"
+        );
+
+
+    if(!container){
+
+        console.warn(
+            "Container #modalEspecificacoes não encontrado no modal."
+        );
+
+        return;
+
+    }
+
+
+    if(
+
+        !especificacoes ||
+
+        especificacoes.length === 0
+
+    ){
+
+        container.innerHTML = "";
+
+        container.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    container.innerHTML = `
+
+        <div class="modal-especificacoes-titulo">
+
+            <i class="fa-solid fa-list-check"></i>
+
+            Especificações
+
+        </div>
+
+
+        <div class="modal-especificacoes-lista">
+
+            ${especificacoes
+
+                .map(
+
+                    item => `
+
+                        <div class="modal-especificacao">
+
+                            <span class="modal-especificacao-nome">
+
+                                ${item.nome}
+
+                            </span>
+
+
+                            <span class="modal-especificacao-valor">
+
+                                ${item.valor}
+
+                            </span>
+
+                        </div>
+
+                    `
+
+                )
+
+                .join("")}
+
+        </div>
+
+    `;
+
+
+    container.style.display =
+        "";
+
+}
 
 /*==================================================
             FECHAR MODAL

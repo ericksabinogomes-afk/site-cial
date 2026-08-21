@@ -1048,20 +1048,6 @@ ul{
     color:#FFFFFF;
 
 }
-/*==================================================
-                GRID PRODUTOS
-==================================================*/
-
-.grid-produtos{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-
-    gap:30px;
-
-}
-
 
 /*==================================================
         CIAL — PADRÃO DOS CARDS DE PRODUTOS
@@ -1072,7 +1058,7 @@ ul{
     display:grid;
     
 grid-template-columns:
-    repeat(auto-fill,minmax(250px,1fr));
+    repeat(auto-fill,minmax(260px,1fr));
     gap:28px;
 
     align-items:stretch;
@@ -1081,73 +1067,31 @@ grid-template-columns:
 
 
 /*==================================================
-                    CARD
+        CIAL — PADRÃO DOS CARDS
 ==================================================*/
 
 .card-produto{
 
-    position:relative;
+    background:#FFFFFF;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    border:1px solid #E5E5E5;
+
+    box-shadow:0 10px 28px rgba(0,0,0,.08);
+
+    transition:.35s;
 
     display:flex;
 
     flex-direction:column;
 
-    width:100%;
-    height: 90%;
-
-    min-width:0;
-
-    overflow:hidden;
-
-    background:#FFFFFF;
-
-    border:1px solid #E5E5E5;
-
-    border-radius:20px;
-
-    box-shadow:
-        0 8px 25px rgba(0,0,0,.07);
-
-    transition:
-        transform .35s ease,
-        box-shadow .35s ease,
-        border-color .35s ease;
+    position:relative;
 
 }
 
-
-/*==================================================
-            DETALHE LARANJA SUPERIOR
-==================================================*/
-
-.card-produto::before{
-
-    content:"";
-
-    position:absolute;
-
-    top:0;
-    left:0;
-
-    width:100%;
-    height:4px;
-
-    background:#F58220;
-
-    transform:scaleX(0);
-
-    transform-origin:center;
-
-    transition:.35s ease;
-
-    z-index:10;
-
-}
-
-
-/*==================================================
-                    HOVER
-==================================================*/
 
 .card-produto:hover{
 
@@ -1156,14 +1100,7 @@ grid-template-columns:
     border-color:#F58220;
 
     box-shadow:
-        0 20px 45px rgba(0,0,0,.14);
-
-}
-
-
-.card-produto:hover::before{
-
-    transform:scaleX(1);
+        0 20px 40px rgba(0,0,0,.14);
 
 }
 
@@ -1176,21 +1113,9 @@ grid-template-columns:
 
     position:relative;
 
-    display:flex;
+    background:#F7F7F7;
 
-    align-items:center;
-
-    justify-content:center;
-
-    height: 200px;
-
-    padding:24px;
-
-    background:#FFFFFF;
-
-    overflow:hidden;
-
-    height: 230px;
+    padding:20px;
 
 }
 
@@ -1203,37 +1128,29 @@ grid-template-columns:
 
     display:flex;
 
-    align-items:center;
-
     justify-content:center;
 
-    width:100%;
-    height:100%;
+    align-items:center;
+
+    height:240px;
 
 }
 
 
 .card-imagem img{
 
-    width:100%;
-    height:100%;
+    max-height:190px;
 
-    max-height:none;
-
-    object-fit:contain;
-
-    transition:
-        transform .45s ease;
+    transition:.35s;
 
 }
 
 
 .card-produto:hover .card-imagem img{
 
-    transform:scale(1.07);
+    transform:scale(1.08);
 
 }
-
 
 /*==================================================
                     FAVORITO
@@ -1682,8 +1599,7 @@ grid-template-columns:
 
     .card-topo{
 
-        height:230px;
-
+        
         padding:20px;
 
     }
@@ -1723,11 +1639,7 @@ grid-template-columns:
 
     }
 
-    .card-topo{
-
-        height:260px;
-
-    }
+    
 
     .card-botoes{
 

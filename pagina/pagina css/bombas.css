@@ -1001,16 +1001,15 @@ ul{
 
     display:grid;
 
-    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
 
     gap:30px;
 
 }
 
 
-
 /*==================================================
-                CARD
+                    CARDS
 ==================================================*/
 
 .card-produto{
@@ -1021,9 +1020,9 @@ ul{
 
     overflow:hidden;
 
-    border:1px solid #ECECEC;
+    border:1px solid #E5E7EB;
 
-    box-shadow:0 12px 30px rgba(0,0,0,.08);
+    box-shadow:0 10px 28px rgba(0,0,0,.08);
 
     transition:.35s;
 
@@ -1035,34 +1034,36 @@ ul{
 
 }
 
+
 .card-produto:hover{
 
     transform:translateY(-8px);
 
-    box-shadow:0 20px 40px rgba(0,0,0,.15);
+    border-color:rgba(11,61,92,.25);
+
+    box-shadow:
+        0 20px 40px rgba(0,0,0,.14);
 
 }
 
 
-
 /*==================================================
-                TOPO
+                    TOPO
 ==================================================*/
 
 .card-topo{
 
     position:relative;
 
-    background:#F8F8F8;
+    background:#F7FAFC;
 
     padding:20px;
 
 }
 
 
-
 /*==================================================
-                FAVORITO
+                  FAVORITO
 ==================================================*/
 
 .btn-favorito{
@@ -1095,6 +1096,7 @@ ul{
 
 }
 
+
 .btn-favorito i{
 
     color:#999;
@@ -1103,11 +1105,13 @@ ul{
 
 }
 
+
 .btn-favorito:hover{
 
-    background:#F58220;
+    background:#0B3D5C;
 
 }
+
 
 .btn-favorito:hover i{
 
@@ -1115,17 +1119,23 @@ ul{
 
 }
 
+
 .btn-favorito.ativo i{
+
     color:#E53935 !important;
+
 }
 
+
 .btn-favorito.ativo:hover i{
+
     color:#E53935 !important;
+
 }
 
 
 /*==================================================
-                SELO
+                      SELO
 ==================================================*/
 
 .selo{
@@ -1136,7 +1146,7 @@ ul{
 
     left:18px;
 
-    background:#F58220;
+    background:#0B3D5C;
 
     color:#FFFFFF;
 
@@ -1151,9 +1161,8 @@ ul{
 }
 
 
-
 /*==================================================
-                IMAGEM
+                     IMAGEM
 ==================================================*/
 
 .card-imagem{
@@ -1168,6 +1177,7 @@ ul{
 
 }
 
+
 .card-imagem img{
 
     max-height:190px;
@@ -1176,6 +1186,7 @@ ul{
 
 }
 
+
 .card-produto:hover .card-imagem img{
 
     transform:scale(1.08);
@@ -1183,9 +1194,8 @@ ul{
 }
 
 
-
 /*==================================================
-                CONTEÚDO
+                    CONTEÚDO
 ==================================================*/
 
 .card-info{
@@ -1200,9 +1210,10 @@ ul{
 
 }
 
+
 .card-categoria{
 
-    color:#F58220;
+    color:#0B3D5C;
 
     font-size:13px;
 
@@ -1213,6 +1224,7 @@ ul{
     margin-bottom:8px;
 
 }
+
 
 .card-titulo{
 
@@ -1229,9 +1241,8 @@ ul{
 }
 
 
-
 /*==================================================
-            ESPECIFICAÇÕES
+                ESPECIFICAÇÕES
 ==================================================*/
 
 .card-especificacoes{
@@ -1246,6 +1257,7 @@ ul{
 
 }
 
+
 .card-especificacoes span{
 
     font-size:14px;
@@ -1254,6 +1266,7 @@ ul{
 
 }
 
+
 .card-especificacoes strong{
 
     color:#181818;
@@ -1261,9 +1274,8 @@ ul{
 }
 
 
-
 /*==================================================
-                PREÇO
+                     PREÇO
 ==================================================*/
 
 .card-preco{
@@ -1276,15 +1288,17 @@ ul{
 
 }
 
+
 .preco{
 
-    color:#F58220;
+    color:#0B3D5C;
 
     font-size:30px;
 
     font-weight:800;
 
 }
+
 
 .parcelamento{
 
@@ -1297,9 +1311,8 @@ ul{
 }
 
 
-
 /*==================================================
-                ESTOQUE
+                    ESTOQUE
 ==================================================*/
 
 .card-estoque{
@@ -1321,9 +1334,8 @@ ul{
 }
 
 
-
 /*==================================================
-                BOTÕES
+                     BOTÕES
 ==================================================*/
 
 .card-botoes{
@@ -1336,19 +1348,20 @@ ul{
 
 }
 
+
 .btn-ver{
 
     flex:1;
 
     height:48px;
 
-    border:2px solid #F58220;
+    border:2px solid #0B3D5C;
 
     border-radius:12px;
 
     background:#FFFFFF;
 
-    color:#F58220;
+    color:#0B3D5C;
 
     font-weight:700;
 
@@ -1356,13 +1369,15 @@ ul{
 
 }
 
+
 .btn-ver:hover{
 
-    background:#F58220;
+    background:#0B3D5C;
 
     color:#FFFFFF;
 
 }
+
 
 .btn-carrinho{
 
@@ -1382,22 +1397,21 @@ ul{
 
 }
 
+
 .btn-carrinho:hover{
 
-    background:#F58220;
+    background:#0B3D5C;
 
     transform:translateY(-2px);
 
 }
+
+
 /*==================================================
-                ANIMAÇÕES
+                  ANIMAÇÕES
 ==================================================*/
 
 .card-produto,
-.sidebar-card,
-.atalho,
-.categorias li,
-.filtros li,
 .btn-ver,
 .btn-carrinho,
 .btn-favorito{
@@ -1406,18 +1420,12 @@ ul{
 
 }
 
-.card-produto:hover{
-
-    border-color:rgba(245,130,32,.25);
-
-}
 
 .card-produto:hover .card-titulo{
 
-    color:#F58220;
+    color:#0B3D5C;
 
 }
-
 
 
 /*==================================================
@@ -1879,62 +1887,120 @@ ul{
 }
 
 /*==================================================
-        MODAL DO PRODUTO - BOMBAS
+            CIAL — MODAL DO PRODUTO
 ==================================================*/
 
 .modal-produto{
+
     position:fixed;
+
     inset:0;
+
     z-index:9999;
 
     display:none;
+
     align-items:center;
+
     justify-content:center;
 
-    padding:30px;
+    padding:25px;
 
-    background:rgba(0,0,0,.65);
+    background:rgba(0,0,0,.78);
 
-    backdrop-filter:blur(5px);
+    backdrop-filter:blur(8px);
+
 }
+
 
 .modal-produto.ativo{
+
     display:flex;
+
 }
 
+
+/*==================================================
+                CONTEÚDO
+==================================================*/
+
 .modal-produto-conteudo{
+
     position:relative;
 
-    width:min(1100px,95vw);
-    max-height:90vh;
+    width:min(1080px,94vw);
+
+    max-height:92vh;
 
     overflow-y:auto;
 
     background:#FFFFFF;
-    border-radius:22px;
 
-    box-shadow:0 25px 80px rgba(0,0,0,.30);
+    border:1px solid rgba(11,61,92,.25);
 
-    animation:abrirModalProduto .25s ease;
+    border-radius:24px;
+
+    box-shadow:
+        0 30px 90px rgba(0,0,0,.40);
+
+    animation:
+        abrirModalProduto .3s ease;
+
 }
+
 
 @keyframes abrirModalProduto{
 
     from{
+
         opacity:0;
-        transform:translateY(20px) scale(.97);
+
+        transform:
+            translateY(25px)
+            scale(.97);
+
     }
 
     to{
+
         opacity:1;
-        transform:translateY(0) scale(1);
+
+        transform:
+            translateY(0)
+            scale(1);
+
     }
 
 }
 
 
 /*==================================================
-        BOTÃO FECHAR
+                BARRA AZUL
+==================================================*/
+
+.modal-produto-conteudo::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    height:5px;
+
+    background:#0B3D5C;
+
+    z-index:10;
+
+}
+
+
+/*==================================================
+                BOTÃO FECHAR
 ==================================================*/
 
 .modal-produto-fechar{
@@ -1942,97 +2008,155 @@ ul{
     position:absolute;
 
     top:18px;
+
     right:18px;
 
-    z-index:5;
+    z-index:20;
 
     width:42px;
+
     height:42px;
 
-    border:none;
-    border-radius:50%;
-
     display:flex;
+
     align-items:center;
+
     justify-content:center;
 
-    background:#FFFFFF;
-    color:#333;
+    border:none;
 
-    font-size:20px;
+    border-radius:50%;
+
+    background:#181818;
+
+    color:#FFFFFF;
+
+    font-size:17px;
 
     cursor:pointer;
 
-    box-shadow:0 3px 12px rgba(0,0,0,.15);
+    box-shadow:
+        0 6px 18px rgba(0,0,0,.18);
 
-    transition:.2s;
+    transition:
+        background .25s ease,
+        transform .25s ease;
+
 }
+
 
 .modal-produto-fechar:hover{
 
-    background:#F58220;
-    color:#FFFFFF;
+    background:#0B3D5C;
 
-    transform:rotate(90deg);
+    transform:
+        rotate(90deg)
+        scale(1.05);
+
 }
 
 
 /*==================================================
-        CORPO
+                    CORPO
 ==================================================*/
 
 .modal-produto-corpo{
 
     display:grid;
 
-    grid-template-columns:1.05fr .95fr;
+    grid-template-columns:
+        minmax(0,1fr)
+        minmax(360px,.9fr);
 
-    gap:45px;
+    gap:42px;
 
     padding:45px;
+
 }
 
 
 /*==================================================
-        GALERIA
+                    GALERIA
 ==================================================*/
 
 .modal-produto-galeria{
 
     min-width:0;
+
 }
 
+
+/*==================================================
+                IMAGEM PRINCIPAL
+==================================================*/
+
 .modal-produto-imagem-principal{
+
+    position:relative;
 
     height:430px;
 
     display:flex;
 
     align-items:center;
+
     justify-content:center;
 
     padding:30px;
 
-    background:#F8F8F8;
+    background:#FAFAFA;
+
+    border:1px solid #EEEEEE;
 
     border-radius:18px;
 
     overflow:hidden;
+
 }
+
+
+.modal-produto-imagem-principal::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:auto 20px 0;
+
+    height:3px;
+
+    background:#0B3D5C;
+
+    border-radius:10px 10px 0 0;
+
+    opacity:.8;
+
+}
+
 
 .modal-produto-imagem-principal img{
 
     width:100%;
+
     height:100%;
 
     object-fit:contain;
 
-    transition:.25s;
+    transition:
+        transform .4s ease;
+
+}
+
+
+.modal-produto-imagem-principal:hover img{
+
+    transform:scale(1.04);
+
 }
 
 
 /*==================================================
-        MINIATURAS
+                MINIATURAS
 ==================================================*/
 
 .modal-produto-miniaturas{
@@ -2043,52 +2167,77 @@ ul{
 
     margin-top:15px;
 
+    padding:3px 2px 8px;
+
     overflow-x:auto;
 
-    padding-bottom:5px;
 }
+
 
 .modal-produto-miniatura{
 
-    flex:0 0 78px;
+    flex:0 0 76px;
 
-    width:78px;
-    height:78px;
+    width:76px;
+
+    height:76px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
 
     padding:5px;
 
-    border:2px solid #E5E5E5;
+    border:2px solid #E6E6E6;
 
-    border-radius:10px;
+    border-radius:12px;
 
     background:#FFFFFF;
 
     cursor:pointer;
 
-    transition:.2s;
+    transition:
+        border-color .25s ease,
+        transform .25s ease,
+        box-shadow .25s ease;
+
 }
+
 
 .modal-produto-miniatura:hover{
 
-    border-color:#F58220;
+    border-color:#0B3D5C;
+
+    transform:translateY(-2px);
+
 }
+
 
 .modal-produto-miniatura.ativa{
 
-    border-color:#F58220;
+    border-color:#0B3D5C;
+
+    box-shadow:
+        0 5px 15px rgba(11,61,92,.16);
+
 }
+
 
 .modal-produto-miniatura img{
 
     width:100%;
+
     height:100%;
 
     object-fit:contain;
+
 }
 
 
 /*==================================================
-        INFORMAÇÕES
+                INFORMAÇÕES
 ==================================================*/
 
 .modal-produto-info{
@@ -2098,148 +2247,324 @@ ul{
     flex-direction:column;
 
     justify-content:center;
+
+    min-width:0;
+
+    padding:5px 5px 5px 0;
+
 }
+
+
+/*==================================================
+                    CATEGORIA
+==================================================*/
 
 .modal-produto-categoria{
-
-    display:inline-block;
-
-    margin-bottom:10px;
-
-    color:#F58220;
-
-    font-size:13px;
-
-    font-weight:700;
-
-    text-transform:uppercase;
-
-    letter-spacing:1px;
-}
-
-.modal-produto-info h2{
-
-    margin:0 0 15px;
-
-    color:#222;
-
-    font-size:32px;
-
-    line-height:1.2;
-}
-
-.modal-produto-codigo{
-
-    margin-bottom:22px;
-
-    color:#777;
-
-    font-size:13px;
-}
-
-.modal-produto-preco{
-
-    margin-bottom:12px;
-
-    color:#F58220;
-
-    font-size:30px;
-
-    font-weight:800;
-}
-
-.modal-produto-estoque{
 
     display:inline-flex;
 
     align-items:center;
 
-    gap:7px;
+    width:max-content;
 
-    margin-bottom:25px;
+    max-width:100%;
 
-    color:#238636;
+    margin-bottom:12px;
 
-    font-size:14px;
+    padding:7px 11px;
 
-    font-weight:600;
+    border-radius:7px;
+
+    background:#EAF2F7;
+
+    color:#0B3D5C;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    letter-spacing:.8px;
+
+    text-transform:uppercase;
+
 }
 
 
 /*==================================================
-        ESPECIFICAÇÕES DA BOMBA
+                    NOME
 ==================================================*/
 
-.modal-produto-especificacoes{
+.modal-produto-info h2{
 
-    display:grid;
+    margin:0 0 12px;
 
-    grid-template-columns:1fr 1fr;
+    color:#181818;
 
-    gap:10px;
+    font-size:32px;
 
-    margin-bottom:25px;
+    font-weight:800;
+
+    line-height:1.25;
+
+    letter-spacing:-.5px;
 
 }
 
-.modal-especificacao{
+
+/*==================================================
+                    CÓDIGO
+==================================================*/
+
+.modal-produto-codigo{
+
+    margin-bottom:22px;
+
+    color:#888888;
+
+    font-size:11px;
+
+    font-weight:500;
+
+}
+
+
+/*==================================================
+                    PREÇO
+==================================================*/
+
+.modal-produto-preco{
+
+    margin-bottom:10px;
+
+    color:#0B3D5C;
+
+    font-size:30px;
+
+    font-weight:800;
+
+    line-height:1.2;
+
+}
+
+
+/*==================================================
+                    ESTOQUE
+==================================================*/
+
+.modal-produto-estoque{
 
     display:flex;
 
-    flex-direction:column;
+    align-items:center;
 
-    gap:4px;
+    gap:7px;
 
-    padding:12px 14px;
+    width:max-content;
 
-    background:#F8F8F8;
+    margin-bottom:25px;
 
-    border-radius:10px;
+    padding:7px 11px;
 
-    border:1px solid #EAEAEA;
+    border-radius:8px;
+
+    background:#EEF8F0;
+
+    color:#2E7D32;
+
+    font-size:11px;
+
+    font-weight:700;
+
 }
 
-.modal-especificacao strong{
+
+/*==================================================
+                    DESCRIÇÃO
+==================================================*/
+
+.modal-produto-descricao{
+
+    margin-bottom:25px;
+
+    padding-top:20px;
+
+    border-top:1px solid #EEEEEE;
+
+    color:#666666;
+
+    font-size:13px;
+
+    line-height:1.8;
+
+}
+
+
+/*==================================================
+            ESPECIFICAÇÕES DO PRODUTO
+==================================================*/
+
+.modal-especificacoes{
+
+    margin-bottom:25px;
+
+    padding:20px;
+
+    background:#FAFAFA;
+
+    border:1px solid #EEEEEE;
+
+    border-radius:14px;
+
+}
+
+
+/*==================================================
+                    TÍTULO
+==================================================*/
+
+.modal-especificacoes-titulo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+
+    margin-bottom:14px;
 
     color:#181818;
 
     font-size:13px;
 
-}
-
-.modal-especificacao span{
-
-    color:#666;
-
-    font-size:14px;
+    font-weight:800;
 
 }
 
 
-.modal-produto-descricao{
+.modal-especificacoes-titulo i{
 
-    margin-bottom:30px;
-
-    color:#666;
+    color:#0B3D5C;
 
     font-size:15px;
 
-    line-height:1.7;
 }
 
 
 /*==================================================
-        BOTÕES
+                    LISTA
+==================================================*/
+
+.modal-especificacoes-lista{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+
+/*==================================================
+                CADA ESPECIFICAÇÃO
+==================================================*/
+
+.modal-especificacao{
+
+    display:grid;
+
+    grid-template-columns:
+        minmax(100px,.65fr)
+        minmax(0,1.35fr);
+
+    gap:15px;
+
+    padding:10px 0;
+
+    border-bottom:1px solid #EAEAEA;
+
+}
+
+
+.modal-especificacao:last-child{
+
+    border-bottom:none;
+
+    padding-bottom:0;
+
+}
+
+
+.modal-especificacao-nome{
+
+    color:#777777;
+
+    font-size:11px;
+
+    font-weight:700;
+
+}
+
+
+.modal-especificacao-valor{
+
+    color:#222222;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    line-height:1.5;
+
+    word-break:break-word;
+
+}
+
+
+/*==================================================
+                    HOVER
+==================================================*/
+
+.modal-especificacao{
+
+    transition:
+        padding-left .25s ease;
+
+}
+
+
+.modal-especificacao:hover{
+
+    padding-left:5px;
+
+}
+
+
+.modal-especificacao:hover
+.modal-especificacao-nome{
+
+    color:#0B3D5C;
+
+}
+
+
+/*==================================================
+                    AÇÕES
 ==================================================*/
 
 .modal-produto-acoes{
 
-    display:flex;
+    display:grid;
 
-    gap:12px;
+    grid-template-columns:
+        auto 1fr;
 
-    flex-wrap:wrap;
+    gap:10px;
+
+    margin-top:auto;
+
 }
+
 
 .modal-btn-favorito,
 .modal-btn-carrinho{
@@ -2252,55 +2577,111 @@ ul{
 
     font-family:inherit;
 
-    font-size:14px;
+    font-size:11px;
 
-    font-weight:700;
+    font-weight:800;
 
     cursor:pointer;
 
-    transition:.2s;
-}
+    transition:
+        background .25s ease,
+        color .25s ease,
+        border-color .25s ease,
+        transform .25s ease,
+        box-shadow .25s ease;
 
-.modal-btn-favorito{
-
-    border:2px solid #F58220;
-
-    background:#FFFFFF;
-
-    color:#F58220;
-}
-
-.modal-btn-favorito:hover{
-
-    background:#F58220;
-
-    color:#FFFFFF;
-}
-
-.modal-btn-carrinho{
-
-    border:2px solid #F58220;
-
-    background:#F58220;
-
-    color:#FFFFFF;
-}
-
-.modal-btn-carrinho:hover{
-
-    background:#D96D12;
-
-    border-color:#D96D12;
-
-    transform:translateY(-2px);
 }
 
 
 /*==================================================
-        RESPONSIVO
+                    FAVORITO
 ==================================================*/
 
-@media(max-width:800px){
+.modal-btn-favorito{
+
+    min-width:52px;
+
+    border:2px solid #181818;
+
+    background:#FFFFFF;
+
+    color:#181818;
+
+}
+
+
+.modal-btn-favorito:hover{
+
+    background:#181818;
+
+    color:#FFFFFF;
+
+    transform:translateY(-2px);
+
+}
+
+
+/*==================================================
+                    CARRINHO
+==================================================*/
+
+.modal-btn-carrinho{
+
+    border:2px solid #0B3D5C;
+
+    background:#0B3D5C;
+
+    color:#FFFFFF;
+
+}
+
+
+.modal-btn-carrinho:hover{
+
+    background:#181818;
+
+    border-color:#181818;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.15);
+
+}
+
+
+/*==================================================
+                    SCROLLBAR
+==================================================*/
+
+.modal-produto-conteudo::-webkit-scrollbar{
+
+    width:7px;
+
+}
+
+
+.modal-produto-conteudo::-webkit-scrollbar-track{
+
+    background:#F2F2F2;
+
+}
+
+
+.modal-produto-conteudo::-webkit-scrollbar-thumb{
+
+    background:#0B3D5C;
+
+    border-radius:20px;
+
+}
+
+
+/*==================================================
+                    TABLET
+==================================================*/
+
+@media(max-width:850px){
 
     .modal-produto{
 
@@ -2308,27 +2689,97 @@ ul{
 
     }
 
+
     .modal-produto-corpo{
 
         grid-template-columns:1fr;
 
-        gap:25px;
+        gap:28px;
 
-        padding:25px;
+        padding:32px;
 
     }
+
 
     .modal-produto-imagem-principal{
 
-        height:300px;
+        height:330px;
 
     }
+
+
+    .modal-produto-info{
+
+        padding:0;
+
+    }
+
 
     .modal-produto-info h2{
 
-        font-size:25px;
+        font-size:27px;
 
     }
+
+
+    .modal-especificacao{
+
+        grid-template-columns:
+            120px 1fr;
+
+    }
+
+}
+
+
+/*==================================================
+                    CELULAR
+==================================================*/
+
+@media(max-width:550px){
+
+    .modal-produto{
+
+        padding:8px;
+
+    }
+
+
+    .modal-produto-conteudo{
+
+        width:100%;
+
+        max-height:95vh;
+
+        border-radius:18px;
+
+    }
+
+
+    .modal-produto-corpo{
+
+        padding:24px 18px;
+
+        gap:22px;
+
+    }
+
+
+    .modal-produto-imagem-principal{
+
+        height:250px;
+
+        padding:20px;
+
+    }
+
+
+    .modal-produto-info h2{
+
+        font-size:23px;
+
+    }
+
 
     .modal-produto-preco{
 
@@ -2336,33 +2787,66 @@ ul{
 
     }
 
+
+    .modal-produto-acoes{
+
+        grid-template-columns:1fr 1fr;
+
+    }
+
+
+    .modal-especificacoes{
+
+        padding:16px;
+
+        margin-bottom:20px;
+
+    }
+
+
+    .modal-especificacao{
+
+        grid-template-columns:1fr;
+
+        gap:4px;
+
+        padding:9px 0;
+
+    }
+
+
+    .modal-especificacao-nome{
+
+        font-size:10px;
+
+        color:#0B3D5C;
+
+        text-transform:uppercase;
+
+    }
+
+
+    .modal-especificacao-valor{
+
+        font-size:12px;
+
+    }
+
 }
 
-@media(max-width:500px){
 
-    .modal-produto-corpo{
+/*==================================================
+                CELULAR PEQUENO
+==================================================*/
 
-        padding:20px;
+@media(max-width:380px){
 
-    }
-
-    .modal-produto-imagem-principal{
-
-        height:240px;
-
-    }
-
-    .modal-produto-especificacoes{
+    .modal-produto-acoes{
 
         grid-template-columns:1fr;
 
     }
 
-    .modal-produto-acoes{
-
-        flex-direction:column;
-
-    }
 
     .modal-btn-favorito,
     .modal-btn-carrinho{
@@ -2371,4 +2855,83 @@ ul{
 
     }
 
+}
+/* ==================================================
+   AJUSTE DE PROPORÇÃO — MODAL BOMBAS
+   MESMO TAMANHO DO MODAL PRODUTOS
+================================================== */
+
+.modal-produto-conteudo{
+    height:625px;
+    max-height:625px;
+    overflow:hidden;
+}
+
+.modal-produto-corpo{
+    height:100%;
+    box-sizing:border-box;
+}
+
+/* mantém a galeria exatamente no tamanho do Produtos */
+
+.modal-produto-imagem-principal{
+    height:430px;
+}
+
+/* compacta apenas as informações para caber
+   no mesmo espaço vertical */
+
+.modal-produto-info{
+    justify-content:flex-start;
+}
+
+.modal-produto-categoria{
+    margin-bottom:8px;
+}
+
+.modal-produto-info h2{
+    margin-bottom:8px;
+}
+
+.modal-produto-codigo{
+    margin-bottom:14px;
+}
+
+.modal-produto-preco{
+    margin-bottom:7px;
+}
+
+.modal-produto-estoque{
+    margin-bottom:15px;
+}
+
+.modal-produto-descricao{
+    margin-bottom:15px;
+    padding-top:14px;
+    line-height:1.55;
+}
+
+/* especificações mais compactas */
+
+.modal-especificacoes{
+    margin-bottom:15px;
+    padding:14px 20px;
+}
+
+.modal-especificacoes-titulo{
+    margin-bottom:8px;
+}
+
+.modal-especificacoes-lista{
+    gap:0;
+}
+
+.modal-especificacao{
+    padding:7px 0;
+}
+
+/* botões continuam no mesmo padrão */
+
+.modal-produto-acoes{
+    margin-top:auto;
 }

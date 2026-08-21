@@ -1664,8 +1664,3 @@ function iniciarFavoritoHeader(){
 
     });
 }
-
-
-
-
-

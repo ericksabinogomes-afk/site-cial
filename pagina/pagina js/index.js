@@ -947,8 +947,10 @@ function iniciarFavoritoHeader(){
 ==================================================*/
 
 document.addEventListener("DOMContentLoaded", () => {
-     
+
     atualizarFavoritoHeader();
+
+    iniciarFavoritoHeader();
 
     iniciarModal();
 

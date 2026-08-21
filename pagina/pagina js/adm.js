@@ -15,453 +15,6 @@ const fecharModalProduto = document.getElementById("fecharModalProduto");
 const cancelarProduto = document.getElementById("cancelarProduto");
 
 /*==================================================
-        NAVEGAÇÃO DO CADASTRO DE PRODUTO
-==================================================*/
-
-let etapaAtualProduto = 1;
-
-const etapasProduto =
-    document.querySelectorAll(".etapa-produto");
-
-const conteudosEtapaProduto =
-    document.querySelectorAll(".etapa-conteudo");
-
-const btnContinuar =
-    document.getElementById("btnProximo");
-
-const btnVoltar =
-    document.getElementById("btnAnterior");
-
-
-/*==================================================
-        MOSTRAR ETAPA
-==================================================*/
-
-function mostrarEtapaProduto(numeroEtapa){
-
-    if(numeroEtapa < 1 || numeroEtapa > 4){
-        return;
-    }
-
-    etapaAtualProduto = numeroEtapa;
-
-
-    /*------------------------------------------
-        ATUALIZA ETAPAS DO TOPO
-    ------------------------------------------*/
-
-    etapasProduto.forEach(etapa => {
-
-        const numero =
-            Number(etapa.dataset.etapa);
-
-        etapa.classList.toggle(
-            "ativa",
-            numero === numeroEtapa
-        );
-
-    });
-
-
-    /*------------------------------------------
-        MOSTRA O CONTEÚDO CORRETO
-    ------------------------------------------*/
-
-    conteudosEtapaProduto.forEach(conteudo => {
-
-        const numero =
-            Number(conteudo.dataset.conteudo);
-
-        conteudo.classList.toggle(
-            "ativa",
-            numero === numeroEtapa
-        );
-
-    });
-
-
-    /*------------------------------------------
-        BOTÃO VOLTAR
-    ------------------------------------------*/
-
-    if(btnVoltar){
-
-        btnVoltar.style.display =
-            numeroEtapa === 1
-                ? "none"
-                : "inline-flex";
-
-    }
-
-
-    /*------------------------------------------
-        BOTÃO CONTINUAR
-    ------------------------------------------*/
-
-    if(btnContinuar){
-
-        if(numeroEtapa === 4){
-
-            btnContinuar.innerHTML =
-                `<i class="fa-solid fa-rocket"></i>
-                 Publicar produto`;
-
-        }else{
-
-            btnContinuar.innerHTML =
-                `Continuar
-                 <i class="fa-solid fa-arrow-right"></i>`;
-
-        }
-
-    }
-
-}
-
-
-/*==================================================
-        BOTÃO CONTINUAR
-==================================================*/
-
-if(btnContinuar){
-
-    btnContinuar.addEventListener("click", () => {
-
-        if(etapaAtualProduto < 4){
-
-            mostrarEtapaProduto(
-                etapaAtualProduto + 1
-            );
-
-        }
-
-    });
-
-}
-
-
-/*==================================================
-        BOTÃO VOLTAR
-==================================================*/
-
-if(btnVoltar){
-
-    btnVoltar.addEventListener("click", () => {
-
-        if(etapaAtualProduto > 1){
-
-            mostrarEtapaProduto(
-                etapaAtualProduto - 1
-            );
-
-        }
-
-    });
-
-}
-
-
-/*==================================================
-        CLIQUE NAS ETAPAS
-==================================================*/
-
-etapasProduto.forEach(etapa => {
-
-    etapa.addEventListener("click", () => {
-
-        const numero =
-            Number(etapa.dataset.etapa);
-
-        mostrarEtapaProduto(numero);
-
-    });
-
-});
-
-
-/*==================================================
-        INICIAR NA ETAPA 1
-==================================================*/
-
-mostrarEtapaProduto(1);
-
-/*==================================================
-        PREVIEW DO PRODUTO EM TEMPO REAL
-==================================================*/
-
-const previewNome =
-    document.getElementById("previewNome");
-
-const previewCategoria =
-    document.getElementById("previewCategoria");
-
-const previewDescricao =
-    document.getElementById("previewDescricao");
-
-const previewPreco =
-    document.getElementById("previewPreco");
-
-
-/*==================================================
-        ATUALIZAR PREVIEW
-==================================================*/
-
-function atualizarPreviewProduto(){
-
-    /*------------------------------------------
-        NOME
-    ------------------------------------------*/
-
-    if(previewNome){
-
-        const nome =
-            document.getElementById("nomeProduto")
-                ?.value.trim();
-
-        previewNome.textContent =
-            nome || "Nome do produto";
-
-    }
-
-
-    /*------------------------------------------
-        CATEGORIA
-    ------------------------------------------*/
-
-    if(previewCategoria){
-
-        const categoria =
-            document.getElementById("categoriaProduto");
-
-        const textoCategoria =
-            categoria?.options[
-                categoria.selectedIndex
-            ]?.textContent.trim();
-
-        previewCategoria.textContent =
-            textoCategoria || "Categoria";
-
-    }
-
-
-    /*------------------------------------------
-        DESCRIÇÃO
-    ------------------------------------------*/
-
-    if(previewDescricao){
-
-        const descricao =
-            document.getElementById("descricaoProduto")
-                ?.value.trim();
-
-        previewDescricao.textContent =
-            descricao ||
-            "A descrição do produto aparecerá aqui.";
-
-    }
-
-
-    /*------------------------------------------
-        PREÇO
-    ------------------------------------------*/
-
-    if(previewPreco){
-
-        const preco =
-            Number(
-                document.getElementById("precoProduto")
-                    ?.value
-            );
-
-        if(preco > 0){
-
-            previewPreco.textContent =
-                preco.toLocaleString("pt-BR", {
-                    style:"currency",
-                    currency:"BRL"
-                });
-
-        }else{
-
-            previewPreco.textContent =
-                "R$ 0,00";
-
-        }
-
-    }
-
-}
-
-
-/*==================================================
-        CAMPOS QUE ATUALIZAM O PREVIEW
-==================================================*/
-
-const campoNomePreview =
-    document.getElementById("nomeProduto");
-
-const campoCategoriaPreview =
-    document.getElementById("categoriaProduto");
-
-const campoDescricaoPreview =
-    document.getElementById("descricaoProduto");
-
-const campoPrecoPreview =
-    document.getElementById("precoProduto");
-
-
-campoNomePreview?.addEventListener(
-    "input",
-    atualizarPreviewProduto
-);
-
-
-campoCategoriaPreview?.addEventListener(
-    "change",
-    atualizarPreviewProduto
-);
-
-
-campoDescricaoPreview?.addEventListener(
-    "input",
-    atualizarPreviewProduto
-);
-
-
-campoPrecoPreview?.addEventListener(
-    "input",
-    atualizarPreviewProduto
-);
-
-
-/*==================================================
-        PREVIEW INICIAL
-==================================================*/
-
-atualizarPreviewProduto();
-
-/*==================================================
-        IMAGEM NO PREVIEW DO PRODUTO
-==================================================*/
-
-const previewImagemProduto =
-    document.querySelector(".preview-imagem");
-
-
-function atualizarImagemPreview(){
-
-    if(!previewImagemProduto){
-        return;
-    }
-
-
-    /*------------------------------------------
-        SEM IMAGEM
-    ------------------------------------------*/
-
-    if(!arquivosSelecionados.length){
-
-        previewImagemProduto.innerHTML = `
-
-            <span class="preview-sem-imagem">
-
-                <i class="fa-solid fa-image"></i>
-
-                <small>
-                    Sem imagem
-                </small>
-
-            </span>
-
-        `;
-
-        return;
-    }
-
-
-    /*------------------------------------------
-        PRIMEIRA IMAGEM = PRINCIPAL
-    ------------------------------------------*/
-
-    const arquivo =
-        arquivosSelecionados[0];
-
-    const reader =
-        new FileReader();
-
-
-    reader.onload = () => {
-
-        previewImagemProduto.innerHTML = `
-
-            <img
-                src="${reader.result}"
-                alt="Preview do produto"
-                style="
-                    width:100%;
-                    height:100%;
-                    object-fit:contain;
-                "
-            >
-
-        `;
-
-    };
-
-
-    reader.readAsDataURL(arquivo);
-
-}
-
-
-/*==================================================
-        ATUALIZAR AO SELECIONAR IMAGENS
-==================================================*/
-
-const atualizarPreviewOriginal =
-    mostrarPreviews;
-
-
-/*
- * Sempre que o usuário adicionar/remover
- * uma imagem, atualiza também o card.
- */
-
-function atualizarPreviewComImagem(){
-
-    atualizarImagemPreview();
-
-}
-
-
-/*==================================================
-        MONITORAR ALTERAÇÕES NAS IMAGENS
-==================================================*/
-
-const previewImagensProduto =
-    document.getElementById("previewImagens");
-
-
-if(previewImagensProduto){
-
-    const observadorImagens =
-        new MutationObserver(() => {
-
-            atualizarImagemPreview();
-
-        });
-
-
-    observadorImagens.observe(
-        previewImagensProduto,
-        {
-            childList:true
-        }
-    );
-
-}
-
-/*==================================================
             AUTENTICAÇÃO DO ADMIN
 ==================================================*/
 
@@ -514,11 +67,11 @@ if (dropArea && inputImagem) {
     mostrarPreviews(arquivosSelecionados);
 
     // Limpa somente o input.
-    // NÃO limpa arquivosSelecionados.
+    // NÃO!! limpa arquivosSelecionados.
     inputImagem.value = "";
 });
 
-  // Evita comportamento padrão do navegador
+  // Evitar comportamento padrão do navegador
   ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
     dropArea.addEventListener(eventName, e => {
       e.preventDefault();
@@ -572,422 +125,129 @@ if (dropArea && inputImagem) {
 });
 }
 
-function mostrarPreviews(arquivos) {
+function atualizarPreviewImagem(src) {
+  const areaImagem =
+    document.querySelector(
+      ".preview-card .preview-imagem"
+    );
 
-    const container =
-        document.getElementById("previewImagens");
+  if (!areaImagem) {
+    return;
+  }
 
-    if (!container) {
-        return;
-    }
+  if (!src) {
+    areaImagem.innerHTML = `
+      <span class="preview-sem-imagem">
+        <i class="fa-solid fa-image"></i>
+        <small>Sem imagem</small>
+      </span>
+    `;
 
-    container.innerHTML = "";
+    return;
+  }
 
-
-    arquivos.forEach((file, index) => {
-
-        if (!file.type.startsWith("image/")) {
-            return;
-        }
-
-
-        const reader =
-            new FileReader();
-
-
-        reader.onload = () => {
-
-            const wrapper =
-                document.createElement("div");
-
-            wrapper.className =
-                "preview-imagem-item";
-
-
-            if (index === 0) {
-                wrapper.classList.add("principal");
-            }
-
-
-            wrapper.innerHTML = `
-
-                <button
-                    type="button"
-                    class="preview-imagem-remover"
-                    title="Remover imagem"
-                >
-                    ×
-                </button>
-
-
-                <img
-                    src="${reader.result}"
-                    alt="Prévia ${index + 1}"
-                >
-
-
-                <span>
-                    ${
-                        index === 0
-                            ? "PRINCIPAL"
-                            : "TORNAR PRINCIPAL"
-                    }
-                </span>
-
-            `;
-
-
-            /*--------------------------------------
-                REMOVER IMAGEM
-            --------------------------------------*/
-
-            const botaoRemover =
-                wrapper.querySelector(
-                    ".preview-imagem-remover"
-                );
-
-
-            botaoRemover.addEventListener(
-                "click",
-                event => {
-
-                    event.stopPropagation();
-
-
-                    arquivosSelecionados =
-                        arquivosSelecionados.filter(
-                            (_, i) => i !== index
-                        );
-
-
-                    mostrarPreviews(
-                        arquivosSelecionados
-                    );
-
-                }
-            );
-
-
-            /*--------------------------------------
-                TORNAR PRINCIPAL
-            --------------------------------------*/
-
-            wrapper.addEventListener(
-                "click",
-                () => {
-
-                    if (index === 0) {
-                        return;
-                    }
-
-
-                    const novaOrdem =
-                        [...arquivosSelecionados];
-
-
-                    const imagemEscolhida =
-                        novaOrdem.splice(index, 1)[0];
-
-
-                    novaOrdem.unshift(
-                        imagemEscolhida
-                    );
-
-
-                    arquivosSelecionados =
-                        novaOrdem;
-
-
-                    mostrarPreviews(
-                        arquivosSelecionados
-                    );
-
-                }
-            );
-
-
-            container.appendChild(wrapper);
-
-        };
-
-
-        reader.readAsDataURL(file);
-
-    });
+  areaImagem.innerHTML = `
+    <img
+      src="${src}"
+      alt="Prévia do produto"
+      style="
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      "
+    >
+  `;
 }
 
-/*==================================================
-        SISTEMA DE RASCUNHO DO PRODUTO
-==================================================*/
 
-const btnSalvarRascunho =
-    document.getElementById("salvarRascunho");
+function mostrarPreviews(arquivos) {
+  const container =
+    document.getElementById("previewImagens");
 
-/*==================================================
-        COLETAR DADOS DO FORMULÁRIO
-==================================================*/
+  if (!container) {
+    return;
+  }
 
-function coletarDadosRascunho(){
+  container.innerHTML = "";
 
-    return {
+  arquivos.forEach((file, index) => {
+    if (!file.type.startsWith("image/")) {
+      return;
+    }
 
-        nome:
-            document.getElementById("nomeProduto")
-                ?.value || "",
+    const reader =
+      new FileReader();
 
-        categoria:
-            document.getElementById("categoriaProduto")
-                ?.value || "",
+    reader.onload = () => {
+      if (index === 0) {
+        atualizarPreviewImagem(
+          reader.result
+        );
+      }
 
-        preco:
-            document.getElementById("precoProduto")
-                ?.value || "",
+      const wrapper =
+        document.createElement("div");
 
-        estoque:
-            document.getElementById("estoqueProduto")
-                ?.value || "",
+      wrapper.className =
+        "preview-imagem-item";
 
-        destaque:
-            document.getElementById("produtoDestaque")
-                ?.checked || false,
+      if (index === 0) {
+        wrapper.classList.add("principal");
+      }
 
-        descricaoStihl:
-            document.getElementById("descricaoStihl")
-                ?.value || "",
+      wrapper.innerHTML = `
+        <button
+          type="button"
+          class="preview-imagem-remover"
+          title="Remover imagem"
+        >
+          ×
+        </button>
 
-        aplicacaoStihl:
-            document.getElementById("aplicacaoStihl")
-                ?.value || "",
+        <img
+          src="${reader.result}"
+          alt="Prévia ${index + 1}"
+        >
 
-        marcaBomba:
-            document.getElementById("marcaBomba")
-                ?.value || "",
+        <span>
+          ${
+            index === 0
+              ? "PRINCIPAL"
+              : `FOTO ${index + 1}`
+          }
+        </span>
+      `;
 
-        potenciaBomba:
-            document.getElementById("potenciaBomba")
-                ?.value || "",
+      const botaoRemover =
+        wrapper.querySelector(
+          ".preview-imagem-remover"
+        );
 
-        vazaoBomba:
-            document.getElementById("vazaoBomba")
-                ?.value || "",
+      botaoRemover.addEventListener(
+        "click",
+        () => {
+          arquivosSelecionados =
+            arquivosSelecionados.filter(
+              (_, i) => i !== index
+            );
 
-        aplicacaoBomba:
-            document.getElementById("aplicacaoBomba")
-                ?.value || "",
+          mostrarPreviews(
+            arquivosSelecionados
+          );
 
-        etapa:
-            etapaAtualProduto,
+          if (
+            arquivosSelecionados.length === 0
+          ) {
+            atualizarPreviewImagem("");
+          }
+        }
+      );
 
-        dataSalvamento:
-            new Date().toISOString()
-
+      container.appendChild(wrapper);
     };
 
-}
-
-
-/*==================================================
-        SALVAR RASCUNHO
-==================================================*/
-
-function salvarRascunhoProduto(){
-
-    const dados =
-        coletarDadosRascunho();
-
-
-    localStorage.setItem(
-        "rascunhoProdutoCial",
-        JSON.stringify(dados)
-    );
-
-
-    alert(
-        "Rascunho salvo com sucesso!"
-    );
-
-}
-
-
-/*==================================================
-        BOTÃO SALVAR RASCUNHO
-==================================================*/
-
-if(btnSalvarRascunho){
-
-    btnSalvarRascunho.addEventListener(
-        "click",
-        salvarRascunhoProduto
-    );
-
-}
-
-/*==================================================
-        CARREGAR RASCUNHO DO PRODUTO
-==================================================*/
-
-function carregarRascunhoProduto(){
-
-    const rascunho =
-        localStorage.getItem("rascunhoProdutoCial");
-
-
-    if(!rascunho){
-        return;
-    }
-
-
-    try{
-
-        const dados =
-            JSON.parse(rascunho);
-
-
-        /*------------------------------------------
-            DADOS BÁSICOS
-        ------------------------------------------*/
-
-        const nome =
-            document.getElementById("nomeProduto");
-
-        const categoria =
-            document.getElementById("categoriaProduto");
-
-        const preco =
-            document.getElementById("precoProduto");
-
-        const estoque =
-            document.getElementById("estoqueProduto");
-
-        const descricao =
-            document.getElementById("descricaoProduto");
-
-        const destaque =
-            document.getElementById("produtoDestaque");
-
-
-        if(nome){
-            nome.value = dados.nome || "";
-        }
-
-        if(categoria){
-            categoria.value = dados.categoria || "";
-        }
-
-        if(preco){
-            preco.value = dados.preco || "";
-        }
-
-        if(estoque){
-            estoque.value =
-                dados.estoque || "Em estoque";
-        }
-
-        if(descricao){
-            descricao.value =
-                dados.descricao || "";
-        }
-
-        if(destaque){
-            destaque.checked =
-                dados.destaque || false;
-        }
-
-
-        /*------------------------------------------
-            ESPECIFICAÇÕES STIHL
-        ------------------------------------------*/
-
-        const descricaoStihl =
-            document.getElementById("descricaoStihl");
-
-        const aplicacaoStihl =
-            document.getElementById("aplicacaoStihl");
-
-
-        if(descricaoStihl){
-            descricaoStihl.value =
-                dados.descricaoStihl || "";
-        }
-
-        if(aplicacaoStihl){
-            aplicacaoStihl.value =
-                dados.aplicacaoStihl || "";
-        }
-
-
-        /*------------------------------------------
-            ESPECIFICAÇÕES BOMBAS
-        ------------------------------------------*/
-
-        const marcaBomba =
-            document.getElementById("marcaBomba");
-
-        const potenciaBomba =
-            document.getElementById("potenciaBomba");
-
-        const vazaoBomba =
-            document.getElementById("vazaoBomba");
-
-        const aplicacaoBomba =
-            document.getElementById("aplicacaoBomba");
-
-
-        if(marcaBomba){
-            marcaBomba.value =
-                dados.marcaBomba || "";
-        }
-
-        if(potenciaBomba){
-            potenciaBomba.value =
-                dados.potenciaBomba || "";
-        }
-
-        if(vazaoBomba){
-            vazaoBomba.value =
-                dados.vazaoBomba || "";
-        }
-
-        if(aplicacaoBomba){
-            aplicacaoBomba.value =
-                dados.aplicacaoBomba || "";
-        }
-
-
-        /*------------------------------------------
-            VOLTAR PARA A ETAPA SALVA
-        ------------------------------------------*/
-
-        if(dados.etapa){
-
-            mostrarEtapaProduto(
-                Number(dados.etapa)
-            );
-
-        }
-
-
-        /*------------------------------------------
-            ATUALIZAR PREVIEW
-        ------------------------------------------*/
-
-        atualizarPreviewProduto();
-
-
-        console.log(
-            "Rascunho carregado com sucesso."
-        );
-
-
-    }catch(erro){
-
-        console.error(
-            "Erro ao carregar rascunho:",
-            erro
-        );
-
-    }
-
+    reader.readAsDataURL(file);
+  });
 }
 
 /*==================================================
@@ -1010,8 +270,6 @@ function abrirSecao(nomeSecao) {
       item.classList.add("active");
     }
   });
-
-  
 }
 
 /*==================================================
@@ -1076,113 +334,67 @@ if (btnSave) {
     ADICIONAR PRODUTOS
    ====================*/
 
-/* ====================
-    ADICIONAR PRODUTOS
-   ====================*/
-
 btnAdd.forEach(botao => {
+  botao.addEventListener("click", () => {
+    const textoBotao = botao.textContent.trim();
 
-    botao.addEventListener("click", () => {
+    if (textoBotao.includes("Novo Produto")) {
+      produtoEditandoId = null;
+      produtoEditando = null;
 
-        const textoBotao =
-            botao.textContent.trim();
+      etapaAtualProduto = 1;
+      mostrarEtapaProduto(1);
 
+      formProduto.reset();
+      
+      atualizarPreviewProduto();
+      atualizarPreviewImagem("");
 
-        /*------------------------------------------
-            NOVO PRODUTO
-        ------------------------------------------*/
+      arquivosSelecionados = [];
 
-        if (textoBotao.includes("Novo Produto")) {
+      const previewContainer =
+        document.getElementById("previewImagens");
 
-            produtoEditandoId = null;
-            produtoEditando = null;
+      if (previewContainer) {
+        previewContainer.innerHTML = "";
+      }
 
-            formProduto.reset();
-
-            arquivosSelecionados = [];
-
-
-            const previewContainer =
-                document.getElementById("previewImagens");
-
-
-            if (previewContainer) {
-
-                previewContainer.innerHTML = "";
-
-                modalProduto.classList.add("aberto");
-
-            }
-
-            /*--------------------------------------
-                VERIFICAR RASCUNHO
-            --------------------------------------*/
-
-            const rascunho =
-                localStorage.getItem(
-                    "rascunhoProdutoCial"
-                );
-
-
-            if (rascunho) {
-
-                const continuar =
-                    confirm(
-                        "Encontramos um rascunho salvo.\n\n" +
-                        "Deseja continuar de onde parou?"
-                    );
-
-
-                if (continuar) {
-
-                    carregarRascunhoProduto();
-
-                } else {
-
-                    localStorage.removeItem(
-                        "rascunhoProdutoCial"
-                    );
-
-                    mostrarEtapaProduto(1);
-
-                }
-
-            } else {
-
-                mostrarEtapaProduto(1);
-
-            }
-
-        }
-
-
-        /*------------------------------------------
-            NOVA CATEGORIA
-        ------------------------------------------*/
-
-        if (textoBotao.includes("Nova Categoria")) {
-
-            alert(
-                "Cadastro de categoria em desenvolvimento."
-            );
-
-        }
-
-    });
-
-});
-
-   /*==================================================
-        FECHAR MODAL
-==================================================*/
-
-function fecharModal() {
-
-    if (modalProduto) {
-        modalProduto.classList.remove("aberto");
+      modalProduto.classList.add("aberto");
     }
 
+    if (textoBotao.includes("Nova Categoria")) {
+      alert("Cadastro de categoria em desenvolvimento.");
+    }
+  });
+});
+
+function fecharModal() {
+  modalProduto.classList.remove("aberto");
+  formProduto.reset();
+
+  atualizarPreviewProduto();
+  atualizarPreviewImagem("");
+
+  etapaAtualProduto = 1;
+  mostrarEtapaProduto(1);
+
+  produtoEditandoId = null;
+  produtoEditando = null;
+
+  arquivosSelecionados = [];
+
+  const previewContainer =
+    document.getElementById("previewImagens");
+
+  if (previewContainer) {
+    previewContainer.innerHTML = "";
+  }
+
+  if (inputImagem) {
+    inputImagem.value = "";
+  }
 }
+
 /*==================================================
         FECHAR MODAL DE PRODUTO
 ==================================================*/
@@ -1335,33 +547,203 @@ const nomesCategoriasBombas = {
 };
 
 
+/*==================================================
+  PRÉ-VISUALIZAÇÃO DO PRODUTO
+==================================================*/
 
-async function carregarProdutosAdmin() {
-  try {
-    const res = await fetch(`${API_BASE}/admin/produtos`, {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
+function atualizarPreviewProduto() {
+  const nomeProduto =
+    document.getElementById("nomeProduto");
 
-    if (res.status === 403) {
-      alert("Acesso negado: seu usuário não tem perfil de administrador.");
-      localStorage.removeItem("tokenCial");
-      localStorage.removeItem("usuarioCial");
-      window.location.href = "../login/login.html";
+  const categoriaProduto =
+    document.getElementById("categoriaProduto");
+
+  const descricaoProduto =
+    document.getElementById("descricaoProduto");
+
+  const precoProduto =
+    document.getElementById("precoProduto");
+
+  const previewNome =
+    document.getElementById("previewNome");
+
+  const previewCategoria =
+    document.getElementById("previewCategoria");
+
+  const previewDescricao =
+    document.getElementById("previewDescricao");
+
+  const previewPreco =
+    document.getElementById("previewPreco");
+
+  if (
+    nomeProduto &&
+    previewNome
+  ) {
+    previewNome.textContent =
+      nomeProduto.value.trim() ||
+      "Nome do produto";
+  }
+
+  if (
+    categoriaProduto &&
+    previewCategoria
+  ) {
+    const option =
+      categoriaProduto.options[
+        categoriaProduto.selectedIndex
+      ];
+
+    previewCategoria.textContent =
+      option &&
+      option.value
+        ? option.textContent.trim()
+        : "CATEGORIA";
+  }
+
+  if (
+    descricaoProduto &&
+    previewDescricao
+  ) {
+    previewDescricao.textContent =
+      descricaoProduto.value.trim() ||
+      "A descrição do produto aparecerá aqui.";
+  }
+
+  if (
+    precoProduto &&
+    previewPreco
+  ) {
+    const preco =
+      Number(precoProduto.value);
+
+    previewPreco.textContent =
+      Number.isFinite(preco) &&
+      preco > 0
+        ? preco.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+          })
+        : "R$ 0,00";
+  }
+}
+
+function ativarEventosPreview() {
+  const campos = [
+    "nomeProduto",
+    "categoriaProduto",
+    "descricaoProduto",
+    "precoProduto"
+  ];
+
+  campos.forEach(id => {
+    const campo =
+      document.getElementById(id);
+
+    if (!campo) {
       return;
     }
 
-    const json = await res.json();
-    if (!json.ok) {
-      throw new Error(json.erro || "Erro ao carregar produtos");
+    campo.addEventListener(
+      "input",
+      atualizarPreviewProduto
+    );
+
+    campo.addEventListener(
+      "change",
+      atualizarPreviewProduto
+    );
+  });
+
+  atualizarPreviewProduto();
+}
+
+async function carregarProdutosAdmin() {
+  try {
+    const tokenAtual =
+      localStorage.getItem("tokenCial");
+
+    if (!tokenAtual) {
+      throw new Error(
+        "Token não encontrado. Faça login novamente."
+      );
     }
 
-    produtosAdmin = json.data || [];
+    const res = await fetch(
+      `${API_BASE}/admin/produtos`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${tokenAtual}`
+        }
+      }
+    );
+
+    const texto = await res.text();
+
+    console.log(
+      "Resposta GET /admin/produtos:",
+      {
+        status: res.status,
+        resposta: texto
+      }
+    );
+
+    let json;
+
+    try {
+      json = JSON.parse(texto);
+    } catch {
+      throw new Error(
+        `A API não retornou JSON. Resposta recebida: ${texto}`
+      );
+    }
+
+    if (res.status === 401) {
+      localStorage.removeItem("tokenCial");
+      localStorage.removeItem("usuarioCial");
+
+      alert(
+        json.erro ||
+        "Sua sessão expirou. Faça login novamente."
+      );
+
+      window.location.href =
+        "../cadastro/login.html";
+
+      return;
+    }
+
+    if (res.status === 403) {
+      throw new Error(
+        json.erro ||
+        "Seu usuário não possui perfil de administrador."
+      );
+    }
+
+    if (!res.ok || !json.ok) {
+      throw new Error(
+        json.erro ||
+        `Erro HTTP ${res.status} ao carregar produtos.`
+      );
+    }
+
+    produtosAdmin = Array.isArray(json.data)
+      ? json.data
+      : [];
+
     renderizarProdutos();
+
   } catch (erro) {
-    console.error(erro);
-    alert("Erro ao carregar produtos. Verifique o console.");
+    console.error(
+      "Erro completo ao carregar produtos:",
+      erro
+    );
+
+    alert(
+      `Erro ao carregar produtos: ${erro.message}`
+    );
   }
 }
 
@@ -1376,17 +758,34 @@ async function criarProduto(dados) {
   });
 
   const texto = await res.text();
-  console.log("Resposta /admin/produtos:", res.status, texto);
+
+  console.log("Resposta da API:", {
+    status: res.status,
+    resposta: texto,
+    dados
+  });
 
   let json;
+
   try {
     json = JSON.parse(texto);
   } catch {
-    throw new Error(`Resposta não-JSON: ${texto}`);
+    throw new Error(
+      `Resposta não JSON da API: ${texto}`
+    );
   }
 
-  if (!json.ok) {
-    throw new Error(json.erro || "Erro ao criar produto");
+  if (!res.ok || !json.ok) {
+    if (
+      json.erro?.includes("produtos_codigo_key") ||
+      json.erro?.includes("duplicate key")
+    ) {
+      throw new Error("Este código/SKU já está cadastrado.");
+    }
+
+    throw new Error(
+      json.erro || `Erro HTTP ${res.status}`
+    );
   }
 
   return json.data;
@@ -1525,6 +924,14 @@ function abrirEdicaoProduto(id) {
   document.getElementById("produtoDestaque").checked =
     Boolean(produto.destaque);
 
+    document.getElementById("skuProduto").value =
+    produto.codigo || "";
+    
+    atualizarPreviewProduto();
+    atualizarPreviewImagem(
+      produto.imagem || ""
+    );
+
   modalProduto.classList.add("aberto");
 }
 
@@ -1647,12 +1054,28 @@ try {
 
 };
 
+    const codigo = document
+    .getElementById("skuProduto")
+    .value
+    .trim();
+
+    const dados = {
+    nome,
+    codigo,
+    categoria,
+    preco,
+    estoque,
+    imagem: imagemUrl,
+    imagens: imagensAdicionais,
+    destaque
+    };
+
     if (produtoEditandoId) {
-      await atualizarProduto(produtoEditandoId, novoProduto);
+      await atualizarProduto(produtoEditandoId, dados);
 
       alert("Produto atualizado com sucesso!");
   } else {
-      await criarProduto(novoProduto);
+      await criarProduto(dados);
 
       alert("Produto cadastrado com sucesso!");
    }
@@ -1664,10 +1087,16 @@ try {
     fecharModal();
 
 
-  } catch (erro) {
-    console.error(erro);
-    alert("Erro ao cadastrar produto. Verifique o console.");
-  }
+    } catch (erro) {
+    console.error(
+        "Erro completo ao cadastrar/atualizar produto:",
+        erro
+    );
+
+    alert(
+        `Erro ao cadastrar produto: ${erro.message}`
+    );
+    }
 });
 
 /* Excluir produto */
@@ -1983,6 +1412,189 @@ btnAtualizarUsuarios?.addEventListener(
 );
 
 
+/*==================================================
+  NAVEGAÇÃO DAS ETAPAS DO PRODUTO
+==================================================*/
+
+let etapaAtualProduto = 1;
+
+const btnProximo =
+  document.getElementById("btnProximo");
+
+const btnAnterior =
+  document.getElementById("btnAnterior");
+
+const btnPublicarProduto =
+  document.getElementById(
+    "btnPublicarProduto"
+  );
+
+function mostrarEtapaProduto(numeroEtapa) {
+  const conteudos =
+    document.querySelectorAll(
+      ".etapa-conteudo"
+    );
+
+  const indicadores =
+    document.querySelectorAll(
+      ".etapa-produto"
+    );
+
+  conteudos.forEach(conteudo => {
+    const numero =
+      Number(conteudo.dataset.conteudo);
+
+    conteudo.classList.toggle(
+      "ativa",
+      numero === numeroEtapa
+    );
+  });
+
+  indicadores.forEach(indicador => {
+    const numero =
+      Number(indicador.dataset.etapa);
+
+    indicador.classList.toggle(
+      "ativa",
+      numero === numeroEtapa
+    );
+
+    indicador.classList.toggle(
+      "concluida",
+      numero < numeroEtapa
+    );
+  });
+
+  etapaAtualProduto = numeroEtapa;
+
+  atualizarBotoesEtapaProduto();
+}
+
+function atualizarBotoesEtapaProduto() {
+  if (btnAnterior) {
+    btnAnterior.style.display =
+      etapaAtualProduto > 1
+        ? "inline-flex"
+        : "none";
+  }
+
+  if (btnProximo) {
+    btnProximo.style.display =
+      etapaAtualProduto < 4
+        ? "inline-flex"
+        : "none";
+  }
+
+  if (btnPublicarProduto) {
+    btnPublicarProduto.style.display =
+      etapaAtualProduto === 4
+        ? "inline-flex"
+        : "none";
+  }
+}
+
+function validarEtapaProduto(numeroEtapa) {
+  if (numeroEtapa === 1) {
+    const nome =
+      document.getElementById("nomeProduto");
+
+    const categoria =
+      document.getElementById(
+        "categoriaProduto"
+      );
+
+    if (!nome || !nome.value.trim()) {
+      alert(
+        "Informe o nome do produto."
+      );
+
+      nome?.focus();
+
+      return false;
+    }
+
+    if (
+      !categoria ||
+      !categoria.value
+    ) {
+      alert(
+        "Selecione uma categoria."
+      );
+
+      categoria?.focus();
+
+      return false;
+    }
+  }
+
+  if (numeroEtapa === 3) {
+    const preco =
+      document.getElementById(
+        "precoProduto"
+      );
+
+    const estoque =
+      document.getElementById(
+        "estoqueProduto"
+      );
+
+    if (!preco || !preco.value) {
+      alert(
+        "Informe o preço do produto."
+      );
+
+      preco?.focus();
+
+      return false;
+    }
+
+    if (!estoque || !estoque.value) {
+      alert(
+        "Informe o estoque do produto."
+      );
+
+      estoque?.focus();
+
+      return false;
+    }
+  }
+
+  return true;
+}
+
+btnProximo?.addEventListener(
+  "click",
+  () => {
+    if (etapaAtualProduto >= 4) {
+      return;
+    }
+
+    if (
+      !validarEtapaProduto(
+        etapaAtualProduto
+      )
+    ) {
+      return;
+    }
+
+    mostrarEtapaProduto(
+      etapaAtualProduto + 1
+    );
+  }
+);
+
+btnAnterior?.addEventListener(
+  "click",
+  () => {
+    if (etapaAtualProduto <= 1) {
+      return;
+    }
+
+    mostrarEtapaProduto(
+      etapaAtualProduto - 1
+    );
+  }
+);
 
 
 
@@ -1991,9 +1603,14 @@ btnAtualizarUsuarios?.addEventListener(
 ==================================================*/
 
 document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-        mostrarSecao("dashboard");
-        carregarProdutosAdmin();
-    }
+  "DOMContentLoaded",
+  () => {
+    mostrarSecao("dashboard");
+
+    ativarEventosPreview();
+
+    mostrarEtapaProduto(1);
+
+    carregarProdutosAdmin();
+  }
 );

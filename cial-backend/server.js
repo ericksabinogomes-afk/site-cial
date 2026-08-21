@@ -318,50 +318,61 @@ function autenticarToken(req, res, next) {
     }
 }
 
-
-
 async function exigirAdmin(req, res, next) {
-    try {
-        const usuarioId = Number(req.usuario.id);
+  try {
+    const usuarioId = Number(req.usuario.id);
 
-        if (!Number.isInteger(usuarioId)) {
-            return res.status(401).json({
-                ok: false,
-                erro: "Usuário inválido"
-            });
-        }
+    console.log("Validando administrador:", {
+      usuarioId,
+      payload: req.usuario
+    });
 
-        const { data: usuario, error } = await supabase
-            .from("usuarios")
-            .select("id, perfil")
-            .eq("id", usuarioId)
-            .single();
-
-        if (error || !usuario) {
-            return res.status(401).json({
-                ok: false,
-                erro: "Usuário não encontrado"
-            });
-        }
-
-        if (usuario.perfil !== "admin") {
-            return res.status(403).json({
-                ok: false,
-                erro: "Acesso permitido somente para administradores"
-            });
-        }
-
-        req.usuarioAtual = usuario;
-
-        next();
-    } catch (err) {
-        console.error("Erro ao validar administrador:", err);
-
-        return res.status(500).json({
-            ok: false,
-            erro: "Erro ao validar permissão"
-        });
+    if (!Number.isInteger(usuarioId)) {
+      return res.status(401).json({
+        ok: false,
+        erro: "Usuário inválido"
+      });
     }
+
+    const { data: usuario, error } = await supabase
+      .from("usuarios")
+      .select("id, email, perfil")
+      .eq("id", usuarioId)
+      .single();
+
+    console.log("Usuário encontrado:", {
+      usuario,
+      error
+    });
+
+    if (error || !usuario) {
+      return res.status(401).json({
+        ok: false,
+        erro: "Usuário não encontrado"
+      });
+    }
+
+    if (usuario.perfil !== "admin") {
+      return res.status(403).json({
+        ok: false,
+        erro: "Acesso permitido somente para administradores"
+      });
+    }
+
+    req.usuarioAtual = usuario;
+    next();
+
+  } catch (err) {
+    console.error(
+      "Erro ao validar administrador:",
+      err
+    );
+
+    return res.status(500).json({
+      ok: false,
+      erro: "Erro ao validar permissão"
+    });
+  }
 }
 
 
@@ -390,25 +401,51 @@ app.get('/produtos', async (req, res) => {
 
 // Listar todos (para o admin)
 app.get(
-    "/admin/produtos",
-    autenticarToken,
-    exigirAdmin,
-    async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from('produtos')
-      .select('*')
-      .order('created_at', { ascending: false });
+  "/admin/produtos",
+  autenticarToken,
+  exigirAdmin,
+  async (req, res) => {
+    try {
+      const { data, error } = await supabase
+        .from("produtos")
+        .select("*")
+        .order("created_at", {
+          ascending: false
+        });
 
-    if (error) {
-      return res.status(500).json({ erro: error.message });
+      if (error) {
+        console.error(
+          "Erro Supabase em GET /admin/produtos:",
+          error
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: error.message,
+          detalhes: error.details,
+          hint: error.hint,
+          codigo: error.code
+        });
+      }
+
+      return res.json({
+        ok: true,
+        data: data || []
+      });
+
+    } catch (err) {
+      console.error(
+        "Erro inesperado em GET /admin/produtos:",
+        err
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: err.message
+      });
     }
-
-    res.json({ ok: true, data });
-  } catch (err) {
-    res.status(500).json({ erro: err.message });
   }
-});
+);
 
 // Criar produto (admin)
 app.post(

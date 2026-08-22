@@ -718,44 +718,94 @@ const pesquisaOk =
 
 
 
-        const marcaOk =
+       const marcaProduto = String(
+    produto.marcaBomba ||
+    produto.marcaIrrigacao ||
+    produto.marca ||
+    ""
+).trim().toLowerCase();
 
-            estado.marca === ""
+const marcaFiltro = String(
+    estado.marca || ""
+).trim().toLowerCase();
 
-            ||
+const marcaOk =
+    marcaFiltro === "" ||
+    marcaProduto.includes(marcaFiltro);
 
-            produto.marca === estado.marca;
+const aplicacaoProduto = String(
+    produto.aplicacaoBomba ||
+    produto.aplicacaoIrrigacao ||
+    produto.aplicacao ||
+    ""
+).trim().toLowerCase();
+
+const aplicacaoFiltro = String(
+    estado.aplicacao || ""
+).trim().toLowerCase();
+
+const aplicacaoOk =
+    aplicacaoFiltro === "" ||
+    aplicacaoProduto.includes(aplicacaoFiltro);
+
+const potenciaProduto = String(
+    produto.potenciaBomba ||
+    produto.potencia ||
+    ""
+).trim().toLowerCase();
+
+const potenciaFiltro = String(
+    estado.potencia || ""
+).trim().toLowerCase();
+
+let potenciaOk = true;
+
+if (potenciaFiltro !== "") {
+
+    if (potenciaFiltro === "acima de 5 cv") {
+
+        const numeroPotencia =
+            parseFloat(potenciaProduto);
+
+        potenciaOk =
+            !isNaN(numeroPotencia) &&
+            numeroPotencia > 5;
+
+    } else {
+
+        potenciaOk =
+            potenciaProduto.includes(
+                potenciaFiltro
+            );
+
+    }
+
+}
 
 
+        let precoOk = true;
 
-        const aplicacaoOk =
+if (estado.preco !== "") {
 
-            estado.aplicacao === ""
+    const precoProduto =
+        Number(produto.preco) || 0;
 
-            ||
+    const limite =
+        Number(estado.preco);
 
-            produto.aplicacao === estado.aplicacao;
+    if (limite === 999999) {
 
+        precoOk =
+            precoProduto > 5000;
 
+    } else {
 
-        const potenciaOk =
+        precoOk =
+            precoProduto <= limite;
 
-            estado.potencia === ""
+    }
 
-            ||
-
-            produto.potencia === estado.potencia;
-
-
-
-        const precoOk =
-
-            estado.preco === ""
-
-            ||
-
-            produto.preco <= Number(estado.preco);
-
+}
 
 
         return (
@@ -797,41 +847,7 @@ const pesquisaOk =
     renderizarProdutos();
 
 }
-/*==================================================
-            CATEGORIAS
-==================================================*/
 
-function iniciarCategorias(){
-
-    elementos.categorias.forEach(item=>{
-
-        item.addEventListener("click",()=>{
-
-            elementos.categorias.forEach(c=>{
-
-                c.classList.remove("ativo");
-
-            });
-
-
-
-            item.classList.add("ativo");
-
-
-
-            estado.categoria =
-
-                item.dataset.categoria;
-
-
-
-            filtrarProdutos();
-
-        });
-
-    });
-
-}
 
 /*==================================================
                 ATALHOS
@@ -876,29 +892,52 @@ function iniciarAtalhos(){
 
             }
 
+else if(texto === "Irrigação"){
 
-            else if(texto === "Novidades"){
+    estado.categoria = "";
 
-                estado.destaque = "novidades";
+    estado.produtosFiltrados =
+        estado.produtos.filter(produto => {
 
-            }
+            const categoria =
+                String(produto.categoria || "")
+                    .toLowerCase();
 
+            return categoria.includes("irrig");
 
-            else if(texto === "Irrigação"){
+        });
 
-                estado.categoria = "irrigacao";
+    ordenarProdutos();
+    renderizarProdutos();
 
-            }
+    return;
 
+}
 
-            else if(texto === "Bombas Residenciais"){
+else if(texto === "Bombas Residenciais"){
 
-                estado.categoria = "bombas-residenciais";
+    estado.categoria = "";
 
-            }
+    estado.produtosFiltrados =
+        estado.produtos.filter(produto => {
 
+            const aplicacao =
+                String(
+                    produto.aplicacaoBomba ||
+                    produto.aplicacao ||
+                    ""
+                ).toLowerCase();
 
-            filtrarProdutos();
+            return aplicacao.includes("residencial");
+
+        });
+
+    ordenarProdutos();
+    renderizarProdutos();
+
+    return;
+
+}
 
         });
 
@@ -960,19 +999,37 @@ function iniciarPesquisa(){
     });
 
 }
+
 /*==================================================
                 MARCAS
 ==================================================*/
 
 function iniciarMarcas(){
 
-    const marcas = elementos.filtros[0].querySelectorAll("li");
+    const blocoMarcas =
+        elementos.filtros[0];
 
-    marcas.forEach(item=>{
+    if(!blocoMarcas){
+        return;
+    }
 
-        item.addEventListener("click",()=>{
+    const marcas =
+        blocoMarcas.parentElement
+            .querySelectorAll(".filtros li");
 
-            estado.marca = item.textContent.trim();
+    marcas.forEach(item => {
+
+        item.addEventListener("click", () => {
+
+            marcas.forEach(marca => {
+                marca.classList.remove("ativo");
+            });
+
+            item.classList.add("ativo");
+
+            estado.marca =
+                item.textContent
+                    .trim();
 
             filtrarProdutos();
 
@@ -981,19 +1038,43 @@ function iniciarMarcas(){
     });
 
 }
+
 /*==================================================
                 APLICAÇÃO
 ==================================================*/
 
 function iniciarAplicacao(){
 
-    const aplicacoes = elementos.filtros[1].querySelectorAll("li");
+    const blocos =
+        document.querySelectorAll(".sidebar-card");
 
-    aplicacoes.forEach(item=>{
+    const blocoAplicacao =
+        Array.from(blocos).find(bloco =>
+            bloco.querySelector("h2")?.textContent
+                .trim()
+                .toLowerCase() === "aplicação"
+        );
 
-        item.addEventListener("click",()=>{
+    if(!blocoAplicacao){
+        return;
+    }
 
-            estado.aplicacao = item.textContent.trim();
+    const aplicacoes =
+        blocoAplicacao.querySelectorAll(".filtros li");
+
+    aplicacoes.forEach(item => {
+
+        item.addEventListener("click", () => {
+
+            aplicacoes.forEach(aplicacao => {
+                aplicacao.classList.remove("ativo");
+            });
+
+            item.classList.add("ativo");
+
+            estado.aplicacao =
+                item.textContent
+                    .trim();
 
             filtrarProdutos();
 
@@ -1002,19 +1083,43 @@ function iniciarAplicacao(){
     });
 
 }
+
 /*==================================================
                 POTÊNCIA
 ==================================================*/
 
 function iniciarPotencia(){
 
-    const potencias = elementos.filtros[2].querySelectorAll("li");
+    const blocos =
+        document.querySelectorAll(".sidebar-card");
 
-    potencias.forEach(item=>{
+    const blocoPotencia =
+        Array.from(blocos).find(bloco =>
+            bloco.querySelector("h2")?.textContent
+                .trim()
+                .toLowerCase() === "potência"
+        );
 
-        item.addEventListener("click",()=>{
+    if(!blocoPotencia){
+        return;
+    }
 
-            estado.potencia = item.textContent.trim();
+    const potencias =
+        blocoPotencia.querySelectorAll(".filtros li");
+
+    potencias.forEach(item => {
+
+        item.addEventListener("click", () => {
+
+            potencias.forEach(potencia => {
+                potencia.classList.remove("ativo");
+            });
+
+            item.classList.add("ativo");
+
+            estado.potencia =
+                item.textContent
+                    .trim();
 
             filtrarProdutos();
 
@@ -1023,6 +1128,31 @@ function iniciarPotencia(){
     });
 
 }
+
+/*==================================================
+                FILTRO DE PREÇO
+==================================================*/
+
+function iniciarFiltroPreco(){
+
+    if(!elementos.filtroPreco){
+        return;
+    }
+
+    elementos.filtroPreco.addEventListener(
+        "change",
+        () => {
+
+            estado.preco =
+                elementos.filtroPreco.value;
+
+            filtrarProdutos();
+
+        }
+    );
+
+}
+
 /*==================================================
             ORDENAÇÃO
 ==================================================*/
@@ -2406,6 +2536,8 @@ function iniciarSistema(){
     iniciarAplicacao();
 
     iniciarPotencia();
+
+    iniciarFiltroPreco();
 
     iniciarOrdenacao();
 

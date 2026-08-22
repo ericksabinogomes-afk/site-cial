@@ -404,6 +404,334 @@ function iniciarCategorias(){
     });
 
 }
+
+/*==================================================
+            EVENTOS DOS ATALHOS
+==================================================*/
+
+function iniciarAtalhos() {
+
+    elementos.atalhos.forEach(atalho => {
+
+        atalho.addEventListener("click", () => {
+
+            const filtro =
+                atalho.dataset.atalho;
+
+            /* REMOVE ATIVO DOS OUTROS */
+
+            elementos.atalhos.forEach(item => {
+                item.classList.remove("ativo");
+            });
+
+            atalho.classList.add("ativo");
+
+
+            /* TODOS */
+
+            if (filtro === "todos") {
+
+                estado.destaque = "";
+                estado.categoria = "todos";
+
+                elementos.categorias.forEach(item => {
+                    item.classList.remove("ativo");
+                });
+
+                const categoriaTodos =
+                    document.querySelector(
+                        '.categorias li[data-categoria="todos"]'
+                    );
+
+                if (categoriaTodos) {
+                    categoriaTodos.classList.add("ativo");
+                }
+
+                estado.produtosFiltrados =
+                    [...estado.produtos];
+
+            }
+
+
+            /* LINHA A BATERIA */
+
+            else if (filtro === "bateria") {
+
+                estado.destaque = "";
+                estado.categoria = "bateria";
+
+                elementos.categorias.forEach(item => {
+                    item.classList.remove("ativo");
+                });
+
+                const categoriaBateria =
+                    document.querySelector(
+                        '.categorias li[data-categoria="bateria"]'
+                    );
+
+                if (categoriaBateria) {
+                    categoriaBateria.classList.add("ativo");
+                }
+
+                estado.produtosFiltrados =
+                    estado.produtos.filter(produto =>
+                        String(produto.categoria || "")
+                            .trim()
+                            .toLowerCase() === "bateria"
+                    );
+
+            }
+
+
+            /* DESTAQUES */
+
+            else {
+
+                estado.destaque = filtro;
+                estado.categoria = "todos";
+
+                elementos.categorias.forEach(item => {
+                    item.classList.remove("ativo");
+                });
+
+                const categoriaTodos =
+                    document.querySelector(
+                        '.categorias li[data-categoria="todos"]'
+                    );
+
+                if (categoriaTodos) {
+                    categoriaTodos.classList.add("ativo");
+                }
+
+
+                estado.produtosFiltrados =
+                    estado.produtos.filter(produto => {
+
+                        const selo =
+                            String(produto.selo || "")
+                                .trim()
+                                .toLowerCase();
+
+                        if (filtro === "promocoes") {
+                            return selo.includes("promo");
+                        }
+
+                        if (filtro === "lancamentos") {
+                            return selo.includes("lançamento") ||
+                                   selo.includes("lancamento");
+                        }
+
+                        if (filtro === "mais-vendidos") {
+                            return selo.includes("vendido");
+                        }
+
+                        return false;
+
+                    });
+
+            }
+
+
+            ordenarProdutos();
+            renderizarProdutos();
+
+        });
+
+    });
+
+}
+
+/*==================================================
+            FILTROS LATERAIS
+==================================================*/
+
+function iniciarFiltrosLaterais() {
+
+    elementos.filtros.forEach(filtro => {
+
+        filtro.addEventListener("click", () => {
+
+            const textoFiltro =
+                filtro.textContent
+                    .trim();
+
+            /* REMOVE ATIVO DOS FILTROS */
+
+            elementos.filtros.forEach(item => {
+                item.classList.remove("ativo");
+            });
+
+            /* ATIVA O FILTRO CLICADO */
+
+            filtro.classList.add("ativo");
+
+            /* GUARDA O FILTRO */
+
+            estado.aplicacao =
+                textoFiltro;
+
+            aplicarFiltros();
+
+        });
+
+    });
+
+
+    /*========================================
+                FILTRO DE PREÇO
+    ========================================*/
+
+    if (elementos.filtroPreco) {
+
+        elementos.filtroPreco.addEventListener(
+            "change",
+            event => {
+
+                estado.preco =
+                    event.target.value;
+
+                aplicarFiltros();
+
+            }
+        );
+
+    }
+
+}
+
+/*==================================================
+            APLICAR FILTROS
+==================================================*/
+
+function aplicarFiltros() {
+
+    const texto =
+        String(estado.pesquisa || "")
+            .toLowerCase()
+            .trim();
+
+
+    estado.produtosFiltrados =
+        estado.produtos.filter(produto => {
+
+            /*========================================
+                    CATEGORIA
+            ========================================*/
+
+            const categoriaProduto =
+                String(produto.categoria || "")
+                    .trim()
+                    .toLowerCase();
+
+            const categoriaSelecionada =
+                String(estado.categoria || "")
+                    .trim()
+                    .toLowerCase();
+
+            const correspondeCategoria =
+                categoriaSelecionada === "todos" ||
+                categoriaProduto === categoriaSelecionada;
+
+
+            /*========================================
+                    PESQUISA
+            ========================================*/
+
+            const textoProduto = [
+
+                produto.nome,
+                produto.categoria,
+                produto.descricao,
+                produto.funcao,
+                produto.aplicacaoStihl,
+                produto.aplicacaoBomba,
+                produto.tipoIrrigacao
+
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+
+            const correspondePesquisa =
+                texto === "" ||
+                textoProduto.includes(texto);
+
+
+            /*========================================
+                    PREÇO
+            ========================================*/
+
+            let correspondePreco = true;
+
+            if (estado.preco !== "") {
+
+                const preco =
+                    Number(produto.preco);
+
+                const limite =
+                    Number(estado.preco);
+
+                if (limite === 999999) {
+
+                    correspondePreco =
+                        preco > 3000;
+
+                } else {
+
+                    correspondePreco =
+                        preco <= limite;
+
+                }
+
+            }
+
+
+            /*========================================
+                    APLICAÇÃO
+            ========================================*/
+
+            let correspondeAplicacao = true;
+
+            if (estado.aplicacao !== "") {
+
+                const aplicacaoProduto = [
+
+                    produto.aplicacaoStihl,
+                    produto.aplicacaoBomba,
+                    produto.tipoIrrigacao,
+                    produto.funcao,
+                    produto.descricao
+
+                ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
+
+
+                correspondeAplicacao =
+                    aplicacaoProduto.includes(
+                        estado.aplicacao.toLowerCase()
+                    );
+
+            }
+
+
+            return (
+                correspondeCategoria &&
+                correspondePesquisa &&
+                correspondePreco &&
+                correspondeAplicacao
+            );
+
+        });
+
+
+    ordenarProdutos();
+    renderizarProdutos();
+
+}
+
 /*==================================================
             PESQUISA
 ==================================================*/
@@ -1572,6 +1900,10 @@ async function iniciarSistema(){
     obterCarrinho();
 
     iniciarCategorias();
+
+    iniciarAtalhos();
+
+    iniciarFiltrosLaterais();
 
     carregarProdutos();
 

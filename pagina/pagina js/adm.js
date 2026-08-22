@@ -304,9 +304,14 @@ menuItems.forEach(item => {
 
         mostrarSecao(secao);
 
-        if (secao === "clientes") {
-            carregarUsuarios();
-        }
+       if (secao === "clientes") {
+    carregarUsuarios();
+}
+
+if (secao === "categorias") {
+    carregarCategorias();
+}
+
     });
 });
 
@@ -808,6 +813,138 @@ async function carregarProdutosAdmin() {
       `Erro ao carregar produtos: ${erro.message}`
     );
   }
+}
+
+async function carregarCategorias() {
+
+    const listaCategorias =
+        document.getElementById("listaCategorias");
+
+    if (!listaCategorias) {
+        return;
+    }
+
+    const tokenAtual =
+        localStorage.getItem("tokenCial");
+
+    if (!tokenAtual) {
+        return;
+    }
+
+    listaCategorias.innerHTML = `
+        <tr>
+            <td colspan="3">
+                Carregando categorias...
+            </td>
+        </tr>
+    `;
+
+    try {
+
+        const resposta = await fetch(
+            `${API_BASE}/admin/categorias`,
+            {
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${tokenAtual}`
+                }
+            }
+        );
+
+        const resultado =
+            await resposta.json();
+
+        if (resposta.status === 401) {
+
+            localStorage.removeItem("tokenCial");
+            localStorage.removeItem("usuarioCial");
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return;
+        }
+
+        if (!resposta.ok || !resultado.ok) {
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar categorias."
+            );
+
+        }
+
+        const categorias =
+            Array.isArray(resultado.data)
+                ? resultado.data
+                : [];
+
+        if (categorias.length === 0) {
+
+            listaCategorias.innerHTML = `
+                <tr>
+                    <td colspan="3">
+                        Nenhuma categoria encontrada.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        listaCategorias.innerHTML =
+            categorias.map(item => `
+
+                <tr>
+
+                    <td>
+                        ${escaparHTML(item.categoria)}
+                    </td>
+
+                    <td>
+                        ${item.produtos}
+                    </td>
+
+                    <td>
+                        <button
+                            type="button"
+                            class="btn-editar-categoria"
+                            data-categoria="${escaparHTML(item.categoria)}"
+                            title="Editar categoria">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn-excluir-categoria"
+                            data-categoria="${escaparHTML(item.categoria)}"
+                            title="Excluir categoria">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `).join("");
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar categorias:",
+            erro
+        );
+
+        listaCategorias.innerHTML = `
+            <tr>
+                <td colspan="3">
+                    ${escaparHTML(erro.message)}
+                </td>
+            </tr>
+        `;
+
+    }
 }
 
 async function criarProduto(dados) {

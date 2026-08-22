@@ -447,6 +447,469 @@ app.get(
   }
 );
 
+// ==========================================================
+// CATEGORIAS DO ADMIN
+// ==========================================================
+
+// LISTAR CATEGORIAS
+app.get(
+  "/admin/categorias",
+  autenticarToken,
+  exigirAdmin,
+  async (req, res) => {
+
+    try {
+
+      // Buscar categorias já cadastradas
+      const { data: categoriasExistentes, error: erroCategorias } =
+        await supabase
+          .from("categorias")
+          .select("id, nome, slug, grupo")
+          .order("nome", { ascending: true });
+
+      if (erroCategorias) {
+        console.error(
+          "Erro ao buscar categorias:",
+          erroCategorias
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroCategorias.message
+        });
+      }
+
+      // Buscar categorias que já existem nos produtos
+      const { data: produtos, error: erroProdutos } =
+        await supabase
+          .from("produtos")
+          .select("categoria");
+
+      if (erroProdutos) {
+        return res.status(500).json({
+          ok: false,
+          erro: erroProdutos.message
+        });
+      }
+
+      // Categorias já cadastradas na tabela
+      const nomesExistentes = new Set(
+        (categoriasExistentes || []).map(categoria =>
+          String(categoria.nome).trim()
+        )
+      );
+
+      // Descobrir categorias que existem nos produtos
+      const categoriasDosProdutos = [
+        ...new Set(
+          (produtos || [])
+            .map(produto =>
+              String(produto.categoria || "").trim()
+            )
+            .filter(Boolean)
+        )
+      ];
+
+      // Criar automaticamente na tabela categorias
+      // aquilo que já existe nos produtos
+      const novasCategorias =
+        categoriasDosProdutos
+          .filter(nome => !nomesExistentes.has(nome))
+          .map(nome => ({
+            nome,
+            slug: nome
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-+|-+$/g, ""),
+            grupo: "Produtos"
+          }));
+
+      if (novasCategorias.length > 0) {
+
+        const { error: erroInsercao } =
+          await supabase
+            .from("categorias")
+            .insert(novasCategorias);
+
+        if (erroInsercao) {
+          console.error(
+            "Erro ao sincronizar categorias:",
+            erroInsercao
+          );
+
+          return res.status(500).json({
+            ok: false,
+            erro: erroInsercao.message
+          });
+        }
+      }
+
+      // Buscar novamente depois da sincronização
+      const { data: categorias, error: erroFinal } =
+        await supabase
+          .from("categorias")
+          .select("id, nome, slug, grupo")
+          .order("nome", { ascending: true });
+
+      if (erroFinal) {
+        return res.status(500).json({
+          ok: false,
+          erro: erroFinal.message
+        });
+      }
+
+      // Montar contagem de produtos por categoria
+      const contagem = {};
+
+      (produtos || []).forEach(produto => {
+
+        const categoria =
+          String(produto.categoria || "").trim();
+
+        if (!categoria) {
+          return;
+        }
+
+        contagem[categoria] =
+          (contagem[categoria] || 0) + 1;
+
+      });
+
+      const resultado =
+        (categorias || []).map(categoria => ({
+          id: categoria.id,
+          nome: categoria.nome,
+          slug: categoria.slug,
+          grupo: categoria.grupo,
+          produtos: contagem[categoria.nome] || 0
+        }));
+
+      return res.json({
+        ok: true,
+        data: resultado
+      });
+
+    } catch (err) {
+
+      console.error(
+        "Erro inesperado ao listar categorias:",
+        err
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: err.message
+      });
+
+    }
+  }
+);
+
+
+// ==========================================================
+// CRIAR CATEGORIA
+// ==========================================================
+
+app.post(
+  "/admin/categorias",
+  autenticarToken,
+  exigirAdmin,
+  async (req, res) => {
+
+    try {
+
+      const nome =
+        String(req.body.nome || "").trim();
+
+      const grupo =
+        String(req.body.grupo || "Produtos").trim();
+
+      if (!nome) {
+        return res.status(400).json({
+          ok: false,
+          erro: "Nome da categoria é obrigatório"
+        });
+      }
+
+      const { data: existente } =
+        await supabase
+          .from("categorias")
+          .select("id")
+          .eq("nome", nome)
+          .maybeSingle();
+
+      if (existente) {
+        return res.status(409).json({
+          ok: false,
+          erro: "Essa categoria já existe"
+        });
+      }
+
+      const slug =
+        nome
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+
+      const { data, error } =
+        await supabase
+          .from("categorias")
+          .insert([{
+            nome,
+            slug,
+            grupo
+          }])
+          .select("id, nome, slug, grupo")
+          .single();
+
+      if (error) {
+        return res.status(500).json({
+          ok: false,
+          erro: error.message
+        });
+      }
+
+      return res.status(201).json({
+        ok: true,
+        data
+      });
+
+    } catch (err) {
+
+      console.error(
+        "Erro ao criar categoria:",
+        err
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: err.message
+      });
+
+    }
+  }
+);
+
+
+// ==========================================================
+// EDITAR CATEGORIA
+// ==========================================================
+
+app.put(
+  "/admin/categorias/:id",
+  autenticarToken,
+  exigirAdmin,
+  async (req, res) => {
+
+    try {
+
+      const categoriaId =
+        Number.parseInt(req.params.id, 10);
+
+      const novoNome =
+        String(req.body.nome || "").trim();
+
+      const novoGrupo =
+        String(req.body.grupo || "Produtos").trim();
+
+      if (!Number.isInteger(categoriaId) || categoriaId <= 0) {
+        return res.status(400).json({
+          ok: false,
+          erro: "ID da categoria inválido"
+        });
+      }
+
+      if (!novoNome) {
+        return res.status(400).json({
+          ok: false,
+          erro: "Nome da categoria é obrigatório"
+        });
+      }
+
+      // Buscar categoria atual
+      const { data: categoriaAtual, error: erroBusca } =
+        await supabase
+          .from("categorias")
+          .select("id, nome")
+          .eq("id", categoriaId)
+          .single();
+
+      if (erroBusca || !categoriaAtual) {
+        return res.status(404).json({
+          ok: false,
+          erro: "Categoria não encontrada"
+        });
+      }
+
+      const slug =
+        novoNome
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+
+      // Atualizar a categoria
+      const { data, error } =
+        await supabase
+          .from("categorias")
+          .update({
+            nome: novoNome,
+            slug,
+            grupo: novoGrupo
+          })
+          .eq("id", categoriaId)
+          .select("id, nome, slug, grupo")
+          .single();
+
+      if (error) {
+        return res.status(500).json({
+          ok: false,
+          erro: error.message
+        });
+      }
+
+      // Atualizar também os produtos que usavam o nome antigo
+      const { error: erroProdutos } =
+        await supabase
+          .from("produtos")
+          .update({
+            categoria: novoNome
+          })
+          .eq("categoria", categoriaAtual.nome);
+
+      if (erroProdutos) {
+        console.error(
+          "Erro ao atualizar produtos da categoria:",
+          erroProdutos
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroProdutos.message
+        });
+      }
+
+      return res.json({
+        ok: true,
+        data
+      });
+
+    } catch (err) {
+
+      console.error(
+        "Erro ao editar categoria:",
+        err
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: err.message
+      });
+
+    }
+  }
+);
+
+
+// ==========================================================
+// EXCLUIR CATEGORIA
+// ==========================================================
+
+app.delete(
+  "/admin/categorias/:id",
+  autenticarToken,
+  exigirAdmin,
+  async (req, res) => {
+
+    try {
+
+      const categoriaId =
+        Number.parseInt(req.params.id, 10);
+
+      if (!Number.isInteger(categoriaId) || categoriaId <= 0) {
+        return res.status(400).json({
+          ok: false,
+          erro: "ID da categoria inválido"
+        });
+      }
+
+      // Buscar categoria
+      const { data: categoria, error: erroCategoria } =
+        await supabase
+          .from("categorias")
+          .select("id, nome")
+          .eq("id", categoriaId)
+          .single();
+
+      if (erroCategoria || !categoria) {
+        return res.status(404).json({
+          ok: false,
+          erro: "Categoria não encontrada"
+        });
+      }
+
+      // Verificar se existem produtos usando essa categoria
+      const { data: produtos, error: erroProdutos } =
+        await supabase
+          .from("produtos")
+          .select("id")
+          .eq("categoria", categoria.nome);
+
+      if (erroProdutos) {
+        return res.status(500).json({
+          ok: false,
+          erro: erroProdutos.message
+        });
+      }
+
+      if (produtos && produtos.length > 0) {
+        return res.status(409).json({
+          ok: false,
+          erro:
+            `Não é possível excluir "${categoria.nome}" porque existem ${produtos.length} produto(s) usando essa categoria.`
+        });
+      }
+
+      // Excluir categoria
+      const { error } =
+        await supabase
+          .from("categorias")
+          .delete()
+          .eq("id", categoriaId);
+
+      if (error) {
+        return res.status(500).json({
+          ok: false,
+          erro: error.message
+        });
+      }
+
+      return res.json({
+        ok: true,
+        mensagem: "Categoria excluída com sucesso"
+      });
+
+    } catch (err) {
+
+      console.error(
+        "Erro ao excluir categoria:",
+        err
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: err.message
+      });
+
+    }
+  }
+);
+
 // Criar produto (admin)
 app.post(
     "/admin/produtos",

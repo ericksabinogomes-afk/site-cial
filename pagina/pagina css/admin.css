@@ -2868,3 +2868,565 @@ tbody tr:last-child td{
     }
 
 }
+
+/* ============================================================
+   MODAL — NOVA CATEGORIA
+   ============================================================ */
+
+#modalCategoria{
+    position:fixed;
+    inset:0;
+    z-index:10000;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:25px;
+
+    background:rgba(0,0,0,.68);
+    backdrop-filter:blur(5px);
+}
+
+
+/* FUNDO DO MODAL */
+
+.modal-categoria-overlay{
+    width:100%;
+    height:100%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+
+/* CAIXA */
+
+.modal-categoria{
+    width:100%;
+    max-width:520px;
+
+    overflow:hidden;
+
+    background:var(--branco);
+
+    border:1px solid #F3C59D;
+    border-radius:20px;
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.28);
+
+    animation:
+        aparecerCategoria .22s ease;
+}
+
+
+/* ANIMAÇÃO */
+
+@keyframes aparecerCategoria{
+
+    from{
+        opacity:0;
+        transform:translateY(12px) scale(.98);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+
+}
+
+
+/* ============================================================
+   CABEÇALHO
+   ============================================================ */
+
+.modal-categoria-header{
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:20px;
+
+    padding:25px 28px;
+
+    border-bottom:1px solid var(--borda);
+
+    background:var(--branco);
+}
+
+
+.modal-categoria-header h2{
+
+    color:var(--preto);
+
+    font-size:22px;
+    font-weight:800;
+}
+
+
+.modal-categoria-header p{
+
+    margin-top:6px;
+
+    color:var(--texto-suave);
+
+    font-size:12px;
+
+    line-height:1.5;
+}
+
+
+/* BOTÃO X */
+
+.fechar-modal-categoria{
+
+    width:38px;
+    height:38px;
+
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:0;
+    border-radius:50%;
+
+    background:#FFF3E8;
+
+    color:var(--laranja);
+
+    font-size:25px;
+    line-height:1;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+
+.fechar-modal-categoria:hover{
+
+    background:var(--laranja);
+
+    color:var(--branco);
+
+    transform:rotate(90deg);
+}
+
+
+/* ============================================================
+   CORPO
+   ============================================================ */
+
+.modal-categoria-body{
+
+    padding:28px;
+}
+
+
+.modal-categoria-body label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    color:var(--texto);
+
+    font-size:12px;
+    font-weight:800;
+}
+
+
+.modal-categoria-body input,
+.modal-categoria-body select{
+
+    width:100%;
+
+    min-height:48px;
+
+    margin-bottom:20px;
+
+    padding:12px 14px;
+
+    border:1px solid #DCDCDC;
+    border-radius:10px;
+
+    background:var(--branco);
+
+    color:var(--texto);
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:13px;
+
+    outline:none;
+
+    transition:.2s ease;
+}
+
+
+.modal-categoria-body input::placeholder{
+
+    color:#AAAAAA;
+}
+
+
+.modal-categoria-body input:focus,
+.modal-categoria-body select:focus{
+
+    border-color:var(--laranja);
+
+    box-shadow:
+        0 0 0 3px rgba(245,130,32,.10);
+}
+
+
+.modal-categoria-body select{
+
+    margin-bottom:0;
+
+    cursor:pointer;
+}
+
+
+/* ============================================================
+   RODAPÉ
+   ============================================================ */
+
+.modal-categoria-footer{
+
+    display:flex;
+
+    align-items:center;
+    justify-content:flex-end;
+
+    gap:10px;
+
+    padding:18px 28px;
+
+    border-top:1px solid var(--borda);
+
+    background:#FAFAFA;
+}
+
+
+/* CANCELAR */
+
+.btn-cancelar-categoria{
+
+    min-height:44px;
+
+    padding:0 18px;
+
+    border:1px solid #D8D8D8;
+
+    border-radius:9px;
+
+    background:var(--branco);
+
+    color:#666666;
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:12px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+
+.btn-cancelar-categoria:hover{
+
+    background:#EEEEEE;
+
+}
+
+
+/* SALVAR */
+
+.btn-salvar-categoria{
+
+    min-height:44px;
+
+    display:inline-flex;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:8px;
+
+    padding:0 20px;
+
+    border:0;
+
+    border-radius:9px;
+
+    background:var(--laranja);
+
+    color:var(--branco);
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:12px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 4px 12px rgba(245,130,32,.18);
+
+    transition:.2s ease;
+}
+
+
+.btn-salvar-categoria:hover{
+
+    background:var(--laranja-escuro);
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 7px 18px rgba(245,130,32,.25);
+}
+
+
+.btn-salvar-categoria:disabled{
+
+    opacity:.7;
+
+    cursor:wait;
+
+    transform:none;
+
+}
+
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+
+@media(max-width:600px){
+
+    #modalCategoria{
+
+        padding:15px;
+    }
+
+
+    .modal-categoria-header{
+
+        padding:20px;
+    }
+
+
+    .modal-categoria-body{
+
+        padding:20px;
+    }
+
+
+    .modal-categoria-footer{
+
+        padding:15px 20px;
+
+        flex-direction:column-reverse;
+
+        align-items:stretch;
+    }
+
+
+    .btn-cancelar-categoria,
+    .btn-salvar-categoria{
+
+        width:100%;
+    }
+
+}
+
+/* ============================================================
+   VISUAL — TABELA DE CATEGORIAS
+   ============================================================ */
+
+#listaCategorias tr{
+    transition:
+        background .2s ease,
+        transform .2s ease;
+}
+
+#listaCategorias tr:hover{
+    background:#FFF8F2;
+}
+
+/* NOME DA CATEGORIA */
+
+#listaCategorias td:first-child{
+    color:#3F3F3F;
+    font-size:13px;
+    font-weight:600;
+}
+
+/* QUANTIDADE DE PRODUTOS */
+
+#listaCategorias td:nth-child(2){
+    color:var(--laranja);
+    font-size:13px;
+    font-weight:800;
+}
+
+/* TRANSFORMA O NÚMERO EM UMA "BADGE" */
+
+#listaCategorias td:nth-child(2){
+    position:relative;
+}
+
+#listaCategorias td:nth-child(2)::before{
+    content:"";
+    display:inline-block;
+    width:7px;
+    height:7px;
+    margin-right:7px;
+
+    border-radius:50%;
+
+    background:var(--laranja);
+
+    vertical-align:middle;
+
+    box-shadow:
+        0 0 0 4px rgba(245,130,32,.10);
+}
+
+/* ÁREA DAS AÇÕES */
+
+#listaCategorias td:last-child{
+    white-space:nowrap;
+}
+
+/* BOTÕES DE CATEGORIA */
+
+#listaCategorias .btn-editar-categoria,
+#listaCategorias .btn-excluir-categoria{
+
+    width:36px;
+    height:36px;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-right:7px;
+
+    border-radius:9px;
+
+    font-family:"Montserrat",sans-serif;
+    font-size:13px;
+
+    cursor:pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        border-color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+/* EDITAR */
+
+#listaCategorias .btn-editar-categoria{
+
+    border:1px solid #F5D0AA;
+
+    background:#FFF8F1;
+
+    color:var(--laranja);
+}
+
+#listaCategorias .btn-editar-categoria:hover{
+
+    background:var(--laranja);
+
+    border-color:var(--laranja);
+
+    color:#FFFFFF;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 6px 14px rgba(245,130,32,.20);
+}
+
+/* EXCLUIR */
+
+#listaCategorias .btn-excluir-categoria{
+
+    border:1px solid #F1CCCC;
+
+    background:#FFF7F7;
+
+    color:var(--vermelho);
+}
+
+#listaCategorias .btn-excluir-categoria:hover{
+
+    background:var(--vermelho);
+
+    border-color:var(--vermelho);
+
+    color:#FFFFFF;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 6px 14px rgba(229,57,53,.18);
+}
+
+/* ÍCONES */
+
+#listaCategorias .btn-editar-categoria i,
+#listaCategorias .btn-excluir-categoria i{
+
+    font-size:13px;
+
+    pointer-events:none;
+}
+
+/* LINHAS */
+
+#listaCategorias tr td{
+
+    height:58px;
+
+    padding-top:12px;
+    padding-bottom:12px;
+}
+
+/* PRIMEIRA COLUNA MAIS CONFORTÁVEL */
+
+#listaCategorias td:first-child{
+
+    padding-left:20px;
+}
+
+/* CABEÇALHO */
+
+table thead th:first-child{
+    padding-left:20px;
+}
+
+/* CANTOS DO CABEÇALHO */
+
+thead th:first-child{
+    border-top-left-radius:15px;
+}
+
+thead th:last-child{
+    border-top-right-radius:15px;
+}

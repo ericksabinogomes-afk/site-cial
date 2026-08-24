@@ -367,9 +367,10 @@ btnAdd.forEach(botao => {
       modalProduto.classList.add("aberto");
     }
 
-    if (textoBotao.includes("Nova Categoria")) {
-      alert("Cadastro de categoria em desenvolvimento.");
-    }
+   if (textoBotao.includes("Nova Categoria")) {
+    abrirModalCategoria();
+}
+
   });
 });
 
@@ -436,9 +437,6 @@ const API_BASE = "http://localhost:4000";
 const categoriaProduto =
     document.getElementById("categoriaProduto");
 
-/*==================================================
-        CAMPOS ESPECÍFICOS DO PRODUTO
-==================================================*/
 
 /*==================================================
         CAMPOS ESPECÍFICOS DO PRODUTO
@@ -893,34 +891,41 @@ async function carregarCategorias() {
             return;
         }
 
-        listaCategorias.innerHTML =
+           listaCategorias.innerHTML =
             categorias.map(item => `
 
                 <tr>
 
                     <td>
-                        ${escaparHTML(item.categoria)}
+                        ${escaparHTML(item.nome)}
                     </td>
 
                     <td>
-                        ${item.produtos}
+                        ${item.produtos ?? 0}
                     </td>
 
                     <td>
+
                         <button
                             type="button"
                             class="btn-editar-categoria"
-                            data-categoria="${escaparHTML(item.categoria)}"
+                            data-id="${item.id}"
+                            data-categoria="${escaparHTML(item.nome)}"
                             title="Editar categoria">
+
                             <i class="fa-solid fa-pen"></i>
+
                         </button>
 
                         <button
                             type="button"
                             class="btn-excluir-categoria"
-                            data-categoria="${escaparHTML(item.categoria)}"
+                            data-id="${item.id}"
+                            data-categoria="${escaparHTML(item.nome)}"
                             title="Excluir categoria">
+
                             <i class="fa-solid fa-trash"></i>
+
                         </button>
 
                     </td>
@@ -928,7 +933,7 @@ async function carregarCategorias() {
                 </tr>
 
             `).join("");
-
+            
     } catch (erro) {
 
         console.error(
@@ -945,6 +950,650 @@ async function carregarCategorias() {
         `;
 
     }
+}
+
+/*==================================================
+        EDITAR CATEGORIA - MODAL
+==================================================*/
+
+function abrirModalEditarCategoria(id, nomeAtual) {
+
+    const modalExistente =
+        document.getElementById("modalCategoria");
+
+    if (modalExistente) {
+        modalExistente.remove();
+    }
+
+    const modal =
+        document.createElement("div");
+
+    modal.id = "modalCategoria";
+
+    modal.innerHTML = `
+        <div class="modal-categoria-overlay">
+
+            <div class="modal-categoria">
+
+                <div class="modal-categoria-header">
+
+                    <div>
+                        <h2>Editar Categoria</h2>
+
+                        <p>
+                            Altere o nome da categoria.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="fechar-modal-categoria"
+                        id="fecharModalEditarCategoria">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <div class="modal-categoria-body">
+
+                    <label for="nomeEditarCategoria">
+                        Nome da categoria
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nomeEditarCategoria"
+                        value="${escaparHTML(nomeAtual)}"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <div class="modal-categoria-footer">
+
+                    <button
+                        type="button"
+                        class="btn-cancelar-categoria"
+                        id="cancelarModalEditarCategoria">
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-salvar-categoria"
+                        id="salvarModalEditarCategoria">
+
+                        <i class="fa-solid fa-check"></i>
+
+                        Salvar Alterações
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+
+    const fechar =
+        document.getElementById(
+            "fecharModalEditarCategoria"
+        );
+
+    const cancelar =
+        document.getElementById(
+            "cancelarModalEditarCategoria"
+        );
+
+    const salvar =
+        document.getElementById(
+            "salvarModalEditarCategoria"
+        );
+
+    const inputNome =
+        document.getElementById(
+            "nomeEditarCategoria"
+        );
+
+
+    function fecharModalEditarCategoria() {
+        modal.remove();
+    }
+
+
+    fechar?.addEventListener(
+        "click",
+        fecharModalEditarCategoria
+    );
+
+
+    cancelar?.addEventListener(
+        "click",
+        fecharModalEditarCategoria
+    );
+
+
+    modal
+        .querySelector(".modal-categoria-overlay")
+        ?.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target.classList.contains(
+                        "modal-categoria-overlay"
+                    )
+                ) {
+                    fecharModalEditarCategoria();
+                }
+
+            }
+        );
+
+
+    salvar?.addEventListener(
+        "click",
+        async () => {
+
+            const nome =
+                inputNome.value.trim();
+
+
+            if (!nome) {
+
+                alert(
+                    "Informe o nome da categoria."
+                );
+
+                inputNome.focus();
+
+                return;
+            }
+
+
+            salvar.disabled = true;
+
+            salvar.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Salvando...
+            `;
+
+
+            try {
+
+                const resposta =
+                    await fetch(
+                        `${API_BASE}/admin/categorias/${id}`,
+                        {
+                            method: "PUT",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                Accept:
+                                    "application/json",
+
+                                Authorization:
+                                    `Bearer ${token}`
+                            },
+
+                            body: JSON.stringify({
+                                nome,
+                                grupo: "Produtos"
+                            })
+                        }
+                    );
+
+
+                const resultado =
+                    await resposta.json();
+
+
+                if (
+                    !resposta.ok ||
+                    !resultado.ok
+                ) {
+
+                    throw new Error(
+                        resultado.erro ||
+                        "Erro ao editar categoria."
+                    );
+
+                }
+
+
+                fecharModalEditarCategoria();
+
+                await carregarCategorias();
+
+
+                alert(
+                    "Categoria atualizada com sucesso!"
+                );
+
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao editar categoria:",
+                    erro
+                );
+
+
+                alert(
+                    `Erro ao editar categoria: ${erro.message}`
+                );
+
+
+                salvar.disabled = false;
+
+                salvar.innerHTML = `
+                    <i class="fa-solid fa-check"></i>
+                    Salvar Alterações
+                `;
+
+            }
+
+        }
+    );
+
+
+    setTimeout(() => {
+
+        inputNome?.focus();
+        inputNome?.select();
+
+    }, 50);
+
+}
+
+/*==================================================
+        AÇÕES DAS CATEGORIAS
+==================================================*/
+
+document.addEventListener("click", async event => {
+
+    /* EDITAR CATEGORIA */
+const botaoEditar =
+    event.target.closest(".btn-editar-categoria");
+
+if (botaoEditar) {
+
+    const id =
+        Number(botaoEditar.dataset.id);
+
+    const nomeAtual =
+        botaoEditar.dataset.categoria || "";
+
+    abrirModalEditarCategoria(
+        id,
+        nomeAtual
+    );
+
+    return;
+}
+
+ 
+
+
+    /* EXCLUIR CATEGORIA */
+    const botaoExcluir =
+        event.target.closest(".btn-excluir-categoria");
+
+    if (botaoExcluir) {
+
+        const id =
+            Number(botaoExcluir.dataset.id);
+
+        const nome =
+            botaoExcluir.dataset.categoria || "esta categoria";
+
+        const confirmar =
+            confirm(
+                `Deseja realmente excluir "${nome}"?`
+            );
+
+        if (!confirmar) {
+            return;
+        }
+
+        try {
+
+            const resposta =
+                await fetch(
+                    `${API_BASE}/admin/categorias/${id}`,
+                    {
+                        method: "DELETE",
+
+                        headers: {
+                            Accept:
+                                "application/json",
+
+                            Authorization:
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+            const resultado =
+                await resposta.json();
+
+            if (
+                !resposta.ok ||
+                !resultado.ok
+            ) {
+                throw new Error(
+                    resultado.erro ||
+                    "Erro ao excluir categoria."
+                );
+            }
+
+            await carregarCategorias();
+
+            alert(
+                "Categoria excluída com sucesso!"
+            );
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao excluir categoria:",
+                erro
+            );
+
+            alert(
+                `Erro ao excluir categoria: ${erro.message}`
+            );
+        }
+
+        return;
+    }
+
+});
+
+/*==================================================
+        NOVA CATEGORIA
+==================================================*/
+
+function abrirModalCategoria() {
+
+    // Evita abrir dois modais
+    const modalExistente =
+        document.getElementById("modalCategoria");
+
+    if (modalExistente) {
+        modalExistente.remove();
+    }
+
+    const modal = document.createElement("div");
+
+    modal.id = "modalCategoria";
+
+    modal.innerHTML = `
+        <div class="modal-categoria-overlay">
+
+            <div class="modal-categoria">
+
+                <div class="modal-categoria-header">
+                    <div>
+                        <h2>Nova Categoria</h2>
+                        <p>Cadastre uma nova categoria para os produtos.</p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="fechar-modal-categoria"
+                        id="fecharModalCategoria">
+                        ×
+                    </button>
+                </div>
+
+                <div class="modal-categoria-body">
+
+                    <label for="nomeNovaCategoria">
+                        Nome da categoria
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nomeNovaCategoria"
+                        placeholder="Ex.: Bombas Centrífugas"
+                        autocomplete="off"
+                    >
+
+                    <label for="grupoNovaCategoria">
+                        Grupo
+                    </label>
+
+                    <select id="grupoNovaCategoria">
+
+                        <option value="Produtos">
+                            Produtos
+                        </option>
+
+                        <option value="STIHL">
+                            STIHL
+                        </option>
+
+                        <option value="Bombas">
+                            Bombas
+                        </option>
+
+                        <option value="Irrigação">
+                            Irrigação
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="modal-categoria-footer">
+
+                    <button
+                        type="button"
+                        class="btn-cancelar-categoria"
+                        id="cancelarModalCategoria">
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-salvar-categoria"
+                        id="salvarModalCategoria">
+                        <i class="fa-solid fa-check"></i>
+                        Salvar Categoria
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+
+    const fechar =
+        document.getElementById(
+            "fecharModalCategoria"
+        );
+
+    const cancelar =
+        document.getElementById(
+            "cancelarModalCategoria"
+        );
+
+    const salvar =
+        document.getElementById(
+            "salvarModalCategoria"
+        );
+
+    const inputNome =
+        document.getElementById(
+            "nomeNovaCategoria"
+        );
+
+
+    function fecharModalCategoria() {
+        modal.remove();
+    }
+
+
+    fechar?.addEventListener(
+        "click",
+        fecharModalCategoria
+    );
+
+    cancelar?.addEventListener(
+        "click",
+        fecharModalCategoria
+    );
+
+
+    // Fechar clicando fora do modal
+    modal
+        .querySelector(".modal-categoria-overlay")
+        ?.addEventListener("click", event => {
+
+            if (
+                event.target.classList.contains(
+                    "modal-categoria-overlay"
+                )
+            ) {
+                fecharModalCategoria();
+            }
+
+        });
+
+
+    salvar?.addEventListener(
+        "click",
+        async () => {
+
+            const nome =
+                inputNome.value.trim();
+
+            const grupo =
+                document.getElementById(
+                    "grupoNovaCategoria"
+                ).value;
+
+
+            if (!nome) {
+
+                alert(
+                    "Informe o nome da categoria."
+                );
+
+                inputNome.focus();
+
+                return;
+            }
+
+
+            salvar.disabled = true;
+
+            salvar.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Salvando...
+            `;
+
+
+            try {
+
+                const resposta =
+                    await fetch(
+                        `${API_BASE}/admin/categorias`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                Accept:
+                                    "application/json",
+
+                                Authorization:
+                                    `Bearer ${token}`
+                            },
+
+                            body: JSON.stringify({
+                                nome,
+                                grupo
+                            })
+                        }
+                    );
+
+
+                const resultado =
+                    await resposta.json();
+
+
+                if (
+                    !resposta.ok ||
+                    !resultado.ok
+                ) {
+
+                    throw new Error(
+                        resultado.erro ||
+                        "Erro ao criar categoria."
+                    );
+
+                }
+
+
+                fecharModalCategoria();
+
+                await carregarCategorias();
+
+
+                alert(
+                    "Categoria criada com sucesso!"
+                );
+
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao criar categoria:",
+                    erro
+                );
+
+                alert(
+                    `Erro ao criar categoria: ${erro.message}`
+                );
+
+
+                salvar.disabled = false;
+
+                salvar.innerHTML = `
+                    <i class="fa-solid fa-check"></i>
+                    Salvar Categoria
+                `;
+
+            }
+
+        }
+    );
+
+
+    // Foco automático
+    setTimeout(() => {
+        inputNome?.focus();
+    }, 50);
+
 }
 
 async function criarProduto(dados) {

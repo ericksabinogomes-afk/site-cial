@@ -448,6 +448,50 @@ app.get(
 );
 
 // ==========================================================
+// CATEGORIAS PÚBLICAS
+// ==========================================================
+
+// Listar categorias para o site público
+app.get("/categorias", async (req, res) => {
+  try {
+
+    const { data, error } = await supabase
+      .from("categorias")
+      .select("id, nome, slug, grupo")
+      .order("nome", { ascending: true });
+
+    if (error) {
+      console.error(
+        "Erro ao buscar categorias públicas:",
+        error
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: error.message
+      });
+    }
+
+    return res.json({
+      ok: true,
+      data: data || []
+    });
+
+  } catch (err) {
+
+    console.error(
+      "Erro inesperado ao listar categorias públicas:",
+      err
+    );
+
+    return res.status(500).json({
+      ok: false,
+      erro: err.message
+    });
+  }
+});
+
+// ==========================================================
 // CATEGORIAS DO ADMIN
 // ==========================================================
 

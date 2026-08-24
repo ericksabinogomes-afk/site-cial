@@ -56,7 +56,7 @@ const elementos = {
 
     ordenacao: document.getElementById("ordenacao"),
 
-    categorias: document.querySelectorAll(".categorias li"),
+  categorias: document.querySelectorAll("#listaCategorias li"),
 
     atalhos: document.querySelectorAll(".atalho"),
 
@@ -348,9 +348,6 @@ function formatarPreco(valor){
 
 }
 
-/*==================================================
-                CRIAR CARD
-==================================================*/
 
 /*==================================================
                 CRIAR CARD
@@ -949,8 +946,343 @@ else if(texto === "Bombas Residenciais"){
             CATEGORIAS
 ==================================================*/
 
+const ordemCategorias = [
+
+    "bombas-centrifugas",
+    "bombas-perifericas",
+    "bombas-submersas",
+    "bombas-submersiveis",
+    "bombas-autoaspirantes",
+    "bombas-injetoras",
+    "motobombas-irrigacao",
+    "bombas-piscina",
+    "bombas-irrigacao",
+    "bombas-poco",
+    "bombas-drenagem",
+    "bombas-esgoto",
+    "pressurizadores",
+    "sistemas-pressurizacao",
+    "acessorios-bombas",
+
+    "aspersores",
+    "microaspersores",
+    "gotejamento",
+    "mangueiras-irrigacao",
+    "tubos-irrigacao",
+    "conexoes-irrigacao",
+    "filtros-irrigacao",
+    "valvulas-irrigacao",
+    "acessorios-irrigacao"
+
+];
+
+
+/*==================================================
+        ÍCONES DAS CATEGORIAS
+==================================================*/
+
+const iconesCategorias = {
+
+    "bombas-centrifugas":
+        "fa-solid fa-water",
+
+    "bombas-perifericas":
+        "fa-solid fa-droplet",
+
+    "bombas-submersas":
+        "fa-solid fa-faucet-drip",
+
+    "bombas-submersiveis":
+        "fa-solid fa-arrow-down",
+
+    "bombas-autoaspirantes":
+        "fa-solid fa-rotate",
+
+    "bombas-injetoras":
+        "fa-solid fa-gears",
+
+    "motobombas-irrigacao":
+        "fa-solid fa-tractor",
+
+    "bombas-piscina":
+        "fa-solid fa-person-swimming",
+
+    "bombas-irrigacao":
+        "fa-solid fa-seedling",
+
+    "bombas-poco":
+        "fa-solid fa-arrow-down",
+
+    "bombas-drenagem":
+        "fa-solid fa-faucet",
+
+    "bombas-esgoto":
+        "fa-solid fa-pipe",
+
+    "pressurizadores":
+        "fa-solid fa-gauge-high",
+
+    "sistemas-pressurizacao":
+        "fa-solid fa-sliders",
+
+    "acessorios-bombas":
+        "fa-solid fa-screwdriver-wrench",
+
+    "aspersores":
+        "fa-solid fa-spray-can-sparkles",
+
+    "microaspersores":
+        "fa-solid fa-spray-can",
+
+    "gotejamento":
+        "fa-solid fa-droplet",
+
+    "mangueiras-irrigacao":
+        "fa-solid fa-water",
+
+    "tubos-irrigacao":
+        "fa-solid fa-grip-lines",
+
+    "conexoes-irrigacao":
+        "fa-solid fa-link",
+
+    "filtros-irrigacao":
+        "fa-solid fa-filter",
+
+    "valvulas-irrigacao":
+        "fa-solid fa-circle-dot",
+
+    "acessorios-irrigacao":
+        "fa-solid fa-screwdriver-wrench"
+
+};
+
+
+/*==================================================
+        CARREGAR CATEGORIAS DO BACKEND
+==================================================*/
+
+async function carregarCategorias(){
+
+    const lista =
+        document.getElementById("listaCategorias");
+
+    if(!lista){
+        return;
+    }
+
+    try{
+
+        const resposta =
+            await fetch(
+                "http://localhost:4000/categorias"
+            );
+
+
+        if(!resposta.ok){
+
+            throw new Error(
+                `Erro HTTP: ${resposta.status}`
+            );
+
+        }
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if(!resultado.ok){
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar categorias."
+            );
+
+        }
+
+
+        const categorias =
+            Array.isArray(resultado.data)
+                ? resultado.data
+                : [];
+
+
+        /*========================================
+            FILTRAR BOMBAS + IRRIGAÇÃO
+        ========================================*/
+
+        const categoriasPermitidas =
+            categorias.filter(categoria => {
+
+                const grupo =
+                    String(
+                        categoria.grupo || ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                return (
+                    grupo === "bombas" ||
+                    grupo === "irrigacao" ||
+                    grupo === "irrigação"
+                );
+
+            });
+
+
+        /*========================================
+            ORDENAR CATEGORIAS
+        ========================================*/
+
+        categoriasPermitidas.sort((a, b) => {
+
+            const indiceA =
+                ordemCategorias.indexOf(
+                    String(a.slug || "").toLowerCase()
+                );
+
+            const indiceB =
+                ordemCategorias.indexOf(
+                    String(b.slug || "").toLowerCase()
+                );
+
+
+            /* Categorias conhecidas primeiro */
+
+            if(indiceA !== -1 && indiceB !== -1){
+                return indiceA - indiceB;
+            }
+
+
+            if(indiceA !== -1){
+                return -1;
+            }
+
+
+            if(indiceB !== -1){
+                return 1;
+            }
+
+
+            /* Categorias novas ficam em ordem alfabética */
+
+            return String(a.nome || "")
+                .localeCompare(
+                    String(b.nome || ""),
+                    "pt-BR"
+                );
+
+        });
+
+
+        /*========================================
+            TODOS OS PRODUTOS
+        ========================================*/
+
+        lista.innerHTML = `
+
+            <li
+                data-categoria="todos"
+                class="ativo">
+
+                <i class="fa-solid fa-layer-group"></i>
+
+                <span>Todos os Produtos</span>
+
+            </li>
+
+        `;
+
+
+        /*========================================
+            CRIAR CATEGORIAS
+        ========================================*/
+
+        categoriasPermitidas.forEach(categoria => {
+
+            const li =
+                document.createElement("li");
+
+
+            const slug =
+                String(
+                    categoria.slug || ""
+                )
+                .toLowerCase();
+
+
+            li.dataset.categoria =
+                categoria.slug;
+
+
+            const icone =
+                iconesCategorias[slug] ||
+                "fa-solid fa-folder";
+
+
+            li.innerHTML = `
+
+                
+        <i class="${icone}" style="margin-right: 8px;"></i>
+
+                <span>
+
+                    ${categoria.nome}
+
+                </span>
+
+            `;
+
+
+            lista.appendChild(li);
+
+        });
+
+
+        /*========================================
+            ATUALIZAR REFERÊNCIA DOS ELEMENTOS
+        ========================================*/
+
+        elementos.categorias =
+            lista.querySelectorAll("li");
+
+
+        /*========================================
+            ATIVAR CLIQUES
+        ========================================*/
+
+        iniciarCategorias();
+
+
+        console.log(
+            "✅ Categorias carregadas:",
+            categoriasPermitidas
+        );
+
+    }
+
+
+    catch(erro){
+
+        console.error(
+            "❌ Erro ao carregar categorias:",
+            erro
+        );
+
+    }
+
+}
+
+/*==================================================
+            CATEGORIAS
+==================================================*/
+
 function iniciarCategorias(){
 
+
+    
     elementos.categorias.forEach(item=>{
 
         item.addEventListener("click",()=>{
@@ -2527,7 +2859,7 @@ function iniciarSistema(){
 
     carregarProdutos();
 
-    iniciarCategorias();
+    carregarCategorias();
 
     iniciarPesquisa();
 

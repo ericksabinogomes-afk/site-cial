@@ -6,10 +6,12 @@ const path = require('path');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const RecuperacaoRoute = require('../cadastro/cadastro backend/RecuperacaoRoute');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/api', RecuperacaoRoute);
 
 /*==========================================================
     Conectar a API (node e supabase

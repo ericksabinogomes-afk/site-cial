@@ -91,44 +91,78 @@ console.log("perfil normalizado:", perfil);
   }
 }
 
-//  Contador do Carrinho
+/*==================================================
+        CONTADOR DO CARRINHO NO BANCO
+==================================================*/
 
-function atualizarContadorCarrinho() {
-    const contador = document.getElementById(
-        "contadorCarrinho"
-    );
+const API_CARRINHO_HEADER =
+    "http://localhost:4000";
+
+async function atualizarContadorCarrinho() {
+    const contador =
+        document.getElementById(
+            "contadorCarrinho"
+        );
 
     if (!contador) {
         return;
     }
 
+    const tokenAtual =
+        localStorage.getItem("tokenCial");
+
+    if (!tokenAtual) {
+        contador.textContent = "0";
+        return;
+    }
+
     try {
-        const dados = localStorage.getItem(
-            "cial_carrinho"
+        const resposta = await fetch(
+            `${API_CARRINHO_HEADER}/carrinho`,
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${tokenAtual}`
+                }
+            }
         );
 
-        const carrinho = dados
-            ? JSON.parse(dados)
-            : [];
+        if (resposta.status === 401) {
+            contador.textContent = "0";
+            return;
+        }
 
-        const quantidade = Array.isArray(carrinho)
-            ? carrinho.reduce((total, produto) => {
-                return total + Number(
-                    produto.quantidade || 0
-                );
-            }, 0)
-            : 0;
+        const resultado =
+            await resposta.json();
 
-        contador.textContent = quantidade;
+        if (!resposta.ok || !resultado.ok) {
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar contador do carrinho"
+            );
+        }
+
+        const quantidade =
+            (resultado.data || [])
+                .reduce((total, item) => {
+                    return total +
+                        Number(item.quantidade || 0);
+                }, 0);
+
+        contador.textContent =
+            quantidade;
     } catch (erro) {
         console.error(
-            "Erro ao atualizar contador do carrinho:",
+            "Erro no contador do carrinho:",
             erro
         );
 
         contador.textContent = "0";
     }
 }
+
+window.atualizarContadorCarrinho =
+    atualizarContadorCarrinho;
 
 document.addEventListener(
     "DOMContentLoaded",

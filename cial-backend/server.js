@@ -1653,10 +1653,416 @@ app.patch(
 
 
 
+/*==========================================================
+    CARRINHO
+==========================================================*/
 
+app.get(
+    "/carrinho",
+    autenticarToken,
+    async (req, res) => {
+        try {
+            const usuarioId =
+                Number(req.usuario.id);
 
+            const { data, error } =
+                await supabase
+                    .from("carrinho_itens")
+                    .select(`
+                        id,
+                        produto_id,
+                        quantidade,
+                        criado_em,
+                        atualizado_em,
+                        produtos (
+                            id,
+                            nome,
+                            preco,
+                            imagem,
+                            estoque,
+                            ativo
+                        )
+                    `)
+                    .eq("usuario_id", usuarioId)
+                    .order("criado_em", {
+                        ascending: true
+                    });
 
+            if (error) {
+                console.error(
+                    "Erro ao buscar carrinho:",
+                    error
+                );
 
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+            }
+
+            const itens = (data || [])
+                .filter(item => item.produtos)
+                .map(item => ({
+                    id: item.id,
+                    produto_id: item.produto_id,
+                    quantidade: item.quantidade,
+                    nome: item.produtos.nome,
+                    preco: Number(item.produtos.preco),
+                    imagem: item.produtos.imagem || "",
+                    estoque: item.produtos.estoque,
+                    ativo: item.produtos.ativo
+                }));
+
+            return res.json({
+                ok: true,
+                data: itens
+            });
+        } catch (err) {
+            console.error(
+                "Erro inesperado ao buscar carrinho:",
+                err
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro: "Erro interno ao buscar carrinho"
+            });
+        }
+    }
+);
+
+//  ADICIONAR PRODUTO
+app.post(
+    "/carrinho",
+    autenticarToken,
+    async (req, res) => {
+        try {
+            const usuarioId =
+                Number(req.usuario.id);
+
+            const produtoId =
+                Number(req.body.produto_id);
+
+            const quantidade =
+                Number(req.body.quantidade || 1);
+
+            if (
+                !Number.isInteger(produtoId) ||
+                produtoId <= 0
+            ) {
+                return res.status(400).json({
+                    ok: false,
+                    erro: "Produto inválido"
+                });
+            }
+
+            if (
+                !Number.isInteger(quantidade) ||
+                quantidade <= 0
+            ) {
+                return res.status(400).json({
+                    ok: false,
+                    erro: "Quantidade inválida"
+                });
+            }
+
+            const { data: produto, error: produtoError } =
+                await supabase
+                    .from("produtos")
+                    .select("id, nome, estoque, ativo")
+                    .eq("id", produtoId)
+                    .eq("ativo", true)
+                    .single();
+
+            if (
+                produtoError ||
+                !produto
+            ) {
+                return res.status(404).json({
+                    ok: false,
+                    erro: "Produto não encontrado ou inativo"
+                });
+            }
+
+            const { data: itemExistente, error: buscaError } =
+                await supabase
+                    .from("carrinho_itens")
+                    .select("id, quantidade")
+                    .eq("usuario_id", usuarioId)
+                    .eq("produto_id", produtoId)
+                    .maybeSingle();
+
+            if (buscaError) {
+                return res.status(500).json({
+                    ok: false,
+                    erro: buscaError.message
+                });
+            }
+
+            let item;
+
+            if (itemExistente) {
+                const novaQuantidade =
+                    itemExistente.quantidade +
+                    quantidade;
+
+                const resultado =
+                    await supabase
+                        .from("carrinho_itens")
+                        .update({
+                            quantidade: novaQuantidade,
+                            atualizado_em:
+                                new Date().toISOString()
+                        })
+                        .eq("id", itemExistente.id)
+                        .eq("usuario_id", usuarioId)
+                        .select()
+                        .single();
+
+                item = resultado.data;
+
+                if (resultado.error) {
+                    return res.status(500).json({
+                        ok: false,
+                        erro: resultado.error.message
+                    });
+                }
+            } else {
+                const resultado =
+                    await supabase
+                        .from("carrinho_itens")
+                        .insert({
+                            usuario_id: usuarioId,
+                            produto_id: produtoId,
+                            quantidade
+                        })
+                        .select()
+                        .single();
+
+                item = resultado.data;
+
+                if (resultado.error) {
+                    return res.status(500).json({
+                        ok: false,
+                        erro: resultado.error.message
+                    });
+                }
+            }
+
+            return res.status(201).json({
+                ok: true,
+                data: item
+            });
+        } catch (err) {
+            console.error(
+                "Erro ao adicionar ao carrinho:",
+                err
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro: "Erro interno ao adicionar ao carrinho"
+            });
+        }
+    }
+);
+
+//REMOVER PRODUTO
+
+app.delete(
+    "/carrinho/:produtoId",
+    autenticarToken,
+    async (req, res) => {
+        try {
+            const usuarioId =
+                Number(req.usuario.id);
+
+            const produtoId =
+                Number(req.params.produtoId);
+
+            if (
+                !Number.isInteger(produtoId) ||
+                produtoId <= 0
+            ) {
+                return res.status(400).json({
+                    ok: false,
+                    erro: "Produto inválido"
+                });
+            }
+
+            const { error } =
+                await supabase
+                    .from("carrinho_itens")
+                    .delete()
+                    .eq("usuario_id", usuarioId)
+                    .eq("produto_id", produtoId);
+
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+            }
+
+            return res.json({
+                ok: true,
+                mensagem: "Item removido do carrinho"
+            });
+        } catch (err) {
+            console.error(
+                "Erro ao remover item:",
+                err
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro: "Erro interno ao remover item"
+            });
+        }
+    }
+);
+
+// LIMPAR CARRINHO
+
+app.delete(
+    "/carrinho",
+    autenticarToken,
+    async (req, res) => {
+        try {
+            const usuarioId =
+                Number(req.usuario.id);
+
+            const { error } =
+                await supabase
+                    .from("carrinho_itens")
+                    .delete()
+                    .eq("usuario_id", usuarioId);
+
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+            }
+
+            return res.json({
+                ok: true,
+                mensagem: "Carrinho limpo"
+            });
+        } catch (err) {
+            console.error(
+                "Erro ao limpar carrinho:",
+                err
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro: "Erro interno ao limpar carrinho"
+            });
+        }
+    }
+);
+
+/*==========================================================
+    ALTERAR QUANTIDADE DO CARRINHO
+==========================================================*/
+
+app.patch(
+    "/carrinho/:produtoId",
+    autenticarToken,
+    async (req, res) => {
+        try {
+            const usuarioId =
+                Number(req.usuario.id);
+
+            const produtoId =
+                Number(req.params.produtoId);
+
+            const quantidade =
+                Number(req.body.quantidade);
+
+            if (
+                !Number.isInteger(usuarioId) ||
+                usuarioId <= 0
+            ) {
+                return res.status(401).json({
+                    ok: false,
+                    erro: "Usuário inválido"
+                });
+            }
+
+            if (
+                !Number.isInteger(produtoId) ||
+                produtoId <= 0
+            ) {
+                return res.status(400).json({
+                    ok: false,
+                    erro: "Produto inválido"
+                });
+            }
+
+            if (
+                !Number.isInteger(quantidade) ||
+                quantidade <= 0
+            ) {
+                return res.status(400).json({
+                    ok: false,
+                    erro:
+                        "A quantidade deve ser maior que zero"
+                });
+            }
+
+            const { data, error } =
+                await supabase
+                    .from("carrinho_itens")
+                    .update({
+                        quantidade,
+                        atualizado_em:
+                            new Date().toISOString()
+                    })
+                    .eq("usuario_id", usuarioId)
+                    .eq("produto_id", produtoId)
+                    .select()
+                    .single();
+
+            if (error) {
+                console.error(
+                    "Erro ao alterar quantidade:",
+                    error
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+            }
+
+            if (!data) {
+                return res.status(404).json({
+                    ok: false,
+                    erro:
+                        "Item não encontrado no carrinho"
+                });
+            }
+
+            return res.json({
+                ok: true,
+                data
+            });
+        } catch (err) {
+            console.error(
+                "Erro inesperado ao alterar quantidade:",
+                err
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro:
+                    "Erro interno ao alterar quantidade"
+            });
+        }
+    }
+);
 
 
 

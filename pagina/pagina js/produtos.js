@@ -192,15 +192,6 @@ function atualizarTotal(){
 
 }
 /*==================================================
-            RENDERIZAÇÃO
-==================================================*/
-
-function renderizarProdutos(){
-
-    elementos.grid.innerHTML = "";
-
-}
-/*==================================================
             FORMATA PREÇO
 ==================================================*/
 
@@ -1176,99 +1167,118 @@ function iniciarFavoritos(){
                 CARRINHO
 ==================================================*/
 
-const CHAVE_CARRINHO = "cial_carrinho";
+const API_CARRINHO =
+    "http://localhost:4000";
 
-function obterCarrinho() {
+async function adicionarAoCarrinho(produto) {
+    const token =
+        localStorage.getItem("tokenCial");
+
+    if (!token) {
+        window.location.href =
+            "../cadastro/login.html";
+
+        return;
+    }
+
     try {
-        const dados = localStorage.getItem(CHAVE_CARRINHO);
+        const resposta = await fetch(
+            `${API_CARRINHO}/carrinho`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json",
 
-        if (!dados) {
-            return [];
+                    Authorization:
+                        `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    produto_id: Number(produto.id),
+                    quantidade: 1
+                })
+            }
+        );
+
+        const resultado =
+            await resposta.json();
+
+        if (resposta.status === 401) {
+            localStorage.removeItem(
+                "tokenCial"
+            );
+
+            localStorage.removeItem(
+                "usuarioCial"
+            );
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return;
         }
 
-        const carrinho = JSON.parse(dados);
+        if (!resposta.ok || !resultado.ok) {
+            throw new Error(
+                resultado.erro ||
+                "Erro ao adicionar ao carrinho"
+            );
+        }
 
-        return Array.isArray(carrinho)
-            ? carrinho
-            : [];
+        if (window.atualizarContadorCarrinho) {
+            await window.atualizarContadorCarrinho();
+        }
+
+        alert(
+            `${produto.nome} foi adicionado ao carrinho.`
+        );
     } catch (erro) {
-        console.error("Erro ao carregar carrinho:", erro);
-        return [];
-    }
-}
+        console.error(
+            "Erro ao adicionar ao carrinho:",
+            erro
+        );
 
-function salvarCarrinho(carrinho) {
-    localStorage.setItem(
-        CHAVE_CARRINHO,
-        JSON.stringify(carrinho)
-    );
-}
-
-function adicionarAoCarrinho(produto) {
-    const carrinho = obterCarrinho();
-
-    const itemExistente = carrinho.find(
-        item => Number(item.id) === Number(produto.id)
-    );
-
-    if (itemExistente) {
-        itemExistente.quantidade++;
-    } else {
-        carrinho.push({
-            id: Number(produto.id),
-            nome: produto.nome,
-            preco: Number(produto.preco),
-            imagem: produto.imagem || "",
-            quantidade: 1
-        });
-    }
-
-    salvarCarrinho(carrinho);
-    atualizarContadorCarrinho();
-
-    alert(`${produto.nome} foi adicionado ao carrinho.`);
-}
-
-function atualizarContadorCarrinho() {
-    const carrinho = obterCarrinho();
-
-    const quantidade = carrinho.reduce(
-        (total, item) => total + Number(item.quantidade || 0),
-        0
-    );
-
-    const contador = document.getElementById(
-        "contadorCarrinho"
-    );
-
-    if (contador) {
-        contador.textContent = quantidade;
+        alert(
+            erro.message ||
+            "Não foi possível adicionar o produto."
+        );
     }
 }
 
 function iniciarCarrinho() {
-    document.addEventListener("click", event => {
-        const botao = event.target.closest(".btn-carrinho");
+    document.addEventListener(
+        "click",
+        event => {
+            const botao =
+                event.target.closest(
+                    ".btn-carrinho"
+                );
 
-        if (!botao) {
-            return;
+            if (!botao) {
+                return;
+            }
+
+            const id =
+                Number(botao.dataset.id);
+
+            const produto =
+                estado.produtos.find(
+                    item =>
+                        Number(item.id) === id
+                );
+
+            if (!produto) {
+                console.error(
+                    "Produto não encontrado:",
+                    id
+                );
+
+                return;
+            }
+
+            adicionarAoCarrinho(produto);
         }
-
-        const id = Number(botao.dataset.id);
-
-        const produto = estado.produtos.find(
-            item => Number(item.id) === id
-        );
-
-        if (!produto) {
-            console.error("Produto não encontrado:", id);
-            return;
-        }
-
-        adicionarAoCarrinho(produto);
-    });
-
-    atualizarContadorCarrinho();
+    );
 }
 
 /*==================================================
@@ -1897,15 +1907,13 @@ async function iniciarSistema(){
 
     atualizarFavoritoHeader();
 
-    obterCarrinho();
-
     iniciarCategorias();
 
     iniciarAtalhos();
 
     iniciarFiltrosLaterais();
 
-    carregarProdutos();
+    await carregarProdutos();
 
     iniciarPesquisa();
 
@@ -1915,7 +1923,7 @@ async function iniciarSistema(){
 
     iniciarCarrinho();
 
-   iniciarModalProduto();
+    iniciarModalProduto();
 
 }
 
@@ -1927,29 +1935,6 @@ document.addEventListener(
 
 
 );
-function aumentarQuantidade(index) {
-    if (!carrinho[index]) {
-        return;
-    }
-
-    carrinho[index].quantidade++;
-    salvarCarrinho();
-    renderizarCarrinho();
-}
-function diminuirQuantidade(index) {
-    if (!carrinho[index]) {
-        return;
-    }
-
-    if (carrinho[index].quantidade > 1) {
-        carrinho[index].quantidade--;
-    } else {
-        carrinho.splice(index, 1);
-    }
-
-    salvarCarrinho();
-    renderizarCarrinho();
-}
 
 
 /*==================================================

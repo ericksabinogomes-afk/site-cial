@@ -28,7 +28,7 @@ const elementos = {
 
     ordenacao: document.getElementById("ordenacao"),
 
-    categorias: document.querySelectorAll(".categorias li"),
+    categorias: [],
 
     atalhos: document.querySelectorAll(".atalho"),
 
@@ -329,6 +329,308 @@ function renderizarProdutos() {
 
     atualizarTotal();
 }
+
+/*==================================================
+        CATEGORIAS DINÂMICAS
+==================================================*/
+
+const ordemCategoriasProdutos = [
+
+    "motosserras",
+    "rocadeiras",
+    "sopradores",
+    "lavadoras",
+    "cortadores",
+    "podadores",
+    "motopodas",
+    "colhedores",
+    "kombisystem",
+    "bateria",
+    "eletrica",
+    "aspiradores",
+    "pecas",
+    "ferramentas",
+    "lubrificantes",
+    "combustiveis",
+    "epis",
+    "acessorios"
+
+];
+
+
+const iconesCategoriasProdutos = {
+
+    "motosserras": "🪚",
+
+    "rocadeiras": "🌿",
+
+    "sopradores": "💨",
+
+    "lavadoras": "💦",
+
+    "cortadores": "🌱",
+
+    "podadores": "✂️",
+
+    "motopodas": "🌳",
+
+    "colhedores": "🌾",
+
+    "kombisystem": "🔧",
+
+    "bateria": "🔋",
+
+    "eletrica": "🔌",
+
+    "aspiradores": "🧹",
+
+    "pecas": "⚙️",
+
+    "ferramentas": "🛠",
+
+    "lubrificantes": "🛢",
+
+    "combustiveis": "⛽",
+
+    "epis": "🦺",
+
+    "acessorios": "🎒"
+
+};
+
+
+async function carregarCategoriasProdutos(){
+
+    const lista =
+        document.querySelector(".categorias");
+
+    if(!lista){
+        return;
+    }
+
+    try{
+
+        const resposta =
+            await fetch(
+                "http://localhost:4000/categorias"
+            );
+
+
+        if(!resposta.ok){
+
+            throw new Error(
+                `Erro HTTP: ${resposta.status}`
+            );
+
+        }
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if(!resultado.ok){
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar categorias."
+            );
+
+        }
+
+
+        const categorias =
+            Array.isArray(resultado.data)
+                ? resultado.data
+                : [];
+
+                console.log("📦 TODAS AS CATEGORIAS VINDAS DO BANCO:", categorias);
+
+        /*========================================
+            PEGAR SOMENTE CATEGORIAS DE PRODUTOS
+        ========================================*/
+
+        const categoriasProdutos =
+            categorias.filter(categoria => {
+
+                const grupo =
+                    String(
+                        categoria.grupo || ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                const slug =
+                    String(
+                        categoria.slug || ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                return (
+                    grupo === "produtos" &&
+                    !slug.startsWith("bombas-")
+                );
+
+            });
+
+
+        /*========================================
+            ORDENAR
+        ========================================*/
+
+        categoriasProdutos.sort((a, b) => {
+
+            const indiceA =
+                ordemCategoriasProdutos.indexOf(
+                    String(a.slug || "").toLowerCase()
+                );
+
+            const indiceB =
+                ordemCategoriasProdutos.indexOf(
+                    String(b.slug || "").toLowerCase()
+                );
+
+
+            if(indiceA !== -1 && indiceB !== -1){
+
+                return indiceA - indiceB;
+
+            }
+
+
+            if(indiceA !== -1){
+
+                return -1;
+
+            }
+
+
+            if(indiceB !== -1){
+
+                return 1;
+
+            }
+
+
+            return String(a.nome || "")
+                .localeCompare(
+                    String(b.nome || ""),
+                    "pt-BR"
+                );
+
+        });
+
+
+        /*========================================
+            LIMPAR CATEGORIAS ANTIGAS
+        ========================================*/
+
+        lista.innerHTML = "";
+
+
+        /*========================================
+            TODOS OS PRODUTOS
+        ========================================*/
+
+        const todos =
+            document.createElement("li");
+
+        todos.dataset.categoria =
+            "todos";
+
+        todos.classList.add("ativo");
+
+        todos.innerHTML = `
+
+            <span class="icone-categoria">
+                🏠
+            </span>
+
+            <span>
+                Todos os Produtos
+            </span>
+
+        `;
+
+        lista.appendChild(todos);
+
+
+        /*========================================
+            CRIAR CATEGORIAS
+        ========================================*/
+
+        categoriasProdutos.forEach(categoria => {
+
+            const li =
+                document.createElement("li");
+
+
+            const slug =
+                String(
+                    categoria.slug || ""
+                )
+                .trim()
+                .toLowerCase();
+
+
+            const icone =
+                iconesCategoriasProdutos[slug] ||
+                "📦";
+
+
+            li.dataset.categoria =
+                categoria.slug;
+
+
+            li.innerHTML = `
+
+                <span
+                    class="icone-categoria"
+                    style="margin-right: 8px;"
+                >
+                    ${icone}
+                </span>
+
+                <span>
+                    ${categoria.nome}
+                </span>
+
+            `;
+
+
+            lista.appendChild(li);
+
+        });
+
+
+        /*========================================
+            ATUALIZAR REFERÊNCIA
+        ========================================*/
+
+        elementos.categorias =
+            lista.querySelectorAll("li");
+
+
+        console.log(
+            "✅ Categorias de produtos carregadas:",
+            categoriasProdutos
+        );
+
+
+    } catch(erro){
+
+        console.error(
+            "❌ Erro ao carregar categorias de produtos:",
+            erro
+        );
+
+    }
+
+}
+
 /*==================================================
             FILTRAR CATEGORIA
 ==================================================*/
@@ -1906,6 +2208,8 @@ async function iniciarSistema(){
     await carregarFavoritos();
 
     atualizarFavoritoHeader();
+
+    await carregarCategoriasProdutos();
 
     iniciarCategorias();
 

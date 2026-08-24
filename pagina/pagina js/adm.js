@@ -1660,14 +1660,49 @@ async function atualizarProduto(id, dados) {
 }
 
 async function excluirProduto(id) {
-  const res = await fetch(`${API_BASE}/admin/produtos/${id}`, {
+  const url = `${API_BASE}/admin/produtos/${id}`;
+
+  console.log("Excluindo produto:", id);
+  console.log("URL:", url);
+
+  const res = await fetch(url, {
     method: "DELETE",
     headers: {
       "Authorization": `Bearer ${token}`
     }
   });
 
-  const json = await res.json();
+  const text = await res.text();
+
+  console.log("Status HTTP:", res.status);
+  console.log("Resposta bruta:", text.slice(0, 500)); // limita pra não poluir demais
+
+  // Se o status já indicar erro, lança já
+  if (!res.ok) {
+    let mensagem = `Erro ${res.status} ao excluir produto`;
+
+    // tenta extrair mensagem do JSON, se for o caso
+    try {
+      const json = JSON.parse(text);
+      if (json && json.erro) {
+        mensagem += ": " + json.erro;
+      }
+    } catch {
+      // não era JSON, ignora
+    }
+
+    throw new Error(mensagem);
+  }
+
+  // tenta transformar em JSON
+  let json;
+  try {
+    json = JSON.parse(text);
+  } catch (e) {
+    console.error("Resposta não é JSON:", text.slice(0, 300));
+    throw new Error("A API não retornou JSON. Veja o console.");
+  }
+
   if (!json.ok) {
     throw new Error(json.erro || "Erro ao excluir produto");
   }

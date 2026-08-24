@@ -447,6 +447,40 @@ app.get(
   }
 );
 
+// EXCLUIR PRODUTO
+app.delete(
+  "/admin/produtos/:id",
+  autenticarToken,
+  exigirAdmin,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      // Exemplo com Supabase:
+      const { data, error } = await supabase
+        .from("produtos")
+        .delete()
+        .eq("id", id)
+        .select();
+
+      if (error || !data || data.length === 0) {
+        return res.status(404).json({
+          ok: false,
+          erro: "Produto não encontrado ou erro ao excluir"
+        });
+      }
+
+      res.json({ ok: true });
+    } catch (err) {
+      console.error("Erro ao excluir produto:", err);
+      res.status(500).json({
+        ok: false,
+        erro: "Erro interno ao excluir produto"
+      });
+    }
+  }
+);
+
 // ==========================================================
 // CATEGORIAS PÚBLICAS
 // ==========================================================

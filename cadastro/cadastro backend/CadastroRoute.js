@@ -1,13 +1,12 @@
-// cadastroRoute.js
-import express from 'express'
-import { createClient } from '@supabase/supabase-js'
+const express = require('express');
+const { createClient } = require('@supabase/supabase-js');
 
-const router = express.Router()
+const router = express.Router();
 
-const SUPABASE_URL = 'https://gbiaozfsqmiljpdxqwlp.supabase.co'
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+const SUPABASE_URL = 'https://gbiaozfsqmiljpdxqwlp.supabase.co';
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 router.post('/cadastro', async (req, res) => {
   try {
@@ -109,4 +108,4 @@ router.post('/cadastro', async (req, res) => {
   }
 })
 
-export default router
+module.exports = router;

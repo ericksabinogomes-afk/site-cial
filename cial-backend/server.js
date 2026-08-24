@@ -6,7 +6,12 @@ const path = require('path');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+<<<<<<< Updated upstream
 
+=======
+const RecuperacaoRoute = require('./RecuperacaoRoute');
+const CadastroRoute = require('./CadastroRoute');
+>>>>>>> Stashed changes
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -79,7 +84,7 @@ app.post('/cadastro', async (req, res) => {
       .insert([{
         nome,
         email,
-        senha: senhaHash,            // HASH
+        password: senhaHash,            // HASH
         cpf,
         telefone,
         whastapp: whatsapp, 
@@ -1482,7 +1487,7 @@ app.post('/login', async (req, res) => {
     const usuario = data[0];
 
     // Comparar senha digitada com o hash
-    const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+    const senhaCorreta = await bcrypt.compare(senha, usuario.password);
     if (!senhaCorreta) {
       return res.status(401).json({ ok: false, erro: 'Senha inválida' });
     }

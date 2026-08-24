@@ -6,16 +6,12 @@ const path = require('path');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-<<<<<<< Updated upstream
-
-=======
 const RecuperacaoRoute = require('./RecuperacaoRoute');
 const CadastroRoute = require('./CadastroRoute');
->>>>>>> Stashed changes
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use('/api', RecuperacaoRoute);
 /*==========================================================
     Conectar a API (node e supabase
 ==========================================================*/

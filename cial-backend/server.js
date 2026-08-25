@@ -6,12 +6,13 @@ const path = require('path');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const RecuperacaoRoute = require('./RecuperacaoRoute');
-const CadastroRoute = require('./CadastroRoute');
+const RecuperacaoRoute = require('../cadastro/cadastro backend/RecuperacaoRoute');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/api', RecuperacaoRoute);
+
 /*==========================================================
     Conectar a API (node e supabase
 ==========================================================*/
@@ -80,7 +81,7 @@ app.post('/cadastro', async (req, res) => {
       .insert([{
         nome,
         email,
-        password: senhaHash,            // HASH
+        senha: senhaHash,            // HASH
         cpf,
         telefone,
         whastapp: whatsapp, 
@@ -1483,7 +1484,7 @@ app.post('/login', async (req, res) => {
     const usuario = data[0];
 
     // Comparar senha digitada com o hash
-    const senhaCorreta = await bcrypt.compare(senha, usuario.password);
+    const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
     if (!senhaCorreta) {
       return res.status(401).json({ ok: false, erro: 'Senha inválida' });
     }

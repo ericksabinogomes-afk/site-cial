@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const supabase = require('./supabaseCliente');
 const { transporter } = require('./emailConfig');
@@ -106,7 +107,7 @@ router.post('/validar-codigo', async (req, res) => {
     // Busca código válido
     const { data: reset, error: resetError } = await supabase
       .from('password_resets')
-      .select('id, user_id, email, expires_at, used')
+      .select('user_id, email, expires_at, used')
       .eq('code', codigo)
       .eq('email', email.toLowerCase())
       .eq('used', false)
@@ -145,7 +146,7 @@ router.post('/atualizar-senha', async (req, res) => {
     // 1. Valida código
     const { data: reset, error: resetError } = await supabase
       .from('password_resets')
-      .select('id, user_id, email, expires_at, used')
+      .select('user_id, email, expires_at, used')
       .eq('code', codigo)
       .eq('user_id', user_id)
       .eq('used', false)

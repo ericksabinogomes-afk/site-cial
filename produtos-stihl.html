@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motosserras STIHL - Cial Site</title>
+  <link rel="stylesheet" href="style-7.css">
+  <style>
+    .stihl-header {
+      background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .stihl-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    
+    .stihl-header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+    
+    .stihl-products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .stihl-product-card {
+      border: 2px solid #eee;
+      border-radius: 12px;
+      padding: 20px;
+      background: #fff;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .stihl-product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      border-color: #ff6600;
+    }
+    
+    .stihl-product-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: contain;
+      margin-bottom: 15px;
+      border-radius: 8px;
+    }
+    
+    .stihl-product-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    
+    .stihl-product-price {
+      font-size: 20px;
+      color: #27ae60;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+    
+    .stihl-product-description {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+    
+    .stihl-product-link {
+      display: inline-block;
+      background: #ff6600;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+      transition: background 0.3s;
+    }
+    
+    .stihl-product-link:hover {
+      background: #e65c00;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      font-size: 18px;
+      color: #666;
+      grid-column: 1 / -1;
+    }
+    
+    .error {
+      text-align: center;
+      padding: 60px 20px;
+      color: #e74c3c;
+      grid-column: 1 / -1;
+    }
+    
+    .error small {
+      display: block;
+      margin-top: 10px;
+      color: #999;
+      font-size: 14px;
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin: 20px;
+      color: #ff6600;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="stihl-header">
+    <h1>🪚 Motosserras STIHL</h1>
+    <p>Confira nossa seleção de motosserras profissionais</p>
+  </div>
+  
+  <a href="index-5.html" class="back-link">← Voltar para Home</a>
+
+  <main>
+    <div id="products-container" class="stihl-products-grid">
+      <div class="loading">🔄 Carregando produtos STIHL...</div>
+    </div>
+  </main>
+
+  <script>
+    async function loadStihlProducts() {
+      const container = document.getElementById('products-container');
+      
+      try {
+        const response = await fetch('stihl-api.php');
+        const result = await response.json();
+        
+        if (!result.success) {
+          throw new Error(result.error || 'Erro ao carregar produtos');
+        }
+        
+        if (result.data.length === 0) {
+          container.innerHTML = '<div class="error">⚠️ Nenhum produto STIHL encontrado</div>';
+          return;
+        }
+        
+        container.innerHTML = result.data.map(product => `
+          <div class="stihl-product-card">
+            ${product.image ? `
+              <img src="${product.image}" alt="${product.name}" onerror="this.style.display='none'">
+            ` : ''}
+            
+            <div class="stihl-product-name">${product.name}</div>
+            
+            ${product.price ? `
+              <div class="stihl-product-price">${product.price}</div>
+            ` : ''}
+            
+            ${product.description ? `
+              <div class="stihl-product-description">${product.description}</div>
+            ` : ''}
+            
+            ${product.link ? `
+              <a href="${product.link}" target="_blank" class="stihl-product-link">
+                Ver produto na STIHL →
+              </a>
+            ` : ''}
+          </div>
+        `).join('');
+        
+      } catch (error) {
+        console.error('Erro:', error);
+        container.innerHTML = `
+          <div class="error">
+            ❌ Erro ao carregar produtos STIHL<br>
+            <small>
+              Verifique se:<br>
+              1. A API stihl-products-api está rodando (npm start)<br>
+              2. O arquivo stihl-api.php está na mesma pasta<br>
+              3. O XAMPP está com Apache ligado
+            </small>
+          </div>
+        `;
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadStihlProducts);
+  </script>
+</body>
+</html>

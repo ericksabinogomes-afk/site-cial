@@ -1,8 +1,7 @@
 const { Router } = require('express');
-const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const supabase = require('./supabaseCliente');
-const { transporter } = require('./emailConfig');
+const { transporter, testEmail } = require('./emailConfig');
 
 const router = Router();
 

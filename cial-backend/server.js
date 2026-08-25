@@ -6,7 +6,7 @@ const path = require('path');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const RecuperacaoRoute = require('../cadastro/cadastro backend/RecuperacaoRoute');
+const RecuperacaoRoute = require('./RecuperacaoRoute');
 
 const app = express();
 app.use(cors());

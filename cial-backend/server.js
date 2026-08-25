@@ -1483,8 +1483,26 @@ app.post('/login', async (req, res) => {
 
     const usuario = data[0];
 
-    // Comparar senha digitada com o hash
-    const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+    const hashDaSenha = usuario.password || usuario.senha;
+
+    if (!hashDaSenha) {
+      return res.status(401).json({
+        ok: false,
+        erro: 'Senha não cadastrada para este usuário'
+      });
+    }
+
+    const senhaCorreta = await bcrypt.compare(
+      senha,
+      hashDaSenha
+    );
+
+    if (!senhaCorreta) {
+      return res.status(401).json({
+        ok: false,
+        erro: 'Senha inválida'
+      });
+    }
     if (!senhaCorreta) {
       return res.status(401).json({ ok: false, erro: 'Senha inválida' });
     }

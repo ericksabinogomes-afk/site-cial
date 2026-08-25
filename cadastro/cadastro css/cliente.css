@@ -671,7 +671,7 @@ td{
 
     grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
 
-    gap:25px;
+    gap:30px;
 
     margin-top:30px;
 

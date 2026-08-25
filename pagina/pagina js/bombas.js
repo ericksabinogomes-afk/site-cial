@@ -2027,6 +2027,217 @@ function abrirModalProduto(id){
 
     produtoModalAtual = produto;
 
+        /*==================================================
+        ATUALIZAR COR DO FAVORITO NO MODAL
+    ==================================================*/
+
+    const btnFavoritoModal =
+        document.getElementById(
+            "modalFavoritarProduto"
+        );
+
+    if(btnFavoritoModal){
+
+        const icone =
+            btnFavoritoModal.querySelector("i");
+
+        const favoritado =
+            estado.favoritos.includes(
+                Number(produto.id)
+            );
+
+        btnFavoritoModal.classList.toggle(
+            "ativo",
+            favoritado
+        );
+
+        if(icone){
+
+            icone.classList.toggle(
+                "fa-solid",
+                favoritado
+            );
+
+            icone.classList.toggle(
+                "fa-regular",
+                !favoritado
+            );
+
+            icone.style.color =
+                favoritado
+                    ? "#E53935"
+                    : "";
+
+        }
+
+    }
+
+        /*==================================================
+        AÇÕES DOS BOTÕES DO MODAL
+    ==================================================*/
+
+    const btnFavoritarModal =
+        document.getElementById(
+            "modalFavoritarProduto"
+        );
+
+    const btnCarrinhoModal =
+        document.getElementById(
+            "modalAdicionarCarrinho"
+        );
+
+
+    /* FAVORITAR */
+
+    btnFavoritarModal.onclick = async function(event){
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if(!produtoModalAtual){
+        return;
+    }
+
+    const id =
+        Number(
+            produtoModalAtual.id
+        );
+
+    await alternarFavorito(id);
+
+
+    /* ATUALIZA O BOTÃO DO MODAL IMEDIATAMENTE */
+
+    const favoritado =
+        estado.favoritos.includes(id);
+
+    const icone =
+        btnFavoritarModal.querySelector("i");
+
+
+    btnFavoritarModal.classList.toggle(
+        "ativo",
+        favoritado
+    );
+
+
+    if(icone){
+
+        icone.classList.toggle(
+            "fa-solid",
+            favoritado
+        );
+
+        icone.classList.toggle(
+            "fa-regular",
+            !favoritado
+        );
+
+        icone.style.color =
+            favoritado
+                ? "#E53935"
+                : "";
+
+    }
+
+};
+
+
+   btnCarrinhoModal.onclick = function(event){
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if(!produtoModalAtual){
+        return;
+    }
+
+    const id =
+        Number(
+            produtoModalAtual.id
+        );
+
+    const jaEstavaNoCarrinho =
+        estado.carrinho.some(
+            item =>
+                Number(item.id) === id
+        );
+
+
+    /*========================================
+        ADICIONAR
+    ========================================*/
+
+    if(!jaEstavaNoCarrinho){
+
+        adicionarCarrinho(id);
+
+        btnCarrinhoModal.innerHTML = `
+            <i class="fa-solid fa-check"></i>
+            Adicionado ao carrinho
+        `;
+
+        btnCarrinhoModal.classList.add(
+            "adicionado"
+        );
+
+    }
+
+
+    /*========================================
+        REMOVER
+    ========================================*/
+
+    else{
+
+        const index =
+            estado.carrinho.findIndex(
+                item =>
+                    Number(item.id) === id
+            );
+
+        if(index !== -1){
+
+            estado.carrinho.splice(
+                index,
+                1
+            );
+
+            salvarCarrinho();
+            atualizarCarrinho();
+
+        }
+
+
+        btnCarrinhoModal.innerHTML = `
+            <i class="fa-solid fa-trash"></i>
+            Removido do carrinho
+        `;
+
+        btnCarrinhoModal.classList.remove(
+            "adicionado"
+        );
+
+    }
+
+
+    /*========================================
+        VOLTAR AO NORMAL
+    ========================================*/
+
+    setTimeout(() => {
+
+        btnCarrinhoModal.innerHTML = `
+            <i class="fa-solid fa-cart-shopping"></i>
+            Adicionar ao carrinho
+        `;
+
+    }, 1500);
+
+};
+
+
+
 
     /*========================================
                 ELEMENTOS DO MODAL
@@ -2781,70 +2992,78 @@ function iniciarModalProduto(){
 
 
 
-    /* FAVORITAR PELO MODAL */
+    /*==================================================
+        BOTÕES DO MODAL
+        FAVORITO + CARRINHO
+    ==================================================*/
 
-    const btnFavoritar =
-        document.getElementById(
-            "modalFavoritarProduto"
-        );
+    document.addEventListener(
+        "click",
+        event => {
 
+            /*========================================
+                FAVORITAR
+            ========================================*/
 
-    if(btnFavoritar){
+            const btnFavoritar =
+                event.target.closest(
+                    "#modalFavoritarProduto"
+                );
 
-        btnFavoritar.addEventListener(
-            "click",
-            () => {
+            if(btnFavoritar){
 
-                if(
-                    produtoModalAtual
-                ){
+                event.preventDefault();
+                event.stopPropagation();
 
-                    alternarFavorito(
-                        Number(
-                            produtoModalAtual.id
-                        )
+                if(!produtoModalAtual){
+                    console.warn(
+                        "⚠️ Nenhum produto aberto no modal."
                     );
-
+                    return;
                 }
 
+                alternarFavorito(
+                    Number(
+                        produtoModalAtual.id
+                    )
+                );
+
+                return;
             }
-        );
-
-    }
 
 
+            /*========================================
+                ADICIONAR AO CARRINHO
+            ========================================*/
 
-    /* ADICIONAR AO CARRINHO PELO MODAL */
+            const btnCarrinho =
+                event.target.closest(
+                    "#modalAdicionarCarrinho"
+                );
 
-    const btnCarrinho =
-        document.getElementById(
-            "modalAdicionarCarrinho"
-        );
+            if(btnCarrinho){
 
+                event.preventDefault();
+                event.stopPropagation();
 
-    if(btnCarrinho){
-
-        btnCarrinho.addEventListener(
-            "click",
-            () => {
-
-                if(
-                    produtoModalAtual
-                ){
-
-                    adicionarCarrinho(
-                        Number(
-                            produtoModalAtual.id
-                        )
+                if(!produtoModalAtual){
+                    console.warn(
+                        "⚠️ Nenhum produto aberto no modal."
                     );
-
+                    return;
                 }
 
+                adicionarCarrinho(
+                    Number(
+                        produtoModalAtual.id
+                    )
+                );
+
+                return;
             }
-        );
 
-    }
-
+        }
+    );
 }
 
 /*==================================================

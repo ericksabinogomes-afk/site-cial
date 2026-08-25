@@ -1526,25 +1526,69 @@ async function adicionarAoCarrinho(produto) {
                 "Erro ao adicionar ao carrinho"
             );
         }
+if (window.atualizarContadorCarrinho) {
+    await window.atualizarContadorCarrinho();
+}
 
-        if (window.atualizarContadorCarrinho) {
-            await window.atualizarContadorCarrinho();
-        }
+return true;
 
-        alert(
-            `${produto.nome} foi adicionado ao carrinho.`
-        );
     } catch (erro) {
         console.error(
             "Erro ao adicionar ao carrinho:",
             erro
         );
 
-        alert(
-            erro.message ||
-            "Não foi possível adicionar o produto."
-        );
+        return false;
     }
+}
+
+async function obterCarrinhoAtual(){
+
+    const token =
+        localStorage.getItem("tokenCial");
+
+    if(!token){
+        return [];
+    }
+
+    try{
+
+        const resposta =
+            await fetch(
+                `${API_CARRINHO}/carrinho`,
+                {
+                    headers:{
+                        Authorization:
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        const resultado =
+            await resposta.json();
+
+        if(
+            !resposta.ok ||
+            !resultado.ok
+        ){
+            return [];
+        }
+
+        return Array.isArray(resultado.data)
+            ? resultado.data
+            : [];
+
+    }catch(erro){
+
+        console.error(
+            "Erro ao consultar carrinho:",
+            erro
+        );
+
+        return [];
+
+    }
+
 }
 
 function iniciarCarrinho() {
@@ -1578,7 +1622,17 @@ function iniciarCarrinho() {
                 return;
             }
 
-            adicionarAoCarrinho(produto);
+           adicionarAoCarrinho(produto).then(sucesso => {
+
+    if(sucesso){
+
+        alert(
+            `${produto.nome} foi adicionado ao carrinho.`
+        );
+
+    }
+
+});
         }
     );
 }
@@ -1646,6 +1700,259 @@ function abrirModalProduto(id){
     produtoModalAtual = produto;
 
 
+        /*==================================================
+        BOTÕES DO MODAL
+        FAVORITO + CARRINHO
+    ==================================================*/
+
+    const btnFavoritarModal =
+        document.getElementById(
+            "modalFavoritarProduto"
+        );
+
+    const btnCarrinhoModal =
+        document.getElementById(
+            "modalAdicionarCarrinho"
+        );
+
+
+    /*========================================
+        FAVORITAR
+    ========================================*/
+
+    if(btnFavoritarModal){
+
+        const favoritado =
+            estado.favoritos.includes(
+                Number(produto.id)
+            );
+
+        const icone =
+            btnFavoritarModal.querySelector("i");
+
+        btnFavoritarModal.classList.toggle(
+            "ativo",
+            favoritado
+        );
+
+        if(icone){
+
+            icone.classList.toggle(
+                "fa-solid",
+                favoritado
+            );
+
+            icone.classList.toggle(
+                "fa-regular",
+                !favoritado
+            );
+
+            icone.style.color =
+                favoritado
+                    ? "#E53935"
+                    : "";
+
+        }
+
+
+        btnFavoritarModal.onclick = async function(event){
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const id =
+                Number(
+                    produtoModalAtual.id
+                );
+
+            await alternarFavorito(id);
+
+
+            const agoraFavoritado =
+                estado.favoritos.includes(id);
+
+            btnFavoritarModal.classList.toggle(
+                "ativo",
+                agoraFavoritado
+            );
+
+            if(icone){
+
+                icone.classList.toggle(
+                    "fa-solid",
+                    agoraFavoritado
+                );
+
+                icone.classList.toggle(
+                    "fa-regular",
+                    !agoraFavoritado
+                );
+
+                icone.style.color =
+                    agoraFavoritado
+                        ? "#E53935"
+                        : "";
+
+            }
+
+        };
+
+    }
+
+
+btnCarrinhoModal.onclick = async function(event){
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if(!produtoModalAtual){
+        return;
+    }
+
+    const id =
+        Number(
+            produtoModalAtual.id
+        );
+
+    const token =
+        localStorage.getItem("tokenCial");
+
+    if(!token){
+        window.location.href =
+            "../cadastro/login.html";
+        return;
+    }
+
+
+    /*========================================
+        CONSULTAR CARRINHO REAL
+    ========================================*/
+
+    const carrinho =
+        await obterCarrinhoAtual();
+
+    const jaEstavaNoCarrinho =
+        carrinho.some(item =>
+            Number(
+                item.produto_id ??
+                item.id
+            ) === id
+        );
+
+
+    /*========================================
+        REMOVER
+    ========================================*/
+
+    if(jaEstavaNoCarrinho){
+
+        try{
+
+            const resposta =
+                await fetch(
+                    `${API_CARRINHO}/carrinho/${id}`,
+                    {
+                        method:"DELETE",
+
+                        headers:{
+                            Authorization:
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+            const resultado =
+                await resposta.json();
+
+            if(
+                !resposta.ok ||
+                !resultado.ok
+            ){
+                throw new Error(
+                    resultado.erro ||
+                    "Erro ao remover do carrinho"
+                );
+            }
+
+
+            if(
+                window.atualizarContadorCarrinho
+            ){
+
+                await window.atualizarContadorCarrinho();
+
+            }
+
+
+            btnCarrinhoModal.innerHTML = `
+                <i class="fa-solid fa-trash"></i>
+                Removido do carrinho
+            `;
+
+            btnCarrinhoModal.classList.remove(
+                "adicionado"
+            );
+
+
+        }catch(erro){
+
+            console.error(
+                "Erro ao remover do carrinho:",
+                erro
+            );
+
+            return;
+        }
+
+    }
+
+
+    /*========================================
+        ADICIONAR
+    ========================================*/
+
+    else{
+
+        const sucesso =
+            await adicionarAoCarrinho(
+                produtoModalAtual
+            );
+
+        if(!sucesso){
+            return;
+        }
+
+
+        btnCarrinhoModal.innerHTML = `
+            <i class="fa-solid fa-check"></i>
+            Adicionado ao carrinho
+        `;
+
+        btnCarrinhoModal.classList.add(
+            "adicionado"
+        );
+
+    }
+
+
+    /*========================================
+        VOLTAR AO NORMAL
+    ========================================*/
+
+    setTimeout(() => {
+
+        btnCarrinhoModal.innerHTML = `
+            <i class="fa-solid fa-cart-shopping"></i>
+            Adicionar ao carrinho
+        `;
+
+        btnCarrinhoModal.classList.remove(
+            "adicionado"
+        );
+
+    }, 1500);
+
+};
     /*========================================
                 ELEMENTOS
     ========================================*/

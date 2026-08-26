@@ -576,6 +576,88 @@ function atualizarCamposEspecificos(){
 
 
 /*==================================================
+        LINHA DINÂMICA
+==================================================*/
+
+const linhaProduto =
+    document.getElementById("linhaProduto");
+
+
+const linhasStihl = [
+    {
+        value: "gasolina",
+        text: "⛽ Gasolina"
+    },
+    {
+        value: "eletrica",
+        text: "🔌 Elétrica"
+    },
+    {
+        value: "bateria",
+        text: "🔋 Bateria"
+    }
+];
+
+
+function atualizarLinhaProduto() {
+
+    if (!linhaProduto || !categoriaProduto) {
+        return;
+    }
+
+    const categoria =
+        categoriaProduto.value;
+
+
+    /*
+        LINHAS STIHL
+    */
+
+    if (categoriasStihl.includes(categoria)) {
+
+        linhaProduto.innerHTML = `
+            <option value="">
+                Selecione uma linha
+            </option>
+        `;
+
+        linhasStihl.forEach(linha => {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                linha.value;
+
+            option.textContent =
+                linha.text;
+
+            linhaProduto.appendChild(option);
+
+        });
+
+    }
+
+
+    /*
+        BOMBAS / IRRIGAÇÃO / OUTROS
+    */
+
+    else {
+
+        linhaProduto.innerHTML = `
+            <option value="">
+                Selecione uma linha
+            </option>
+        `;
+
+        linhaProduto.value = "";
+
+    }
+
+}
+
+/*==================================================
         EVENTO DA CATEGORIA
 ==================================================*/
 
@@ -583,16 +665,24 @@ if(categoriaProduto){
 
     categoriaProduto.addEventListener(
         "change",
-        atualizarCamposEspecificos
+        () => {
+
+            atualizarCamposEspecificos();
+
+            atualizarLinhaProduto();
+ 
+        }
     );
 
 }
+
 /*==================================================
     INICIALIZAR CAMPOS ESPECÍFICOS
 ==================================================*/
 
 atualizarCamposEspecificos();
 
+atualizarLinhaProduto();
 
 const nomesCategoriasBombas = {
   "bombas-centrifugas": "Bombas Centrífugas",
@@ -1825,6 +1915,8 @@ formProduto.addEventListener("submit", async event => {
 
   const nome = document.getElementById("nomeProduto").value.trim();
   const categoria = document.getElementById("categoriaProduto").value;
+    const linhaProduto =
+    document.getElementById("linhaProduto")?.value || "";
   const preco = Number(
     document.getElementById("precoProduto").value
   );
@@ -1964,6 +2056,9 @@ try {
 
     categoria,
 
+   
+    linhaProduto,
+
     preco,
 
     estoque,
@@ -2061,6 +2156,12 @@ if(btnSalvarRascunho){
                     document
                         .getElementById("categoriaProduto")
                         ?.value || "",
+
+               
+                       linhaProduto:
+                   document
+                       .getElementById("linhaProduto")
+                       ?.value || "",
 
                 preco:
                     document
@@ -2194,6 +2295,10 @@ function carregarRascunho() {
             "categoriaProduto",
             rascunho.categoria
         );
+
+        atualizarCamposEspecificos();
+
+
 
         preencher(
             "precoProduto",

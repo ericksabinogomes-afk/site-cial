@@ -1011,6 +1011,8 @@ app.post(
     descricao,
     funcao,
 
+    linhaProduto,
+
     descricaoStihl,
     aplicacaoStihl,
 
@@ -1048,6 +1050,7 @@ app.post(
        funcao: funcao || "",
 
       descricao_stihl: descricaoStihl || "",
+      linha_produto: linhaProduto || "",
       aplicacao_stihl: aplicacaoStihl || "",
 
       marca_bomba: marcaBomba || "",
@@ -1093,6 +1096,7 @@ app.put(
       ativo,
       descricao,
       funcao,
+      linhaProduto,
       descricaoStihl,
       aplicacaoStihl,
       marcaBomba,
@@ -1170,6 +1174,10 @@ app.put(
     if (funcao !== undefined) {
       dadosAtualizacao.funcao = funcao;
     }
+
+    if (linhaProduto !== undefined) {
+    dadosAtualizacao.linha_produto = linhaProduto;
+   }
 
     if (descricaoStihl !== undefined) {
       dadosAtualizacao.descricao_stihl = descricaoStihl;

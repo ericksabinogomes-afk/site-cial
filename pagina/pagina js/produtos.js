@@ -113,6 +113,11 @@ async function carregarProdutos() {
 
     funcao: p.funcao || "",
 
+    linhaProduto:
+    p.linha_produto ||
+    p.linhaProduto ||
+    p.linha ||
+    "",
 
     /*========================================
             IMAGEM PRINCIPAL
@@ -180,6 +185,15 @@ async function carregarProdutos() {
     console.error("Erro ao carregar produtos:", erro);
   }
 }
+
+console.log(
+    "🔋 PRODUTOS COM LINHA:",
+    estado.produtos.map(p => ({
+        id: p.id,
+        nome: p.nome,
+        linhaProduto: p.linhaProduto
+    }))
+);
 
 
 /*==================================================
@@ -748,33 +762,71 @@ function iniciarAtalhos() {
 
             /* LINHA A BATERIA */
 
-            else if (filtro === "bateria") {
+           else if (filtro === "bateria") {
 
-                estado.destaque = "";
-                estado.categoria = "bateria";
+    estado.destaque = "";
+    estado.categoria = "todos";
 
-                elementos.categorias.forEach(item => {
-                    item.classList.remove("ativo");
-                });
+    elementos.categorias.forEach(item => {
+        item.classList.remove("ativo");
+    });
 
-                const categoriaBateria =
-                    document.querySelector(
-                        '.categorias li[data-categoria="bateria"]'
-                    );
+    const categoriaTodos =
+        document.querySelector(
+            '.categorias li[data-categoria="todos"]'
+        );
 
-                if (categoriaBateria) {
-                    categoriaBateria.classList.add("ativo");
-                }
+    if (categoriaTodos) {
+        categoriaTodos.classList.add("ativo");
+    }
 
-                estado.produtosFiltrados =
-                    estado.produtos.filter(produto =>
-                        String(produto.categoria || "")
-                            .trim()
-                            .toLowerCase() === "bateria"
-                    );
+    estado.produtosFiltrados =
+        estado.produtos.filter(produto => {
 
-            }
+            const linha =
+                String(produto.linhaProduto || "")
+                    .trim()
+                    .toLowerCase();
 
+            return linha === "bateria";
+
+        });
+
+    }
+
+              /* LINHA ELÉTRICA */
+
+else if (filtro === "eletrica") {
+
+    estado.destaque = "";
+    estado.categoria = "todos";
+
+    elementos.categorias.forEach(item => {
+        item.classList.remove("ativo");
+    });
+
+    const categoriaTodos =
+        document.querySelector(
+            '.categorias li[data-categoria="todos"]'
+        );
+
+    if (categoriaTodos) {
+        categoriaTodos.classList.add("ativo");
+    }
+
+    estado.produtosFiltrados =
+        estado.produtos.filter(produto => {
+
+            const linha =
+                String(produto.linhaProduto || "")
+                    .trim()
+                    .toLowerCase();
+
+            return linha === "eletrica";
+
+        });
+
+}
 
             /* DESTAQUES */
 
@@ -860,8 +912,58 @@ function iniciarFiltrosLaterais() {
 
             /* GUARDA O FILTRO */
 
-            estado.aplicacao =
-                textoFiltro;
+            if (textoFiltro === "Linha a Bateria") {
+
+    estado.destaque = "";
+    estado.categoria = "todos";
+    estado.aplicacao = "";
+
+    estado.produtosFiltrados =
+        estado.produtos.filter(produto => {
+
+            const linha =
+                String(produto.linhaProduto || "")
+                    .trim()
+                    .toLowerCase();
+
+            return linha === "bateria";
+        });
+
+    ordenarProdutos();
+    atualizarTotal();
+    renderizarProdutos();
+
+    return;
+}
+
+if (textoFiltro === "Linha Elétrica") {
+
+    estado.destaque = "";
+    estado.categoria = "todos";
+    estado.aplicacao = "";
+
+    estado.produtosFiltrados =
+        estado.produtos.filter(produto => {
+
+            const linha =
+                String(produto.linhaProduto || "")
+                    .trim()
+                    .toLowerCase();
+
+            return linha === "eletrica";
+        });
+
+    ordenarProdutos();
+    atualizarTotal();
+    renderizarProdutos();
+
+    return;
+}
+
+estado.aplicacao =
+    textoFiltro;
+
+aplicarFiltros();
 
             aplicarFiltros();
 

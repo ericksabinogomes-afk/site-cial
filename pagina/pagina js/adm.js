@@ -605,9 +605,7 @@ function atualizarLinhaProduto() {
         return;
     }
 
-    const categoria =
-        categoriaProduto.value;
-
+    const categoria = categoriaProduto.value;
 
     /*
         LINHAS STIHL
@@ -638,7 +636,7 @@ function atualizarLinhaProduto() {
 
     }
 
-
+    
     /*
         BOMBAS / IRRIGAÇÃO / OUTROS
     */
@@ -2290,6 +2288,13 @@ function carregarRascunho() {
             "skuProduto",
             rascunho.codigo
         );
+
+         atualizarLinhaProduto();
+
+preencher(
+    "linhaProduto",
+    rascunho.linhaProduto
+);
 
         preencher(
             "categoriaProduto",

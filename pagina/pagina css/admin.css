@@ -873,2001 +873,6 @@ tbody tr:last-child td{
 
 }
 
-/* ==================================================
-   NOVO CADASTRO DE PRODUTO
-================================================== */
-
-#modalProduto{
-    position:fixed;
-    inset:0;
-    z-index:9999;
-
-    display:none;
-    align-items:center;
-    justify-content:center;
-
-    padding:25px;
-
-    background:rgba(0,0,0,.68);
-    backdrop-filter:blur(5px);
-}
-
-#modalProduto.aberto{
-    display:flex;
-}
-
-
-/* ==================================================
-   CAIXA PRINCIPAL
-================================================== */
-
-#modalProduto .cadastro-produto{
-    width:100%;
-    max-width:1100px;
-    max-height:94vh;
-
-    display:flex;
-    flex-direction:column;
-
-    overflow:hidden;
-
-    background:var(--branco);
-
-    border:1px solid #F3C59D;
-    border-radius:20px;
-
-    box-shadow:0 25px 80px rgba(0,0,0,.28);
-}
-
-
-/* ==================================================
-   CABEÇALHO
-================================================== */
-
-.cadastro-topo{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    gap:20px;
-
-    padding:24px 30px;
-
-    border-bottom:1px solid var(--borda);
-
-    background:var(--branco);
-}
-
-.cadastro-topo h2{
-    margin-top:10px;
-
-    color:var(--preto);
-
-    font-size:25px;
-    font-weight:800;
-}
-
-.cadastro-topo p{
-    margin-top:5px;
-
-    color:var(--texto-suave);
-
-    font-size:12px;
-}
-
-
-/* VOLTAR PARA PRODUTOS */
-
-.btn-voltar-produtos{
-    display:inline-flex;
-    align-items:center;
-
-    gap:8px;
-
-    padding:0;
-
-    border:0;
-    background:transparent;
-
-    color:var(--laranja);
-
-    font-family:"Montserrat",sans-serif;
-
-    font-size:12px;
-    font-weight:700;
-
-    cursor:pointer;
-
-    transition:.2s ease;
-}
-
-.btn-voltar-produtos:hover{
-    color:var(--laranja-escuro);
-
-    transform:translateX(-3px);
-}
-
-
-/* ==================================================
-   BOTÃO FECHAR
-================================================== */
-
-#modalProduto .btn-fechar{
-    width:40px;
-    height:40px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    flex-shrink:0;
-
-    border:0;
-    border-radius:50%;
-
-    background:var(--vermelho);
-    color:var(--branco);
-
-    font-size:24px;
-
-    cursor:pointer;
-
-    transition:.2s ease;
-}
-
-#modalProduto .btn-fechar:hover{
-    transform:rotate(90deg) scale(1.05);
-}
-
-
-/* ==================================================
-   ETAPAS
-================================================== */
-
-.etapas-produto{
-    display:flex;
-    align-items:center;
-
-    padding:20px 30px;
-
-    background:#FAFAFA;
-
-    border-bottom:1px solid var(--borda);
-
-    overflow-x:auto;
-}
-
-.etapa-produto{
-    display:flex;
-    align-items:center;
-
-    gap:10px;
-
-    flex-shrink:0;
-
-    color:#999999;
-
-    transition:.25s ease;
-}
-
-.numero-etapa{
-    width:34px;
-    height:34px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border:2px solid #D8D8D8;
-    border-radius:50%;
-
-    background:var(--branco);
-
-    color:#999999;
-
-    font-size:12px;
-    font-weight:800;
-
-    transition:.25s ease;
-}
-
-.etapa-produto strong{
-    display:block;
-
-    font-size:11px;
-    font-weight:800;
-}
-
-.etapa-produto small{
-    display:block;
-
-    margin-top:2px;
-
-    color:#999999;
-
-    font-size:9px;
-}
-
-.etapa-produto.ativa{
-    color:var(--laranja);
-}
-
-.etapa-produto.ativa .numero-etapa{
-    border-color:var(--laranja);
-
-    background:var(--laranja);
-
-    color:var(--branco);
-
-    box-shadow:0 4px 12px rgba(245,130,32,.25);
-}
-
-.etapa-produto.ativa small{
-    color:var(--texto-suave);
-}
-
-.linha-etapa{
-    flex:1;
-
-    min-width:25px;
-
-    height:2px;
-
-    margin:0 15px;
-
-    background:#E2E2E2;
-}
-
-
-/* ==================================================
-   FORMULÁRIO
-================================================== */
-
-#modalProduto #formProduto{
-    flex:1;
-
-    min-height:0;
-
-    display:flex;
-    flex-direction:column;
-
-    overflow:hidden;
-}
-
-
-/* ==================================================
-   CONTEÚDO DAS ETAPAS
-================================================== */
-
-.etapa-conteudo{
-    display:none;
-
-    flex:1;
-
-    overflow-y:auto;
-
-    padding:30px;
-}
-
-.etapa-conteudo.ativa{
-    display:block;
-}
-
-
-/* ==================================================
-   TÍTULO DAS SEÇÕES
-================================================== */
-
-.titulo-secao{
-    display:flex;
-    align-items:flex-start;
-
-    gap:12px;
-
-    margin-bottom:25px;
-}
-
-.icone-secao{
-    width:42px;
-    height:42px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    flex-shrink:0;
-
-    border-radius:11px;
-
-    background:#FFF3E8;
-
-    color:var(--laranja);
-
-    font-size:17px;
-}
-
-.titulo-secao h3{
-    color:var(--preto);
-
-    font-size:18px;
-    font-weight:800;
-}
-
-.titulo-secao p{
-    margin-top:4px;
-
-    color:var(--texto-suave);
-
-    font-size:11px;
-}
-
-
-/* ==================================================
-   GRID DA PRIMEIRA ETAPA
-================================================== */
-
-.cadastro-grid{
-    display:grid;
-
-    grid-template-columns:minmax(0,1fr) 330px;
-
-    gap:35px;
-
-    align-items:start;
-}
-
-.cadastro-formulario{
-    min-width:0;
-}
-
-.form-row{
-    display:grid;
-
-    grid-template-columns:repeat(2,minmax(0,1fr));
-
-    gap:18px;
-}
-
-
-/* ==================================================
-   CAMPOS DO FORMULÁRIO
-================================================== */
-
-.cadastro-formulario .form-group{
-    margin-bottom:20px;
-}
-
-.cadastro-formulario .form-group label{
-    display:block;
-
-    margin-bottom:8px;
-
-    color:var(--texto);
-
-    font-size:13px;
-    font-weight:700;
-}
-
-.cadastro-formulario .form-group input,
-.cadastro-formulario .form-group select,
-.cadastro-formulario .form-group textarea{
-    width:100%;
-
-    min-height:48px;
-
-    padding:12px 14px;
-
-    border:1px solid #DCDCDC;
-    border-radius:10px;
-
-    background:var(--branco);
-
-    color:var(--texto);
-
-    font-family:"Montserrat",sans-serif;
-
-    font-size:13px;
-
-    outline:none;
-
-    transition:.2s ease;
-}
-
-.cadastro-formulario .form-group textarea{
-    min-height:110px;
-
-    resize:vertical;
-}
-
-.cadastro-formulario .form-group input:focus,
-.cadastro-formulario .form-group select:focus,
-.cadastro-formulario .form-group textarea:focus{
-    border-color:var(--laranja);
-
-    box-shadow:0 0 0 3px rgba(245,130,32,.10);
-}
-
-
-/* ==================================================
-   PREVIEW DO PRODUTO
-================================================== */
-
-.preview-produto{
-    position:sticky;
-
-    top:0;
-
-    padding:20px;
-
-    border:1px solid var(--borda);
-    border-radius:15px;
-
-    background:#FAFAFA;
-}
-
-.preview-titulo{
-    display:flex;
-    align-items:center;
-
-    gap:10px;
-
-    margin-bottom:18px;
-}
-
-.preview-titulo > span{
-    width:36px;
-    height:36px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border-radius:9px;
-
-    background:#FFF3E8;
-
-    color:var(--laranja);
-}
-
-.preview-titulo h3{
-    color:var(--preto);
-
-    font-size:14px;
-    font-weight:800;
-}
-
-.preview-titulo p{
-    margin-top:2px;
-
-    color:var(--texto-suave);
-
-    font-size:10px;
-}
-
-.preview-card{
-    overflow:hidden;
-
-    border:1px solid var(--borda);
-    border-radius:13px;
-
-    background:var(--branco);
-
-    box-shadow:0 4px 15px rgba(0,0,0,.04);
-}
-
-.preview-imagem{
-    height:220px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:#F7F7F7;
-
-    border-bottom:1px solid var(--borda);
-}
-
-.preview-sem-imagem{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-
-    gap:8px;
-
-    color:#B5B5B5;
-}
-
-.preview-sem-imagem i{
-    font-size:38px;
-}
-
-.preview-sem-imagem small{
-    font-size:10px;
-}
-
-.preview-info{
-    padding:18px;
-}
-
-.preview-categoria{
-    display:inline-block;
-
-    margin-bottom:8px;
-
-    color:var(--laranja);
-
-    font-size:9px;
-    font-weight:800;
-
-    text-transform:uppercase;
-}
-
-.preview-info h3{
-    color:var(--preto);
-
-    font-size:15px;
-    font-weight:800;
-
-    line-height:1.35;
-}
-
-.preview-info p{
-    margin-top:8px;
-
-    color:var(--texto-suave);
-
-    font-size:10px;
-
-    line-height:1.5;
-}
-
-.preview-info strong{
-    display:block;
-
-    margin-top:15px;
-
-    color:var(--laranja);
-
-    font-size:19px;
-    font-weight:800;
-}
-
-
-/* ==================================================
-   UPLOAD DE IMAGENS
-================================================== */
-
-.drop-area{
-    min-height:240px;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-
-    padding:30px;
-
-    border:2px dashed #D4D4D4;
-    border-radius:15px;
-
-    background:#FCFCFC;
-
-    text-align:center;
-
-    cursor:pointer;
-
-    transition:.25s ease;
-}
-
-.drop-area > i{
-    margin-bottom:15px;
-
-    color:var(--laranja);
-
-    font-size:42px;
-}
-
-.drop-area h3{
-    color:var(--preto);
-
-    font-size:16px;
-    font-weight:800;
-}
-
-.drop-area p{
-    margin-top:7px;
-
-    color:var(--laranja);
-
-    font-size:12px;
-    font-weight:700;
-}
-
-.drop-area small{
-    margin-top:8px;
-
-    color:#999999;
-
-    font-size:10px;
-}
-
-.drop-area:hover,
-.drop-area.ativo{
-    border-color:var(--laranja);
-
-    background:#FFF8F1;
-}
-
-
-/* ==================================================
-   MINIATURAS
-================================================== */
-
-.preview-imagens{
-    display:grid;
-
-    grid-template-columns:
-        repeat(auto-fill,minmax(130px,1fr));
-
-    gap:15px;
-
-    margin-top:20px;
-}
-
-.preview-imagem-item{
-    position:relative;
-
-    height:130px;
-
-    padding:7px;
-
-    border:1px solid var(--borda);
-    border-radius:11px;
-
-    background:#FAFAFA;
-
-    overflow:hidden;
-}
-
-.preview-imagem-item.principal{
-    border:2px solid var(--laranja);
-
-    box-shadow:0 4px 12px rgba(245,130,32,.15);
-}
-
-.preview-imagem-item img{
-    width:100%;
-    height:100%;
-
-    object-fit:contain;
-}
-
-.preview-imagem-item span{
-    position:absolute;
-
-    left:6px;
-    bottom:6px;
-
-    padding:4px 7px;
-
-    border-radius:5px;
-
-    background:var(--laranja);
-    color:var(--branco);
-
-    font-size:8px;
-    font-weight:800;
-}
-
-.preview-imagem-remover{
-    position:absolute;
-
-    top:6px;
-    right:6px;
-
-    width:27px;
-    height:27px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border:0;
-    border-radius:50%;
-
-    background:var(--vermelho);
-    color:var(--branco);
-
-    cursor:pointer;
-
-    z-index:2;
-}
-
-
-/* ==================================================
-   CAMPOS ESPECÍFICOS
-================================================== */
-
-.campos-produto{
-    padding:20px;
-
-    margin-bottom:20px;
-
-    border:1px solid #F3CBAE;
-    border-radius:14px;
-
-    background:#FFF9F4;
-}
-
-.campo-titulo{
-    display:flex;
-    align-items:flex-start;
-
-    gap:12px;
-
-    margin-bottom:20px;
-}
-
-.campo-titulo > span{
-    font-size:25px;
-}
-
-.campo-titulo h3{
-    color:var(--preto);
-
-    font-size:16px;
-    font-weight:800;
-}
-
-.campo-titulo p{
-    margin-top:4px;
-
-    color:var(--texto-suave);
-
-    font-size:11px;
-
-    line-height:1.5;
-}
-
-
-/* ==================================================
-   DESTAQUE
-================================================== */
-
-.destaque-produto{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    gap:20px;
-
-    padding:20px;
-
-    border:1px solid #F3CBAE;
-    border-radius:14px;
-
-    background:#FFF9F4;
-}
-
-.destaque-produto h3{
-    color:var(--preto);
-
-    font-size:14px;
-    font-weight:800;
-}
-
-.destaque-produto h3 i{
-    margin-right:6px;
-
-    color:var(--laranja);
-}
-
-.destaque-produto p{
-    margin-top:5px;
-
-    color:var(--texto-suave);
-
-    font-size:10px;
-}
-
-.checkbox-destaque{
-    display:flex;
-
-    align-items:center;
-
-    cursor:pointer;
-}
-
-.checkbox-destaque input{
-    width:20px;
-    height:20px;
-
-    accent-color:var(--laranja);
-
-    cursor:pointer;
-}
-
-
-/* ==================================================
-   SEM ESPECIFICAÇÕES
-================================================== */
-
-.sem-especificacoes{
-    display:flex;
-    align-items:flex-start;
-
-    gap:15px;
-
-    padding:22px;
-
-    border:1px dashed #D8D8D8;
-    border-radius:14px;
-
-    background:#FAFAFA;
-
-    color:#777777;
-}
-
-.sem-especificacoes > i{
-    margin-top:2px;
-
-    color:var(--laranja);
-
-    font-size:18px;
-}
-
-.sem-especificacoes strong{
-    display:block;
-
-    color:var(--preto);
-
-    font-size:12px;
-}
-
-.sem-especificacoes p{
-    margin-top:5px;
-
-    font-size:10px;
-
-    line-height:1.5;
-}
-
-
-/* ==================================================
-   RODAPÉ / AÇÕES
-================================================== */
-
-.cadastro-acoes{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    gap:15px;
-
-    padding:18px 30px;
-
-    border-top:1px solid var(--borda);
-
-    background:#FAFAFA;
-}
-
-.acoes-navegacao{
-    display:flex;
-    align-items:center;
-
-    gap:10px;
-}
-
-.btn-rascunho,
-.cadastro-acoes .btn-cancelar,
-.cadastro-acoes .btn-confirmar{
-    min-height:44px;
-
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-
-    gap:8px;
-
-    padding:0 18px;
-
-    border-radius:9px;
-
-    font-family:"Montserrat",sans-serif;
-
-    font-size:12px;
-    font-weight:800;
-
-    cursor:pointer;
-
-    transition:.2s ease;
-}
-
-.btn-rascunho{
-    border:1px solid #D8D8D8;
-
-    background:var(--branco);
-
-    color:#666666;
-}
-
-.btn-rascunho:hover{
-    border-color:var(--laranja);
-
-    color:var(--laranja);
-
-    background:#FFF8F1;
-}
-
-/* ==================================================
-   BOTÃO RASCUNHO — TOPO DO MODAL
-================================================== */
-
-.acoes-topo-produto{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.btn-rascunho-topo{
-    display:inline-flex;
-
-    align-items:center;
-    justify-content:center;
-
-    gap:7px;
-
-    height:40px;
-
-    padding:0 16px;
-
-    border:1px solid #F58220;
-
-    border-radius:10px;
-
-    background:#FFF8F1;
-
-    color:#F58220;
-
-    font-family:"Montserrat",sans-serif;
-
-    font-size:11px;
-
-    font-weight:800;
-
-    cursor:pointer;
-
-    transition:
-        background .2s ease,
-        color .2s ease,
-        border-color .2s ease,
-        transform .2s ease,
-        box-shadow .2s ease;
-}
-
-.btn-rascunho-topo i{
-    font-size:13px;
-}
-
-.btn-rascunho-topo:hover{
-    background:#F58220;
-
-    color:#FFFFFF;
-
-    border-color:#F58220;
-
-    transform:translateY(-2px);
-
-    box-shadow:
-        0 6px 15px rgba(245,130,32,.22);
-}
-
-.btn-rascunho-topo:active{
-    transform:translateY(0);
-
-    box-shadow:none;
-}
-
-.cadastro-acoes .btn-cancelar{
-    border:1px solid #D8D8D8;
-
-    background:var(--branco);
-
-    color:#666666;
-}
-
-.cadastro-acoes .btn-cancelar:hover{
-    background:#EEEEEE;
-}
-
-.cadastro-acoes .btn-confirmar{
-    border:0;
-
-    background:var(--laranja);
-
-    color:var(--branco);
-
-    box-shadow:0 4px 12px rgba(245,130,32,.18);
-}
-
-.cadastro-acoes .btn-confirmar:hover{
-    background:var(--laranja-escuro);
-
-    transform:translateY(-2px);
-
-    box-shadow:0 7px 18px rgba(245,130,32,.25);
-}
-
-
-/* ==================================================
-   SCROLL
-================================================== */
-
-#modalProduto .etapa-conteudo::-webkit-scrollbar{
-    width:7px;
-}
-
-#modalProduto .etapa-conteudo::-webkit-scrollbar-thumb{
-    background:#D0D0D0;
-
-    border-radius:10px;
-}
-
-
-/* ==================================================
-   RESPONSIVO
-================================================== */
-
-@media(max-width:900px){
-
-    #modalProduto .cadastro-produto{
-        max-width:95vw;
-    }
-
-    .cadastro-grid{
-        grid-template-columns:1fr;
-    }
-
-    .preview-produto{
-        position:static;
-    }
-
-}
-
-@media(max-width:700px){
-
-    #modalProduto{
-        padding:10px;
-    }
-
-    #modalProduto .cadastro-produto{
-        max-height:96vh;
-
-        border-radius:15px;
-    }
-
-    .cadastro-topo{
-        padding:20px;
-    }
-
-    .cadastro-topo h2{
-        font-size:21px;
-    }
-
-    .etapas-produto{
-        padding:15px 20px;
-    }
-
-    .etapa-produto strong{
-        font-size:9px;
-    }
-
-    .etapa-produto small{
-        display:none;
-    }
-
-    .linha-etapa{
-        margin:0 8px;
-
-        min-width:15px;
-    }
-
-    .etapa-conteudo{
-        padding:22px 20px;
-    }
-
-    .form-row{
-        grid-template-columns:1fr;
-    }
-
-    .cadastro-acoes{
-        padding:15px 20px;
-
-        flex-direction:column;
-        align-items:stretch;
-    }
-
-    .acoes-navegacao{
-        width:100%;
-    }
-
-    .acoes-navegacao button{
-        flex:1;
-    }
-
-    .btn-rascunho{
-        width:100%;
-    }
-
-}
-
-@media(max-width:450px){
-
-    .numero-etapa{
-        width:30px;
-        height:30px;
-
-        font-size:10px;
-    }
-
-    .etapa-produto strong{
-        font-size:8px;
-    }
-
-    .titulo-secao h3{
-        font-size:16px;
-    }
-
-    .preview-imagens{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-}
-/* ============================================================
-   NOVO VISUAL — ETAPAS 2, 3 E 4 DO CADASTRO DE PRODUTO
-   ============================================================ */
-
-
-/* ============================================================
-   BASE DAS ETAPAS
-   ============================================================ */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"],
-#modalProduto .etapa-conteudo[data-conteudo="3"],
-#modalProduto .etapa-conteudo[data-conteudo="4"]{
-    padding:34px 38px;
-    background:#FFFFFF;
-}
-
-
-/* ============================================================
-   TÍTULO DAS ETAPAS
-   ============================================================ */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .titulo-secao,
-#modalProduto .etapa-conteudo[data-conteudo="3"] .titulo-secao,
-#modalProduto .etapa-conteudo[data-conteudo="4"] .titulo-secao{
-    margin-bottom:28px;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .icone-secao,
-#modalProduto .etapa-conteudo[data-conteudo="3"] .icone-secao,
-#modalProduto .etapa-conteudo[data-conteudo="4"] .icone-secao{
-    width:46px;
-    height:46px;
-
-    border-radius:13px;
-
-    background:#FFF4E9;
-
-    color:var(--laranja);
-
-    font-size:18px;
-
-    box-shadow:
-        0 4px 12px rgba(245,130,32,.08);
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .titulo-secao h3,
-#modalProduto .etapa-conteudo[data-conteudo="3"] .titulo-secao h3,
-#modalProduto .etapa-conteudo[data-conteudo="4"] .titulo-secao h3{
-    font-size:20px;
-    letter-spacing:-.2px;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .titulo-secao p,
-#modalProduto .etapa-conteudo[data-conteudo="3"] .titulo-secao p,
-#modalProduto .etapa-conteudo[data-conteudo="4"] .titulo-secao p{
-    font-size:12px;
-}
-
-
-/* ============================================================
-   ETAPA 2 — FOTOS
-   ============================================================ */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"]{
-    max-width:100%;
-}
-
-
-/* ÁREA DE UPLOAD */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area{
-    position:relative;
-
-    min-height:285px;
-
-    padding:45px 30px;
-
-    border:2px dashed #E4E4E4;
-    border-radius:18px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #FFFFFF 0%,
-            #FCFCFC 100%
-        );
-
-    box-shadow:
-        0 4px 18px rgba(0,0,0,.025);
-
-    transition:
-        border-color .25s ease,
-        background .25s ease,
-        box-shadow .25s ease,
-        transform .25s ease;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area:hover,
-#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area.ativo{
-    border-color:var(--laranja);
-
-    background:#FFF9F4;
-
-    box-shadow:
-        0 8px 25px rgba(245,130,32,.10);
-
-    transform:translateY(-1px);
-}
-
-
-/* ÍCONE DO UPLOAD */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area > i{
-    width:72px;
-    height:72px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    margin:0 0 20px;
-
-    border-radius:20px;
-
-    background:#FFF1E3;
-
-    color:var(--laranja);
-
-    font-size:28px;
-
-    box-shadow:
-        0 6px 18px rgba(245,130,32,.08);
-}
-
-
-/* TEXTO DO UPLOAD */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area h3{
-    font-size:17px;
-    font-weight:800;
-
-    color:var(--preto);
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area p{
-    margin-top:9px;
-
-    font-size:12px;
-    font-weight:700;
-
-    color:var(--laranja);
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area small{
-    margin-top:10px;
-
-    font-size:11px;
-
-    color:#999999;
-}
-
-
-/* ============================================================
-   GALERIA DE FOTOS
-   ============================================================ */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagens{
-    display:grid;
-
-    grid-template-columns:
-        repeat(auto-fill,minmax(165px,1fr));
-
-    gap:18px;
-
-    margin-top:24px;
-}
-
-
-/* CARD DA IMAGEM */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item{
-    position:relative;
-
-    height:165px;
-
-    padding:8px;
-
-    border:1px solid #E6E6E6;
-    border-radius:14px;
-
-    background:#FFFFFF;
-
-    overflow:hidden;
-
-    box-shadow:
-        0 4px 14px rgba(0,0,0,.04);
-
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        border-color .2s ease;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item:hover{
-    transform:translateY(-3px);
-
-    border-color:#DADADA;
-
-    box-shadow:
-        0 10px 25px rgba(0,0,0,.08);
-}
-
-
-/* FOTO PRINCIPAL */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item.principal{
-    border:2px solid var(--laranja);
-
-    box-shadow:
-        0 8px 22px rgba(245,130,32,.15);
-}
-
-
-/* IMAGEM */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item img{
-    width:100%;
-    height:100%;
-
-    object-fit:contain;
-
-    border-radius:9px;
-}
-
-
-/* ETIQUETA PRINCIPAL */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item span{
-    left:9px;
-    bottom:9px;
-
-    padding:5px 9px;
-
-    border-radius:7px;
-
-    background:var(--laranja);
-
-    font-size:9px;
-    font-weight:800;
-
-    box-shadow:
-        0 3px 8px rgba(245,130,32,.20);
-}
-
-
-/* BOTÃO REMOVER */
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-remover{
-    top:9px;
-    right:9px;
-
-    width:29px;
-    height:29px;
-
-    background:#FFFFFF;
-
-    color:var(--vermelho);
-
-    border:1px solid #E8E8E8;
-
-    box-shadow:
-        0 3px 10px rgba(0,0,0,.10);
-
-    transition:
-        background .2s ease,
-        color .2s ease,
-        transform .2s ease;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-remover:hover{
-    background:var(--vermelho);
-
-    color:#FFFFFF;
-
-    transform:scale(1.08);
-}
-
-
-/* ============================================================
-   ETAPA 3 — VENDA E ESTOQUE
-   ============================================================ */
-
-#modalProduto .etapa-conteudo[data-conteudo="3"]{
-    max-width:900px;
-
-    margin:0 auto;
-
-    width:100%;
-}
-
-
-/* GRID DOS CAMPOS */
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .form-row{
-    display:grid;
-
-    grid-template-columns:
-        repeat(2,minmax(0,1fr));
-
-    gap:22px;
-
-    margin-bottom:22px;
-}
-
-
-/* CARD DOS CAMPOS */
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group{
-    margin-bottom:0;
-
-    padding:22px;
-
-    border:1px solid #E8E8E8;
-    border-radius:16px;
-
-    background:#FFFFFF;
-
-    box-shadow:
-        0 4px 15px rgba(0,0,0,.035);
-
-    transition:
-        border-color .2s ease,
-        box-shadow .2s ease;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group:focus-within{
-    border-color:#F5C89E;
-
-    box-shadow:
-        0 6px 20px rgba(245,130,32,.08);
-}
-
-
-/* LABEL */
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group label{
-    display:block;
-
-    margin-bottom:10px;
-
-    color:var(--preto);
-
-    font-size:12px;
-    font-weight:800;
-}
-
-
-/* INPUTS */
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group input,
-#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group select{
-    width:100%;
-
-    min-height:52px;
-
-    padding:13px 15px;
-
-    border:1px solid #DEDEDE;
-    border-radius:11px;
-
-    background:#FAFAFA;
-
-    color:var(--texto);
-
-    font-family:"Montserrat",sans-serif;
-
-    font-size:13px;
-
-    outline:none;
-
-    transition:
-        border-color .2s ease,
-        background .2s ease,
-        box-shadow .2s ease;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group input:focus,
-#modalProduto .etapa-conteudo[data-conteudo="3"] .form-group select:focus{
-    border-color:var(--laranja);
-
-    background:#FFFFFF;
-
-    box-shadow:
-        0 0 0 3px rgba(245,130,32,.10);
-}
-
-
-/* PREÇO */
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] #precoProduto{
-    font-size:16px;
-    font-weight:700;
-}
-
-
-/* ============================================================
-   PRODUTO EM DESTAQUE
-   ============================================================ */
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .destaque-produto{
-    display:flex;
-
-    align-items:center;
-    justify-content:space-between;
-
-    gap:25px;
-
-    margin-top:6px;
-
-    padding:22px 24px;
-
-    border:1px solid #F1D4BA;
-    border-radius:16px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #FFF9F4 0%,
-            #FFFFFF 100%
-        );
-
-    box-shadow:
-        0 5px 18px rgba(245,130,32,.05);
-}
-
-
-/* TÍTULO */
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .destaque-produto h3{
-    font-size:14px;
-    font-weight:800;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .destaque-produto h3 i{
-    margin-right:7px;
-
-    color:var(--laranja);
-}
-
-
-/* DESCRIÇÃO */
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .destaque-produto p{
-    margin-top:6px;
-
-    color:var(--texto-suave);
-
-    font-size:11px;
-}
-
-
-/* ============================================================
-   TOGGLE MODERNO
-   ============================================================ */
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque{
-    position:relative;
-
-    width:52px;
-    height:30px;
-
-    flex-shrink:0;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque input{
-    position:absolute;
-
-    opacity:0;
-
-    width:0;
-    height:0;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque span{
-    position:absolute;
-    inset:0;
-
-    border-radius:30px;
-
-    background:#D8D8D8;
-
-    cursor:pointer;
-
-    transition:.25s ease;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque span::before{
-    content:"";
-
-    position:absolute;
-
-    width:22px;
-    height:22px;
-
-    left:4px;
-    top:4px;
-
-    border-radius:50%;
-
-    background:#FFFFFF;
-
-    box-shadow:
-        0 2px 5px rgba(0,0,0,.15);
-
-    transition:.25s ease;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque input:checked + span{
-    background:var(--laranja);
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="3"] .checkbox-destaque input:checked + span::before{
-    transform:translateX(22px);
-}
-
-
-/* ============================================================
-   ETAPA 4 — ESPECIFICAÇÕES
-   ============================================================ */
-
-#modalProduto .etapa-conteudo[data-conteudo="4"]{
-    max-width:950px;
-
-    margin:0 auto;
-
-    width:100%;
-}
-
-
-/* CARDS DE ESPECIFICAÇÕES */
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .campos-produto{
-    padding:26px;
-
-    margin-bottom:20px;
-
-    border:1px solid #E5E5E5;
-    border-radius:17px;
-
-    background:#FFFFFF;
-
-    box-shadow:
-        0 5px 18px rgba(0,0,0,.035);
-
-    transition:
-        border-color .2s ease,
-        box-shadow .2s ease;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .campos-produto:hover{
-    border-color:#E1DAD4;
-
-    box-shadow:
-        0 8px 25px rgba(0,0,0,.055);
-}
-
-
-/* CABEÇALHO DO CARD */
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .campo-titulo{
-    display:flex;
-
-    align-items:center;
-
-    gap:14px;
-
-    margin-bottom:24px;
-
-    padding-bottom:18px;
-
-    border-bottom:1px solid #EEEEEE;
-}
-
-
-/* ÍCONE / EMOJI */
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .campo-titulo > span{
-    width:46px;
-    height:46px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    flex-shrink:0;
-
-    border-radius:13px;
-
-    background:#FFF3E8;
-
-    font-size:22px;
-
-    box-shadow:
-        0 4px 12px rgba(245,130,32,.07);
-}
-
-
-/* TÍTULO */
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .campo-titulo h3{
-    font-size:16px;
-
-    font-weight:800;
-}
-
-
-/* DESCRIÇÃO */
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .campo-titulo p{
-    margin-top:4px;
-
-    color:var(--texto-suave);
-
-    font-size:11px;
-}
-
-
-/* FORMULÁRIOS DOS CARDS */
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group{
-    margin-bottom:18px;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group:last-child{
-    margin-bottom:0;
-}
-
-
-/* LABELS */
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group label{
-    display:block;
-
-    margin-bottom:8px;
-
-    color:var(--texto);
-
-    font-size:12px;
-    font-weight:800;
-}
-
-
-/* INPUTS E SELECTS */
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group input,
-#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group select,
-#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group textarea{
-    width:100%;
-
-    min-height:48px;
-
-    padding:12px 14px;
-
-    border:1px solid #DEDEDE;
-    border-radius:10px;
-
-    background:#FAFAFA;
-
-    color:var(--texto);
-
-    font-family:"Montserrat",sans-serif;
-
-    font-size:12px;
-
-    outline:none;
-
-    transition:
-        border-color .2s ease,
-        background .2s ease,
-        box-shadow .2s ease;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group textarea{
-    min-height:105px;
-
-    resize:vertical;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group input:focus,
-#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group select:focus,
-#modalProduto .etapa-conteudo[data-conteudo="4"] .form-group textarea:focus{
-    border-color:var(--laranja);
-
-    background:#FFFFFF;
-
-    box-shadow:
-        0 0 0 3px rgba(245,130,32,.10);
-}
-
-
-/* GRID DAS ESPECIFICAÇÕES */
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .form-row{
-    display:grid;
-
-    grid-template-columns:
-        repeat(2,minmax(0,1fr));
-
-    gap:18px;
-
-    margin-bottom:18px;
-}
-
-
-/* ============================================================
-   SEM ESPECIFICAÇÕES
-   ============================================================ */
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .sem-especificacoes{
-    display:flex;
-
-    align-items:center;
-
-    gap:15px;
-
-    padding:24px;
-
-    border:1px dashed #D8D8D8;
-    border-radius:16px;
-
-    background:#FAFAFA;
-
-    box-shadow:none;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .sem-especificacoes > i{
-    width:40px;
-    height:40px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    flex-shrink:0;
-
-    margin:0;
-
-    border-radius:11px;
-
-    background:#FFF3E8;
-
-    color:var(--laranja);
-
-    font-size:16px;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .sem-especificacoes strong{
-    font-size:12px;
-    font-weight:800;
-}
-
-#modalProduto .etapa-conteudo[data-conteudo="4"] .sem-especificacoes p{
-    margin-top:5px;
-
-    color:#888888;
-
-    font-size:10px;
-}
-
-
-/* ============================================================
-   RESPONSIVO — NOVAS ETAPAS
-   ============================================================ */
-
-@media(max-width:800px){
-
-    #modalProduto .etapa-conteudo[data-conteudo="2"],
-    #modalProduto .etapa-conteudo[data-conteudo="3"],
-    #modalProduto .etapa-conteudo[data-conteudo="4"]{
-        padding:25px 22px;
-    }
-
-    #modalProduto .etapa-conteudo[data-conteudo="3"] .form-row,
-    #modalProduto .etapa-conteudo[data-conteudo="4"] .form-row{
-        grid-template-columns:1fr;
-    }
-
-}
-
-
-@media(max-width:600px){
-
-    #modalProduto .etapa-conteudo[data-conteudo="2"],
-    #modalProduto .etapa-conteudo[data-conteudo="3"],
-    #modalProduto .etapa-conteudo[data-conteudo="4"]{
-        padding:22px 18px;
-    }
-
-    #modalProduto .etapa-conteudo[data-conteudo="2"] .drop-area{
-        min-height:240px;
-
-        padding:30px 20px;
-    }
-
-    #modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagens{
-        grid-template-columns:
-            repeat(2,minmax(0,1fr));
-
-        gap:12px;
-    }
-
-    #modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item{
-        height:145px;
-    }
-
-    #modalProduto .etapa-conteudo[data-conteudo="3"] .destaque-produto{
-        align-items:flex-start;
-    }
-
-    #modalProduto .etapa-conteudo[data-conteudo="4"] .campos-produto{
-        padding:20px;
-    }
-
-}
-
-
-@media(max-width:450px){
-
-    #modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagens{
-        grid-template-columns:1fr 1fr;
-    }
-
-    #modalProduto .etapa-conteudo[data-conteudo="2"] .preview-imagem-item{
-        height:125px;
-    }
-
-    #modalProduto .etapa-conteudo[data-conteudo="3"] .form-group{
-        padding:18px;
-    }
-
-    #modalProduto .etapa-conteudo[data-conteudo="4"] .campo-titulo{
-        align-items:flex-start;
-    }
-
-}
 
 /* ============================================================
    MODAL — NOVA CATEGORIA
@@ -3429,4 +1434,1016 @@ thead th:first-child{
 
 thead th:last-child{
     border-top-right-radius:15px;
+}
+/* ============================================================
+   MODAL — NOVO PRODUTO
+============================================================ */
+
+.modal-produto{
+    position:fixed;
+    inset:0;
+    z-index:10000;
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    padding:30px;
+
+    background:rgba(0,0,0,.68);
+    backdrop-filter:blur(6px);
+}
+
+.modal-produto.ativo{
+    display:flex;
+}
+
+
+/* ============================================================
+   CAIXA PRINCIPAL
+============================================================ */
+
+.modal-produto-conteudo{
+    width:100%;
+    max-width:1050px;
+    max-height:92vh;
+
+    display:flex;
+    flex-direction:column;
+
+    overflow:hidden;
+
+    background:var(--branco);
+
+    border:1px solid #F3C59D;
+    border-radius:22px;
+
+    box-shadow:
+        0 30px 90px rgba(0,0,0,.30);
+
+    animation:aparecerProduto .22s ease;
+}
+
+@keyframes aparecerProduto{
+
+    from{
+        opacity:0;
+        transform:translateY(15px) scale(.98);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+
+}
+
+
+/* ============================================================
+   CABEÇALHO
+============================================================ */
+
+.modal-produto-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:25px;
+
+    padding:25px 30px 22px;
+
+    border-bottom:1px solid var(--borda);
+}
+
+.modal-produto-kicker{
+    display:block;
+
+    margin-bottom:7px;
+
+    color:var(--laranja);
+
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.08em;
+}
+
+.modal-produto-header h2{
+    color:var(--preto);
+
+    font-size:25px;
+    font-weight:800;
+}
+
+.modal-produto-header p{
+    margin-top:6px;
+
+    color:var(--texto-suave);
+
+    font-size:12px;
+    line-height:1.5;
+}
+
+
+/* BOTÃO FECHAR */
+
+.modal-fechar{
+    width:40px;
+    height:40px;
+
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:0;
+    border-radius:50%;
+
+    background:#FFF3E8;
+    color:var(--laranja);
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.modal-fechar:hover{
+    background:var(--laranja);
+    color:var(--branco);
+
+    transform:rotate(90deg);
+}
+
+
+/* ============================================================
+   ETAPAS
+============================================================ */
+
+.produto-etapas{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+
+    gap:10px;
+
+    padding:18px 30px;
+
+    background:#FAFAFA;
+
+    border-bottom:1px solid var(--borda);
+}
+
+.produto-etapa{
+    position:relative;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:8px;
+
+    min-height:42px;
+
+    border-radius:10px;
+
+    color:#999999;
+
+    font-size:11px;
+    font-weight:700;
+
+    transition:.2s ease;
+}
+
+.produto-etapa span{
+    width:27px;
+    height:27px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:#E9E9E9;
+
+    color:#777777;
+
+    font-size:11px;
+    font-weight:800;
+}
+
+.produto-etapa.ativa{
+    background:#FFF3E8;
+    color:var(--laranja);
+}
+
+.produto-etapa.ativa span{
+    background:var(--laranja);
+    color:var(--branco);
+}
+
+.produto-etapa.concluida{
+    color:var(--verde);
+}
+
+.produto-etapa.concluida span{
+    background:var(--verde);
+    color:var(--branco);
+}
+
+
+/* ============================================================
+   CONTEÚDO DAS ETAPAS
+============================================================ */
+
+.produto-etapa-conteudo{
+    display:none;
+
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:30px;
+}
+
+.produto-etapa-conteudo.ativa{
+    display:block;
+}
+
+
+/* ============================================================
+   TÍTULO DA SEÇÃO
+============================================================ */
+
+.produto-secao-titulo{
+    display:flex;
+    align-items:center;
+
+    gap:14px;
+
+    margin-bottom:25px;
+}
+
+.produto-secao-icone{
+    width:46px;
+    height:46px;
+
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:12px;
+
+    background:#FFF3E8;
+
+    color:var(--laranja);
+
+    font-size:18px;
+}
+
+.produto-secao-titulo h3{
+    color:var(--preto);
+
+    font-size:19px;
+    font-weight:800;
+}
+
+.produto-secao-titulo p{
+    margin-top:5px;
+
+    color:var(--texto-suave);
+
+    font-size:12px;
+}
+
+
+/* ============================================================
+   AVISO DE CATEGORIAS
+============================================================ */
+
+.aviso-categorias{
+    display:flex;
+    align-items:flex-start;
+
+    gap:12px;
+
+    margin-bottom:25px;
+    padding:16px 18px;
+
+    border:1px solid #F5D0AA;
+    border-radius:12px;
+
+    background:#FFF8F1;
+}
+
+.aviso-categorias > i{
+    margin-top:2px;
+
+    color:var(--laranja);
+
+    font-size:16px;
+}
+
+.aviso-categorias strong{
+    color:var(--texto);
+
+    font-size:12px;
+}
+
+.aviso-categorias p{
+    margin-top:5px;
+
+    color:var(--texto-suave);
+
+    font-size:11px;
+    line-height:1.5;
+}
+
+
+/* ============================================================
+   GRUPOS DE CATEGORIAS
+============================================================ */
+
+.grupo-categorias{
+    margin-bottom:22px;
+
+    padding:20px;
+
+    border:1px solid var(--borda);
+    border-radius:15px;
+
+    background:var(--branco);
+}
+
+.grupo-categorias-header{
+    display:flex;
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:17px;
+
+    padding-bottom:15px;
+
+    border-bottom:1px solid #EEEEEE;
+}
+
+.grupo-categorias-header > span{
+    width:38px;
+    height:38px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:10px;
+
+    background:#FFF3E8;
+
+    color:var(--laranja);
+}
+
+.grupo-categorias-header h4{
+    color:var(--preto);
+
+    font-size:15px;
+    font-weight:800;
+}
+
+.grupo-categorias-header p{
+    margin-top:3px;
+
+    color:var(--texto-suave);
+
+    font-size:10px;
+}
+
+
+/* LISTA */
+
+.lista-categorias{
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(220px,1fr));
+
+    gap:9px;
+}
+
+
+/* CHECKBOX */
+
+.categoria-checkbox{
+    position:relative;
+
+    min-height:46px;
+
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+
+    padding:0 13px;
+
+    border:1px solid #EEEEEE;
+    border-radius:9px;
+
+    background:#FAFAFA;
+
+    color:#555555;
+
+    font-size:11px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.categoria-checkbox:hover{
+    border-color:#F5C99F;
+    background:#FFF8F2;
+}
+
+.categoria-checkbox input{
+    position:absolute;
+
+    opacity:0;
+    pointer-events:none;
+}
+
+.categoria-checkbox-marca{
+    width:18px;
+    height:18px;
+
+    flex-shrink:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:2px solid #D5D5D5;
+    border-radius:5px;
+
+    background:var(--branco);
+
+    transition:.2s ease;
+}
+
+.categoria-checkbox input:checked
+~ .categoria-checkbox-marca{
+    border-color:var(--laranja);
+
+    background:var(--laranja);
+}
+
+.categoria-checkbox input:checked
+~ .categoria-checkbox-marca::after{
+    content:"✓";
+
+    color:var(--branco);
+
+    font-size:11px;
+    font-weight:900;
+}
+
+
+/* ============================================================
+   RESUMO DAS CATEGORIAS
+============================================================ */
+
+.categorias-selecionadas{
+    margin-top:25px;
+
+    padding:18px;
+
+    border:1px solid #E8E8E8;
+    border-radius:14px;
+
+    background:#FAFAFA;
+}
+
+.categorias-selecionadas-titulo{
+    display:flex;
+    align-items:center;
+
+    gap:8px;
+
+    margin-bottom:12px;
+
+    color:var(--texto);
+
+    font-size:12px;
+    font-weight:800;
+}
+
+.categorias-selecionadas-titulo i{
+    color:var(--verde);
+}
+
+.resumo-categorias{
+    display:flex;
+    flex-wrap:wrap;
+
+    gap:7px;
+}
+
+.resumo-vazio{
+    color:#999999;
+
+    font-size:11px;
+}
+
+.resumo-categoria{
+    display:inline-flex;
+    align-items:center;
+
+    padding:7px 10px;
+
+    border-radius:20px;
+
+    background:#FFF0E3;
+
+    color:var(--laranja);
+
+    font-size:10px;
+    font-weight:700;
+}
+
+
+/* ============================================================
+   FORMULÁRIOS
+============================================================ */
+
+.produto-form-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:18px;
+
+    margin-bottom:20px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+
+    gap:7px;
+
+    margin-bottom:18px;
+}
+
+.form-group.campo-largo{
+    grid-column:1 / -1;
+}
+
+.form-group label{
+    color:var(--texto);
+
+    font-size:11px;
+    font-weight:800;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+    width:100%;
+
+    padding:12px 14px;
+
+    border:1px solid #DCDCDC;
+    border-radius:10px;
+
+    background:var(--branco);
+
+    color:var(--texto);
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:12px;
+
+    outline:none;
+
+    transition:.2s ease;
+}
+
+.form-group input{
+    min-height:46px;
+}
+
+.form-group textarea{
+    resize:vertical;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder{
+    color:#AAAAAA;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus{
+    border-color:var(--laranja);
+
+    box-shadow:
+        0 0 0 3px rgba(245,130,32,.10);
+}
+
+
+/* ============================================================
+   FILTROS DINÂMICOS
+============================================================ */
+
+#filtrosDinamicosProduto{
+    display:flex;
+    flex-direction:column;
+
+    gap:18px;
+}
+
+.filtro-vazio{
+    min-height:180px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    padding:30px;
+
+    border:1px dashed #D8D8D8;
+    border-radius:15px;
+
+    background:#FAFAFA;
+
+    text-align:center;
+}
+
+.filtro-vazio > i{
+    margin-bottom:12px;
+
+    color:var(--laranja);
+
+    font-size:28px;
+}
+
+.filtro-vazio strong{
+    color:var(--texto);
+
+    font-size:13px;
+}
+
+.filtro-vazio p{
+    margin-top:6px;
+
+    color:var(--texto-suave);
+
+    font-size:11px;
+}
+
+
+/* ============================================================
+   DESTAQUES
+============================================================ */
+
+.produto-destaques{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:10px;
+
+    margin-top:20px;
+    padding:20px;
+
+    border:1px solid var(--borda);
+    border-radius:14px;
+
+    background:#FAFAFA;
+}
+
+.produto-destaques h4{
+    grid-column:1 / -1;
+
+    margin-bottom:5px;
+
+    color:var(--texto);
+
+    font-size:13px;
+    font-weight:800;
+}
+
+.produto-destaques h4 i{
+    margin-right:6px;
+
+    color:var(--laranja);
+}
+
+.filtro-checkbox{
+    min-height:42px;
+
+    display:flex;
+    align-items:center;
+
+    gap:9px;
+
+    padding:0 12px;
+
+    border:1px solid #E5E5E5;
+    border-radius:9px;
+
+    background:var(--branco);
+
+    color:#555555;
+
+    font-size:11px;
+    font-weight:600;
+
+    cursor:pointer;
+}
+
+.filtro-checkbox input{
+    accent-color:var(--laranja);
+}
+
+
+/* STATUS */
+
+.produto-status{
+    margin-top:15px;
+    padding:15px 18px;
+
+    border-radius:12px;
+
+    background:#F4FAF5;
+}
+
+
+/* ============================================================
+   UPLOAD DE IMAGENS
+============================================================ */
+
+.drop-area{
+    min-height:230px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    padding:30px;
+
+    border:2px dashed #D7D7D7;
+    border-radius:16px;
+
+    background:#FAFAFA;
+
+    text-align:center;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.drop-area:hover{
+    border-color:var(--laranja);
+    background:#FFF9F4;
+}
+
+.drop-area > i{
+    margin-bottom:12px;
+
+    color:var(--laranja);
+
+    font-size:38px;
+}
+
+.drop-area h3{
+    color:var(--texto);
+
+    font-size:14px;
+    font-weight:800;
+}
+
+.drop-area p{
+    margin-top:5px;
+
+    color:var(--laranja);
+
+    font-size:11px;
+    font-weight:700;
+}
+
+.drop-area small{
+    margin-top:8px;
+
+    color:#999999;
+
+    font-size:10px;
+}
+
+.preview-imagens{
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fill,minmax(130px,1fr));
+
+    gap:12px;
+
+    margin-top:20px;
+}
+
+
+/* ============================================================
+   RODAPÉ DO MODAL
+============================================================ */
+
+.cadastro-acoes{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:15px;
+
+    padding:18px 30px;
+
+    border-top:1px solid var(--borda);
+
+    background:#FAFAFA;
+}
+
+.acoes-navegacao{
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+}
+
+
+/* BOTÕES */
+
+.btn-rascunho,
+.btn-cancelar,
+.btn-confirmar{
+    min-height:44px;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:8px;
+
+    padding:0 18px;
+
+    border-radius:9px;
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:11px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.btn-rascunho{
+    border:1px solid #F5D0AA;
+
+    background:#FFF8F1;
+
+    color:var(--laranja);
+}
+
+.btn-rascunho:hover{
+    background:#FFF0E3;
+}
+
+.btn-cancelar{
+    border:1px solid #D8D8D8;
+
+    background:var(--branco);
+
+    color:#666666;
+}
+
+.btn-cancelar:hover{
+    background:#EEEEEE;
+}
+
+.btn-confirmar{
+    border:0;
+
+    background:var(--laranja);
+
+    color:var(--branco);
+
+    box-shadow:
+        0 4px 12px rgba(245,130,32,.18);
+}
+
+.btn-confirmar:hover{
+    background:var(--laranja-escuro);
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 7px 18px rgba(245,130,32,.25);
+}
+
+#btnPublicarProduto{
+    display:none;
+}
+
+
+/* ============================================================
+   RESPONSIVO
+============================================================ */
+
+@media(max-width:800px){
+
+    .modal-produto{
+        padding:15px;
+    }
+
+    .modal-produto-conteudo{
+        max-height:95vh;
+    }
+
+    .produto-etapas{
+        grid-template-columns:repeat(5,1fr);
+
+        padding:12px 15px;
+    }
+
+    .produto-etapa strong{
+        display:none;
+    }
+
+    .produto-etapa-conteudo{
+        padding:20px;
+    }
+
+    .lista-categorias{
+        grid-template-columns:1fr;
+    }
+
+    .produto-form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-group.campo-largo{
+        grid-column:auto;
+    }
+
+    .produto-destaques{
+        grid-template-columns:1fr;
+    }
+
+    .produto-destaques h4{
+        grid-column:auto;
+    }
+
+    .cadastro-acoes{
+        flex-direction:column;
+
+        align-items:stretch;
+    }
+
+    .acoes-navegacao{
+        width:100%;
+    }
+
+    .btn-rascunho,
+    .btn-cancelar,
+    .btn-confirmar{
+        flex:1;
+    }
+
+}
+
+@media(max-width:500px){
+
+    .modal-produto-header{
+        padding:20px;
+    }
+
+    .modal-produto-header h2{
+        font-size:20px;
+    }
+
+    .produto-etapa-conteudo{
+        padding:18px;
+    }
+
+    .cadastro-acoes{
+        padding:15px;
+    }
+
 }

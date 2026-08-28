@@ -9,10 +9,6 @@ const btnSave = document.querySelector(".btn-save");
 const btnAdd = document.querySelectorAll(".btn-add");
 const listaClientes = document.getElementById("listaClientes");
 const btnAtualizarUsuarios =document.getElementById("btnAtualizarUsuarios");
-const modalProduto = document.getElementById("modalProduto");
-const formProduto = document.getElementById("formProduto");
-const fecharModalProduto = document.getElementById("fecharModalProduto");
-const cancelarProduto = document.getElementById("cancelarProduto");
 
 /*==================================================
             AUTENTICAÇÃO DO ADMIN
@@ -335,87 +331,1149 @@ if (btnSave) {
   });
 }
 
-/* ====================
-    ADICIONAR PRODUTOS
-   ====================*/
+/*==================================================
+        MODAL — NOVO PRODUTO
+==================================================*/
+
+const modalNovoProduto =
+  document.getElementById("modalNovoProduto");
+
+const fecharModalProduto =
+  document.getElementById("fecharModalProduto");
+
+
+/* ABRIR */
 
 btnAdd.forEach(botao => {
+
   botao.addEventListener("click", () => {
-    const textoBotao = botao.textContent.trim();
 
-    if (textoBotao.includes("Novo Produto")) {
-      produtoEditandoId = null;
-      produtoEditando = null;
-
-      etapaAtualProduto = 1;
-      mostrarEtapaProduto(1);
-
-      formProduto.reset();
-      
-      atualizarPreviewProduto();
-      atualizarPreviewImagem("");
-
-      arquivosSelecionados = [];
-
-      const previewContainer =
-        document.getElementById("previewImagens");
-
-      if (previewContainer) {
-        previewContainer.innerHTML = "";
-      }
-
-      modalProduto.classList.add("aberto");
+    if (!modalNovoProduto) {
+      return;
     }
 
-   if (textoBotao.includes("Nova Categoria")) {
-    abrirModalCategoria();
-}
+    modalNovoProduto.classList.add("ativo");
 
   });
+
 });
 
-function fecharModal() {
-  modalProduto.classList.remove("aberto");
-  formProduto.reset();
 
-  atualizarPreviewProduto();
-  atualizarPreviewImagem("");
+/* FECHAR */
 
-  etapaAtualProduto = 1;
-  mostrarEtapaProduto(1);
+fecharModalProduto?.addEventListener(
+  "click",
+  () => {
 
-  produtoEditandoId = null;
-  produtoEditando = null;
+    modalNovoProduto?.classList.remove("ativo");
 
-  arquivosSelecionados = [];
+  }
+);
 
-  const previewContainer =
-    document.getElementById("previewImagens");
 
-  if (previewContainer) {
-    previewContainer.innerHTML = "";
+/* FECHAR CLICANDO FORA */
+
+modalNovoProduto?.addEventListener(
+  "click",
+  event => {
+
+    if (event.target === modalNovoProduto) {
+
+      modalNovoProduto.classList.remove("ativo");
+
+    }
+
+  }
+);
+
+/*==================================================
+        NAVEGAÇÃO — NOVO PRODUTO
+==================================================*/
+
+const etapasProduto =
+  document.querySelectorAll(".produto-etapa");
+
+const conteudosEtapaProduto =
+  document.querySelectorAll(".produto-etapa-conteudo");
+
+const btnAnterior =
+  document.getElementById("btnAnterior");
+
+const btnProximo =
+  document.getElementById("btnProximo");
+
+const btnPublicarProduto =
+  document.getElementById("btnPublicarProduto");
+
+let etapaProdutoAtual = 1;
+
+
+/*==================================================
+        MOSTRAR ETAPA
+==================================================*/
+
+function mostrarEtapaProduto(numeroEtapa) {
+
+  etapaProdutoAtual = numeroEtapa;
+
+
+  /* ETAPAS */
+
+  etapasProduto.forEach(etapa => {
+
+    const numero =
+      Number(etapa.dataset.etapa);
+
+    etapa.classList.remove(
+      "ativa",
+      "concluida"
+    );
+
+    if (numero === numeroEtapa) {
+
+      etapa.classList.add("ativa");
+
+    } else if (numero < numeroEtapa) {
+
+      etapa.classList.add("concluida");
+
+    }
+
+  });
+
+
+  /* CONTEÚDO */
+
+  conteudosEtapaProduto.forEach(conteudo => {
+
+    const numero =
+      Number(conteudo.dataset.conteudoEtapa);
+
+    conteudo.classList.remove("ativa");
+
+    if (numero === numeroEtapa) {
+
+      conteudo.classList.add("ativa");
+
+    }
+
+  });
+
+
+  /* BOTÃO VOLTAR */
+
+  if (btnAnterior) {
+
+    btnAnterior.style.display =
+      numeroEtapa === 1
+        ? "none"
+        : "inline-flex";
+
   }
 
-  if (inputImagem) {
-    inputImagem.value = "";
+
+  /* BOTÃO CONTINUAR */
+
+  if (btnProximo) {
+
+    btnProximo.style.display =
+      numeroEtapa === 5
+        ? "none"
+        : "inline-flex";
+
   }
+
+
+  /* BOTÃO CADASTRAR */
+
+  if (btnPublicarProduto) {
+
+    btnPublicarProduto.style.display =
+      numeroEtapa === 5
+        ? "inline-flex"
+        : "none";
+
+  }
+
+}
+
+
+/*==================================================
+        BOTÃO PRÓXIMO
+==================================================*/
+
+btnProximo?.addEventListener(
+  "click",
+  () => {
+
+    if (etapaProdutoAtual < 5) {
+
+      mostrarEtapaProduto(
+        etapaProdutoAtual + 1
+      );
+
+    }
+
+  }
+);
+
+
+/*==================================================
+        BOTÃO VOLTAR
+==================================================*/
+
+btnAnterior?.addEventListener(
+  "click",
+  () => {
+
+    if (etapaProdutoAtual > 1) {
+
+      mostrarEtapaProduto(
+        etapaProdutoAtual - 1
+      );
+
+    }
+
+  }
+);
+
+
+/*==================================================
+        CLIQUE DIRETO NAS ETAPAS
+==================================================*/
+
+etapasProduto.forEach(etapa => {
+
+  etapa.addEventListener(
+    "click",
+    () => {
+
+      const numero =
+        Number(etapa.dataset.etapa);
+
+      /*
+       * Por enquanto permitimos clicar
+       * somente nas etapas já alcançadas.
+       */
+
+      if (numero <= etapaProdutoAtual) {
+
+        mostrarEtapaProduto(numero);
+
+      }
+
+    }
+  );
+
+});
+
+
+/*==================================================
+        ESTADO INICIAL
+==================================================*/
+
+mostrarEtapaProduto(1);
+
+/*==================================================
+        CATEGORIAS — RESUMO DINÂMICO
+==================================================*/
+
+const checkboxesCategorias =
+  document.querySelectorAll(
+    'input[name="categoriasProduto"]'
+  );
+
+const resumoCategoriasProduto =
+  document.getElementById(
+    "resumoCategoriasProduto"
+  );
+
+
+function atualizarResumoCategorias() {
+
+  if (!resumoCategoriasProduto) {
+    return;
+  }
+
+
+  const selecionadas = Array.from(
+    checkboxesCategorias
+  ).filter(checkbox => checkbox.checked);
+
+
+  if (selecionadas.length === 0) {
+
+    resumoCategoriasProduto.innerHTML = `
+      <span class="resumo-vazio">
+        Nenhuma categoria selecionada.
+      </span>
+    `;
+
+    return;
+  }
+
+
+  resumoCategoriasProduto.innerHTML =
+    selecionadas.map(checkbox => {
+
+      const label =
+        checkbox.closest(
+          ".categoria-checkbox"
+        );
+
+      const nome =
+        label?.querySelector(
+          "span:last-child"
+        )?.textContent.trim()
+        || checkbox.value;
+
+
+      return `
+        <span class="resumo-categoria">
+          ${nome}
+        </span>
+      `;
+
+    }).join("");
+
+}
+
+
+/* ATUALIZA AO MARCAR/DESMARCAR */
+
+checkboxesCategorias.forEach(
+  checkbox => {
+
+    checkbox.addEventListener(
+      "change",
+      atualizarResumoCategorias
+    );
+
+  }
+);
+
+
+/* ESTADO INICIAL */
+
+atualizarResumoCategorias();
+
+/*==================================================
+        CONFIGURAÇÃO — FILTROS DOS PRODUTOS
+==================================================*/
+
+const filtrosProdutos = {
+
+    motosserras: {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura",
+            "Paisagismo"
+        ],
+        linha: [
+            "Gasolina",
+            "Elétrica",
+            "Bateria"
+        ]
+    },
+
+    rocadeiras: {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura",
+            "Paisagismo"
+        ],
+        linha: [
+            "Gasolina",
+            "Elétrica",
+            "Bateria"
+        ]
+    },
+
+    sopradores: {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura",
+            "Paisagismo"
+        ],
+        linha: [
+            "Gasolina",
+            "Elétrica",
+            "Bateria"
+        ]
+    },
+
+    lavadoras: {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem"
+        ],
+        linha: [
+            "Elétrica",
+            "Bateria"
+        ]
+    },
+
+    "lavadoras-alta-pressao": {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem"
+        ],
+        linha: [
+            "Elétrica"
+        ]
+    },
+
+    "cortadores-grama": {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura",
+            "Paisagismo"
+        ],
+        linha: [
+            "Gasolina",
+            "Elétrica",
+            "Bateria"
+        ]
+    },
+
+    "podadores-cerca-viva": {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Paisagismo"
+        ],
+        linha: [
+            "Gasolina",
+            "Elétrica",
+            "Bateria"
+        ]
+    },
+
+    motopodas: {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura",
+            "Paisagismo"
+        ],
+        linha: [
+            "Gasolina",
+            "Bateria"
+        ]
+    },
+
+    colhedores: {
+        aplicacao: [
+            "Uso Profissional",
+            "Agricultura"
+        ],
+        linha: [
+            "Gasolina",
+            "Bateria"
+        ]
+    },
+
+    kombisystem: {
+        aplicacao: [
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura",
+            "Paisagismo"
+        ],
+        linha: [
+            "Gasolina",
+            "Bateria"
+        ]
+    },
+
+    "linha-eletrica": {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Paisagismo"
+        ],
+        linha: [
+            "Elétrica"
+        ]
+    },
+
+    aspiradores: {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem"
+        ],
+        linha: [
+            "Elétrica",
+            "Bateria"
+        ]
+    },
+
+    "pecas-reposicao": {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura",
+            "Paisagismo"
+        ]
+    },
+
+    "ferramentas-corte": {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura",
+            "Paisagismo"
+        ]
+    },
+
+    lubrificantes: {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura"
+        ]
+    },
+
+    combustiveis: {
+        aplicacao: [
+            "Uso Profissional",
+            "Agricultura",
+            "Jardinagem"
+        ]
+    },
+
+    epis: {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura",
+            "Paisagismo"
+        ]
+    },
+
+    acessorios: {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura",
+            "Paisagismo"
+        ]
+    },
+
+    "linha-bateria": {
+        aplicacao: [
+            "Uso Doméstico",
+            "Uso Profissional",
+            "Jardinagem",
+            "Agricultura",
+            "Paisagismo"
+        ],
+        linha: [
+            "Bateria"
+        ]
+    }
+
+};
+
+/*==================================================
+        MOTOR — FILTROS DINÂMICOS
+==================================================*/
+
+const filtrosDinamicosProduto =
+    document.getElementById(
+        "filtrosDinamicosProduto"
+    );
+
+
+function atualizarFiltrosDinamicos() {
+
+    if (!filtrosDinamicosProduto) {
+        return;
+    }
+
+
+    const categoriasSelecionadas =
+        Array.from(
+            checkboxesCategorias
+        )
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
+
+
+    /* Nenhuma categoria */
+
+    if (categoriasSelecionadas.length === 0) {
+
+        filtrosDinamicosProduto.innerHTML = `
+            <div class="filtro-vazio">
+
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+                <strong>
+                    Os filtros aparecerão conforme as categorias.
+                </strong>
+
+                <p>
+                    Primeiro selecione as categorias do produto.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /*==================================================
+            JUNTA OS FILTROS
+    ==================================================*/
+
+    const filtrosCombinados = {};
+
+
+    categoriasSelecionadas.forEach(
+        categoria => {
+
+            const configuracao =
+                filtrosProdutos[categoria];
+
+
+            if (!configuracao) {
+                return;
+            }
+
+
+            Object.entries(configuracao)
+                .forEach(
+                    ([grupo, opcoes]) => {
+
+                        if (!filtrosCombinados[grupo]) {
+
+                            filtrosCombinados[grupo] =
+                                new Set();
+
+                        }
+
+
+                        opcoes.forEach(opcao => {
+
+                            filtrosCombinados[grupo]
+                                .add(opcao);
+
+                        });
+
+                    }
+                );
+
+        }
+    );
+
+
+    /*==================================================
+            NENHUM FILTRO CONFIGURADO
+    ==================================================*/
+
+    if (
+        Object.keys(filtrosCombinados).length === 0
+    ) {
+
+        filtrosDinamicosProduto.innerHTML = `
+            <div class="filtro-vazio">
+
+                <i class="fa-solid fa-filter"></i>
+
+                <strong>
+                    Esta categoria ainda não possui filtros.
+                </strong>
+
+                <p>
+                    Os filtros poderão ser adicionados
+                    posteriormente.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /*==================================================
+            NOMES DOS GRUPOS
+    ==================================================*/
+
+    const nomesGrupos = {
+
+        aplicacao: "Aplicação",
+
+        linha: "Linha"
+
+    };
+
+
+    /*==================================================
+            MONTAR HTML
+    ==================================================*/
+
+    filtrosDinamicosProduto.innerHTML =
+        Object.entries(filtrosCombinados)
+        .map(
+            ([grupo, opcoes]) => {
+
+                const nomeGrupo =
+                    nomesGrupos[grupo]
+                    || grupo;
+
+
+                return `
+                    <div class="grupo-filtro-produto">
+
+                        <div class="grupo-filtro-header">
+
+                            <div>
+
+                                <h4>
+                                    ${nomeGrupo}
+                                </h4>
+
+                                <span>
+                                    Selecione uma ou mais opções
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="lista-filtros-produto">
+
+                            ${
+                                Array.from(opcoes)
+                                .map(
+                                    opcao => `
+                                        <label
+                                            class="filtro-checkbox-produto"
+                                        >
+
+                                            <input
+                                                type="checkbox"
+                                                name="filtro_${grupo}"
+                                                value="${opcao}"
+                                            >
+
+                                            <span>
+                                                ${opcao}
+                                            </span>
+
+                                        </label>
+                                    `
+                                )
+                                .join("")
+                            }
+
+                        </div>
+
+                    </div>
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+/*==================================================
+        ATUALIZAR AO ALTERAR CATEGORIA
+==================================================*/
+
+checkboxesCategorias.forEach(
+    checkbox => {
+
+        checkbox.addEventListener(
+            "change",
+            atualizarFiltrosDinamicos
+        );
+
+    }
+);
+
+
+/*==================================================
+        ESTADO INICIAL
+==================================================*/
+
+atualizarFiltrosDinamicos();
+
+/*==================================================
+        COLETAR FILTROS SELECIONADOS
+==================================================*/
+
+function obterFiltrosSelecionados() {
+
+    const filtros = {};
+
+    if (!filtrosDinamicosProduto) {
+        return filtros;
+    }
+
+
+    const checkboxes =
+        filtrosDinamicosProduto.querySelectorAll(
+            'input[type="checkbox"]'
+        );
+
+
+    checkboxes.forEach(checkbox => {
+
+        if (!checkbox.checked) {
+            return;
+        }
+
+
+        const grupo =
+            checkbox.name.replace(
+                "filtro_",
+                ""
+            );
+
+
+        if (!filtros[grupo]) {
+            filtros[grupo] = [];
+        }
+
+
+        filtros[grupo].push(
+            checkbox.value
+        );
+
+    });
+
+
+    return filtros;
 }
 
 /*==================================================
-        FECHAR MODAL DE PRODUTO
+        INFORMAÇÕES — NOVO PRODUTO
 ==================================================*/
 
-if (fecharModalProduto) {
-    fecharModalProduto.addEventListener("click", () => {
-        fecharModal();
-    });
+function obterInformacoesProduto() {
+
+    const nome =
+        document.getElementById(
+            "novoProdutoNome"
+        )?.value.trim() || "";
+
+
+    const codigo =
+        document.getElementById(
+            "novoProdutoCodigo"
+        )?.value.trim() || "";
+
+
+    const marca =
+        document.getElementById(
+            "novoProdutoMarca"
+        )?.value.trim() || "";
+
+
+    const linha =
+        document.getElementById(
+            "novoProdutoLinha"
+        )?.value.trim() || "";
+
+
+    const modelo =
+        document.getElementById(
+            "novoProdutoModelo"
+        )?.value.trim() || "";
+
+
+    const descricao =
+        document.getElementById(
+            "novoProdutoDescricao"
+        )?.value.trim() || "";
+
+
+    return {
+
+        nome,
+
+        codigo,
+
+        marca,
+
+        linha,
+
+        modelo,
+
+        descricao
+
+    };
+
 }
 
-if (cancelarProduto) {
-    cancelarProduto.addEventListener("click", () => {
-        fecharModal();
-    });
+/*==================================================
+        CONFIGURAÇÃO — ESPECIFICAÇÕES TÉCNICAS
+==================================================*/
+
+const especificacoesCategoriasProduto = {
+
+    motosserras: [
+
+        {
+            id: "cilindrada",
+            nome: "Cilindrada",
+            tipo: "text",
+            placeholder: "Ex.: 30,1 cm³"
+        },
+
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 1,2 kW"
+        },
+
+        {
+            id: "comprimento-sabre",
+            nome: "Comprimento do sabre",
+            tipo: "text",
+            placeholder: "Ex.: 30 cm"
+        },
+
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 4,2 kg"
+        },
+
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "text",
+            placeholder: "Ex.: 2 tempos"
+        },
+
+        {
+            id: "capacidade-tanque",
+            nome: "Capacidade do tanque",
+            tipo: "text",
+            placeholder: "Ex.: 0,25 l"
+        }
+
+    ]
+
+};
+
+/*==================================================
+        ESPECIFICAÇÕES — MOTOR DINÂMICO
+==================================================*/
+
+const especificacoesDinamicasProduto =
+    document.getElementById(
+        "especificacoesDinamicasProduto"
+    );
+
+
+function atualizarEspecificacoesProduto() {
+
+    if (!especificacoesDinamicasProduto) {
+        return;
+    }
+
+
+    const categoriasSelecionadas =
+        Array.from(
+            checkboxesCategorias
+        )
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
+
+
+    /*==================================================
+            NENHUMA CATEGORIA
+    ==================================================*/
+
+    if (categoriasSelecionadas.length === 0) {
+
+        especificacoesDinamicasProduto.innerHTML = `
+            <div class="especificacoes-vazio">
+
+                <i class="fa-solid fa-sliders"></i>
+
+                <strong>
+                    Especificações técnicas
+                </strong>
+
+                <p>
+                    Os campos específicos aparecerão
+                    conforme as categorias selecionadas.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /*==================================================
+            JUNTAR ESPECIFICAÇÕES
+    ==================================================*/
+
+    const especificacoesCombinadas = new Map();
+
+
+    categoriasSelecionadas.forEach(
+        categoria => {
+
+            const especificacoes =
+                especificacoesCategoriasProduto[
+                    categoria
+                ];
+
+
+            if (!especificacoes) {
+                return;
+            }
+
+
+            especificacoes.forEach(
+                especificacao => {
+
+                    if (
+                        !especificacoesCombinadas
+                            .has(especificacao.id)
+                    ) {
+
+                        especificacoesCombinadas.set(
+                            especificacao.id,
+                            especificacao
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    /*==================================================
+            NENHUMA ESPECIFICAÇÃO
+    ==================================================*/
+
+    if (
+        especificacoesCombinadas.size === 0
+    ) {
+
+        especificacoesDinamicasProduto.innerHTML = `
+            <div class="especificacoes-vazio">
+
+                <i class="fa-solid fa-sliders"></i>
+
+                <strong>
+                    Nenhuma especificação cadastrada
+                </strong>
+
+                <p>
+                    Esta categoria ainda não possui
+                    campos técnicos configurados.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /*==================================================
+            CRIAR CAMPOS
+    ==================================================*/
+
+    especificacoesDinamicasProduto.innerHTML = `
+        <div class="especificacoes-grid">
+
+            ${
+                Array.from(
+                    especificacoesCombinadas.values()
+                )
+                .map(
+                    especificacao => `
+                        <div
+                            class="campo-especificacao"
+                        >
+
+                            <label
+                                for="especificacao_${especificacao.id}"
+                            >
+                                ${especificacao.nome}
+                            </label>
+
+                            <input
+                                type="${especificacao.tipo || "text"}"
+                                id="especificacao_${especificacao.id}"
+                                name="especificacao_${especificacao.id}"
+                                placeholder="${especificacao.placeholder || ""}"
+                                autocomplete="off"
+                            >
+
+                        </div>
+                    `
+                )
+                .join("")
+            }
+
+        </div>
+    `;
+
 }
+
+
+/*==================================================
+        ATUALIZAR AO ALTERAR CATEGORIA
+==================================================*/
+
+checkboxesCategorias.forEach(
+    checkbox => {
+
+        checkbox.addEventListener(
+            "change",
+            atualizarEspecificacoesProduto
+        );
+
+    }
+);
+
+
+/*==================================================
+        ESTADO INICIAL
+==================================================*/
+
+atualizarEspecificacoesProduto();
 
 /*==================================================
                 PRODUTOS - VIA API
@@ -430,257 +1488,7 @@ let produtoEditando = null;
 // Ajuste se sua API rodar em outra porta/origem
 const API_BASE = "http://localhost:4000"; 
 
-/*==================================================
-        CATEGORIAS DE BOMBAS
-==================================================*/
 
-const categoriaProduto =
-    document.getElementById("categoriaProduto");
-
-
-/*==================================================
-        CAMPOS ESPECÍFICOS DO PRODUTO
-==================================================*/
-
-const camposStihl =
-    document.getElementById("camposStihl");
-
-const camposBombas =
-    document.getElementById("camposBombas");
-
-const camposIrrigacao =
-    document.getElementById("camposIrrigacao");
-
-
-/*==================================================
-        CATEGORIAS STIHL
-==================================================*/
-
-const categoriasStihl = [
-
-    "motosserras",
-    "rocadeiras",
-    "lavadoras",
-    "sopradores",
-    "podadores",
-    "motobombas",
-    "motocultivadores",
-    "motores-estacionarios",
-    "geradores",
-    "cortadores-grama",
-    "pulverizadores",
-    "ferramentas-multifuncionais",
-    "motopodas",
-    "perfuradores",
-    "cortadores-disco",
-    "colhedores",
-    "tesouras-serrotes-poda",
-    "ferramentas-florestais",
-    "aspiradores",
-    "baterias-carregadores",
-    "acessorios-stihl",
-    "epi"
-
-];
-
-
-/*==================================================
-        CATEGORIAS BOMBAS
-==================================================*/
-
-const categoriasBombas = [
-
-    "bombas-centrifugas",
-    "bombas-perifericas",
-    "bombas-submersas",
-    "bombas-submersiveis",
-    "bombas-autoaspirantes",
-    "bombas-injetoras",
-    "motobombas-irrigacao",
-    "bombas-piscina",
-    "bombas-irrigacao",
-    "bombas-poco",
-    "bombas-drenagem",
-    "bombas-esgoto",
-    "pressurizadores",
-    "sistemas-pressurizacao",
-    "acessorios-bombas"
-
-];
-
-
-/*==================================================
-        CATEGORIAS IRRIGAÇÃO
-==================================================*/
-
-const categoriasIrrigacao = [
-
-    "aspersores",
-    "microaspersores",
-    "gotejamento",
-    "mangueiras-irrigacao",
-    "tubos-irrigacao",
-    "conexoes-irrigacao",
-    "filtros-irrigacao",
-    "valvulas-irrigacao"
-
-];
-
-
-/*==================================================
-        ATUALIZAR CAMPOS ESPECÍFICOS
-==================================================*/
-
-function atualizarCamposEspecificos(){
-
-    const categoria =
-        categoriaProduto.value;
-
-
-    /* STIHL */
-
-    if(camposStihl){
-
-        camposStihl.style.display =
-            categoriasStihl.includes(categoria)
-                ? "block"
-                : "none";
-
-    }
-
-
-    /* BOMBAS */
-
-    if(camposBombas){
-
-        camposBombas.style.display =
-            categoriasBombas.includes(categoria)
-                ? "block"
-                : "none";
-
-    }
-
-
-    /* IRRIGAÇÃO */
-
-    if(camposIrrigacao){
-
-        camposIrrigacao.style.display =
-            categoriasIrrigacao.includes(categoria)
-                ? "block"
-                : "none";
-
-    }
-
-}
-
-
-/*==================================================
-        LINHA DINÂMICA
-==================================================*/
-
-const linhaProduto =
-    document.getElementById("linhaProduto");
-
-
-const linhasStihl = [
-    {
-        value: "gasolina",
-        text: "⛽ Gasolina"
-    },
-    {
-        value: "eletrica",
-        text: "🔌 Elétrica"
-    },
-    {
-        value: "bateria",
-        text: "🔋 Bateria"
-    }
-];
-
-
-function atualizarLinhaProduto() {
-
-    if (!linhaProduto || !categoriaProduto) {
-        return;
-    }
-
-    const categoria = categoriaProduto.value;
-
-    /*
-        LINHAS STIHL
-    */
-
-    if (categoriasStihl.includes(categoria)) {
-
-        linhaProduto.innerHTML = `
-            <option value="">
-                Selecione uma linha
-            </option>
-        `;
-
-        linhasStihl.forEach(linha => {
-
-            const option =
-                document.createElement("option");
-
-            option.value =
-                linha.value;
-
-            option.textContent =
-                linha.text;
-
-            linhaProduto.appendChild(option);
-
-        });
-
-    }
-
-    
-    /*
-        BOMBAS / IRRIGAÇÃO / OUTROS
-    */
-
-    else {
-
-        linhaProduto.innerHTML = `
-            <option value="">
-                Selecione uma linha
-            </option>
-        `;
-
-        linhaProduto.value = "";
-
-    }
-
-}
-
-/*==================================================
-        EVENTO DA CATEGORIA
-==================================================*/
-
-if(categoriaProduto){
-
-    categoriaProduto.addEventListener(
-        "change",
-        () => {
-
-            atualizarCamposEspecificos();
-
-            atualizarLinhaProduto();
- 
-        }
-    );
-
-}
-
-/*==================================================
-    INICIALIZAR CAMPOS ESPECÍFICOS
-==================================================*/
-
-atualizarCamposEspecificos();
-
-atualizarLinhaProduto();
 
 const nomesCategoriasBombas = {
   "bombas-centrifugas": "Bombas Centrífugas",
@@ -699,118 +1507,6 @@ const nomesCategoriasBombas = {
   "bombas-sistemas-pressurizacao": "Sistemas de Pressurização",
   "bombas-acessorios": "Acessórios para Bombas"
 };
-
-
-/*==================================================
-  PRÉ-VISUALIZAÇÃO DO PRODUTO
-==================================================*/
-
-function atualizarPreviewProduto() {
-  const nomeProduto =
-    document.getElementById("nomeProduto");
-
-  const categoriaProduto =
-    document.getElementById("categoriaProduto");
-
-  const descricaoProduto =
-    document.getElementById("descricaoProduto");
-
-  const precoProduto =
-    document.getElementById("precoProduto");
-
-  const previewNome =
-    document.getElementById("previewNome");
-
-  const previewCategoria =
-    document.getElementById("previewCategoria");
-
-  const previewDescricao =
-    document.getElementById("previewDescricao");
-
-  const previewPreco =
-    document.getElementById("previewPreco");
-
-  if (
-    nomeProduto &&
-    previewNome
-  ) {
-    previewNome.textContent =
-      nomeProduto.value.trim() ||
-      "Nome do produto";
-  }
-
-  if (
-    categoriaProduto &&
-    previewCategoria
-  ) {
-    const option =
-      categoriaProduto.options[
-        categoriaProduto.selectedIndex
-      ];
-
-    previewCategoria.textContent =
-      option &&
-      option.value
-        ? option.textContent.trim()
-        : "CATEGORIA";
-  }
-
-  if (
-    descricaoProduto &&
-    previewDescricao
-  ) {
-    previewDescricao.textContent =
-      descricaoProduto.value.trim() ||
-      "A descrição do produto aparecerá aqui.";
-  }
-
-  if (
-    precoProduto &&
-    previewPreco
-  ) {
-    const preco =
-      Number(precoProduto.value);
-
-    previewPreco.textContent =
-      Number.isFinite(preco) &&
-      preco > 0
-        ? preco.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL"
-          })
-        : "R$ 0,00";
-  }
-}
-
-function ativarEventosPreview() {
-  const campos = [
-    "nomeProduto",
-    "categoriaProduto",
-    "descricaoProduto",
-    "precoProduto"
-  ];
-
-  campos.forEach(id => {
-    const campo =
-      document.getElementById(id);
-
-    if (!campo) {
-      return;
-    }
-
-    campo.addEventListener(
-      "input",
-      atualizarPreviewProduto
-    );
-
-    campo.addEventListener(
-      "change",
-      atualizarPreviewProduto
-    );
-  });
-
-  atualizarPreviewProduto();
-}
 
 async function carregarProdutosAdmin() {
   try {
@@ -1865,591 +2561,7 @@ function renderizarProdutos() {
   }
 }
 
-/* ============================
-    CONFIGURAÇÃO DOS PRODUTOS
-   ===========================*/
 
-function abrirEdicaoProduto(id) {
-  const produto = produtosAdmin.find(item => item.id === id);
-  
-
-  if (!produto) {
-    alert("Produto não encontrado.");
-    return;
-  }
-
-  produtoEditandoId = id;
-  produtoEditando = produto;
-
-  document.getElementById("nomeProduto").value =
-    produto.nome || "";
-
-  document.getElementById("categoriaProduto").value =
-    produto.categoria || "";
-
-  document.getElementById("precoProduto").value =
-    produto.preco || "";
-
-  document.getElementById("estoqueProduto").value =
-    produto.estoque || "";
-
-  document.getElementById("produtoDestaque").checked =
-    Boolean(produto.destaque);
-
-    document.getElementById("skuProduto").value =
-    produto.codigo || "";
-    
-    atualizarPreviewProduto();
-    atualizarPreviewImagem(
-      produto.imagem || ""
-    );
-
-  modalProduto.classList.add("aberto");
-}
-
-/* Submit do formulário (criar produto) */
-formProduto.addEventListener("submit", async event => {
-  event.preventDefault();
-
-  const nome = document.getElementById("nomeProduto").value.trim();
-  const categoria = document.getElementById("categoriaProduto").value;
-    const linhaProduto =
-    document.getElementById("linhaProduto")?.value || "";
-  const preco = Number(
-    document.getElementById("precoProduto").value
-  );
-  const estoque = document.getElementById("estoqueProduto").value;
-
-  const destaque =
-    document.getElementById("produtoDestaque").checked;
-
-    /*========================================
-    INFORMAÇÕES ESPECÍFICAS
-========================================*/
-
-/*========================================
-    INFORMAÇÕES ESPECÍFICAS
-========================================*/
-
-/* STIHL */
-
-const descricaoStihl =
-    document.getElementById("descricaoStihl")?.value.trim() || "";
-
-const aplicacaoStihl =
-    document.getElementById("aplicacaoStihl")?.value.trim() || "";
-
-
-/* BOMBAS */
-
-const marcaBomba =
-    document.getElementById("marcaBomba")?.value.trim() || "";
-
-const potenciaBomba =
-    document.getElementById("potenciaBomba")?.value.trim() || "";
-
-const vazaoBomba =
-    document.getElementById("vazaoBomba")?.value.trim() || "";
-
-const aplicacaoBomba =
-    document.getElementById("aplicacaoBomba")?.value.trim() || "";
-
-
-/* IRRIGAÇÃO */
-
-const marcaIrrigacao =
-    document.getElementById("marcaIrrigacao")?.value.trim() || "";
-
-const tipoIrrigacao =
-    document.getElementById("tipoIrrigacao")?.value.trim() || "";
-
-let imagemUrl =
-  produtoEditando?.imagem || "";
-
-let imagensAdicionais =
-  Array.isArray(produtoEditando?.imagens)
-    ? [...produtoEditando.imagens]
-    : [];
-
-try {
-
-    if (arquivosSelecionados.length > 0) {
-
-        const formData = new FormData();
-
-        arquivosSelecionados.forEach(file => {
-
-            formData.append("imagens", file);
-
-        });
-
-        const resUpload = await fetch(
-            `${API_BASE}/upload-imagens`,
-            {
-                method: "POST",
-
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                },
-
-                body: formData
-            }
-        );
-
-        const jsonUpload = await resUpload.json();
-
-        if (!jsonUpload.ok) {
-
-            throw new Error(
-                jsonUpload.erro ||"Erro no upload das imagens"
-            );
-
-        }
-
-        const urls = jsonUpload.urls || [];
-
-        /*
-         * PRIMEIRA FOTO = PRINCIPAL
-         */
-
-        imagemUrl = urls[0] || imagemUrl;
-
-        /*
-         * RESTANTE = FOTOS ADICIONAIS
-         */
-        imagensAdicionais = urls.slice(1);
-
-    }
-
-    const novoProduto = {
-
-    nome,
-
-    categoria,
-
-    preco,
-
-    estoque,
-
-    // FOTO PRINCIPAL
-    imagem: imagemUrl,
-
-    // FOTOS ADICIONAIS
-    imagens: imagensAdicionais,
-
-    destaque
-
-};
-
-    const codigo = document
-    .getElementById("skuProduto")
-    .value
-    .trim();
-
-   const dados = {
-
-    nome,
-
-    codigo,
-
-    categoria,
-
-   
-    linhaProduto,
-
-    preco,
-
-    estoque,
-
-    imagem: imagemUrl,
-
-    imagens: imagensAdicionais,
-
-    destaque,
-
-
-    /* STIHL */
-
-    descricaoStihl,
-
-    aplicacaoStihl,
-
-
-    /* BOMBAS */
-
-    marcaBomba,
-
-    potenciaBomba,
-
-    vazaoBomba,
-
-    aplicacaoBomba,
-
-
-    /* IRRIGAÇÃO */
-
-    marcaIrrigacao,
-
-    tipoIrrigacao
-
-};
-
-    if (produtoEditandoId) {
-      await atualizarProduto(produtoEditandoId, dados);
-
-      alert("Produto atualizado com sucesso!");
-  } else {
-      await criarProduto(dados);
-
-      alert("Produto cadastrado com sucesso!");
-   }
-    await carregarProdutosAdmin();
-
-    produtoEditandoId = null;
-    produtoEditando = null;
-
-    fecharModal();
-
-
-    } catch (erro) {
-    console.error(
-        "Erro completo ao cadastrar/atualizar produto:",
-        erro
-    );
-
-    alert(
-        `Erro ao cadastrar produto: ${erro.message}`
-    );
-    }
-});
-
-/*==================================================
-                SALVAR RASCUNHO
-==================================================*/
-
-const btnSalvarRascunho =
-    document.getElementById("salvarRascunho");
-
-if(btnSalvarRascunho){
-
-    btnSalvarRascunho.addEventListener(
-        "click",
-        () => {
-
-            const rascunho = {
-
-                nome:
-                    document
-                        .getElementById("nomeProduto")
-                        ?.value
-                        .trim() || "",
-
-                codigo:
-                    document
-                        .getElementById("skuProduto")
-                        ?.value
-                        .trim() || "",
-
-                categoria:
-                    document
-                        .getElementById("categoriaProduto")
-                        ?.value || "",
-
-               
-                       linhaProduto:
-                   document
-                       .getElementById("linhaProduto")
-                       ?.value || "",
-
-                preco:
-                    document
-                        .getElementById("precoProduto")
-                        ?.value || "",
-
-                estoque:
-                    document
-                        .getElementById("estoqueProduto")
-                        ?.value || "",
-
-                descricao:
-                    document
-                        .getElementById("descricaoProduto")
-                        ?.value
-                        .trim() || "",
-
-                destaque:
-                    document
-                        .getElementById("produtoDestaque")
-                        ?.checked || false,
-
-                descricaoStihl:
-                    document
-                        .getElementById("descricaoStihl")
-                        ?.value
-                        .trim() || "",
-
-                aplicacaoStihl:
-                    document
-                        .getElementById("aplicacaoStihl")
-                        ?.value
-                        .trim() || "",
-
-                marcaBomba:
-                    document
-                        .getElementById("marcaBomba")
-                        ?.value
-                        .trim() || "",
-
-                potenciaBomba:
-                    document
-                        .getElementById("potenciaBomba")
-                        ?.value
-                        .trim() || "",
-
-                vazaoBomba:
-                    document
-                        .getElementById("vazaoBomba")
-                        ?.value
-                        .trim() || "",
-
-                aplicacaoBomba:
-                    document
-                        .getElementById("aplicacaoBomba")
-                        ?.value
-                        .trim() || "",
-
-                marcaIrrigacao:
-                    document
-                        .getElementById("marcaIrrigacao")
-                        ?.value
-                        .trim() || "",
-
-                tipoIrrigacao:
-                    document
-                        .getElementById("tipoIrrigacao")
-                        ?.value
-                        .trim() || "",
-
-                etapa:
-                    etapaAtualProduto
-            };
-
-            localStorage.setItem(
-                "produtoRascunho",
-                JSON.stringify(rascunho)
-            );
-
-            alert(
-                "Rascunho salvo com sucesso!"
-            );
-
-        }
-    );
-
-}
-
-/*==================================================
-            CARREGAR RASCUNHO
-==================================================*/
-
-function carregarRascunho() {
-
-    const salvo =
-        localStorage.getItem("produtoRascunho");
-
-    if (!salvo) {
-        return false;
-    }
-
-    try {
-
-        const rascunho =
-            JSON.parse(salvo);
-
-
-        const preencher = (id, valor) => {
-
-            const campo =
-                document.getElementById(id);
-
-            if (campo && valor !== undefined) {
-                campo.value = valor;
-            }
-
-        };
-
-
-        preencher(
-            "nomeProduto",
-            rascunho.nome
-        );
-
-        preencher(
-            "skuProduto",
-            rascunho.codigo
-        );
-
-         atualizarLinhaProduto();
-
-preencher(
-    "linhaProduto",
-    rascunho.linhaProduto
-);
-
-        preencher(
-            "categoriaProduto",
-            rascunho.categoria
-        );
-
-        atualizarCamposEspecificos();
-
-
-
-        preencher(
-            "precoProduto",
-            rascunho.preco
-        );
-
-        preencher(
-            "estoqueProduto",
-            rascunho.estoque
-        );
-
-        preencher(
-            "descricaoProduto",
-            rascunho.descricao
-        );
-
-
-        const destaque =
-            document.getElementById(
-                "produtoDestaque"
-            );
-
-        if (destaque) {
-
-            destaque.checked =
-                Boolean(rascunho.destaque);
-
-        }
-
-
-        /* STIHL */
-
-        preencher(
-            "descricaoStihl",
-            rascunho.descricaoStihl
-        );
-
-        preencher(
-            "aplicacaoStihl",
-            rascunho.aplicacaoStihl
-        );
-
-
-        /* BOMBAS */
-
-        preencher(
-            "marcaBomba",
-            rascunho.marcaBomba
-        );
-
-        preencher(
-            "potenciaBomba",
-            rascunho.potenciaBomba
-        );
-
-        preencher(
-            "vazaoBomba",
-            rascunho.vazaoBomba
-        );
-
-        preencher(
-            "aplicacaoBomba",
-            rascunho.aplicacaoBomba
-        );
-
-
-        /* IRRIGAÇÃO */
-
-        preencher(
-            "marcaIrrigacao",
-            rascunho.marcaIrrigacao
-        );
-
-        preencher(
-            "tipoIrrigacao",
-            rascunho.tipoIrrigacao
-        );
-
-
-        /* Atualiza campos da categoria */
-
-        atualizarCamposEspecificos();
-
-
-        /* Atualiza prévia */
-
-        atualizarPreviewProduto();
-
-
-        /* Volta para a etapa salva */
-
-        const etapa =
-            Number(rascunho.etapa) || 1;
-
-        mostrarEtapaProduto(
-            etapa
-        );
-
-
-        return true;
-
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao carregar rascunho:",
-            erro
-        );
-
-        return false;
-
-    }
-
-}
-
-/*==================================================
-        BOTÃO CONTINUAR RASCUNHO
-==================================================*/
-
-const btnContinuarRascunho =
-    document.getElementById("continuarRascunho");
-
-if (btnContinuarRascunho) {
-
-    btnContinuarRascunho.addEventListener(
-        "click",
-        () => {
-
-            const carregou =
-                carregarRascunho();
-
-            if (!carregou) {
-
-                alert(
-                    "Não existe nenhum rascunho salvo."
-                );
-
-                return;
-            }
-
-            modalProduto.classList.add("aberto");
-
-        }
-    );
-
-}
 
 /* Excluir produto */
 document.addEventListener("click", async event => {
@@ -2764,191 +2876,6 @@ btnAtualizarUsuarios?.addEventListener(
 );
 
 
-/*==================================================
-  NAVEGAÇÃO DAS ETAPAS DO PRODUTO
-==================================================*/
-
-let etapaAtualProduto = 1;
-
-const btnProximo =
-  document.getElementById("btnProximo");
-
-const btnAnterior =
-  document.getElementById("btnAnterior");
-
-const btnPublicarProduto =
-  document.getElementById(
-    "btnPublicarProduto"
-  );
-
-function mostrarEtapaProduto(numeroEtapa) {
-  const conteudos =
-    document.querySelectorAll(
-      ".etapa-conteudo"
-    );
-
-  const indicadores =
-    document.querySelectorAll(
-      ".etapa-produto"
-    );
-
-  conteudos.forEach(conteudo => {
-    const numero =
-      Number(conteudo.dataset.conteudo);
-
-    conteudo.classList.toggle(
-      "ativa",
-      numero === numeroEtapa
-    );
-  });
-
-  indicadores.forEach(indicador => {
-    const numero =
-      Number(indicador.dataset.etapa);
-
-    indicador.classList.toggle(
-      "ativa",
-      numero === numeroEtapa
-    );
-
-    indicador.classList.toggle(
-      "concluida",
-      numero < numeroEtapa
-    );
-  });
-
-  etapaAtualProduto = numeroEtapa;
-
-  atualizarBotoesEtapaProduto();
-}
-
-function atualizarBotoesEtapaProduto() {
-  if (btnAnterior) {
-    btnAnterior.style.display =
-      etapaAtualProduto > 1
-        ? "inline-flex"
-        : "none";
-  }
-
-  if (btnProximo) {
-    btnProximo.style.display =
-      etapaAtualProduto < 4
-        ? "inline-flex"
-        : "none";
-  }
-
-  if (btnPublicarProduto) {
-    btnPublicarProduto.style.display =
-      etapaAtualProduto === 4
-        ? "inline-flex"
-        : "none";
-  }
-}
-
-function validarEtapaProduto(numeroEtapa) {
-  if (numeroEtapa === 1) {
-    const nome =
-      document.getElementById("nomeProduto");
-
-    const categoria =
-      document.getElementById(
-        "categoriaProduto"
-      );
-
-    if (!nome || !nome.value.trim()) {
-      alert(
-        "Informe o nome do produto."
-      );
-
-      nome?.focus();
-
-      return false;
-    }
-
-    if (
-      !categoria ||
-      !categoria.value
-    ) {
-      alert(
-        "Selecione uma categoria."
-      );
-
-      categoria?.focus();
-
-      return false;
-    }
-  }
-
-  if (numeroEtapa === 3) {
-    const preco =
-      document.getElementById(
-        "precoProduto"
-      );
-
-    const estoque =
-      document.getElementById(
-        "estoqueProduto"
-      );
-
-    if (!preco || !preco.value) {
-      alert(
-        "Informe o preço do produto."
-      );
-
-      preco?.focus();
-
-      return false;
-    }
-
-    if (!estoque || !estoque.value) {
-      alert(
-        "Informe o estoque do produto."
-      );
-
-      estoque?.focus();
-
-      return false;
-    }
-  }
-
-  return true;
-}
-
-btnProximo?.addEventListener(
-  "click",
-  () => {
-    if (etapaAtualProduto >= 4) {
-      return;
-    }
-
-    if (
-      !validarEtapaProduto(
-        etapaAtualProduto
-      )
-    ) {
-      return;
-    }
-
-    mostrarEtapaProduto(
-      etapaAtualProduto + 1
-    );
-  }
-);
-
-btnAnterior?.addEventListener(
-  "click",
-  () => {
-    if (etapaAtualProduto <= 1) {
-      return;
-    }
-
-    mostrarEtapaProduto(
-      etapaAtualProduto - 1
-    );
-  }
-);
-
-
 
 /*==================================================
                 INICIALIZAÇÃO
@@ -2959,10 +2886,7 @@ document.addEventListener(
   () => {
     mostrarSecao("dashboard");
 
-    ativarEventosPreview();
-
-    mostrarEtapaProduto(1);
-
     carregarProdutosAdmin();
   }
+  
 );

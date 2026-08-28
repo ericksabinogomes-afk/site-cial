@@ -532,1304 +532,1127 @@
 
             </section>
 
-           <!-- ==================================================
-     NOVO CADASTRO DE PRODUTO
-================================================== -->
+<!-- ============================================================
+     MODAL — NOVO PRODUTO
+============================================================ -->
 
-<div id="modalProduto" class="modal-produto">
+<div id="modalNovoProduto" class="modal-produto">
 
-    <div class="cadastro-produto">
+    <div class="modal-produto-conteudo">
 
-        <!-- =========================
-             CABEÇALHO
-        ========================== -->
-
-        <div class="cadastro-topo">
+        <!-- CABEÇALHO -->
+        <div class="modal-produto-header">
 
             <div>
-                <button
-                    type="button"
-                    id="voltarProdutos"
-                    class="btn-voltar-produtos">
-
-                    <i class="fa-solid fa-arrow-left"></i>
-
-                    Voltar para Produtos
-
-                </button>
+                <span class="modal-produto-kicker">
+                    CADASTRO DE PRODUTO
+                </span>
 
                 <h2>Novo Produto</h2>
 
                 <p>
-                    Cadastre um novo produto na loja.
+                    Cadastre o produto e defina em quais categorias
+                    e filtros ele aparecerá na loja.
                 </p>
             </div>
 
-            <div class="acoes-topo-produto">
-
-    <button
-        type="button"
-        id="continuarRascunho"
-        class="btn-rascunho-topo">
-
-        <i class="fa-solid fa-file-pen"></i>
-
-        Rascunho
-
-    </button>
-
-
-    <button
-        type="button"
-        id="fecharModalProduto"
-        class="btn-fechar">
-
-        &times;
-
-    </button>
-
-</div>
+            <button
+                type="button"
+                id="fecharModalProduto"
+                class="modal-fechar"
+                aria-label="Fechar"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
 
         </div>
 
 
-        <!-- =========================
-             ETAPAS
-        ========================== -->
+        <!-- INDICADOR DAS ETAPAS -->
+        <div class="produto-etapas">
 
-        <div class="etapas-produto">
-
-            <div
-                class="etapa-produto ativa"
-                data-etapa="1">
-
-                <span class="numero-etapa">1</span>
-
-                <div>
-                    <strong>Informações</strong>
-                    <small>Dados básicos</small>
-                </div>
-
+            <div class="produto-etapa ativa" data-etapa="1">
+                <span>1</span>
+                <strong>Categorias</strong>
             </div>
 
-
-            <div class="linha-etapa"></div>
-
-
-            <div
-                class="etapa-produto"
-                data-etapa="2">
-
-                <span class="numero-etapa">2</span>
-
-                <div>
-                    <strong>Fotos</strong>
-                    <small>Imagens do produto</small>
-                </div>
-
+            <div class="produto-etapa" data-etapa="2">
+                <span>2</span>
+                <strong>Filtros</strong>
             </div>
 
-
-            <div class="linha-etapa"></div>
-
-
-            <div
-                class="etapa-produto"
-                data-etapa="3">
-
-                <span class="numero-etapa">3</span>
-
-                <div>
-                    <strong>Estoque</strong>
-                    <small>Preço e estoque</small>
-                </div>
-
+            <div class="produto-etapa" data-etapa="3">
+                <span>3</span>
+                <strong>Informações</strong>
             </div>
 
+            <div class="produto-etapa" data-etapa="4">
+                <span>4</span>
+                <strong>Venda</strong>
+            </div>
 
-            <div class="linha-etapa"></div>
-
-
-            <div
-                class="etapa-produto"
-                data-etapa="4">
-
-                <span class="numero-etapa">4</span>
-
-                <div>
-                    <strong>Especificações</strong>
-                    <small>Detalhes do produto</small>
-                </div>
-
+            <div class="produto-etapa" data-etapa="5">
+                <span>5</span>
+                <strong>Imagens</strong>
             </div>
 
         </div>
 
 
-        <!-- =========================
-             CONTEÚDO DO CADASTRO
-        ========================== -->
-
-        <form id="formProduto">
-
-            <!-- =================================
-                 ETAPA 1
-                 INFORMAÇÕES BÁSICAS
-            ================================== -->
-
-            <section
-                class="etapa-conteudo ativa"
-                data-conteudo="1">
-
-                <div class="cadastro-grid">
-
-                    <!-- FORMULÁRIO -->
-
-                    <div class="cadastro-formulario">
-
-                        <div class="titulo-secao">
-
-                            <span class="icone-secao">
-                                <i class="fa-solid fa-box"></i>
-                            </span>
-
-                            <div>
-
-                                <h3>Informações básicas</h3>
-
-                                <p>
-                                    Informe os principais dados do produto.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- NOME -->
-
-                        <div class="form-group">
-
-                            <label for="nomeProduto">
-                                Nome do produto
-                            </label>
-
-                            <input
-                                type="text"
-                                id="nomeProduto"
-                                placeholder="Ex: STIHL MS 170"
-                                autocomplete="off"
-                                required>
-
-                        </div>
-
-
-                        <!-- CATEGORIA -->
-
-                        <div class="form-group">
-
-                            <label for="categoriaProduto">
-                                Categoria
-                            </label>
-
-                            <select
-                                id="categoriaProduto"
-                                required>
-
-                                <option value="">
-                                    Selecione uma categoria
-                                </option>
-
-                                <optgroup label="STIHL">
-
-                                    <option value="motosserras">
-                                        Motosserras
-                                    </option>
-
-                                    <option value="rocadeiras">
-                                        Roçadeiras
-                                    </option>
-
-                                    <option value="lavadoras">
-                                        Lavadoras de Alta Pressão
-                                    </option>
-
-                                    <option value="sopradores">
-                                        Sopradores
-                                    </option>
-
-                                    <option value="podadores">
-                                        Podadores
-                                    </option>
-
-                                    <option value="motobombas">
-                                        Motobombas
-                                    </option>
-
-                                    <option value="motocultivadores">
-                                        Motocultivadores
-                                    </option>
-
-                                    <option value="motores-estacionarios">
-                                        Motores Estacionários
-                                    </option>
-
-                                    <option value="geradores">
-                                        Geradores
-                                    </option>
-
-                                    <option value="cortadores-grama">
-                                        Cortadores de Grama
-                                    </option>
-
-                                    <option value="pulverizadores">
-                                        Pulverizadores
-                                    </option>
-
-                                    <option value="ferramentas-multifuncionais">
-                                        Ferramentas Multifuncionais
-                                    </option>
-
-                                    <option value="motopodas">
-                                        Motopodas
-                                    </option>
-
-                                    <option value="perfuradores">
-                                        Perfuradores
-                                    </option>
-
-                                    <option value="cortadores-disco">
-                                        Cortadores a Disco
-                                    </option>
-
-                                    <option value="colhedores">
-                                        Colhedores
-                                    </option>
-
-                                    <option value="tesouras-serrotes-poda">
-                                        Tesouras e Serrotes de Poda
-                                    </option>
-
-                                    <option value="ferramentas-florestais">
-                                        Ferramentas Florestais / Machados
-                                    </option>
-
-                                    <option value="aspiradores">
-                                        Aspiradores
-                                    </option>
-
-                                    <option value="baterias-carregadores">
-                                        Baterias e Carregadores
-                                    </option>
-
-                                    <option value="acessorios-stihl">
-                                        Acessórios STIHL
-                                    </option>
-
-                                    <option value="epi">
-                                        Equipamentos de Proteção
-                                    </option>
-
-                                </optgroup>
-
-
-                                <optgroup label="Bombas e Irrigação">
-
-                                    <option value="bombas-centrifugas">
-                                        Bombas Centrífugas
-                                    </option>
-
-                                    <option value="bombas-perifericas">
-                                        Bombas Periféricas
-                                    </option>
-
-                                    <option value="bombas-submersas">
-                                        Bombas Submersas
-                                    </option>
-
-                                    <option value="bombas-submersiveis">
-                                        Bombas Submersíveis
-                                    </option>
-
-                                    <option value="bombas-autoaspirantes">
-                                        Bombas Autoaspirantes
-                                    </option>
-
-                                    <option value="bombas-injetoras">
-                                        Bombas Injetoras
-                                    </option>
-
-                                    <option value="motobombas-irrigacao">
-                                        Motobombas
-                                    </option>
-
-                                    <option value="bombas-piscina">
-                                        Bombas para Piscina
-                                    </option>
-
-                                    <option value="bombas-irrigacao">
-                                        Bombas para Irrigação
-                                    </option>
-
-                                    <option value="bombas-poco">
-                                        Bombas para Poços
-                                    </option>
-
-                                    <option value="bombas-drenagem">
-                                        Bombas para Drenagem
-                                    </option>
-
-                                    <option value="bombas-esgoto">
-                                        Bombas para Esgoto
-                                    </option>
-
-                                    <option value="pressurizadores">
-                                        Pressurizadores
-                                    </option>
-
-                                    <option value="sistemas-pressurizacao">
-                                        Sistemas de Pressurização
-                                    </option>
-
-                                    <option value="acessorios-bombas">
-                                        Acessórios para Bombas
-                                    </option>
-
-                                    <option value="aspersores">
-                                        Aspersores
-                                    </option>
-
-                                    <option value="microaspersores">
-                                        Microaspersores
-                                    </option>
-
-                                    <option value="gotejamento">
-                                        Gotejamento
-                                    </option>
-
-                                    <option value="mangueiras-irrigacao">
-                                        Mangueiras de Irrigação
-                                    </option>
-
-                                    <option value="tubos-irrigacao">
-                                        Tubos para Irrigação
-                                    </option>
-
-                                    <option value="conexoes-irrigacao">
-                                        Conexões para Irrigação
-                                    </option>
-
-                                    <option value="filtros-irrigacao">
-                                        Filtros de Irrigação
-                                    </option>
-
-                                    <option value="valvulas-irrigacao">
-                                        Válvulas de Irrigação
-                                    </option>
-
-                                    <option value="acessorios-irrigacao">
-                                        Acessórios de Irrigação
-                                    </option>
-
-                                </optgroup>
-
-
-                                <option value="linha-bateria">
-                                    🔋 Linha a Bateria
-                                </option>
-
-                                <option value="linha-eletrica">
-                                    🔌 Linha Elétrica
-                                </option>
-
-                                <option value="pecas-reposicao">
-                                    ⚙️ Peças de Reposição
-                                </option>
-
-                                <option value="ferramentas-corte">
-                                    🛠️ Ferramentas de Corte
-                                </option>
-
-                                <option value="lubrificantes">
-                                    🛢️ Lubrificantes
-                                </option>
-
-                                <option value="combustiveis">
-                                    ⛽ Combustíveis
-                                </option>
-
-                                <option value="epis">
-                                    🦺 EPIs
-                                </option>
-
-                                <option value="acessorios">
-                                    🔧 Acessórios
-                                </option>
-
-                                <option value="outros">
-                                    Outros
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <!-- LINHA -->
-
-<div class="form-group">
-
-    <label for="linhaProduto">
-        Linha
-    </label>
-
-    <select id="linhaProduto">
-
-    </select>
-
-</div>
-
-                        <!-- MARCA + SKU -->
-
-                        <div class="form-row">
-
-                            <div class="form-group">
-
-                                <label for="marcaProduto">
-                                    Marca
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="marcaProduto"
-                                    placeholder="Ex: STIHL">
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="skuProduto">
-                                    Código / SKU
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="skuProduto"
-                                    placeholder="Ex: MS170">
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- DESCRIÇÃO -->
-
-                        <div class="form-group">
-
-                            <label for="descricaoProduto">
-                                Descrição
-                            </label>
-
-                            <textarea
-                                id="descricaoProduto"
-                                rows="5"
-                                placeholder="Descreva o produto..."
-                            ></textarea>
-
-                        </div>
-
-
-                       
-                    </div>
-
-
-                    <!-- PREVIEW -->
-
-                    <aside class="preview-produto">
-
-                        <div class="preview-titulo">
-
-                            <span>
-                                <i class="fa-solid fa-eye"></i>
-                            </span>
-
-                            <div>
-
-                                <h3>Visualização</h3>
-
-                                <p>
-                                    Prévia do produto na loja
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="preview-card">
-
-                            <div class="preview-imagem">
-
-                                <span class="preview-sem-imagem">
-                                    <i class="fa-solid fa-image"></i>
-                                    <small>Sem imagem</small>
-                                </span>
-
-                            </div>
-
-
-                            <div class="preview-info">
-
-                                <span
-                                    id="previewCategoria"
-                                    class="preview-categoria">
-                                    Categoria
-                                </span>
-
-                                <h3 id="previewNome">
-                                    Nome do produto
-                                </h3>
-
-                                <p id="previewDescricao">
-                                    A descrição do produto aparecerá aqui.
-                                </p>
-
-                                <strong id="previewPreco">
-                                    R$ 0,00
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                    </aside>
-
+        <!-- ====================================================
+             ETAPA 1 — CATEGORIAS
+        ===================================================== -->
+
+        <section
+            class="produto-etapa-conteudo ativa"
+            data-conteudo-etapa="1"
+        >
+
+            <div class="produto-secao-titulo">
+
+                <div class="produto-secao-icone">
+                    <i class="fa-solid fa-layer-group"></i>
                 </div>
 
-            </section>
-
-
-            <!-- =================================
-                 ETAPA 2
-                 FOTOS
-            ================================== -->
-
-            <section
-                class="etapa-conteudo"
-                data-conteudo="2">
-
-                <div class="titulo-secao">
-
-                    <span class="icone-secao">
-                        <i class="fa-solid fa-images"></i>
-                    </span>
-
-                    <div>
-
-                        <h3>Fotos do produto</h3>
-
-                        <p>
-                            Adicione as imagens que serão exibidas na loja.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    id="dropArea"
-                    class="drop-area">
-
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-
-                    <h3>
-                        Arraste suas imagens aqui
-                    </h3>
+                <div>
+                    <h3>Categorias do produto</h3>
 
                     <p>
-                        ou clique para selecionar
+                        Selecione todas as categorias nas quais
+                        este produto deverá aparecer.
                     </p>
+                </div>
 
-                    <small>
-                        Você pode selecionar várias imagens.
-                    </small>
+            </div>
 
-                    <input
-                        type="file"
-                        id="arquivoImagem"
-                        accept="image/*"
-                        multiple
-                        hidden>
+
+            <div class="aviso-categorias">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                <div>
+                    <strong>
+                        O produto pode pertencer a várias categorias.
+                    </strong>
+
+                    <p>
+                        Exemplo: uma motosserra a bateria pode
+                        pertencer a <strong>Motosserras</strong> e
+                        <strong>Linha a Bateria</strong> ao mesmo tempo.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- PRODUTOS / STIHL -->
+
+            <div class="grupo-categorias">
+
+                <div class="grupo-categorias-header">
+
+                    <span>
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </span>
+
+                    <div>
+                        <h4>Produtos</h4>
+
+                        <p>
+                            Máquinas, ferramentas e acessórios.
+                        </p>
+                    </div>
 
                 </div>
 
 
                 <div
-                    id="previewImagens"
-                    class="preview-imagens">
-                </div>
+                    id="categoriasProdutos"
+                    class="lista-categorias"
+                >
 
-            </section>
-
-
-            <!-- =================================
-                 ETAPA 3
-                 ESTOQUE
-            ================================== -->
-
-            <section
-                class="etapa-conteudo"
-                data-conteudo="3">
-
-                <div class="titulo-secao">
-
-                    <span class="icone-secao">
-                        <i class="fa-solid fa-dollar-sign"></i>
-                    </span>
-
-                    <div>
-
-                        <h3>Venda e estoque</h3>
-
-                        <p>
-                            Configure o preço e a disponibilidade.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="form-row">
-
-                    <div class="form-group">
-
-                        <label for="precoProduto">
-                            Preço
-                        </label>
-
-                        <input
-                            type="number"
-                            id="precoProduto"
-                            min="0"
-                            step="0.01"
-                            placeholder="1299.90"
-                            required>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="estoqueProduto">
-                            Estoque
-                        </label>
-
-                        <select
-                            id="estoqueProduto"
-                            required>
-
-                            <option value="Em estoque">
-                                Em estoque
-                            </option>
-
-                            <option value="Estoque baixo">
-                                Estoque baixo
-                            </option>
-
-                            <option value="Fora de estoque">
-                                Fora de estoque
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-
-                <div class="destaque-produto">
-
-                    <div>
-
-                        <h3>
-                            <i class="fa-solid fa-star"></i>
-                            Produto em destaque
-                        </h3>
-
-                        <p>
-                            Exibir este produto na página inicial.
-                        </p>
-
-                    </div>
-
-
-                    <label class="checkbox-destaque">
-
+                    <label class="categoria-checkbox">
                         <input
                             type="checkbox"
-                            id="produtoDestaque">
+                            name="categoriasProduto"
+                            value="motosserras"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Motosserras</span>
+                    </label>
 
-                        <span></span>
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="rocadeiras"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Roçadeiras</span>
+                    </label>
 
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="sopradores"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Sopradores</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="lavadoras"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Lavadoras</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="lavadoras-alta-pressao"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Lavadoras de Alta Pressão</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="cortadores-grama"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Cortadores de Grama</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="podadores-cerca-viva"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Podadores de Cerca Viva</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="motopodas"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Motopodas</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="colhedores"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Colhedores</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="kombisystem"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>KombiSystem</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="linha-eletrica"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Linha Elétrica</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="aspiradores"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Aspiradores</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="pecas-reposicao"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Peças de Reposição</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="ferramentas-corte"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Ferramentas de Corte</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="lubrificantes"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Lubrificantes</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="combustiveis"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Combustíveis</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="epis"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>EPIs</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="acessorios"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Acessórios</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="linha-bateria"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Linha a Bateria</span>
                     </label>
 
                 </div>
 
-            </section>
+            </div>
 
 
-            <!-- =================================
-                 ETAPA 4
-                 ESPECIFICAÇÕES
-            ================================== -->
+            <!-- BOMBAS -->
 
-            <section
-                class="etapa-conteudo"
-                data-conteudo="4">
+            <div class="grupo-categorias">
 
-                <div class="titulo-secao">
+                <div class="grupo-categorias-header">
 
-                    <span class="icone-secao">
-                        <i class="fa-solid fa-sliders"></i>
+                    <span>
+                        <i class="fa-solid fa-droplet"></i>
                     </span>
 
                     <div>
-
-                        <h3>Especificações</h3>
+                        <h4>Bombas</h4>
 
                         <p>
-                            Configure os detalhes específicos do produto.
+                            Bombas e equipamentos hidráulicos.
                         </p>
-
                     </div>
 
                 </div>
 
-
-                <!-- STIHL -->
 
                 <div
-                    id="camposStihl"
-                    class="campos-produto"
-                    style="display:none;">
-
-                    <div class="campo-titulo">
-
-                        <span>🪚</span>
-
-                        <div>
-
-                            <h3>Informações STIHL</h3>
-
-                            <p>
-                                Especificações do produto STIHL.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="descricaoStihl">
-                            Pequena descrição
-                        </label>
-
-                        <textarea
-                            id="descricaoStihl"
-                            rows="4"
-                            placeholder="Descrição curta do produto."
-                        ></textarea>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="aplicacaoStihl">
-                            Aplicação
-                        </label>
-
-                        <select id="aplicacaoStihl">
-
-                            <option value="">
-                                Selecione uma aplicação
-                            </option>
-
-                            <option value="Uso Doméstico">
-                                Uso Doméstico
-                            </option>
-
-                            <option value="Uso Profissional">
-                                Uso Profissional
-                            </option>
-
-                            <option value="Jardinagem">
-                                Jardinagem
-                            </option>
-
-                            <option value="Agricultura">
-                                Agricultura
-                            </option>
-
-                            <option value="Paisagismo">
-                                Paisagismo
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-
-                <!-- BOMBAS -->
-
-                <div
-                    id="camposBombas"
-                    class="campos-produto"
-                    style="display:none;">
-
-                    <div class="campo-titulo">
-
-                        <span>💧</span>
-
-                        <div>
-
-                            <h3>Informações da bomba</h3>
-
-                            <p>
-                                Especificações da bomba.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label for="marcaBomba">
-                                Marca
-                            </label>
-
-                            <input
-                                type="text"
-                                id="marcaBomba"
-                                placeholder="Ex: Ebara">
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="potenciaBomba">
-                                Potência
-                            </label>
-
-                            <select id="potenciaBomba">
-
-                                <option value="">
-                                    Selecione a potência
-                                </option>
-
-                                <option value="1/2 CV">
-                                    1/2 CV
-                                </option>
-
-                                <option value="3/4 CV">
-                                    3/4 CV
-                                </option>
-
-                                <option value="1 CV">
-                                    1 CV
-                                </option>
-
-                                <option value="2 CV">
-                                    2 CV
-                                </option>
-
-                                <option value="3 CV">
-                                    3 CV
-                                </option>
-
-                                <option value="5 CV">
-                                    5 CV
-                                </option>
-
-                                <option value="Acima de 5 CV">
-                                    Acima de 5 CV
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label for="vazaoBomba">
-                                Vazão
-                            </label>
-
-                            <input
-                                type="text"
-                                id="vazaoBomba"
-                                placeholder="Ex: 2.000 L/h">
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="aplicacaoBomba">
-                                Aplicação
-                            </label>
-
-                            <select id="aplicacaoBomba">
-
-                                <option value="">
-                                    Selecione uma aplicação
-                                </option>
-
-                                <option value="Residencial">
-                                    Residencial
-                                </option>
-
-                                <option value="Comercial">
-                                    Comercial
-                                </option>
-
-                                <option value="Industrial">
-                                    Industrial
-                                </option>
-
-                                <option value="Agrícola">
-                                    Agrícola
-                                </option>
-
-                                <option value="Irrigação">
-                                    Irrigação
-                                </option>
-
-                                <option value="Piscinas">
-                                    Piscinas
-                                </option>
-
-                                <option value="Poços Artesianos">
-                                    Poços Artesianos
-                                </option>
-
-                                <option value="Construção Civil">
-                                    Construção Civil
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- IRRIGAÇÃO -->
-
-                <div
-                    id="camposIrrigacao"
-                    class="campos-produto"
-                    style="display:none;">
-
-                    <div class="campo-titulo">
-
-                        <span>🌱</span>
-
-                        <div>
-
-                            <h3>Informações de irrigação</h3>
-
-                            <p>
-                                Especificações do produto de irrigação.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label for="marcaIrrigacao">
-                                Marca
-                            </label>
-
-                            <input
-                                type="text"
-                                id="marcaIrrigacao"
-                                placeholder="Ex: Rain Bird">
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="tipoIrrigacao">
-                                Tipo
-                            </label>
-
-                            <select id="tipoIrrigacao">
-
-                                <option value="">
-                                    Selecione o tipo
-                                </option>
-
-                                <option value="Aspersor">
-                                    Aspersor
-                                </option>
-
-                                <option value="Microaspersor">
-                                    Microaspersor
-                                </option>
-
-                                <option value="Gotejamento">
-                                    Gotejamento
-                                </option>
-
-                                <option value="Mangueira de Irrigação">
-                                    Mangueira de Irrigação
-                                </option>
-
-                                <option value="Tubo de Irrigação">
-                                    Tubo de Irrigação
-                                </option>
-
-                                <option value="Filtro de Irrigação">
-                                    Filtro de Irrigação
-                                </option>
-
-                                <option value="Válvula de Irrigação">
-                                    Válvula de Irrigação
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label for="vazaoIrrigacao">
-                                Vazão
-                            </label>
-
-                            <input
-                                type="text"
-                                id="vazaoIrrigacao"
-                                placeholder="Ex: 1.200 L/h">
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="alcanceIrrigacao">
-                                Alcance
-                            </label>
-
-                            <input
-                                type="text"
-                                id="alcanceIrrigacao"
-                                placeholder="Ex: 12 metros">
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label for="diametroIrrigacao">
-                                Diâmetro
-                            </label>
-
-                            <input
-                                type="text"
-                                id="diametroIrrigacao"
-                                placeholder="Ex: 1/2 polegada">
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="aplicacaoIrrigacao">
-                                Aplicação
-                            </label>
-
-                            <select id="aplicacaoIrrigacao">
-
-                                <option value="">
-                                    Selecione uma aplicação
-                                </option>
-
-                                <option value="Residencial">
-                                    Residencial
-                                </option>
-
-                                <option value="Jardinagem">
-                                    Jardinagem
-                                </option>
-
-                                <option value="Agrícola">
-                                    Agrícola
-                                </option>
-
-                                <option value="Paisagismo">
-                                    Paisagismo
-                                </option>
-
-                                <option value="Hortas">
-                                    Hortas
-                                </option>
-
-                                <option value="Estufas">
-                                    Estufas
-                                </option>
-
-                                <option value="Uso Profissional">
-                                    Uso Profissional
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="descricaoIrrigacao">
-                            Pequena descrição
-                        </label>
-
-                        <textarea
-                            id="descricaoIrrigacao"
-                            rows="4"
-                            placeholder="Descrição curta do produto."
-                        ></textarea>
-
-                    </div>
-
-                </div>
-
-
-                <!-- CATEGORIA SEM CAMPOS ESPECÍFICOS -->
-
-                <div
-                    id="semEspecificacoes"
-                    class="sem-especificacoes">
-
-                    <i class="fa-solid fa-circle-info"></i>
-
-                    <div>
-
-                        <strong>
-                            Nenhuma especificação específica
-                        </strong>
-
-                        <p>
-                            Selecione uma categoria para carregar
-                            os campos correspondentes.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- =================================
-                 RODAPÉ DO CADASTRO
-            ================================== -->
-
-            <div class="cadastro-acoes">
-
-                <button
-                    type="button"
-                    id="salvarRascunho"
-                    class="btn-rascunho">
-
-                    <i class="fa-regular fa-floppy-disk"></i>
-
-                    Salvar rascunho
-
-                </button>
-
-
-                <div class="acoes-navegacao">
-
-                    <button
-                        type="button"
-                        id="btnAnterior"
-                        class="btn-cancelar">
-
-                        <i class="fa-solid fa-arrow-left"></i>
-
-                        Voltar
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        id="btnProximo"
-                        class="btn-confirmar">
-
-                        Continuar
-
-                        <i class="fa-solid fa-arrow-right"></i>
-
-                    </button>
-
-
-                    <button
-                        type="submit"
-                        id="btnPublicarProduto"
-                        class="btn-confirmar"
-                        style="display:none;">
-
-                        <i class="fa-solid fa-rocket"></i>
-
-                        Publicar produto
-
-                    </button>
+                    id="categoriasBombas"
+                    class="lista-categorias"
+                >
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="bombas-centrifugas"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Bombas Centrífugas</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="bombas-perifericas"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Bombas Periféricas</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="bombas-submersas"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Bombas Submersas</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="bombas-submersiveis"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Bombas Submersíveis</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="bombas-autoaspirantes"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Bombas Autoaspirantes</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="bombas-injetoras"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Bombas Injetoras</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="motobombas"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Motobombas</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="bombas-piscina"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Bombas para Piscina</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="bombas-irrigacao"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Bombas para Irrigação</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="bombas-poco"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Bombas para Poço</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="bombas-drenagem"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Bombas para Drenagem</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="bombas-esgoto"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Bombas para Esgoto</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="pressurizadores"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Pressurizadores</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="sistemas-pressurizacao"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Sistemas de Pressurização</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="acessorios-bombas"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Acessórios para Bombas</span>
+                    </label>
 
                 </div>
 
             </div>
 
-        </form>
+
+            <!-- IRRIGAÇÃO -->
+
+            <div class="grupo-categorias">
+
+                <div class="grupo-categorias-header">
+
+                    <span>
+                        <i class="fa-solid fa-seedling"></i>
+                    </span>
+
+                    <div>
+                        <h4>Irrigação</h4>
+
+                        <p>
+                            Produtos e acessórios para irrigação.
+                        </p>
+                    </div>
+
+                </div>
 
 
+                <div
+                    id="categoriasIrrigacao"
+                    class="lista-categorias"
+                >
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="aspersores"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Aspersores</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="microaspersores"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Microaspersores</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="gotejamento"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Gotejamento</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="mangueiras-irrigacao"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Mangueiras de Irrigação</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="tubos-irrigacao"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Tubos para Irrigação</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="conexoes-irrigacao"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Conexões de Irrigação</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="filtros-irrigacao"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Filtros de Irrigação</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="valvulas-irrigacao"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Válvulas de Irrigação</span>
+                    </label>
+
+                    <label class="categoria-checkbox">
+                        <input
+                            type="checkbox"
+                            name="categoriasProduto"
+                            value="acessorios-irrigacao"
+                        >
+                        <span class="categoria-checkbox-marca"></span>
+                        <span>Acessórios de Irrigação</span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESUMO -->
+
+            <div class="categorias-selecionadas">
+
+                <div class="categorias-selecionadas-titulo">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    <span>
+                        Categorias selecionadas
+                    </span>
+
+                </div>
+
+                <div
+                    id="resumoCategoriasProduto"
+                    class="resumo-categorias"
+                >
+                    <span class="resumo-vazio">
+                        Nenhuma categoria selecionada.
+                    </span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ====================================================
+             ETAPA 2 — FILTROS
+        ===================================================== -->
+
+        <section
+            class="produto-etapa-conteudo"
+            data-conteudo-etapa="2"
+        >
+
+            <div class="produto-secao-titulo">
+
+                <div class="produto-secao-icone">
+                    <i class="fa-solid fa-filter"></i>
+                </div>
+
+                <div>
+                    <h3>Filtros do produto</h3>
+
+                    <p>
+                        Defina os filtros que serão usados na loja.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div id="filtrosDinamicosProduto">
+
+                <div class="filtro-vazio">
+
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+                    <strong>
+                        Os filtros aparecerão conforme as categorias.
+                    </strong>
+
+                    <p>
+                        Primeiro selecione as categorias do produto.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ====================================================
+             ETAPA 3 — INFORMAÇÕES
+        ===================================================== -->
+
+        <section
+            class="produto-etapa-conteudo"
+            data-conteudo-etapa="3"
+        >
+
+            <div class="produto-secao-titulo">
+
+                <div class="produto-secao-icone">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+
+                <div>
+                    <h3>Informações do produto</h3>
+
+                    <p>
+                        Cadastre os dados principais do produto.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="produto-form-grid">
+
+                <div class="form-group campo-largo">
+
+                    <label for="novoProdutoNome">
+                        Nome do produto
+                    </label>
+
+                    <input
+                        type="text"
+                        id="novoProdutoNome"
+                        placeholder="Ex: STIHL MSA 220"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="novoProdutoCodigo">
+                        Código / SKU
+                    </label>
+
+                    <input
+                        type="text"
+                        id="novoProdutoCodigo"
+                        placeholder="Código do produto"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="novoProdutoMarca">
+                        Marca
+                    </label>
+
+                    <input
+                        type="text"
+                        id="novoProdutoMarca"
+                        placeholder="Ex: STIHL"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="novoProdutoLinha">
+                        Linha
+                    </label>
+
+                    <input
+                        type="text"
+                        id="novoProdutoLinha"
+                        placeholder="Ex: Linha a Bateria"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="novoProdutoModelo">
+                        Modelo
+                    </label>
+
+                    <input
+                        type="text"
+                        id="novoProdutoModelo"
+                        placeholder="Modelo"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="novoProdutoDescricao">
+                    Descrição
+                </label>
+
+                <textarea
+                    id="novoProdutoDescricao"
+                    rows="6"
+                    placeholder="Descreva o produto..."
+                ></textarea>
+
+            </div>
+
+
+            <div
+                id="especificacoesDinamicasProduto"
+                class="especificacoes-dinamicas"
+            >
+
+                <div class="filtro-vazio">
+
+                    <i class="fa-solid fa-sliders"></i>
+
+                    <strong>
+                        Especificações técnicas
+                    </strong>
+
+                    <p>
+                        Os campos específicos aparecerão conforme
+                        as categorias selecionadas.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ====================================================
+             ETAPA 4 — VENDA
+        ===================================================== -->
+
+        <section
+            class="produto-etapa-conteudo"
+            data-conteudo-etapa="4"
+        >
+
+            <div class="produto-secao-titulo">
+
+                <div class="produto-secao-icone">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </div>
+
+                <div>
+                    <h3>Venda e estoque</h3>
+
+                    <p>
+                        Configure preço, estoque e status do produto.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="produto-form-grid">
+
+                <div class="form-group">
+
+                    <label for="novoProdutoPreco">
+                        Preço de venda
+                    </label>
+
+                    <input
+                        type="number"
+                        id="novoProdutoPreco"
+                        min="0"
+                        step="0.01"
+                        placeholder="0,00"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="novoProdutoEstoque">
+                        Estoque
+                    </label>
+
+                    <input
+                        type="number"
+                        id="novoProdutoEstoque"
+                        min="0"
+                        step="1"
+                        placeholder="0"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="produto-destaques">
+
+                <h4>
+                    <i class="fa-solid fa-star"></i>
+                    Destaques
+                </h4>
+
+                <label class="filtro-checkbox">
+
+                    <input
+                        type="checkbox"
+                        id="novoProdutoPromocao"
+                    >
+
+                    <span>
+                        Promoções
+                    </span>
+
+                </label>
+
+                <label class="filtro-checkbox">
+
+                    <input
+                        type="checkbox"
+                        id="novoProdutoLancamento"
+                    >
+
+                    <span>
+                        Lançamentos
+                    </span>
+
+                </label>
+
+                <label class="filtro-checkbox">
+
+                    <input
+                        type="checkbox"
+                        id="novoProdutoMaisVendido"
+                    >
+
+                    <span>
+                        Mais Vendidos
+                    </span>
+
+                </label>
+
+                <label class="filtro-checkbox">
+
+                    <input
+                        type="checkbox"
+                        id="novoProdutoNovidade"
+                    >
+
+                    <span>
+                        Novidades
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <div class="produto-status">
+
+                <label class="filtro-checkbox">
+
+                    <input
+                        type="checkbox"
+                        id="novoProdutoAtivo"
+                        checked
+                    >
+
+                    <span>
+                        Produto ativo
+                    </span>
+
+                </label>
+
+            </div>
+
+        </section>
+
+
+        <!-- ====================================================
+             ETAPA 5 — IMAGENS
+        ===================================================== -->
+
+        <section
+            class="produto-etapa-conteudo"
+            data-conteudo-etapa="5"
+        >
+
+            <div class="produto-secao-titulo">
+
+                <div class="produto-secao-icone">
+                    <i class="fa-solid fa-images"></i>
+                </div>
+
+                <div>
+                    <h3>Imagens do produto</h3>
+
+                    <p>
+                        Adicione as fotos que serão exibidas na loja.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div
+                id="dropArea"
+                class="drop-area"
+            >
+
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                <h3>
+                    Arraste suas imagens aqui
+                </h3>
+
+                <p>
+                    ou clique para selecionar
+                </p>
+
+                <small>
+                    Você pode selecionar várias imagens.
+                </small>
+
+                <input
+                    type="file"
+                    id="arquivoImagem"
+                    accept="image/*"
+                    multiple
+                    hidden
+                >
+
+            </div>
+
+
+            <div
+                id="previewImagens"
+                class="preview-imagens"
+            ></div>
+
+        </section>
+
+
+        <!-- ====================================================
+             RODAPÉ
+        ===================================================== -->
+
+        <div class="cadastro-acoes">
+
+            <button
+                type="button"
+                id="salvarRascunho"
+                class="btn-rascunho"
+            >
+                <i class="fa-regular fa-floppy-disk"></i>
+                Salvar rascunho
+            </button>
+
+
+            <div class="acoes-navegacao">
+
+                <button
+                    type="button"
+                    id="btnAnterior"
+                    class="btn-cancelar"
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Voltar
+                </button>
+
+
+                <button
+                    type="button"
+                    id="btnProximo"
+                    class="btn-confirmar"
+                >
+                    Continuar
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+
+                <button
+                    type="button"
+                    id="btnPublicarProduto"
+                    class="btn-confirmar"
+                >
+                    <i class="fa-solid fa-check"></i>
+                    Cadastrar produto
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
             <!--==========================
                 CONFIGURAÇÕES
             ==========================-->

@@ -539,6 +539,183 @@ btnAnterior?.addEventListener(
 
 
 /*==================================================
+        BOTÃO CADASTRAR PRODUTO
+==================================================*/
+
+btnPublicarProduto?.addEventListener(
+    "click",
+    async () => {
+
+        try {
+
+            btnPublicarProduto.disabled = true;
+
+            btnPublicarProduto.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Cadastrando...
+            `;
+
+
+            /* INFORMAÇÕES */
+
+            const informacoes =
+                obterInformacoesProduto();
+
+
+            /* FILTROS */
+
+            const filtros =
+                obterFiltrosSelecionados();
+
+
+            /* ESPECIFICAÇÕES */
+
+            const especificacoes =
+                obterEspecificacoesProduto();
+
+
+            /* CATEGORIAS */
+
+            const categorias =
+                Array.from(
+                    checkboxesCategorias
+                )
+                .filter(
+                    checkbox => checkbox.checked
+                )
+                .map(
+                    checkbox => checkbox.value
+                );
+
+
+            /* DADOS DO PRODUTO */
+
+            const dadosProduto = {
+
+                ...informacoes,
+
+                categorias,
+
+                filtros,
+
+                especificacoes,
+
+                preco:
+                    Number(
+                        document.getElementById(
+                            "novoProdutoPreco"
+                        )?.value || 0
+                    ),
+
+                estoque:
+                    Number(
+                        document.getElementById(
+                            "novoProdutoEstoque"
+                        )?.value || 0
+                    ),
+
+                promocao:
+                    document.getElementById(
+                        "novoProdutoPromocao"
+                    )?.checked || false,
+
+                lancamento:
+                    document.getElementById(
+                        "novoProdutoLancamento"
+                    )?.checked || false,
+
+                mais_vendido:
+                    document.getElementById(
+                        "novoProdutoMaisVendido"
+                    )?.checked || false,
+
+                novidade:
+                    document.getElementById(
+                        "novoProdutoNovidade"
+                    )?.checked || false,
+
+                ativo:
+                    document.getElementById(
+                        "novoProdutoAtivo"
+                    )?.checked ?? true
+
+            };
+
+
+            console.log(
+                "Produto pronto para cadastro:",
+                dadosProduto
+            );
+
+
+            /* CADASTRAR */
+
+            const produtoCriado =
+                await criarProduto(
+                    dadosProduto
+                );
+
+
+            console.log(
+                "Produto cadastrado:",
+                produtoCriado
+            );
+
+
+            alert(
+                "Produto cadastrado com sucesso!"
+            );
+
+
+            /* FECHAR MODAL */
+
+            const modal =
+                document.getElementById(
+                    "modalNovoProduto"
+                );
+
+            if (modal) {
+                modal.classList.remove("ativo");
+            }
+
+
+            /* ATUALIZAR LISTA */
+
+            if (
+                typeof carregarProdutosAdmin ===
+                "function"
+            ) {
+                carregarProdutosAdmin();
+            }
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao cadastrar produto:",
+                erro
+            );
+
+            alert(
+                `Erro ao cadastrar produto: ${erro.message}`
+            );
+
+
+        } finally {
+
+            btnPublicarProduto.disabled = false;
+
+            btnPublicarProduto.innerHTML = `
+                <i class="fa-solid fa-check"></i>
+                Cadastrar produto
+            `;
+
+        }
+
+    }
+);
+
+/*==================================================
         CLIQUE DIRETO NAS ETAPAS
 ==================================================*/
 
@@ -1238,50 +1415,1421 @@ function obterInformacoesProduto() {
 
 const especificacoesCategoriasProduto = {
 
+    /*========================================
+        MOTOSSERRAS
+    ========================================*/
     motosserras: [
-
         {
             id: "cilindrada",
             nome: "Cilindrada",
             tipo: "text",
             placeholder: "Ex.: 30,1 cm³"
         },
-
         {
             id: "potencia",
             nome: "Potência",
             tipo: "text",
             placeholder: "Ex.: 1,2 kW"
         },
-
         {
             id: "comprimento-sabre",
             nome: "Comprimento do sabre",
             tipo: "text",
             placeholder: "Ex.: 30 cm"
         },
-
         {
             id: "peso",
             nome: "Peso",
             tipo: "text",
             placeholder: "Ex.: 4,2 kg"
         },
-
         {
             id: "tipo-motor",
             nome: "Tipo de motor",
-            tipo: "text",
-            placeholder: "Ex.: 2 tempos"
+            tipo: "select",
+            opcoes: [
+                "2 tempos",
+                "Elétrico",
+                "Bateria"
+            ]
         },
-
         {
             id: "capacidade-tanque",
             nome: "Capacidade do tanque",
             tipo: "text",
             placeholder: "Ex.: 0,25 l"
         }
+    ],
 
+
+    /*========================================
+        ROÇADEIRAS
+    ========================================*/
+    rocadeiras: [
+        {
+            id: "cilindrada",
+            nome: "Cilindrada",
+            tipo: "text",
+            placeholder: "Ex.: 27,2 cm³"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 0,8 kW"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 5,5 kg"
+        },
+        {
+            id: "diametro-corte",
+            nome: "Diâmetro de corte",
+            tipo: "text",
+            placeholder: "Ex.: 420 mm"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: [
+                "2 tempos",
+                "Elétrico",
+                "Bateria"
+            ]
+        },
+        {
+            id: "capacidade-tanque",
+            nome: "Capacidade do tanque",
+            tipo: "text",
+            placeholder: "Ex.: 0,34 l"
+        }
+    ],
+
+
+    /*========================================
+        SOPRADORES
+    ========================================*/
+    sopradores: [
+        {
+            id: "cilindrada",
+            nome: "Cilindrada",
+            tipo: "text",
+            placeholder: "Ex.: 27,2 cm³"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 0,8 kW"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 3,5 kg"
+        },
+        {
+            id: "velocidade-ar",
+            nome: "Velocidade máxima do ar",
+            tipo: "text",
+            placeholder: "Ex.: 70 m/s"
+        },
+        {
+            id: "vazao-ar",
+            nome: "Vazão de ar",
+            tipo: "text",
+            placeholder: "Ex.: 800 m³/h"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: [
+                "2 tempos",
+                "Elétrico",
+                "Bateria"
+            ]
+        }
+    ],
+
+
+    /*========================================
+        LAVADORAS
+    ========================================*/
+    lavadoras: [
+        {
+            id: "pressao-maxima",
+            nome: "Pressão máxima",
+            tipo: "text",
+            placeholder: "Ex.: 150 bar"
+        },
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 500 l/h"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 2,2 kW"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 20 kg"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: [
+                "Elétrico",
+                "Bateria"
+            ]
+        }
+    ],
+
+
+    /*========================================
+        LAVADORAS DE ALTA PRESSÃO
+    ========================================*/
+    "lavadoras-alta-pressao": [
+        {
+            id: "pressao-maxima",
+            nome: "Pressão máxima",
+            tipo: "text",
+            placeholder: "Ex.: 180 bar"
+        },
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 600 l/h"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 2,5 kW"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 25 kg"
+        },
+        {
+            id: "comprimento-mangueira",
+            nome: "Comprimento da mangueira",
+            tipo: "text",
+            placeholder: "Ex.: 10 m"
+        }
+    ],
+
+
+    /*========================================
+        CORTADORES DE GRAMA
+    ========================================*/
+    "cortadores-grama": [
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 1,8 kW"
+        },
+        {
+            id: "largura-corte",
+            nome: "Largura de corte",
+            tipo: "text",
+            placeholder: "Ex.: 46 cm"
+        },
+        {
+            id: "altura-corte",
+            nome: "Altura de corte",
+            tipo: "text",
+            placeholder: "Ex.: 25–75 mm"
+        },
+        {
+            id: "capacidade-recolhedor",
+            nome: "Capacidade do recolhedor",
+            tipo: "text",
+            placeholder: "Ex.: 55 l"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 28 kg"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: [
+                "Gasolina",
+                "Elétrico",
+                "Bateria"
+            ]
+        }
+    ],
+
+
+    /*========================================
+        PODADORES DE CERCA VIVA
+    ========================================*/
+    "podadores-cerca-viva": [
+        {
+            id: "cilindrada",
+            nome: "Cilindrada",
+            tipo: "text",
+            placeholder: "Ex.: 24,1 cm³"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 0,7 kW"
+        },
+        {
+            id: "comprimento-lamina",
+            nome: "Comprimento da lâmina",
+            tipo: "text",
+            placeholder: "Ex.: 60 cm"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 5,2 kg"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: [
+                "2 tempos",
+                "Elétrico",
+                "Bateria"
+            ]
+        }
+    ],
+
+
+    /*========================================
+        MOTOPODAS
+    ========================================*/
+    motopodas: [
+        {
+            id: "cilindrada",
+            nome: "Cilindrada",
+            tipo: "text",
+            placeholder: "Ex.: 27,2 cm³"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 0,8 kW"
+        },
+        {
+            id: "comprimento-sabre",
+            nome: "Comprimento do sabre",
+            tipo: "text",
+            placeholder: "Ex.: 30 cm"
+        },
+        {
+            id: "alcance",
+            nome: "Alcance",
+            tipo: "text",
+            placeholder: "Ex.: 3,5 m"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 7 kg"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: [
+                "2 tempos",
+                "Bateria"
+            ]
+        }
+    ],
+
+
+    /*========================================
+        COLHEDORES
+    ========================================*/
+    colhedores: [
+        {
+            id: "cilindrada",
+            nome: "Cilindrada",
+            tipo: "text",
+            placeholder: "Ex.: 27,2 cm³"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 0,8 kW"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 6 kg"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: [
+                "2 tempos",
+                "Bateria"
+            ]
+        }
+    ],
+
+
+    /*========================================
+        KOMBISYSTEM
+    ========================================*/
+    kombisystem: [
+        {
+            id: "cilindrada",
+            nome: "Cilindrada",
+            tipo: "text",
+            placeholder: "Ex.: 27,2 cm³"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 0,8 kW"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 4,5 kg"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: [
+                "2 tempos",
+                "Bateria"
+            ]
+        }
+    ],
+
+
+    /*========================================
+        LINHA ELÉTRICA
+    ========================================*/
+    "linha-eletrica": [
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 1,5 kW"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "text",
+            placeholder: "Ex.: 220 V"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 4 kg"
+        },
+        {
+            id: "tipo-alimentacao",
+            nome: "Alimentação",
+            tipo: "select",
+            opcoes: [
+                "Elétrica"
+            ]
+        }
+    ],
+
+
+    /*========================================
+        ASPIRADORES
+    ========================================*/
+    aspiradores: [
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 1,4 kW"
+        },
+        {
+            id: "vazao-ar",
+            nome: "Vazão de ar",
+            tipo: "text",
+            placeholder: "Ex.: 210 m³/h"
+        },
+        {
+            id: "capacidade-reservatorio",
+            nome: "Capacidade do reservatório",
+            tipo: "text",
+            placeholder: "Ex.: 20 l"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 7,5 kg"
+        },
+        {
+            id: "tipo-alimentacao",
+            nome: "Alimentação",
+            tipo: "select",
+            opcoes: [
+                "Elétrica",
+                "Bateria"
+            ]
+        }
+    ],
+
+
+    /*========================================
+        PEÇAS DE REPOSIÇÃO
+    ========================================*/
+    "pecas-reposicao": [
+        {
+            id: "codigo-peca",
+            nome: "Código da peça",
+            tipo: "text",
+            placeholder: "Ex.: 1123 640 2000"
+        },
+        {
+            id: "aplicacao-peca",
+            nome: "Aplicação",
+            tipo: "text",
+            placeholder: "Ex.: MS 170"
+        },
+        {
+            id: "material",
+            nome: "Material",
+            tipo: "text",
+            placeholder: "Ex.: Aço"
+        }
+    ],
+
+
+    /*========================================
+        FERRAMENTAS DE CORTE
+    ========================================*/
+    "ferramentas-corte": [
+        {
+            id: "tipo-ferramenta",
+            nome: "Tipo de ferramenta",
+            tipo: "text",
+            placeholder: "Ex.: Lâmina de corte"
+        },
+        {
+            id: "diametro",
+            nome: "Diâmetro",
+            tipo: "text",
+            placeholder: "Ex.: 230 mm"
+        },
+        {
+            id: "espessura",
+            nome: "Espessura",
+            tipo: "text",
+            placeholder: "Ex.: 2,5 mm"
+        },
+        {
+            id: "material",
+            nome: "Material",
+            tipo: "text",
+            placeholder: "Ex.: Aço"
+        }
+    ],
+
+
+    /*========================================
+        LUBRIFICANTES
+    ========================================*/
+    lubrificantes: [
+        {
+            id: "tipo-lubrificante",
+            nome: "Tipo de lubrificante",
+            tipo: "text",
+            placeholder: "Ex.: Óleo para motor 2 tempos"
+        },
+        {
+            id: "volume",
+            nome: "Volume",
+            tipo: "text",
+            placeholder: "Ex.: 1 litro"
+        },
+        {
+            id: "aplicacao-lubrificante",
+            nome: "Aplicação",
+            tipo: "text",
+            placeholder: "Ex.: Motores 2 tempos"
+        }
+    ],
+
+
+    /*========================================
+        COMBUSTÍVEIS
+    ========================================*/
+    combustiveis: [
+        {
+            id: "tipo-combustivel",
+            nome: "Tipo de combustível",
+            tipo: "text",
+            placeholder: "Ex.: Combustível para motores 2 tempos"
+        },
+        {
+            id: "volume",
+            nome: "Volume",
+            tipo: "text",
+            placeholder: "Ex.: 5 litros"
+        }
+    ],
+
+
+    /*========================================
+        EPIs
+    ========================================*/
+    epis: [
+        {
+            id: "tipo-epi",
+            nome: "Tipo de EPI",
+            tipo: "text",
+            placeholder: "Ex.: Protetor auricular"
+        },
+        {
+            id: "tamanho",
+            nome: "Tamanho",
+            tipo: "text",
+            placeholder: "Ex.: M"
+        },
+        {
+            id: "material",
+            nome: "Material",
+            tipo: "text",
+            placeholder: "Ex.: Policarbonato"
+        },
+        {
+            id: "certificacao",
+            nome: "Certificação",
+            tipo: "text",
+            placeholder: "Ex.: CA 12345"
+        }
+    ],
+
+
+    /*========================================
+        ACESSÓRIOS
+    ========================================*/
+    acessorios: [
+        {
+            id: "tipo-acessorio",
+            nome: "Tipo de acessório",
+            tipo: "text",
+            placeholder: "Ex.: Carregador"
+        },
+        {
+            id: "compatibilidade",
+            nome: "Compatibilidade",
+            tipo: "text",
+            placeholder: "Ex.: Linha STIHL AP"
+        },
+        {
+            id: "material",
+            nome: "Material",
+            tipo: "text",
+            placeholder: "Ex.: Plástico"
+        }
+    ],
+
+
+    /*========================================
+        LINHA A BATERIA
+    ========================================*/
+    "linha-bateria": [
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "text",
+            placeholder: "Ex.: 36 V"
+        },
+        {
+            id: "capacidade-bateria",
+            nome: "Capacidade da bateria",
+            tipo: "text",
+            placeholder: "Ex.: 4,8 Ah"
+        },
+        {
+            id: "tempo-funcionamento",
+            nome: "Tempo de funcionamento",
+            tipo: "text",
+            placeholder: "Ex.: Até 45 min"
+        },
+        {
+            id: "tempo-carregamento",
+            nome: "Tempo de carregamento",
+            tipo: "text",
+            placeholder: "Ex.: 80 min"
+        },
+        {
+            id: "peso",
+            nome: "Peso",
+            tipo: "text",
+            placeholder: "Ex.: 3,2 kg"
+        }
+    ],
+
+    /*========================================
+        BOMBAS CENTRÍFUGAS
+    ========================================*/
+    "bombas-centrifugas": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 10 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 30 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 1,5 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "diametro-entrada",
+            nome: "Diâmetro de entrada",
+            tipo: "text",
+            placeholder: "Ex.: 1 1/2 polegada"
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 1 polegada"
+        },
+        {
+            id: "rotacao",
+            nome: "Rotação",
+            tipo: "text",
+            placeholder: "Ex.: 3500 rpm"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: ["Elétrico", "Gasolina", "Diesel"]
+        }
+    ],
+
+    /*========================================
+        BOMBAS PERIFÉRICAS
+    ========================================*/
+    "bombas-perifericas": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 3 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 40 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 1 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "diametro-entrada",
+            nome: "Diâmetro de entrada",
+            tipo: "text",
+            placeholder: "Ex.: 1 polegada"
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 1 polegada"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: ["Elétrico"]
+        }
+    ],
+
+    /*========================================
+        BOMBAS SUBMERSAS
+    ========================================*/
+    "bombas-submersas": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 5 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 50 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 2 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 1 1/4 polegada"
+        },
+        {
+            id: "diametro-bomba",
+            nome: "Diâmetro da bomba",
+            tipo: "text",
+            placeholder: "Ex.: 4 polegadas"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: ["Elétrico"]
+        }
+    ],
+
+    /*========================================
+        BOMBAS SUBMERSÍVEIS
+    ========================================*/
+    "bombas-submersiveis": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 12 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 15 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 1 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 2 polegadas"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: ["Elétrico"]
+        }
+    ],
+
+    /*========================================
+        BOMBAS AUTOASPIRANTES
+    ========================================*/
+    "bombas-autoaspirantes": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 15 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 35 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 2 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "diametro-entrada",
+            nome: "Diâmetro de entrada",
+            tipo: "text",
+            placeholder: "Ex.: 2 polegadas"
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 2 polegadas"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: ["Elétrico", "Gasolina", "Diesel"]
+        }
+    ],
+
+    /*========================================
+        BOMBAS INJETORAS
+    ========================================*/
+    "bombas-injetoras": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 2 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 60 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 1 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "diametro-entrada",
+            nome: "Diâmetro de entrada",
+            tipo: "text",
+            placeholder: "Ex.: 1 polegada"
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 1 polegada"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: ["Elétrico"]
+        }
+    ],
+
+    /*========================================
+        MOTOBOMBAS PARA IRRIGAÇÃO
+    ========================================*/
+    "bombas-motobombas-irrigacao": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 30 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 40 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 5,5 cv"
+        },
+        {
+            id: "combustivel",
+            nome: "Combustível",
+            tipo: "select",
+            opcoes: ["Gasolina", "Diesel"]
+        },
+        {
+            id: "diametro-entrada",
+            nome: "Diâmetro de entrada",
+            tipo: "text",
+            placeholder: "Ex.: 2 polegadas"
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 2 polegadas"
+        },
+        {
+            id: "rotacao",
+            nome: "Rotação",
+            tipo: "text",
+            placeholder: "Ex.: 3600 rpm"
+        }
+    ],
+
+    /*========================================
+        BOMBAS PARA PISCINA
+    ========================================*/
+    "bombas-piscina": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 12 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 12 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 1 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "diametro-entrada",
+            nome: "Diâmetro de entrada",
+            tipo: "text",
+            placeholder: "Ex.: 1 1/2 polegada"
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 1 1/2 polegada"
+        }
+    ],
+
+    /*========================================
+        BOMBAS PARA IRRIGAÇÃO
+    ========================================*/
+    "bombas-irrigacao": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 20 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 40 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 3 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "diametro-entrada",
+            nome: "Diâmetro de entrada",
+            tipo: "text",
+            placeholder: "Ex.: 2 polegadas"
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 2 polegadas"
+        }
+    ],
+
+    /*========================================
+        BOMBAS PARA POÇO
+    ========================================*/
+    "bombas-poco": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 5 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 80 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 2 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "diametro-bomba",
+            nome: "Diâmetro da bomba",
+            tipo: "text",
+            placeholder: "Ex.: 4 polegadas"
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 1 1/4 polegada"
+        }
+    ],
+
+    /*========================================
+        BOMBAS PARA DRENAGEM
+    ========================================*/
+    "bombas-drenagem": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 15 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 15 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 2 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 2 polegadas"
+        },
+        {
+            id: "tipo-motor",
+            nome: "Tipo de motor",
+            tipo: "select",
+            opcoes: ["Elétrico"]
+        }
+    ],
+
+    /*========================================
+        BOMBAS PARA ESGOTO
+    ========================================*/
+    "bombas-esgoto": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 20 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 20 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 3 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "diametro-saida",
+            nome: "Diâmetro de saída",
+            tipo: "text",
+            placeholder: "Ex.: 3 polegadas"
+        },
+        {
+            id: "passagem-solidos",
+            nome: "Passagem de sólidos",
+            tipo: "text",
+            placeholder: "Ex.: 35 mm"
+        }
+    ],
+
+    /*========================================
+        PRESSURIZADORES
+    ========================================*/
+    "bombas-pressurizadores": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 4 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 20 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 1 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "pressao-maxima",
+            nome: "Pressão máxima",
+            tipo: "text",
+            placeholder: "Ex.: 40 mca"
+        }
+    ],
+
+    /*========================================
+        SISTEMAS DE PRESSURIZAÇÃO
+    ========================================*/
+    "bombas-sistemas-pressurizacao": [
+        {
+            id: "vazao",
+            nome: "Vazão",
+            tipo: "text",
+            placeholder: "Ex.: 10 m³/h"
+        },
+        {
+            id: "altura-manometrica",
+            nome: "Altura manométrica",
+            tipo: "text",
+            placeholder: "Ex.: 30 m"
+        },
+        {
+            id: "potencia",
+            nome: "Potência",
+            tipo: "text",
+            placeholder: "Ex.: 3 cv"
+        },
+        {
+            id: "tensao",
+            nome: "Tensão",
+            tipo: "select",
+            opcoes: ["127 V", "220 V", "380 V", "Bivolt"]
+        },
+        {
+            id: "fase",
+            nome: "Fase",
+            tipo: "select",
+            opcoes: ["Monofásica", "Trifásica"]
+        },
+        {
+            id: "pressao-maxima",
+            nome: "Pressão máxima",
+            tipo: "text",
+            placeholder: "Ex.: 40 mca"
+        },
+        {
+            id: "numero-bombas",
+            nome: "Número de bombas",
+            tipo: "text",
+            placeholder: "Ex.: 2"
+        }
+    ],
+
+    /*========================================
+        ACESSÓRIOS PARA BOMBAS
+    ========================================*/
+    "bombas-acessorios": [
+        {
+            id: "tipo-acessorio",
+            nome: "Tipo de acessório",
+            tipo: "text",
+            placeholder: "Ex.: Flange, válvula ou conexão"
+        },
+        {
+            id: "diametro",
+            nome: "Diâmetro",
+            tipo: "text",
+            placeholder: "Ex.: 1 1/2 polegada"
+        },
+        {
+            id: "material",
+            nome: "Material",
+            tipo: "text",
+            placeholder: "Ex.: PVC"
+        },
+        {
+            id: "compatibilidade",
+            nome: "Compatibilidade",
+            tipo: "text",
+            placeholder: "Ex.: Bombas 1,5 cv"
+        }
     ]
 
 };
@@ -1303,68 +2851,51 @@ function atualizarEspecificacoesProduto() {
     }
 
 
+    /*==================================================
+            CATEGORIAS SELECIONADAS
+    ==================================================*/
+
     const categoriasSelecionadas =
         Array.from(
             checkboxesCategorias
         )
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value);
+        .filter(
+            checkbox => checkbox.checked
+        )
+        .map(
+            checkbox => checkbox.value
+        );
 
 
     /*==================================================
-            NENHUMA CATEGORIA
+            COMBINAR ESPECIFICAÇÕES
     ==================================================*/
 
-    if (categoriasSelecionadas.length === 0) {
-
-        especificacoesDinamicasProduto.innerHTML = `
-            <div class="especificacoes-vazio">
-
-                <i class="fa-solid fa-sliders"></i>
-
-                <strong>
-                    Especificações técnicas
-                </strong>
-
-                <p>
-                    Os campos específicos aparecerão
-                    conforme as categorias selecionadas.
-                </p>
-
-            </div>
-        `;
-
-        return;
-    }
-
-
-    /*==================================================
-            JUNTAR ESPECIFICAÇÕES
-    ==================================================*/
-
-    const especificacoesCombinadas = new Map();
+    const especificacoesCombinadas =
+        new Map();
 
 
     categoriasSelecionadas.forEach(
         categoria => {
 
-            const especificacoes =
+            const configuracao =
                 especificacoesCategoriasProduto[
                     categoria
                 ];
 
 
-            if (!especificacoes) {
+            if (!configuracao) {
                 return;
             }
 
 
-            especificacoes.forEach(
+            configuracao.forEach(
                 especificacao => {
 
                     if (
-                        !especificacoesCombinadas
-                            .has(especificacao.id)
+                        !especificacoesCombinadas.has(
+                            especificacao.id
+                        )
                     ) {
 
                         especificacoesCombinadas.set(
@@ -1390,6 +2921,7 @@ function atualizarEspecificacoesProduto() {
     ) {
 
         especificacoesDinamicasProduto.innerHTML = `
+
             <div class="especificacoes-vazio">
 
                 <i class="fa-solid fa-sliders"></i>
@@ -1404,6 +2936,7 @@ function atualizarEspecificacoesProduto() {
                 </p>
 
             </div>
+
         `;
 
         return;
@@ -1415,6 +2948,7 @@ function atualizarEspecificacoesProduto() {
     ==================================================*/
 
     especificacoesDinamicasProduto.innerHTML = `
+
         <div class="especificacoes-grid">
 
             ${
@@ -1422,36 +2956,132 @@ function atualizarEspecificacoesProduto() {
                     especificacoesCombinadas.values()
                 )
                 .map(
-                    especificacao => `
-                        <div
-                            class="campo-especificacao"
-                        >
+                    especificacao => {
 
-                            <label
-                                for="especificacao_${especificacao.id}"
+                        /* SELECT */
+
+                        if (
+                            especificacao.tipo === "select"
+                        ) {
+
+                            return `
+
+                                <div
+                                    class="campo-especificacao"
+                                >
+
+                                    <label
+                                        for="especificacao_${especificacao.id}"
+                                    >
+                                        ${especificacao.nome}
+                                    </label>
+
+                                    <select
+                                        id="especificacao_${especificacao.id}"
+                                        name="especificacao_${especificacao.id}"
+                                    >
+
+                                        <option value="">
+                                            Selecione...
+                                        </option>
+
+                                        ${
+                                            (
+                                                especificacao.opcoes || []
+                                            )
+                                            .map(
+                                                opcao => `
+                                                    <option
+                                                        value="${opcao}"
+                                                    >
+                                                        ${opcao}
+                                                    </option>
+                                                `
+                                            )
+                                            .join("")
+                                        }
+
+                                    </select>
+
+                                </div>
+
+                            `;
+
+                        }
+
+
+                        /* INPUT */
+
+                        return `
+
+                            <div
+                                class="campo-especificacao"
                             >
-                                ${especificacao.nome}
-                            </label>
 
-                            <input
-                                type="${especificacao.tipo || "text"}"
-                                id="especificacao_${especificacao.id}"
-                                name="especificacao_${especificacao.id}"
-                                placeholder="${especificacao.placeholder || ""}"
-                                autocomplete="off"
-                            >
+                                <label
+                                    for="especificacao_${especificacao.id}"
+                                >
+                                    ${especificacao.nome}
+                                </label>
 
-                        </div>
-                    `
+                                <input
+                                    type="${especificacao.tipo || "text"}"
+                                    id="especificacao_${especificacao.id}"
+                                    name="especificacao_${especificacao.id}"
+                                    placeholder="${especificacao.placeholder || ""}"
+                                    autocomplete="off"
+                                >
+
+                            </div>
+
+                        `;
+
+                    }
                 )
                 .join("")
             }
 
         </div>
+
     `;
 
 }
+/*==================================================
+        COLETAR ESPECIFICAÇÕES DO PRODUTO
+==================================================*/
 
+function obterEspecificacoesProduto() {
+
+    const especificacoes = {};
+
+    if (!especificacoesDinamicasProduto) {
+        return especificacoes;
+    }
+
+    const campos =
+        especificacoesDinamicasProduto.querySelectorAll(
+            "input, select"
+        );
+
+    campos.forEach(campo => {
+
+        if (!campo.id.startsWith("especificacao_")) {
+            return;
+        }
+
+        const id =
+            campo.id.replace(
+                "especificacao_",
+                ""
+            );
+
+        especificacoes[id] =
+            campo.value.trim();
+
+    });
+
+    return especificacoes;
+}
 
 /*==================================================
         ATUALIZAR AO ALTERAR CATEGORIA
@@ -2889,4 +4519,5 @@ document.addEventListener(
     carregarProdutosAdmin();
   }
   
-);
+)
+

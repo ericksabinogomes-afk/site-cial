@@ -997,10 +997,11 @@ app.post(
     exigirAdmin,
     async (req, res) => {
 
- const {
+const {
     nome,
     codigo,
     categoria,
+    categorias,
     preco,
     estoque,
     imagem,
@@ -1025,7 +1026,14 @@ app.post(
     tipoIrrigacao
 } = req.body;
 
-  if (!nome || !categoria || preco == null) {
+// Aceita tanto categoria única quanto as categorias do novo formulário
+const categoriaFinal =
+    categoria ||
+    (Array.isArray(categorias) && categorias.length > 0
+        ? categorias[0]
+        : "");
+
+ if (!nome || !categoriaFinal || preco == null) {
     return res.status(400).json({
       ok: false,
       erro: 'Informe nome, categoria e preço'
@@ -1038,7 +1046,7 @@ app.post(
     .insert([{
         nome,
         codigo: codigo || `CIAL-${Date.now()}`,
-        categoria,
+        categoria: categoriaFinal,
         preco: Number(preco),
         estoque: estoque || 'Em estoque',
         imagem: imagem || '',

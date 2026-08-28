@@ -2056,6 +2056,424 @@ thead th:last-child{
 
 
 /* ============================================================
+   ESPECIFICAÇÕES TÉCNICAS
+============================================================ */
+
+#especificacoesDinamicasProduto{
+
+    margin-top:20px;
+
+}
+
+
+/* GRID DOS CAMPOS */
+
+#especificacoesDinamicasProduto .especificacoes-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:18px;
+
+    padding:22px;
+
+    border:1px solid var(--borda);
+    border-radius:15px;
+
+    background:#FAFAFA;
+
+}
+
+
+/* CAMPO */
+
+#especificacoesDinamicasProduto
+.campo-especificacao{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:7px;
+
+}
+
+
+/* LABEL */
+
+#especificacoesDinamicasProduto
+.campo-especificacao label{
+
+    color:var(--texto);
+
+    font-size:11px;
+
+    font-weight:800;
+
+}
+
+
+/* INPUT E SELECT */
+
+#especificacoesDinamicasProduto
+.campo-especificacao input,
+
+#especificacoesDinamicasProduto
+.campo-especificacao select{
+
+    width:100%;
+
+    min-height:46px;
+
+    padding:12px 14px;
+
+    border:1px solid #DCDCDC;
+
+    border-radius:10px;
+
+    background:var(--branco);
+
+    color:var(--texto);
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:12px;
+
+    outline:none;
+
+    transition:.2s ease;
+
+}
+
+
+/* PLACEHOLDER */
+
+#especificacoesDinamicasProduto
+.campo-especificacao input::placeholder{
+
+    color:#AAAAAA;
+
+}
+
+
+/* FOCO */
+
+#especificacoesDinamicasProduto
+.campo-especificacao input:focus,
+
+#especificacoesDinamicasProduto
+.campo-especificacao select:focus{
+
+    border-color:var(--laranja);
+
+    box-shadow:
+        0 0 0 3px rgba(245,130,32,.10);
+
+}
+
+
+/* SELECT */
+
+#especificacoesDinamicasProduto
+.campo-especificacao select{
+
+    cursor:pointer;
+
+}
+
+
+/* ESTADO VAZIO */
+
+#especificacoesDinamicasProduto
+.especificacoes-vazio{
+
+    min-height:150px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:25px;
+
+    border:1px dashed #D8D8D8;
+
+    border-radius:15px;
+
+    background:#FAFAFA;
+
+    text-align:center;
+
+}
+
+
+#especificacoesDinamicasProduto
+.especificacoes-vazio > i{
+
+    margin-bottom:10px;
+
+    color:var(--laranja);
+
+    font-size:28px;
+
+}
+
+
+#especificacoesDinamicasProduto
+.especificacoes-vazio strong{
+
+    color:var(--texto);
+
+    font-size:13px;
+
+}
+
+
+#especificacoesDinamicasProduto
+.especificacoes-vazio p{
+
+    margin-top:6px;
+
+    color:var(--texto-suave);
+
+    font-size:11px;
+
+}
+
+
+/* ============================================================
+   RESPONSIVO
+============================================================ */
+
+@media(max-width:800px){
+
+    #especificacoesDinamicasProduto
+    .especificacoes-grid{
+
+        grid-template-columns:1fr;
+
+        padding:18px;
+
+    }
+
+}
+
+/* ============================================================
+   FILTROS DINÂMICOS DO PRODUTO
+============================================================ */
+
+#filtrosDinamicosProduto{
+
+    margin-top:22px;
+
+}
+
+
+/* GRUPO DO FILTRO */
+
+#filtrosDinamicosProduto .grupo-filtro-produto{
+
+    margin-bottom:22px;
+
+    padding:20px;
+
+    background:#FAFAFA;
+
+    border:1px solid var(--borda);
+
+    border-radius:15px;
+
+}
+
+
+/* TÍTULO DO GRUPO */
+
+#filtrosDinamicosProduto .grupo-filtro-produto h4{
+
+    margin:0 0 5px;
+
+    color:var(--texto);
+
+    font-size:13px;
+
+    font-weight:800;
+
+}
+
+
+/* DESCRIÇÃO */
+
+#filtrosDinamicosProduto .grupo-filtro-produto p{
+
+    margin:0 0 14px;
+
+    color:var(--texto-suave);
+
+    font-size:11px;
+
+}
+
+
+/* OPÇÕES */
+
+#filtrosDinamicosProduto .filtro-opcoes-produto{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+}
+
+
+/* CADA CHECKBOX */
+
+#filtrosDinamicosProduto .filtro-checkbox-produto{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+
+    min-height:42px;
+
+    padding:10px 14px;
+
+    background:#FFFFFF;
+
+    border:1px solid #DDDDDD;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+
+    font-size:11px;
+
+    font-weight:600;
+
+    color:var(--texto);
+
+}
+
+
+/* CHECKBOX */
+
+#filtrosDinamicosProduto .filtro-checkbox-produto input{
+
+    width:16px;
+
+    height:16px;
+
+    margin:0;
+
+    accent-color:var(--laranja);
+
+    cursor:pointer;
+
+}
+
+
+/* TEXTO */
+
+#filtrosDinamicosProduto .filtro-checkbox-produto span{
+
+    white-space:nowrap;
+
+}
+
+
+/* HOVER */
+
+#filtrosDinamicosProduto .filtro-checkbox-produto:hover{
+
+    border-color:var(--laranja);
+
+    background:#FFF8F2;
+
+}
+
+
+/* OPÇÃO MARCADA */
+
+#filtrosDinamicosProduto
+.filtro-checkbox-produto:has(input:checked){
+
+    border-color:var(--laranja);
+
+    background:#FFF1E6;
+
+    color:var(--laranja);
+
+}
+
+
+/* ESTADO VAZIO */
+
+#filtrosDinamicosProduto .filtro-vazio{
+
+    min-height:150px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:25px;
+
+    border:1px dashed #D8D8D8;
+
+    border-radius:15px;
+
+    background:#FAFAFA;
+
+    text-align:center;
+
+}
+
+
+#filtrosDinamicosProduto .filtro-vazio i{
+
+    margin-bottom:10px;
+
+    color:var(--laranja);
+
+    font-size:28px;
+
+}
+
+
+#filtrosDinamicosProduto .filtro-vazio strong{
+
+    color:var(--texto);
+
+    font-size:13px;
+
+}
+
+
+#filtrosDinamicosProduto .filtro-vazio p{
+
+    margin-top:6px;
+
+    color:var(--texto-suave);
+
+    font-size:11px;
+
+}
+
+/* ============================================================
    FILTROS DINÂMICOS
 ============================================================ */
 
@@ -2444,6 +2862,296 @@ thead th:last-child{
 
     .cadastro-acoes{
         padding:15px;
+    }
+
+}
+/* ============================================================
+   ETAPA 5 — IMAGENS DO PRODUTO
+============================================================ */
+
+/* ÁREA DE UPLOAD */
+
+#dropArea {
+    width: 100%;
+    min-height: 250px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 35px 25px;
+
+    border: 2px dashed #D8D8D8;
+    border-radius: 18px;
+
+    background: #FAFAFA;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    transition: all .2s ease;
+}
+
+
+/* HOVER */
+
+#dropArea:hover {
+    border-color: #FF7A00;
+    background: #FFF9F4;
+}
+
+
+/* QUANDO ARRASTA IMAGEM */
+
+#dropArea.ativo {
+    border-color: #FF7A00;
+    background: #FFF1E6;
+
+    transform: scale(1.01);
+}
+
+
+/* INPUT DE ARQUIVO */
+
+#arquivoImagem {
+    display: none;
+}
+
+
+/* ============================================================
+   PRÉVIA PRINCIPAL DO PRODUTO
+============================================================ */
+
+.preview-card {
+    width: 100%;
+
+    padding: 20px;
+
+    border: 1px solid #E2E2E2;
+    border-radius: 16px;
+
+    background: #FFFFFF;
+}
+
+
+.preview-card .preview-imagem {
+    width: 100%;
+    height: 300px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    border-radius: 12px;
+
+    background: #FAFAFA;
+}
+
+
+.preview-card .preview-imagem img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    display: block;
+}
+
+
+/* SEM IMAGEM */
+
+.preview-sem-imagem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    color: #B0B0B0;
+}
+
+
+.preview-sem-imagem i {
+    font-size: 34px;
+}
+
+
+.preview-sem-imagem small {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   LISTA DE IMAGENS
+============================================================ */
+
+#previewImagens {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 16px;
+
+    margin-top: 20px;
+}
+
+
+/* CARD DA IMAGEM */
+
+.preview-imagem-item {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 1 / 1;
+
+    overflow: hidden;
+
+    border: 1px solid #E0E0E0;
+    border-radius: 14px;
+
+    background: #FFFFFF;
+
+    transition: all .2s ease;
+}
+
+
+/* HOVER */
+
+.preview-imagem-item:hover {
+    border-color: #FF7A00;
+
+    box-shadow:
+        0 6px 18px rgba(0,0,0,.08);
+}
+
+
+/* IMAGEM */
+
+.preview-imagem-item img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: contain;
+
+    background: #FAFAFA;
+}
+
+
+/* ============================================================
+   IMAGEM PRINCIPAL
+============================================================ */
+
+.preview-imagem-item.principal {
+    border: 2px solid #FF7A00;
+}
+
+
+/* ETIQUETA PRINCIPAL */
+
+.preview-imagem-item span {
+    position: absolute;
+
+    left: 8px;
+    bottom: 8px;
+
+    padding: 5px 9px;
+
+    border-radius: 6px;
+
+    background: #FF7A00;
+    color: #FFFFFF;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: .3px;
+}
+
+
+/* ============================================================
+   BOTÃO REMOVER
+============================================================ */
+
+.preview-imagem-remover {
+    position: absolute;
+
+    top: 8px;
+    right: 8px;
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #FFFFFF;
+    color: #E74C3C;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 3px 10px rgba(0,0,0,.15);
+
+    transition: all .2s ease;
+}
+
+
+.preview-imagem-remover:hover {
+    background: #E74C3C;
+    color: #FFFFFF;
+
+    transform: scale(1.08);
+}
+
+
+/* ============================================================
+   RESPONSIVO
+============================================================ */
+
+@media (max-width: 800px) {
+
+    #previewImagens {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .preview-card .preview-imagem {
+        height: 240px;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    #previewImagens {
+        grid-template-columns: 1fr;
+    }
+
+    #dropArea {
+        min-height: 210px;
+
+        padding: 25px 18px;
     }
 
 }

@@ -254,13 +254,13 @@ function criarCard(produto) {
         </button>
       </div>
 
-      <div class="card-imagem">
-        <img
-          src="${produto.imagem || 'imagens/produto-sem-imagem.png'}"
-          alt="${produto.nome}"
-          loading="lazy"
-          onerror="this.src='imagens/produto-sem-imagem.png'">
-      </div>
+     <div class="card-imagem">
+    <img
+        src="${produto.imagem || 'https://placehold.co/600x600?text=Sem+imagem'}"
+        alt="${produto.nome}"
+        loading="lazy"
+        onerror="this.onerror=null; this.src='https://placehold.co/600x600?text=Sem+imagem'">
+</div>
 
       <div class="card-info">
         <span class="card-categoria">

@@ -1073,11 +1073,129 @@ const categoriaFinal =
     .single();
 
 
-    if (error) {
-      return res.status(500).json({ ok: false, erro: error.message });
-    }
+   if (error) {
+  return res.status(500).json({
+    ok: false,
+    erro: error.message
+  });
+}
 
-    return res.status(201).json({ ok: true, data });
+
+/*==================================================
+    SALVAR TODAS AS CATEGORIAS DO PRODUTO
+==================================================*/
+
+const categoriasSelecionadas =
+  Array.isArray(categorias)
+    ? categorias.filter(Boolean)
+    : categoriaFinal
+      ? [categoriaFinal]
+      : [];
+
+
+if (categoriasSelecionadas.length > 0) {
+
+  /* Buscar os IDs das categorias pelo slug */
+
+  const {
+    data: categoriasBanco,
+    error: erroCategorias
+  } = await supabase
+    .from("categorias")
+    .select("id, slug")
+    .in("slug", categoriasSelecionadas);
+
+
+  if (erroCategorias) {
+
+    console.error(
+      "Erro ao buscar categorias:",
+      erroCategorias
+    );
+
+    /* desfaz o produto criado */
+
+    await supabase
+      .from("produtos")
+      .delete()
+      .eq("id", data.id);
+
+    return res.status(500).json({
+      ok: false,
+      erro: erroCategorias.message
+    });
+
+  }
+
+
+  /* Verificar se todas as categorias existem */
+
+  if (
+    !categoriasBanco ||
+    categoriasBanco.length !==
+      categoriasSelecionadas.length
+  ) {
+
+    await supabase
+      .from("produtos")
+      .delete()
+      .eq("id", data.id);
+
+    return res.status(400).json({
+      ok: false,
+      erro:
+        "Uma ou mais categorias selecionadas não foram encontradas."
+    });
+
+  }
+
+
+  /* Montar relações */
+
+  const relacoesCategorias =
+    categoriasBanco.map(categoria => ({
+      produto_id: data.id,
+      categoria_id: categoria.id
+    }));
+
+
+  /* Gravar relações */
+
+  const {
+    error: erroRelacoes
+  } = await supabase
+    .from("produto_categorias")
+    .insert(relacoesCategorias);
+
+
+  if (erroRelacoes) {
+
+    console.error(
+      "Erro ao salvar categorias do produto:",
+      erroRelacoes
+    );
+
+    /* desfaz o produto criado */
+
+    await supabase
+      .from("produtos")
+      .delete()
+      .eq("id", data.id);
+
+    return res.status(500).json({
+      ok: false,
+      erro: erroRelacoes.message
+    });
+
+  }
+
+}
+
+
+return res.status(201).json({
+  ok: true,
+  data
+});
   } catch (err) {
     res.status(500).json({ ok: false, erro: err.message });
   }

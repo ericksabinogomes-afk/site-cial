@@ -537,6 +537,49 @@ btnAnterior?.addEventListener(
   }
 );
 
+async function enviarImagensProduto() {
+
+    console.log("🔥 UPLOAD FOI CHAMADO");
+console.log("📸 ARQUIVOS NO UPLOAD:", arquivosSelecionados);
+
+    if (!arquivosSelecionados || arquivosSelecionados.length === 0) {
+        return [];
+    }
+
+    const formData = new FormData();
+
+    arquivosSelecionados.forEach(arquivo => {
+        formData.append("imagens", arquivo);
+    });
+
+    const res = await fetch(`${API_BASE}/upload-imagens`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        },
+        body: formData
+    });
+
+    const texto = await res.text();
+
+    let json;
+
+    try {
+        json = JSON.parse(texto);
+    } catch {
+        throw new Error(
+            `Resposta inválida ao enviar imagens: ${texto}`
+        );
+    }
+
+    if (!res.ok || !json.ok) {
+        throw new Error(
+            json.erro || "Erro ao enviar imagens"
+        );
+    }
+
+    return json.urls || [];
+}
 
 /*==================================================
         BOTÃO CADASTRAR PRODUTO
@@ -587,6 +630,16 @@ btnPublicarProduto?.addEventListener(
                     checkbox => checkbox.value
                 );
 
+            
+
+                /* IMAGENS */
+
+const urlsImagens = await enviarImagensProduto();
+
+const imagemPrincipal = urlsImagens[0] || "";
+
+const imagensAdicionais = urlsImagens.slice(1);
+
 
             /* DADOS DO PRODUTO */
 
@@ -594,6 +647,9 @@ btnPublicarProduto?.addEventListener(
 
                 ...informacoes,
 
+                imagem: imagemPrincipal,
+                imagens: imagensAdicionais,
+ 
                 categorias,
 
                 filtros,
@@ -4191,7 +4247,141 @@ function renderizarProdutos() {
   }
 }
 
+/*==================================================
+        EDITAR PRODUTO
+==================================================*/
 
+async function abrirEdicaoProduto(id) {
+
+    const produto = produtosAdmin.find(
+        item => Number(item.id) === Number(id)
+    );
+
+    if (!produto) {
+        alert("Produto não encontrado.");
+        return;
+    }
+
+    const modal = document.getElementById("modalNovoProduto");
+
+    if (!modal) {
+        alert("Modal de produto não encontrado.");
+        return;
+    }
+
+    /* ABRIR MODAL */
+
+    modal.classList.add("ativo");
+
+    /* NOME */
+
+    const nome = document.getElementById("novoProdutoNome");
+    if (nome) {
+        nome.value = produto.nome || "";
+    }
+
+    /* CÓDIGO */
+
+    const codigo = document.getElementById("novoProdutoCodigo");
+    if (codigo) {
+        codigo.value = produto.codigo || "";
+    }
+
+    /* MARCA */
+
+    const marca = document.getElementById("novoProdutoMarca");
+    if (marca) {
+        marca.value = produto.marca || "";
+    }
+
+    /* LINHA */
+
+    const linha = document.getElementById("novoProdutoLinha");
+    if (linha) {
+        linha.value = produto.linha || "";
+    }
+
+    /* MODELO */
+
+    const modelo = document.getElementById("novoProdutoModelo");
+    if (modelo) {
+        modelo.value = produto.modelo || "";
+    }
+
+    /* DESCRIÇÃO */
+
+    const descricao = document.getElementById("novoProdutoDescricao");
+    if (descricao) {
+        descricao.value = produto.descricao || "";
+    }
+
+    /* PREÇO */
+
+    const preco = document.getElementById("novoProdutoPreco");
+    if (preco) {
+        preco.value = produto.preco ?? 0;
+    }
+
+    /* ESTOQUE */
+
+    const estoque = document.getElementById("novoProdutoEstoque");
+    if (estoque) {
+        estoque.value = produto.estoque ?? 0;
+    }
+
+    /* DESTAQUES */
+
+    const promocao = document.getElementById("novoProdutoPromocao");
+    if (promocao) {
+        promocao.checked = !!produto.promocao;
+    }
+
+    const lancamento = document.getElementById("novoProdutoLancamento");
+    if (lancamento) {
+        lancamento.checked = !!produto.lancamento;
+    }
+
+    const maisVendido = document.getElementById("novoProdutoMaisVendido");
+    if (maisVendido) {
+        maisVendido.checked = !!produto.mais_vendido;
+    }
+
+    const novidade = document.getElementById("novoProdutoNovidade");
+    if (novidade) {
+        novidade.checked = !!produto.novidade;
+    }
+
+    const ativo = document.getElementById("novoProdutoAtivo");
+    if (ativo) {
+        ativo.checked = produto.ativo ?? true;
+    }
+
+    /* CATEGORIAS */
+
+    const categoriasProduto =
+        Array.isArray(produto.categorias)
+            ? produto.categorias
+            : [];
+
+    checkboxesCategorias.forEach(checkbox => {
+
+        checkbox.checked =
+            categoriasProduto.includes(checkbox.value);
+
+    });
+
+    atualizarResumoCategorias();
+    atualizarFiltrosDinamicos();
+
+    /* ETAPA INICIAL */
+
+    mostrarEtapaProduto(1);
+
+    console.log(
+        "Editando produto:",
+        produto
+    );
+}
 
 /* Excluir produto */
 document.addEventListener("click", async event => {

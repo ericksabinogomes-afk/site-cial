@@ -352,6 +352,9 @@ btnAdd.forEach(botao => {
       return;
     }
 
+    produtoEditandoId = null;
+produtoEditando = null;
+
     modalNovoProduto.classList.add("ativo");
 
   });
@@ -706,16 +709,20 @@ const imagensAdicionais = urlsImagens.slice(1);
 
             /* CADASTRAR */
 
-            const produtoCriado =
-                await criarProduto(
-                    dadosProduto
-                );
+const produtoSalvo = produtoEditandoId
+    ? await atualizarProduto(
+        produtoEditandoId,
+        dadosProduto
+      )
+    : await criarProduto(
+        dadosProduto
+      );
 
 
-            console.log(
-                "Produto cadastrado:",
-                produtoCriado
-            );
+           console.log(
+    "Produto cadastrado:",
+    produtoSalvo
+);
 
 
             alert(
@@ -4262,6 +4269,9 @@ async function abrirEdicaoProduto(id) {
         return;
     }
 
+    produtoEditandoId = produto.id;
+    produtoEditando = produto;
+
     const modal = document.getElementById("modalNovoProduto");
 
     if (!modal) {
@@ -4370,8 +4380,36 @@ async function abrirEdicaoProduto(id) {
 
     });
 
-    atualizarResumoCategorias();
+      atualizarResumoCategorias();
+
+    /* ATUALIZA FILTROS DINÂMICOS */
     atualizarFiltrosDinamicos();
+
+    /* RESTAURA FILTROS SALVOS */
+    const filtrosSalvos = produto.filtros || {};
+
+    Object.entries(filtrosSalvos).forEach(
+        ([grupo, valores]) => {
+
+            if (!Array.isArray(valores)) {
+                return;
+            }
+
+            valores.forEach(valor => {
+
+                const checkbox =
+                    filtrosDinamicosProduto.querySelector(
+                        `input[name="filtro_${grupo}"][value="${valor}"]`
+                    );
+
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+
+            });
+
+        }
+    );
 
     /* ETAPA INICIAL */
 

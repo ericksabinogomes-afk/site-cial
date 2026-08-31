@@ -99,6 +99,11 @@ async function carregarProdutos() {
 
     categoria: p.categoria || "",
 
+    categorias:
+    Array.isArray(p.categorias)
+        ? p.categorias
+        : (p.categoria ? [p.categoria] : []),
+
     nome: p.nome || "",
 
     selo: p.selo || "",
@@ -663,21 +668,46 @@ function filtrarCategoria(categoria){
 
     }
 
-    else{
+  else {
 
-        estado.produtosFiltrados = estado.produtos.filter(produto=>{
+    estado.produtosFiltrados =
+        estado.produtos.filter(produto => {
 
-            return produto.categoria === categoria;
+            const categoriaSelecionada =
+                String(categoria || "")
+                    .trim()
+                    .toLowerCase();
 
+            const categoriasProduto =
+                Array.isArray(produto.categorias)
+                    ? produto.categorias.map(c =>
+                        String(c || "")
+                            .trim()
+                            .toLowerCase()
+                      )
+                    : [
+                        String(produto.categoria || "")
+                            .trim()
+                            .toLowerCase()
+                      ];
+
+                const categoriasEquivalentes =
+    categoriaSelecionada === "bateria"
+        ? ["bateria", "linha-bateria"]
+        : [categoriaSelecionada];
+
+return categoriasProduto.some(item =>
+    categoriasEquivalentes.includes(item)
+);
         });
 
+
     }
-
-
 
     renderizarProdutos();
 
 }
+
 /*==================================================
             EVENTOS CATEGORIAS
 ==================================================*/
@@ -788,7 +818,10 @@ function iniciarAtalhos() {
                     .trim()
                     .toLowerCase();
 
-            return linha === "bateria";
+           return (
+  linha === "bateria" ||
+  produto.categorias.includes("linha-bateria")
+);
 
         });
 
@@ -822,7 +855,10 @@ else if (filtro === "eletrica") {
                     .trim()
                     .toLowerCase();
 
-            return linha === "eletrica";
+           return (
+    linha === "eletrica" ||
+    produto.categorias.includes("linha-eletrica")
+);
 
         });
 
@@ -926,7 +962,11 @@ function iniciarFiltrosLaterais() {
                     .trim()
                     .toLowerCase();
 
-            return linha === "bateria";
+           return (
+  linha === "bateria" ||
+  produto.categorias.includes("linha-bateria")
+);
+
         });
 
     ordenarProdutos();
@@ -950,7 +990,11 @@ if (textoFiltro === "Linha Elétrica") {
                     .trim()
                     .toLowerCase();
 
-            return linha === "eletrica";
+           return (
+    linha === "eletrica" ||
+    produto.categorias.includes("linha-eletrica")
+);
+
         });
 
     ordenarProdutos();
@@ -1013,19 +1057,26 @@ function aplicarFiltros() {
                     CATEGORIA
             ========================================*/
 
-            const categoriaProduto =
-                String(produto.categoria || "")
-                    .trim()
-                    .toLowerCase();
+    const categoriaSelecionada =
+      String(estado.categoria || "")
+        .trim()
+        .toLowerCase();
 
-            const categoriaSelecionada =
-                String(estado.categoria || "")
-                    .trim()
-                    .toLowerCase();
+const categoriasProduto = Array.isArray(produto.categorias)
+    ? produto.categorias.map(c =>
+        String(c || "")
+            .trim()
+            .toLowerCase()
+      )
+    : [
+        String(produto.categoria || "")
+            .trim()
+            .toLowerCase()
+      ];
 
-            const correspondeCategoria =
-                categoriaSelecionada === "todos" ||
-                categoriaProduto === categoriaSelecionada;
+const correspondeCategoria =
+    categoriaSelecionada === "todos" ||
+    categoriasProduto.includes(categoriaSelecionada);
 
 
             /*========================================
@@ -1145,15 +1196,27 @@ function pesquisarProdutos(){
 
 
 
-    estado.produtosFiltrados = estado.produtos.filter(produto=>{
 
-        const correspondeCategoria =
+  const correspondeCategoria =
+    estado.categoria === "todos" ||
+    (
+        Array.isArray(produto.categorias)
+            ? produto.categorias.some(categoria =>
+                String(categoria)
+                    .trim()
+                    .toLowerCase() ===
+                String(estado.categoria)
+                    .trim()
+                    .toLowerCase()
+            )
+            : String(produto.categoria || "")
+                .trim()
+                .toLowerCase() ===
+              String(estado.categoria || "")
+                .trim()
+                .toLowerCase()
 
-            estado.categoria === "todos"
-
-            ||
-
-            produto.categoria === estado.categoria;
+    );
 
 
 
@@ -1186,13 +1249,13 @@ function pesquisarProdutos(){
         .includes(texto);
         return correspondeCategoria && correspondePesquisa;
 
-    });
+    };
 
 
 
     renderizarProdutos();
 
-}
+
 /*==================================================
             EVENTOS PESQUISA
 ==================================================*/

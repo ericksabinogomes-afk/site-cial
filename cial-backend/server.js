@@ -1175,8 +1175,17 @@ const {
     aplicacaoBomba,
 
     marcaIrrigacao,
-    tipoIrrigacao
+    tipoIrrigacao,
+    filtros,
+    especificacoes,
+
 } = req.body;
+
+console.log("========== CATEGORIAS RECEBIDAS ==========");
+console.log("CATEGORIAS:", categorias);
+console.log("CATEGORIA PRINCIPAL:", categoria);
+console.log("LINHA PRODUTO:", linhaProduto);
+console.log("==========================================");
 
 // Aceita tanto categoria única quanto as categorias do novo formulário
 const categoriaFinal =
@@ -1218,8 +1227,11 @@ const categoriaFinal =
       vazao_bomba: vazaoBomba || "",
       aplicacao_bomba: aplicacaoBomba || "",
 
-      marca_irrigacao: marcaIrrigacao || "",
-      tipo_irrigacao: tipoIrrigacao || ""
+            marca_irrigacao: marcaIrrigacao || "",
+      tipo_irrigacao: tipoIrrigacao || "",
+      filtros: filtros || {},
+      especificacoes: especificacoes || {}
+
     }])
     .select("*")
     .single();

@@ -1,3 +1,9 @@
+//==================================================
+// CONFIGURAÇÃO DA API
+//==================================================
+
+const API_BASE = "http://localhost:4000";
+
 /*==================================================
                 ELEMENTOS
 ==================================================*/
@@ -325,11 +331,174 @@ if (btnLogout) {
   });
 }
 
-if (btnSave) {
-  btnSave.addEventListener("click", () => {
-    alert("Configurações salvas com sucesso!");
-  });
+/*==================================================
+        CONFIGURAÇÕES DO SITE
+==================================================*/
+
+const camposConfiguracoes = {
+    nome_empresa: document.getElementById("configNomeEmpresa"),
+    whatsapp: document.getElementById("configWhatsApp"),
+    telefone: document.getElementById("configTelefone"),
+    email: document.getElementById("configEmail"),
+    instagram: document.getElementById("configInstagram"),
+    facebook: document.getElementById("configFacebook"),
+    endereco: document.getElementById("configEndereco"),
+    pix: document.getElementById("configPix")
+};
+
+
+/*==================================================
+        CARREGAR CONFIGURAÇÕES
+==================================================*/
+
+async function carregarConfiguracoesAdmin() {
+
+    try {
+
+        const resposta = await fetch(
+            `${API_BASE}/admin/configuracoes`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok || !resultado.ok) {
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar configurações."
+            );
+        }
+
+        const dados = resultado.data || {};
+
+        Object.keys(camposConfiguracoes).forEach(campo => {
+
+            if (camposConfiguracoes[campo]) {
+
+                camposConfiguracoes[campo].value =
+                    dados[campo] || "";
+
+            }
+
+        });
+
+        console.log(
+            "Configurações carregadas:",
+            dados
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar configurações:",
+            erro
+        );
+
+    }
+
 }
+
+
+/*==================================================
+        SALVAR CONFIGURAÇÕES
+==================================================*/
+
+if (btnSave) {
+
+    btnSave.addEventListener("click", async () => {
+
+        try {
+
+            btnSave.disabled = true;
+
+            const dados = {};
+
+            Object.keys(camposConfiguracoes).forEach(campo => {
+
+                dados[campo] =
+                    camposConfiguracoes[campo]?.value.trim() || "";
+
+            });
+
+
+            console.log(
+                "Salvando configurações:",
+                dados
+            );
+
+
+            const resposta = await fetch(
+                `${API_BASE}/admin/configuracoes`,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+
+                    body: JSON.stringify(dados)
+                }
+            );
+
+
+            const resultado = await resposta.json();
+
+
+            if (!resposta.ok || !resultado.ok) {
+
+                throw new Error(
+                    resultado.erro ||
+                    "Erro ao salvar configurações."
+                );
+
+            }
+
+
+            alert(
+                "Configurações salvas com sucesso!"
+            );
+
+
+            console.log(
+                "Configurações salvas:",
+                resultado.data
+            );
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao salvar configurações:",
+                erro
+            );
+
+            alert(
+                `Erro ao salvar configurações: ${erro.message}`
+            );
+
+
+        } finally {
+
+            btnSave.disabled = false;
+
+        }
+
+    });
+
+}
+
+
+/*==================================================
+        INICIAR CONFIGURAÇÕES
+==================================================*/
+
+carregarConfiguracoesAdmin();
+
 
 /*==================================================
         MODAL — NOVO PRODUTO
@@ -3177,11 +3346,6 @@ let produtosAdmin = [];
 
 let produtoEditandoId = null;
 let produtoEditando = null;
-
-// Ajuste se sua API rodar em outra porta/origem
-const API_BASE = "http://localhost:4000"; 
-
-
 
 const nomesCategoriasBombas = {
   "bombas-centrifugas": "Bombas Centrífugas",

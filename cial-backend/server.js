@@ -2545,8 +2545,238 @@ app.patch(
 
 
 
+/*==========================================================
+    CONFIGURAÇÕES PÚBLICAS DO SITE
+==========================================================*/
+
+app.get("/configuracoes", async (req, res) => {
+  try {
+
+    const { data, error } = await supabase
+      .from("configuracoes_site")
+      .select(
+        "nome_empresa, whatsapp, telefone, email, instagram, facebook, endereco, pix"
+      )
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error(
+        "Erro ao buscar configurações públicas:",
+        error
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: error.message
+      });
+    }
+
+    return res.json({
+      ok: true,
+      data: data || {}
+    });
+
+  } catch (err) {
+
+    console.error(
+      "Erro inesperado ao buscar configurações públicas:",
+      err
+    );
+
+    return res.status(500).json({
+      ok: false,
+      erro: err.message
+    });
+
+  }
+});
 
 
+/*==========================================================
+    CONFIGURAÇÕES DO SITE - ADMIN
+==========================================================*/
+
+// Buscar configurações
+app.get(
+  "/admin/configuracoes",
+  autenticarToken,
+  exigirAdmin,
+  async (req, res) => {
+    try {
+
+      const { data, error } = await supabase
+        .from("configuracoes_site")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error(
+          "Erro ao buscar configurações:",
+          error
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: error.message
+        });
+      }
+
+      return res.json({
+        ok: true,
+        data: data || null
+      });
+
+    } catch (err) {
+
+      console.error(
+        "Erro inesperado ao buscar configurações:",
+        err
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: err.message
+      });
+
+    }
+  }
+);
+
+
+// Salvar configurações
+app.put(
+  "/admin/configuracoes",
+  autenticarToken,
+  exigirAdmin,
+  async (req, res) => {
+
+    try {
+
+      const {
+        nome_empresa,
+        whatsapp,
+        telefone,
+        email,
+        instagram,
+        facebook,
+        endereco,
+        pix
+      } = req.body;
+
+
+      // Verificar se já existe uma configuração
+      const { data: existente, error: erroBusca } =
+        await supabase
+          .from("configuracoes_site")
+          .select("id")
+          .limit(1)
+          .maybeSingle();
+
+
+      if (erroBusca) {
+        console.error(
+          "Erro ao verificar configurações:",
+          erroBusca
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroBusca.message
+        });
+      }
+
+
+      let data;
+      let error;
+
+
+      // Se já existe, atualizar
+      if (existente) {
+
+        const resultado = await supabase
+          .from("configuracoes_site")
+          .update({
+            nome_empresa,
+            whatsapp,
+            telefone,
+            email,
+            instagram,
+            facebook,
+            endereco,
+            pix
+          })
+          .eq("id", existente.id)
+          .select()
+          .single();
+
+        data = resultado.data;
+        error = resultado.error;
+
+      }
+
+      // Se ainda não existe, criar
+      else {
+
+        const resultado = await supabase
+          .from("configuracoes_site")
+          .insert([{
+            nome_empresa,
+            whatsapp,
+            telefone,
+            email,
+            instagram,
+            facebook,
+            endereco,
+            pix
+          }])
+          .select()
+          .single();
+
+        data = resultado.data;
+        error = resultado.error;
+
+      }
+
+
+      if (error) {
+
+        console.error(
+          "Erro ao salvar configurações:",
+          error
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: error.message
+        });
+
+      }
+
+
+      return res.json({
+        ok: true,
+        mensagem: "Configurações salvas com sucesso!",
+        data
+      });
+
+
+    } catch (err) {
+
+      console.error(
+        "Erro inesperado ao salvar configurações:",
+        err
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: err.message
+      });
+
+    }
+  }
+);
 
 
 

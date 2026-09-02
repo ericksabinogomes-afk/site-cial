@@ -9,6 +9,7 @@ const bcrypt = require('bcryptjs');
 const RecuperacaoRoute = require('./RecuperacaoRoute');
 
 const app = express();
+const axios = require('axios');
 app.use(cors());
 app.use(express.json());
 app.use('/api', RecuperacaoRoute);
@@ -385,124 +386,19 @@ async function exigirAdmin(req, res, next) {
 // Listar produtos (apenas ativos)
 app.get('/produtos', async (req, res) => {
   try {
+    const { data, error } = await supabase
+      .from('produtos')
+      .select('*')
+      .eq('ativo', true)
+      .order('created_at', { ascending: false });
 
-    /*==================================================
-        BUSCAR PRODUTOS
-    ==================================================*/
-
-    const { data: produtos, error: erroProdutos } =
-      await supabase
-        .from('produtos')
-        .select('*')
-        .eq('ativo', true)
-        .order('created_at', { ascending: false });
-
-    if (erroProdutos) {
-      return res.status(500).json({
-        ok: false,
-        erro: erroProdutos.message
-      });
+    if (error) {
+      return res.status(500).json({ erro: error.message });
     }
 
-
-    /*==================================================
-        BUSCAR RELAÇÕES PRODUTO → CATEGORIA
-    ==================================================*/
-
-    const { data: relacoes, error: erroRelacoes } =
-      await supabase
-        .from('produto_categorias')
-        .select('produto_id, categoria_id');
-
-    if (erroRelacoes) {
-      return res.status(500).json({
-        ok: false,
-        erro: erroRelacoes.message
-      });
-    }
-
-
-    /*==================================================
-        BUSCAR SLUGS DAS CATEGORIAS
-    ==================================================*/
-
-    const { data: categorias, error: erroCategorias } =
-      await supabase
-        .from('categorias')
-        .select('id, slug');
-
-    if (erroCategorias) {
-      return res.status(500).json({
-        ok: false,
-        erro: erroCategorias.message
-      });
-    }
-
-
-    /*==================================================
-        MONTAR CATEGORIAS DE CADA PRODUTO
-    ==================================================*/
-
-    const produtosComCategorias =
-      (produtos || []).map(produto => {
-
-        const categoriasDoProduto =
-          (relacoes || [])
-            .filter(relacao =>
-              Number(relacao.produto_id) ===
-              Number(produto.id)
-            )
-            .map(relacao => {
-
-              const categoria =
-                (categorias || []).find(cat =>
-                  Number(cat.id) ===
-                  Number(relacao.categoria_id)
-                );
-
-              return categoria
-                ? categoria.slug
-                : null;
-
-            })
-            .filter(Boolean);
-
-
-        return {
-          ...produto,
-
-          /* categoria principal continua existindo */
-          categoria: produto.categoria,
-
-          /* novas múltiplas categorias */
-          categorias: categoriasDoProduto
-        };
-
-      });
-
-
-    /*==================================================
-        RETORNAR PRODUTOS
-    ==================================================*/
-
-    return res.json({
-      ok: true,
-      data: produtosComCategorias
-    });
-
-
+    res.json({ ok: true, data });
   } catch (err) {
-
-    console.error(
-      'Erro ao listar produtos:',
-      err
-    );
-
-    return res.status(500).json({
-      ok: false,
-      erro: err.message
-    });
-
+    res.status(500).json({ erro: err.message });
   }
 });
 
@@ -535,56 +431,9 @@ app.get(
         });
       }
 
-
-
-      const { data: relacoes, error: erroRelacoes } = await supabase
-  .from("produto_categorias")
-  .select("produto_id, categoria_id");
-
-if (erroRelacoes) {
-  return res.status(500).json({
-    ok: false,
-    erro: erroRelacoes.message
-  });
-}
-
-const { data: categorias, error: erroCategorias } = await supabase
-  .from("categorias")
-  .select("id, slug");
-
-if (erroCategorias) {
-  return res.status(500).json({
-    ok: false,
-    erro: erroCategorias.message
-  });
-}
-
-
-const produtosComCategorias = (data || []).map(produto => {
-  const categoriasDoProduto = (relacoes || [])
-    .filter(relacao =>
-      Number(relacao.produto_id) === Number(produto.id)
-    )
-    .map(relacao => {
-      const categoria = (categorias || []).find(item =>
-        Number(item.id) === Number(relacao.categoria_id)
-      );
-
-      return categoria ? categoria.slug : null;
-    })
-    .filter(Boolean);
-
-  return {
-    ...produto,
-    categorias: categoriasDoProduto.length > 0
-      ? categoriasDoProduto
-      : (produto.categoria ? [produto.categoria] : [])
-  };
-});
-
       return res.json({
         ok: true,
-       data: produtosComCategorias
+        data: data || []
       });
 
     } catch (err) {
@@ -1175,17 +1024,8 @@ const {
     aplicacaoBomba,
 
     marcaIrrigacao,
-    tipoIrrigacao,
-    filtros,
-    especificacoes,
-
+    tipoIrrigacao
 } = req.body;
-
-console.log("========== CATEGORIAS RECEBIDAS ==========");
-console.log("CATEGORIAS:", categorias);
-console.log("CATEGORIA PRINCIPAL:", categoria);
-console.log("LINHA PRODUTO:", linhaProduto);
-console.log("==========================================");
 
 // Aceita tanto categoria única quanto as categorias do novo formulário
 const categoriaFinal =
@@ -1227,11 +1067,8 @@ const categoriaFinal =
       vazao_bomba: vazaoBomba || "",
       aplicacao_bomba: aplicacaoBomba || "",
 
-            marca_irrigacao: marcaIrrigacao || "",
-      tipo_irrigacao: tipoIrrigacao || "",
-      filtros: filtros || {},
-      especificacoes: especificacoes || {}
-
+      marca_irrigacao: marcaIrrigacao || "",
+      tipo_irrigacao: tipoIrrigacao || ""
     }])
     .select("*")
     .single();
@@ -1377,7 +1214,6 @@ app.put(
       nome,
       codigo,
       categoria,
-      categorias,
       preco,
       estoque,
       imagem,
@@ -1405,51 +1241,7 @@ app.put(
       });
     }
 
-    const categoriasSelecionadas = Array.isArray(categorias)
-  ? [...new Set(
-      categorias
-        .map(item => String(item || "").trim().toLowerCase())
-        .filter(Boolean)
-    )]
-  : null;
-
-let categoriasBanco = [];
-
-if (categoriasSelecionadas !== null) {
-  if (categoriasSelecionadas.length === 0) {
-    return res.status(400).json({
-      ok: false,
-      erro: "Selecione pelo menos uma categoria."
-    });
-  }
-
-  const { data, error } = await supabase
-    .from("categorias")
-    .select("id, slug")
-    .in("slug", categoriasSelecionadas);
-
-  if (error) {
-    return res.status(500).json({
-      ok: false,
-      erro: error.message
-    });
-  }
-
-  if (!data || data.length !== categoriasSelecionadas.length) {
-    return res.status(400).json({
-      ok: false,
-      erro: "Uma ou mais categorias não foram encontradas."
-    });
-  }
-
-  categoriasBanco = data;
-}
-
     const dadosAtualizacao = {};
-
-    if (categoriasSelecionadas !== null) {
-  dadosAtualizacao.categoria = categoriasSelecionadas[0];
-}
 
     if (nome !== undefined) {
       dadosAtualizacao.nome = nome;
@@ -1569,41 +1361,6 @@ if (categoriasSelecionadas !== null) {
           erro: error.message
         });
       }
-
-
-      if (categoriasSelecionadas !== null) {
-  const { error: erroRemover } = await supabase
-    .from("produto_categorias")
-    .delete()
-    .eq("produto_id", produtoId);
-
-  if (erroRemover) {
-    return res.status(500).json({
-      ok: false,
-      erro: erroRemover.message
-    });
-  }
-}
-
-if (categoriasSelecionadas !== null) {
-  const relacoes = categoriasBanco.map(categoria => ({
-    produto_id: produtoId,
-    categoria_id: categoria.id
-  }));
-
-  const { error: erroInserir } = await supabase
-    .from("produto_categorias")
-    .insert(relacoes);
-
-  if (erroInserir) {
-    return res.status(500).json({
-      ok: false,
-      erro: erroInserir.message
-    });
-  }
-}
-
-
 
       return res.json({
         ok: true,
@@ -2544,208 +2301,138 @@ app.patch(
 
 
 
-
-/*==========================================================
-    CONFIGURAÇÕES PÚBLICAS DO SITE
-==========================================================*/
-
-app.get("/configuracoes", async (req, res) => {
+app.post('/pedidos/criar-do-carrinho', autenticarToken, async (req, res) => {
   try {
+    const usuarioId = req.usuario.id;
 
-    const { data, error } = await supabase
-      .from("configuracoes_site")
-      .select(
-        "nome_empresa, whatsapp, telefone, email, instagram, facebook, endereco, pix"
-      )
-      .limit(1)
-      .maybeSingle();
+    const { data: itensCarrinho, error: erroCarrinho } =
+      await supabase
+        .from('carrinho_itens')
+        .select(`
+          produto_id,
+          quantidade,
+          produtos (
+            id,
+            nome,
+            preco,
+            ativo
+          )
+        `)
+        .eq('usuario_id', usuarioId);
 
-    if (error) {
-      console.error(
-        "Erro ao buscar configurações públicas:",
-        error
-      );
+    if (erroCarrinho) {
+      throw erroCarrinho;
+    }
 
-      return res.status(500).json({
+    if (!itensCarrinho || itensCarrinho.length === 0) {
+      return res.status(400).json({
         ok: false,
-        erro: error.message
+        erro: 'Seu carrinho está vazio.'
       });
     }
 
-    return res.json({
-      ok: true,
-      data: data || {}
+    const itensPedido = itensCarrinho.map(item => {
+      const produto = item.produtos;
+
+      if (!produto || !produto.ativo) {
+        throw new Error(
+          `Produto inválido ou inativo: ${item.produto_id}`
+        );
+      }
+
+      const quantidade = Number(item.quantidade);
+      const precoUnitario = Number(produto.preco);
+
+      if (!Number.isInteger(quantidade) || quantidade <= 0) {
+        throw new Error(
+          `Quantidade inválida para o produto ${produto.nome}.`
+        );
+      }
+
+      if (!Number.isFinite(precoUnitario) || precoUnitario < 0) {
+        throw new Error(
+          `Preço inválido para o produto ${produto.nome}.`
+        );
+      }
+
+      return {
+        produto_id: produto.id,
+        produto_nome: produto.nome,
+        quantidade,
+        preco_unitario: precoUnitario
+      };
     });
 
-  } catch (err) {
-
-    console.error(
-      "Erro inesperado ao buscar configurações públicas:",
-      err
+    const valorTotal = itensPedido.reduce(
+      (total, item) => {
+        return total +
+          item.quantidade * item.preco_unitario;
+      },
+      0
     );
 
-    return res.status(500).json({
-      ok: false,
-      erro: err.message
-    });
+    const numeroPedido =
+      `PED-${Date.now()}`;
 
-  }
-});
+    const { data: pedido, error: erroPedido } =
+      await supabase
+        .from('pedidos')
+        .insert({
+          usuario_id: usuarioId,
+          numero: numeroPedido,
+          status: 'aguardando_pagamento',
+          valor: valorTotal,
+          gateway: 'asaas',
+          gateway_status: 'PENDING',
+          observacoes: req.body.observacoes || null
+        })
+        .select()
+        .single();
 
-
-/*==========================================================
-    CONFIGURAÇÕES DO SITE - ADMIN
-==========================================================*/
-
-// Buscar configurações
-app.get(
-  "/admin/configuracoes",
-  autenticarToken,
-  exigirAdmin,
-  async (req, res) => {
-    try {
-
-      const { data, error } = await supabase
-        .from("configuracoes_site")
-        .select("*")
-        .limit(1)
-        .maybeSingle();
-
-      if (error) {
-        console.error(
-          "Erro ao buscar configurações:",
-          error
-        );
-
-        return res.status(500).json({
-          ok: false,
-          erro: error.message
-        });
-      }
-
-      return res.json({
-        ok: true,
-        data: data || null
-      });
-
-    } catch (err) {
-
-      console.error(
-        "Erro inesperado ao buscar configurações:",
-        err
-      );
-
-      return res.status(500).json({
-        ok: false,
-        erro: err.message
-      });
-
+    if (erroPedido) {
+      throw erroPedido;
     }
-  }
-);
 
+    const itensParaInserir = itensPedido.map(item => ({
+      pedido_id: pedido.id,
+      produto_id: item.produto_id,
+      produto_nome: item.produto_nome,
+      quantidade: item.quantidade,
+      preco_unitario: item.preco_unitario
+    }));
 
-// Salvar configurações
-app.put(
-  "/admin/configuracoes",
-  autenticarToken,
-  exigirAdmin,
-  async (req, res) => {
+    const { error: erroItens } =
+      await supabase
+        .from('pedido_itens')
+        .insert(itensParaInserir);
 
-    try {
+    if (erroItens) {
+      throw erroItens;
+    }
 
-      const {
-        nome_empresa,
-        whatsapp,
-        telefone,
-        email,
-        instagram,
-        facebook,
-        endereco,
-        pix
-      } = req.body;
-
-
-      // Verificar se já existe uma configuração
-      const { data: existente, error: erroBusca } =
-        await supabase
-          .from("configuracoes_site")
-          .select("id")
-          .limit(1)
-          .maybeSingle();
-
-
-      if (erroBusca) {
-        console.error(
-          "Erro ao verificar configurações:",
-          erroBusca
-        );
-
-        return res.status(500).json({
-          ok: false,
-          erro: erroBusca.message
-        });
+    console.log(
+      'Pedido criado no Supabase:',
+      {
+        id: pedido.id,
+        numero: pedido.numero,
+        valor: pedido.valor,
+        usuarioId
       }
+    );
 
-
-      let data;
-      let error;
-
-
-      // Se já existe, atualizar
-      if (existente) {
-
-        const resultado = await supabase
-          .from("configuracoes_site")
-          .update({
-            nome_empresa,
-            whatsapp,
-            telefone,
-            email,
-            instagram,
-            facebook,
-            endereco,
-            pix
-          })
-          .eq("id", existente.id)
-          .select()
-          .single();
-
-        data = resultado.data;
-        error = resultado.error;
-
+    return res.status(201).json({
+      ok: true,
+      pedido: {
+        id: pedido.id,
+        numero: pedido.numero,
+        valor: pedido.valor
       }
-
-      // Se ainda não existe, criar
-      else {
-
-        const resultado = await supabase
-          .from("configuracoes_site")
-          .insert([{
-            nome_empresa,
-            whatsapp,
-            telefone,
-            email,
-            instagram,
-            facebook,
-            endereco,
-            pix
-          }])
-          .select()
-          .single();
-
-        data = resultado.data;
-        error = resultado.error;
-
-      }
-
-
-      if (error) {
-
-        console.error(
-          "Erro ao salvar configurações:",
-          error
-        );
+    });
+  } catch (erro) {
+    console.error(
+      'Erro ao criar pedido a partir do carrinho:',
+      erro
+    );
 
         return res.status(500).json({
           ok: false,
@@ -2778,163 +2465,6 @@ app.put(
   }
 );
 
-
-/*==========================================================
-    PEDIDOS - ADMINISTRATIVO
-==========================================================*/
-
-app.get(
-    "/admin/pedidos",
-    autenticarToken,
-    exigirAdmin,
-    async (req, res) => {
-
-        try {
-
-            /*==================================================
-                BUSCAR PEDIDOS
-            ==================================================*/
-
-            const {
-                data: pedidos,
-                error: erroPedidos
-            } = await supabase
-                .from("pedidos")
-                .select(`
-                    *,
-                    pedido_itens (
-                        id,
-                        produto_nome,
-                        quantidade,
-                        preco_unitario
-                    )
-                `)
-                .order("data_pedido", {
-                    ascending: false
-                });
-
-
-            if (erroPedidos) {
-                throw erroPedidos;
-            }
-
-
-            /*==================================================
-                BUSCAR CLIENTES
-            ==================================================*/
-
-            const idsUsuarios = [
-                ...new Set(
-                    (pedidos || [])
-                        .map(pedido => pedido.usuario_id)
-                        .filter(Boolean)
-                )
-            ];
-
-
-            let clientesMap = {};
-
-
-            if (idsUsuarios.length > 0) {
-
-                const {
-                    data: usuarios,
-                    error: erroUsuarios
-                } = await supabase
-                    .from("usuarios")
-                    .select("id, nome")
-                    .in("id", idsUsuarios);
-
-
-                if (erroUsuarios) {
-                    throw erroUsuarios;
-                }
-
-
-                (usuarios || []).forEach(usuario => {
-
-                    clientesMap[usuario.id] =
-                        usuario.nome;
-
-                });
-
-            }
-
-
-            /*==================================================
-                MONTAR RESPOSTA
-            ==================================================*/
-
-            const resultado =
-                (pedidos || []).map(pedido => ({
-
-                    id:
-                        pedido.id,
-
-                    numero:
-                        pedido.numero,
-
-                    usuario_id:
-                        pedido.usuario_id,
-
-                    cliente:
-                        clientesMap[pedido.usuario_id] || null,
-
-                    pagamento:
-                        pedido.forma_pagamento ||
-                        pedido.pagamento ||
-                        pedido.metodo_pagamento ||
-                        null,
-
-                    status:
-                        pedido.status || null,
-
-                    data_pedido:
-                        pedido.data_pedido || null,
-
-                    valor:
-                        pedido.valor !== null &&
-                        pedido.valor !== undefined
-                            ? Number(pedido.valor)
-                            : 0,
-
-                    itens:
-                        pedido.pedido_itens || []
-
-                }));
-
-
-            return res.json({
-
-                ok: true,
-
-                data: resultado
-
-            });
-
-
-        } catch (err) {
-
-            console.error(
-                "Erro ao carregar pedidos:",
-                err
-            );
-
-
-            return res.status(500).json({
-
-                ok: false,
-
-                erro:
-                    err.message ||
-                    "Erro ao carregar pedidos"
-
-            });
-
-        }
-
-    }
-);
 
 
 /*==========================================================
@@ -3243,215 +2773,6 @@ status:
 
         }
 
-    }
-);
-
-
-/*==========================================================
-    PEDIDOS - ADMINISTRATIVO
-==========================================================*/
-
-// LISTAR TODOS OS PEDIDOS
-app.get(
-    "/admin/pedidos",
-    autenticarToken,
-    exigirAdmin,
-    async (req, res) => {
-
-        try {
-
-            const { data, error } = await supabase
-                .from("pedidos")
-                .select(`
-                    *,
-                    pedido_itens (
-                        id,
-                        produto_nome,
-                        quantidade,
-                        preco_unitario
-                    )
-                `)
-                .order("data_pedido", {
-                    ascending: false
-                });
-
-            if (error) {
-                console.error(
-                    "Erro ao listar pedidos:",
-                    error
-                );
-
-                return res.status(500).json({
-                    ok: false,
-                    erro: error.message
-                });
-            }
-
-            return res.json({
-                ok: true,
-                data: data || []
-            });
-
-        } catch (err) {
-
-            console.error(
-                "Erro inesperado ao listar pedidos:",
-                err
-            );
-
-            return res.status(500).json({
-                ok: false,
-                erro: err.message
-            });
-        }
-    }
-);
-
-
-// DETALHES DE UM PEDIDO
-app.get(
-    "/admin/pedidos/:id",
-    autenticarToken,
-    exigirAdmin,
-    async (req, res) => {
-
-        try {
-
-            const pedidoId = req.params.id;
-
-            const { data, error } = await supabase
-                .from("pedidos")
-                .select(`
-                    *,
-                    pedido_itens (
-                        id,
-                        produto_nome,
-                        quantidade,
-                        preco_unitario
-                    )
-                `)
-                .eq("id", pedidoId)
-                .single();
-
-            if (error) {
-
-                console.error(
-                    "Erro ao buscar pedido:",
-                    error
-                );
-
-                return res.status(404).json({
-                    ok: false,
-                    erro: "Pedido não encontrado."
-                });
-            }
-
-            // Buscar dados do cliente
-            let cliente = null;
-
-            if (data.usuario_id) {
-
-                const resultadoCliente = await supabase
-                    .from("usuarios")
-                    .select(`
-                        id,
-                        nome,
-                        email,
-                        cpf,
-                        telefone
-                    `)
-                    .eq("id", data.usuario_id)
-                    .single();
-
-                if (!resultadoCliente.error) {
-                    cliente = resultadoCliente.data;
-                }
-            }
-
-            return res.json({
-                ok: true,
-                data: {
-                    ...data,
-                    cliente
-                }
-            });
-
-        } catch (err) {
-
-            console.error(
-                "Erro inesperado ao buscar pedido:",
-                err
-            );
-
-            return res.status(500).json({
-                ok: false,
-                erro: err.message
-            });
-        }
-    }
-);
-
-
-// ATUALIZAR STATUS DO PEDIDO
-app.patch(
-    "/admin/pedidos/:id/status",
-    autenticarToken,
-    exigirAdmin,
-    async (req, res) => {
-
-        try {
-
-            const pedidoId = req.params.id;
-            const { status } = req.body;
-
-            if (!status) {
-
-                return res.status(400).json({
-                    ok: false,
-                    erro: "O status do pedido é obrigatório."
-                });
-            }
-
-            const { data, error } = await supabase
-                .from("pedidos")
-                .update({
-                    status: status
-                })
-                .eq("id", pedidoId)
-                .select()
-                .single();
-
-            if (error) {
-
-                console.error(
-                    "Erro ao atualizar status:",
-                    error
-                );
-
-                return res.status(500).json({
-                    ok: false,
-                    erro: error.message
-                });
-            }
-
-            return res.json({
-                ok: true,
-                mensagem: "Status atualizado com sucesso!",
-                data
-            });
-
-        } catch (err) {
-
-            console.error(
-                "Erro inesperado ao atualizar status:",
-                err
-            );
-
-            return res.status(500).json({
-                ok: false,
-                erro: err.message
-            });
-        }
     }
 );
 

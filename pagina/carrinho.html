@@ -206,7 +206,51 @@
 
     </main>
 
+    <div id="modalPix" class="modal-pix" hidden>
+        <div class="modal-pix__conteudo">
+            <button
+            id="fecharModalPix"
+            class="modal-pix__fechar"
+            type="button"
+            aria-label="Fechar pagamento Pix"
+            >
+            ×
+            </button>
 
+            <h2>Pagamento via Pix</h2>
+
+            <p id="pixDescricao">
+            Escaneie o QR Code usando o aplicativo do seu banco.
+            </p>
+
+            <img
+            id="pixQrCode"
+            alt="QR Code Pix para pagamento"
+            width="260"
+            height="260"
+            >
+
+            <p class="modal-pix__legenda">
+            Ou copie o código Pix e cole no aplicativo do seu banco:
+            </p>
+
+            <textarea
+            id="pixCopiaCola"
+            readonly
+            aria-label="Código Pix Copia e Cola"
+            ></textarea>
+
+            <button id="copiarCodigoPix" type="button">
+            Copiar código Pix
+            </button>
+
+            <p id="pixValidade"></p>
+
+            <p id="pixStatus" aria-live="polite">
+            Aguardando o pagamento…
+            </p>
+        </div>  
+    </div>
 
     <!--==========================
             FOOTER
@@ -221,7 +265,7 @@
 
 
     <script src="pagina js/carrinho.js"></script>
-
+    
 </body>
 
 </html>

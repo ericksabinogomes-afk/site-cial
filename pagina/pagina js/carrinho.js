@@ -472,6 +472,255 @@ cartProducts?.addEventListener(
     }
 );
 
+
+btnFinish?.addEventListener(
+    "click",
+    async event => {
+        event.preventDefault();
+
+        if (carrinho.length === 0) {
+            alert("Seu carrinho está vazio.");
+            return;
+        }
+
+        const token = obterToken();
+
+        if (!token) {
+            redirecionarParaLogin();
+            return;
+        }
+
+        const usuario = JSON.parse(
+            localStorage.getItem("usuarioCial") || "{}"
+        );
+
+        if (!usuario.id) {
+            alert(
+                "Usuário não encontrado. Faça login novamente."
+            );
+
+            redirecionarParaLogin();
+            return;
+        }
+
+        const observacoes = observation?.value?.trim() || "";
+
+        btnFinish.disabled = true;
+        btnFinish.textContent = "Criando pedido...";
+
+        try {
+            /*
+             * 1. Cria pedido + itens usando o carrinho salvo
+             *    no Supabase. O backend recalcula o valor.
+             */
+            const respostaPedido = await fetch(
+                `${API_CARRINHO}/pedidos/criar-do-carrinho`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        observacoes
+                    })
+                }
+            );
+
+            const resultadoPedido =
+                await lerResposta(respostaPedido);
+
+            const pedido = resultadoPedido.pedido;
+
+            if (!pedido?.id) {
+                throw new Error(
+                    "O pedido foi criado, mas o ID não foi retornado."
+                );
+            }
+
+            btnFinish.textContent = "Gerando Pix...";
+
+            /*
+             * 2. Cria a cobrança usando o ID do pedido.
+             *    O backend consulta o valor salvo no Supabase.
+             */
+            const respostaPagamento = await fetch(
+                `${API_CARRINHO}/api/asaas/cobrancas/pix`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        customerId:
+                            usuario.asaas_customer_id ||
+                            "cus_000008956030",
+
+                        pedidoId: pedido.id,
+
+                        descricao:
+                            `Pedido ${pedido.numero} - Cial Site`
+                    })
+                }
+            );
+
+            const resultadoPagamento =
+                await lerResposta(respostaPagamento);
+
+            const pagamento =
+                resultadoPagamento.pagamento;
+
+            if (!pagamento?.id) {
+                throw new Error(
+                    "A cobrança Pix foi criada, mas o ID não foi retornado."
+                );
+            }
+
+            btnFinish.textContent = "Gerando QR Code...";
+
+            /*
+             * 3. Busca o QR Code da cobrança criada.
+             */
+            const respostaQrCode = await fetch(
+                `${API_CARRINHO}/api/asaas/cobrancas/${pagamento.id}/pix-qrcode`
+            );
+
+            const dadosQrCode =
+                await lerResposta(respostaQrCode);
+
+            const modalPix =
+                document.getElementById("modalPix");
+
+            const pixQrCode =
+                document.getElementById("pixQrCode");
+
+            const pixCopiaCola =
+                document.getElementById("pixCopiaCola");
+
+            const pixValidade =
+                document.getElementById("pixValidade");
+
+            const pixStatus =
+                document.getElementById("pixStatus");
+
+            const pixDescricao =
+                document.getElementById("pixDescricao");
+
+            if (!modalPix || !pixQrCode || !pixCopiaCola) {
+                throw new Error(
+                    "Elementos do pagamento Pix não foram encontrados no carrinho.html."
+                );
+            }
+
+            pixQrCode.src =
+                `data:image/png;base64,${dadosQrCode.encodedImage}`;
+
+            pixCopiaCola.value =
+                dadosQrCode.payload || "";
+
+            if (pixDescricao) {
+                pixDescricao.textContent =
+                    `Pedido ${pedido.numero} — ` +
+                    `${formatarPreco(pedido.valor)}`;
+            }
+
+            if (
+                pixValidade &&
+                dadosQrCode.expirationDate
+            ) {
+                pixValidade.textContent =
+                    `Válido até: ${dadosQrCode.expirationDate}`;
+            }
+
+            if (pixStatus) {
+                pixStatus.textContent =
+                    "Aguardando confirmação do pagamento...";
+            }
+
+            console.log(
+                "Pedido e pagamento criados:",
+                {
+                    pedidoId: pedido.id,
+                    numeroPedido: pedido.numero,
+                    pagamentoId: pagamento.id
+                }
+            );
+
+            modalPix.hidden = false;
+        } catch (erro) {
+            console.error(
+                "Erro ao finalizar compra:",
+                erro
+            );
+
+            alert(
+                `Não foi possível finalizar a compra:\n${erro.message}`
+            );
+        } finally {
+            btnFinish.disabled = false;
+            btnFinish.textContent = "Finalizar compra";
+        }
+    }
+);
+
+const modalPix =
+    document.getElementById("modalPix");
+
+const fecharModalPix =
+    document.getElementById("fecharModalPix");
+
+const copiarCodigoPix =
+    document.getElementById("copiarCodigoPix");
+
+const pixCopiaCola =
+    document.getElementById("pixCopiaCola");
+
+fecharModalPix?.addEventListener(
+    "click",
+    () => {
+        if (modalPix) {
+            modalPix.hidden = true;
+        }
+    }
+);
+
+copiarCodigoPix?.addEventListener(
+    "click",
+    async () => {
+        if (!pixCopiaCola?.value) {
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(
+                pixCopiaCola.value
+            );
+
+            copiarCodigoPix.textContent =
+                "Código copiado!";
+
+            setTimeout(
+                () => {
+                    copiarCodigoPix.textContent =
+                        "Copiar código Pix";
+                },
+                2000
+            );
+        } catch (erro) {
+            console.error(
+                "Não foi possível copiar o Pix:",
+                erro
+            );
+
+            alert(
+                "Não foi possível copiar automaticamente. Selecione o código e copie manualmente."
+            );
+        }
+    }
+);
+
+
 btnWhatsapp?.addEventListener(
     "click",
     () => {

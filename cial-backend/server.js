@@ -2765,6 +2765,380 @@ status:
 );
 
 
+/*==========================================================
+    PAGAMENTOS ASAAS
+==========================================================*/
+
+app.get(
+  '/api/asaas/cobrancas/:id',
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const resposta = await axios.get(
+        `${process.env.ASAAS_BASE_URL}/payments/${id}`,
+        {
+          headers: {
+            access_token:
+              process.env.ASAAS_API_KEY
+          }
+        }
+      );
+
+      return res.status(200).json(
+        resposta.data
+      );
+    } catch (erro) {
+      console.error(
+        'Erro ao consultar cobrança Asaas:',
+        erro.response?.data ||
+          erro.message
+      );
+
+      return res.status(
+        erro.response?.status || 500
+      ).json({
+        ok: false,
+        erro:
+          'Não foi possível consultar a cobrança.',
+        detalhes:
+          erro.response?.data ||
+          erro.message
+      });
+    }
+  }
+);
+
+app.post(
+  '/api/asaas/cobrancas/pix',
+  autenticarToken,
+  async (req, res) => {
+    try {
+      const {
+        customerId,
+        pedidoId,
+        descricao
+      } = req.body;
+
+      const usuarioId =
+        Number(req.usuario.id);
+
+      if (!customerId || !pedidoId) {
+        return res.status(400).json({
+          ok: false,
+          erro:
+            'customerId e pedidoId são obrigatórios.'
+        });
+      }
+
+      const {
+        data: pedido,
+        error: erroPedido
+      } = await supabase
+        .from('pedidos')
+        .select(`
+          id,
+          usuario_id,
+          numero,
+          valor,
+          status,
+          gateway_payment_id
+        `)
+        .eq('id', pedidoId)
+        .eq('usuario_id', usuarioId)
+        .single();
+
+      if (erroPedido || !pedido) {
+        return res.status(404).json({
+          ok: false,
+          erro: 'Pedido não encontrado.'
+        });
+      }
+
+      if (pedido.gateway_payment_id) {
+        return res.status(409).json({
+          ok: false,
+          erro:
+            'Este pedido já possui uma cobrança criada.',
+          pagamentoId:
+            pedido.gateway_payment_id
+        });
+      }
+
+      if (
+        pedido.status !==
+        'aguardando_pagamento'
+      ) {
+        return res.status(409).json({
+          ok: false,
+          erro:
+            `Pedido não pode ser pago. ` +
+            `Status atual: ${pedido.status}`
+        });
+      }
+
+      const hoje = new Date()
+        .toISOString()
+        .split('T')[0];
+
+      const resposta = await axios.post(
+        `${process.env.ASAAS_BASE_URL}/payments`,
+        {
+          customer: customerId,
+          billingType: 'PIX',
+          value: Number(pedido.valor),
+          dueDate: hoje,
+          description:
+            descricao ||
+            `Pedido ${pedido.numero} - Cial Site`,
+          externalReference:
+            String(pedido.id)
+        },
+        {
+          headers: {
+            access_token:
+              process.env.ASAAS_API_KEY,
+            'Content-Type':
+              'application/json'
+          }
+        }
+      );
+
+      const {
+        error: erroAtualizarPedido
+      } = await supabase
+        .from('pedidos')
+        .update({
+          gateway: 'asaas',
+          gateway_payment_id:
+            resposta.data.id,
+          gateway_status:
+            resposta.data.status
+        })
+        .eq('id', pedido.id);
+
+      if (erroAtualizarPedido) {
+        throw erroAtualizarPedido;
+      }
+
+      console.log(
+        'Cobrança Pix vinculada ao pedido:',
+        {
+          pedidoId: pedido.id,
+          numeroPedido: pedido.numero,
+          pagamentoId: resposta.data.id,
+          status: resposta.data.status,
+          valor: resposta.data.value
+        }
+      );
+
+      return res.status(201).json({
+        ok: true,
+        pagamento: resposta.data
+      });
+    } catch (erro) {
+      console.error(
+        'Erro ao criar cobrança Pix:',
+        erro.response?.data ||
+          erro.message
+      );
+
+      return res.status(
+        erro.response?.status || 500
+      ).json({
+        ok: false,
+        erro:
+          'Não foi possível criar a cobrança Pix.',
+        detalhes:
+          erro.response?.data ||
+          erro.message
+      });
+    }
+  }
+);
+
+app.get(
+  '/api/asaas/cobrancas/:id/pix-qrcode',
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const resposta = await axios.get(
+        `${process.env.ASAAS_BASE_URL}/payments/${id}/pixQrCode`,
+        {
+          headers: {
+            access_token:
+              process.env.ASAAS_API_KEY
+          }
+        }
+      );
+
+      return res.status(200).json(
+        resposta.data
+      );
+    } catch (erro) {
+      console.error(
+        'Erro ao buscar QR Code Pix:',
+        erro.response?.data ||
+          erro.message
+      );
+
+      return res.status(
+        erro.response?.status || 500
+      ).json({
+        ok: false,
+        erro:
+          'Não foi possível buscar o QR Code Pix.',
+        detalhes:
+          erro.response?.data ||
+          erro.message
+      });
+    }
+  }
+);
+
+app.post(
+  '/api/asaas/webhook',
+  async (req, res) => {
+    try {
+      const tokenRecebido =
+        req.headers['asaas-access-token'];
+
+      if (
+        !process.env.ASAAS_WEBHOOK_TOKEN ||
+        tokenRecebido !==
+          process.env.ASAAS_WEBHOOK_TOKEN
+      ) {
+        return res.status(401).json({
+          ok: false,
+          erro:
+            'Token de webhook inválido.'
+        });
+      }
+
+      const evento = req.body;
+
+      console.log(
+        'Webhook Asaas recebido:',
+        JSON.stringify(evento, null, 2)
+      );
+
+      const tipoEvento =
+        evento.event;
+
+      const pagamento =
+        evento.payment;
+
+      if (!pagamento?.id) {
+        return res.sendStatus(200);
+      }
+
+      if (
+        tipoEvento === 'PAYMENT_RECEIVED' ||
+        tipoEvento === 'PAYMENT_CONFIRMED'
+      ) {
+        const pedidoId = Number(
+          pagamento.externalReference
+        );
+
+        if (
+          !Number.isInteger(pedidoId)
+        ) {
+          console.error(
+            'externalReference inválida:',
+            pagamento.externalReference
+          );
+
+          return res.sendStatus(200);
+        }
+
+        const {
+          data: pedido,
+          error: erroBuscarPedido
+        } = await supabase
+          .from('pedidos')
+          .select(`
+            id,
+            usuario_id,
+            gateway_payment_id,
+            status
+          `)
+          .eq('id', pedidoId)
+          .single();
+
+        if (
+          erroBuscarPedido ||
+          !pedido
+        ) {
+          console.error(
+            'Pedido não encontrado:',
+            pedidoId,
+            erroBuscarPedido
+          );
+
+          return res.sendStatus(200);
+        }
+
+        if (
+          pedido.gateway_payment_id !==
+          pagamento.id
+        ) {
+          console.error(
+            'Pagamento não corresponde ao pedido:',
+            {
+              pedidoId,
+              pagamentoRecebido:
+                pagamento.id,
+              pagamentoEsperado:
+                pedido.gateway_payment_id
+            }
+          );
+
+          return res.sendStatus(200);
+        }
+
+        const {
+          error: erroAtualizarPedido
+        } = await supabase
+          .from('pedidos')
+          .update({
+            status: 'pago',
+            gateway_status:
+              pagamento.status,
+            paid_at:
+              new Date().toISOString()
+          })
+          .eq('id', pedidoId)
+          .neq('status', 'pago');
+
+        if (erroAtualizarPedido) {
+          throw erroAtualizarPedido;
+        }
+
+        console.log(
+          'Pedido atualizado como pago:',
+          {
+            pedidoId,
+            pagamentoId:
+              pagamento.id,
+            statusAsaas:
+              pagamento.status
+          }
+        );
+      }
+
+      return res.sendStatus(200);
+    } catch (erro) {
+      console.error(
+        'Erro no webhook Asaas:',
+        erro
+      );
+
+      return res.sendStatus(500);
+    }
+  }
+);
+
 /* ==============
     SERVIDOR 
     SEMPRE COLOCAR ATRAS DELE!!!

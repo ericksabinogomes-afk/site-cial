@@ -2301,12 +2301,17 @@ app.patch(
 
 
 
-app.post('/pedidos/criar-do-carrinho', autenticarToken, async (req, res) => {
-  try {
-    const usuarioId = req.usuario.id;
+app.post(
+  '/pedidos/criar-do-carrinho',
+  autenticarToken,
+  async (req, res) => {
+    try {
+      const usuarioId = req.usuario.id;
 
-    const { data: itensCarrinho, error: erroCarrinho } =
-      await supabase
+      const {
+        data: itensCarrinho,
+        error: erroCarrinho
+      } = await supabase
         .from('carrinho_itens')
         .select(`
           produto_id,
@@ -2320,147 +2325,130 @@ app.post('/pedidos/criar-do-carrinho', autenticarToken, async (req, res) => {
         `)
         .eq('usuario_id', usuarioId);
 
-    if (erroCarrinho) {
-      throw erroCarrinho;
-    }
-
-    if (!itensCarrinho || itensCarrinho.length === 0) {
-      return res.status(400).json({
-        ok: false,
-        erro: 'Seu carrinho está vazio.'
-      });
-    }
-
-    const itensPedido = itensCarrinho.map(item => {
-      const produto = item.produtos;
-
-      if (!produto || !produto.ativo) {
-        throw new Error(
-          `Produto inválido ou inativo: ${item.produto_id}`
-        );
+      if (erroCarrinho) {
+        throw erroCarrinho;
       }
 
-      const quantidade = Number(item.quantidade);
-      const precoUnitario = Number(produto.preco);
-
-      if (!Number.isInteger(quantidade) || quantidade <= 0) {
-        throw new Error(
-          `Quantidade inválida para o produto ${produto.nome}.`
-        );
-      }
-
-      if (!Number.isFinite(precoUnitario) || precoUnitario < 0) {
-        throw new Error(
-          `Preço inválido para o produto ${produto.nome}.`
-        );
-      }
-
-      return {
-        produto_id: produto.id,
-        produto_nome: produto.nome,
-        quantidade,
-        preco_unitario: precoUnitario
-      };
-    });
-
-    const valorTotal = itensPedido.reduce(
-      (total, item) => {
-        return total +
-          item.quantidade * item.preco_unitario;
-      },
-      0
-    );
-
-    const numeroPedido =
-      `PED-${Date.now()}`;
-
-    const { data: pedido, error: erroPedido } =
-      await supabase
-        .from('pedidos')
-        .insert({
-          usuario_id: usuarioId,
-          numero: numeroPedido,
-          status: 'aguardando_pagamento',
-          valor: valorTotal,
-          gateway: 'asaas',
-          gateway_status: 'PENDING',
-          observacoes: req.body.observacoes || null
-        })
-        .select()
-        .single();
-
-    if (erroPedido) {
-      throw erroPedido;
-    }
-
-    const itensParaInserir = itensPedido.map(item => ({
-      pedido_id: pedido.id,
-      produto_id: item.produto_id,
-      produto_nome: item.produto_nome,
-      quantidade: item.quantidade,
-      preco_unitario: item.preco_unitario
-    }));
-
-    const { error: erroItens } =
-      await supabase
-        .from('pedido_itens')
-        .insert(itensParaInserir);
-
-    if (erroItens) {
-      throw erroItens;
-    }
-
-    console.log(
-      'Pedido criado no Supabase:',
-      {
-        id: pedido.id,
-        numero: pedido.numero,
-        valor: pedido.valor,
-        usuarioId
-      }
-    );
-
-    return res.status(201).json({
-      ok: true,
-      pedido: {
-        id: pedido.id,
-        numero: pedido.numero,
-        valor: pedido.valor
-      }
-    });
-  } catch (erro) {
-    console.error(
-      'Erro ao criar pedido a partir do carrinho:',
-      erro
-    );
-
-        return res.status(500).json({
+      if (!itensCarrinho || itensCarrinho.length === 0) {
+        return res.status(400).json({
           ok: false,
-          erro: error.message
+          erro: 'Seu carrinho está vazio.'
         });
-
       }
 
+      const itensPedido = itensCarrinho.map(item => {
+        const produto = item.produtos;
 
-      return res.json({
-        ok: true,
-        mensagem: "Configurações salvas com sucesso!",
-        data
+        if (!produto || !produto.ativo) {
+          throw new Error(
+            `Produto inválido ou inativo: ${item.produto_id}`
+          );
+        }
+
+        const quantidade = Number(item.quantidade);
+        const precoUnitario = Number(produto.preco);
+
+        if (
+          !Number.isInteger(quantidade) ||
+          quantidade <= 0
+        ) {
+          throw new Error(
+            `Quantidade inválida para o produto ${produto.nome}.`
+          );
+        }
+
+        if (
+          !Number.isFinite(precoUnitario) ||
+          precoUnitario < 0
+        ) {
+          throw new Error(
+            `Preço inválido para o produto ${produto.nome}.`
+          );
+        }
+
+        return {
+          produto_id: produto.id,
+          produto_nome: produto.nome,
+          quantidade,
+          preco_unitario: precoUnitario
+        };
       });
 
+      const valorTotal = itensPedido.reduce(
+        (total, item) => {
+          return total +
+            item.quantidade * item.preco_unitario;
+        },
+        0
+      );
 
-    } catch (err) {
+      const numeroPedido = `PED-${Date.now()}`;
 
+      const { data: pedido, error: erroPedido } =
+        await supabase
+          .from('pedidos')
+          .insert({
+            usuario_id: usuarioId,
+            numero: numeroPedido,
+            status: 'aguardando_pagamento',
+            valor: valorTotal,
+            gateway: 'asaas',
+            gateway_status: 'PENDING',
+            observacoes: req.body.observacoes || null
+          })
+          .select()
+          .single();
+
+      if (erroPedido) {
+        throw erroPedido;
+      }
+
+      const itensParaInserir = itensPedido.map(item => ({
+        pedido_id: pedido.id,
+        produto_id: item.produto_id,
+        produto_nome: item.produto_nome,
+        quantidade: item.quantidade,
+        preco_unitario: item.preco_unitario
+      }));
+
+      const { error: erroItens } =
+        await supabase
+          .from('pedido_itens')
+          .insert(itensParaInserir);
+
+      if (erroItens) {
+        throw erroItens;
+      }
+
+      console.log(
+        'Pedido criado no Supabase:',
+        {
+          id: pedido.id,
+          numero: pedido.numero,
+          valor: pedido.valor,
+          usuarioId
+        }
+      );
+
+      return res.status(201).json({
+        ok: true,
+        pedido: {
+          id: pedido.id,
+          numero: pedido.numero,
+          valor: pedido.valor
+        }
+      });
+    } catch (erro) {
       console.error(
-        "Erro inesperado ao salvar configurações:",
-        err
+        'Erro ao criar pedido a partir do carrinho:',
+        erro
       );
 
       return res.status(500).json({
         ok: false,
-        erro: err.message
+        erro: 'Não foi possível criar o pedido.',
+        detalhes: erro.message
       });
-
     }
   }
 );

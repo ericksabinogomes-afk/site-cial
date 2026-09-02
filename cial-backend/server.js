@@ -2628,8 +2628,7 @@ app.get(
                         === "estoque baixo"
                 ).length;
 
-
-                       /*==================================================
+          /*==================================================
                 ÚLTIMOS PEDIDOS
             ==================================================*/
 
@@ -3138,6 +3137,215 @@ app.post(
     }
   }
 );
+
+/*==========================================================
+    PEDIDOS - ADMINISTRATIVO
+==========================================================*/
+
+// LISTAR TODOS OS PEDIDOS
+app.get(
+    "/admin/pedidos",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
+
+        try {
+
+            const { data, error } = await supabase
+                .from("pedidos")
+                .select(`
+                    *,
+                    pedido_itens (
+                        id,
+                        produto_nome,
+                        quantidade,
+                        preco_unitario
+                    )
+                `)
+                .order("data_pedido", {
+                    ascending: false
+                });
+
+            if (error) {
+                console.error(
+                    "Erro ao listar pedidos:",
+                    error
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+            }
+
+            return res.json({
+                ok: true,
+                data: data || []
+            });
+
+        } catch (err) {
+
+            console.error(
+                "Erro inesperado ao listar pedidos:",
+                err
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro: err.message
+            });
+        }
+    }
+);
+
+
+// DETALHES DE UM PEDIDO
+app.get(
+    "/admin/pedidos/:id",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
+
+        try {
+
+            const pedidoId = req.params.id;
+
+            const { data, error } = await supabase
+                .from("pedidos")
+                .select(`
+                    *,
+                    pedido_itens (
+                        id,
+                        produto_nome,
+                        quantidade,
+                        preco_unitario
+                    )
+                `)
+                .eq("id", pedidoId)
+                .single();
+
+            if (error) {
+
+                console.error(
+                    "Erro ao buscar pedido:",
+                    error
+                );
+
+                return res.status(404).json({
+                    ok: false,
+                    erro: "Pedido não encontrado."
+                });
+            }
+
+            // Buscar dados do cliente
+            let cliente = null;
+
+            if (data.usuario_id) {
+
+                const resultadoCliente = await supabase
+                    .from("usuarios")
+                    .select(`
+                        id,
+                        nome,
+                        email,
+                        cpf,
+                        telefone
+                    `)
+                    .eq("id", data.usuario_id)
+                    .single();
+
+                if (!resultadoCliente.error) {
+                    cliente = resultadoCliente.data;
+                }
+            }
+
+            return res.json({
+                ok: true,
+                data: {
+                    ...data,
+                    cliente
+                }
+            });
+
+        } catch (err) {
+
+            console.error(
+                "Erro inesperado ao buscar pedido:",
+                err
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro: err.message
+            });
+        }
+    }
+);
+
+
+// ATUALIZAR STATUS DO PEDIDO
+app.patch(
+    "/admin/pedidos/:id/status",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
+
+        try {
+
+            const pedidoId = req.params.id;
+            const { status } = req.body;
+
+            if (!status) {
+
+                return res.status(400).json({
+                    ok: false,
+                    erro: "O status do pedido é obrigatório."
+                });
+            }
+
+            const { data, error } = await supabase
+                .from("pedidos")
+                .update({
+                    status: status
+                })
+                .eq("id", pedidoId)
+                .select()
+                .single();
+
+            if (error) {
+
+                console.error(
+                    "Erro ao atualizar status:",
+                    error
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+            }
+
+            return res.json({
+                ok: true,
+                mensagem: "Status atualizado com sucesso!",
+                data
+            });
+
+        } catch (err) {
+
+            console.error(
+                "Erro inesperado ao atualizar status:",
+                err
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro: err.message
+            });
+        }
+    }
+);
+
 
 /* ==============
     SERVIDOR 

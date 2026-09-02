@@ -318,6 +318,10 @@ if (secao === "dashboard") {
     carregarDashboardAdmin();
 }
 
+if (secao === "pedidos") {
+    carregarPedidosAdmin();
+}
+
     });
 });
 
@@ -4554,6 +4558,1240 @@ const cliente =
 
 }
 
+
+/*==================================================
+        PEDIDOS — ADMINISTRATIVO
+==================================================*/
+
+async function carregarPedidosAdmin() {
+
+    const tabela =
+        document.getElementById("listaPedidos");
+
+
+    if (!tabela) {
+        return;
+    }
+
+
+    const tokenAtual =
+        localStorage.getItem("tokenCial");
+
+
+    if (!tokenAtual) {
+
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    Sessão não encontrada.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    tabela.innerHTML = `
+        <tr>
+            <td colspan="7">
+                Carregando pedidos...
+            </td>
+        </tr>
+    `;
+
+
+    try {
+
+        const resposta = await fetch(
+            `${API_BASE}/admin/pedidos`,
+            {
+                method: "GET",
+
+                headers: {
+                    Accept: "application/json",
+
+                    Authorization:
+                        `Bearer ${tokenAtual}`
+                }
+            }
+        );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if (resposta.status === 401) {
+
+            localStorage.removeItem(
+                "tokenCial"
+            );
+
+            localStorage.removeItem(
+                "usuarioCial"
+            );
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return;
+        }
+
+
+        if (
+            !resposta.ok ||
+            !resultado.ok
+        ) {
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar pedidos."
+            );
+
+        }
+
+
+        const pedidos =
+            Array.isArray(resultado.data)
+                ? resultado.data
+                : [];
+
+
+        if (pedidos.length === 0) {
+
+            tabela.innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        Nenhum pedido encontrado.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        tabela.innerHTML =
+            pedidos.map(pedido => {
+
+                const numero =
+                    pedido.numero || "-";
+
+
+                const cliente =
+                    pedido.cliente || "-";
+
+
+                const pagamento =
+                    pedido.pagamento || "-";
+
+
+                const status =
+                    pedido.status || "-";
+
+
+                const data =
+                    pedido.data_pedido
+                        ? new Date(
+                            pedido.data_pedido
+                        ).toLocaleDateString(
+                            "pt-BR"
+                        )
+                        : "-";
+
+
+                const valor =
+                    formatarMoeda(
+                        pedido.valor || 0
+                    );
+
+
+                return `
+                    <tr>
+
+                        <td>
+                            ${escaparHTML(numero)}
+                        </td>
+
+                        <td>
+                            ${escaparHTML(cliente)}
+                        </td>
+
+                        <td>
+                            ${escaparHTML(pagamento)}
+                        </td>
+
+                        <td>
+                            ${escaparHTML(status)}
+                        </td>
+
+                        <td>
+                            ${data}
+                        </td>
+
+                        <td>
+                            ${valor}
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="btn-acao-pedido"
+                                onclick="verPedidoAdmin(${pedido.id})"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                                Ver
+                            </button>
+
+                        </td>
+
+                    </tr>
+                `;
+
+            }).join("");
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar pedidos:",
+            erro
+        );
+
+
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    ${escaparHTML(
+                        erro.message
+                    )}
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+/*==================================================
+        MODAL — DETALHES DO PEDIDO
+==================================================*/
+
+const modalDetalhesPedido =
+    document.getElementById("modalDetalhesPedido");
+
+const fecharModalPedido =
+    document.getElementById("fecharModalPedido");
+
+const btnFecharPedidoModal =
+    document.getElementById("btnFecharPedidoModal");
+
+const btnSalvarStatusPedido =
+    document.getElementById("btnSalvarStatusPedido");
+
+
+let pedidoAtualAdmin = null;
+
+
+/*==================================================
+        ABRIR MODAL
+==================================================*/
+
+async function verPedidoAdmin(idPedido) {
+
+    if (!modalDetalhesPedido) {
+        console.error(
+            "Modal de detalhes do pedido não encontrado."
+        );
+
+        return;
+    }
+
+
+    const tokenAtual =
+        localStorage.getItem("tokenCial");
+
+
+    if (!tokenAtual) {
+
+        alert(
+            "Sua sessão expirou. Faça login novamente."
+        );
+
+        window.location.href =
+            "../cadastro/login.html";
+
+        return;
+    }
+
+
+    /* ESTADO DE CARREGAMENTO */
+
+    modalDetalhesPedido.classList.add("ativo");
+
+    modalDetalhesPedido.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+
+    preencherModalPedidoCarregando();
+
+
+    try {
+
+        const resposta = await fetch(
+            `${API_BASE}/admin/pedidos/${idPedido}`,
+            {
+                method: "GET",
+
+                headers: {
+                    Accept: "application/json",
+
+                    Authorization:
+                        `Bearer ${tokenAtual}`
+                }
+            }
+        );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if (resposta.status === 401) {
+
+            localStorage.removeItem(
+                "tokenCial"
+            );
+
+            localStorage.removeItem(
+                "usuarioCial"
+            );
+
+            alert(
+                "Sua sessão expirou. Faça login novamente."
+            );
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return;
+        }
+
+
+        if (
+            !resposta.ok ||
+            !resultado.ok
+        ) {
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar os detalhes do pedido."
+            );
+
+        }
+
+
+        const pedido =
+            resultado.data || resultado.pedido;
+
+
+        if (!pedido) {
+
+            throw new Error(
+                "A API não retornou os dados do pedido."
+            );
+
+        }
+
+
+        pedidoAtualAdmin = pedido;
+
+
+        preencherModalPedido(pedido);
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao abrir pedido:",
+            erro
+        );
+
+
+        preencherModalPedidoErro(
+            erro.message
+        );
+
+    }
+
+}
+
+
+/*==================================================
+        CARREGANDO
+==================================================*/
+
+function preencherModalPedidoCarregando() {
+
+    const numero =
+        document.getElementById(
+            "pedidoModalNumero"
+        );
+
+    const identificacao =
+        document.getElementById(
+            "pedidoModalIdentificacao"
+        );
+
+    const campos = [
+        "pedidoModalCliente",
+        "pedidoModalEmail",
+        "pedidoModalTelefone",
+        "pedidoModalCpf",
+        "pedidoModalPagamento",
+        "pedidoModalData",
+        "pedidoModalAtualizado",
+        "pedidoModalEndereco",
+        "pedidoModalObservacoes"
+    ];
+
+
+    if (numero) {
+        numero.textContent =
+            "Pedido #—";
+    }
+
+
+    if (identificacao) {
+        identificacao.textContent =
+            "Carregando informações...";
+    }
+
+
+    campos.forEach(id => {
+
+        const elemento =
+            document.getElementById(id);
+
+        if (elemento) {
+            elemento.textContent =
+                "Carregando...";
+        }
+
+    });
+
+
+    const itens =
+        document.getElementById(
+            "pedidoModalItens"
+        );
+
+    if (itens) {
+
+        itens.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    Carregando itens...
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+/*==================================================
+        PREENCHER MODAL
+==================================================*/
+
+function preencherModalPedido(pedido) {
+
+    const usuario =
+        pedido.usuario ||
+        pedido.cliente_dados ||
+        {};
+
+
+    const numero =
+        pedido.numero ||
+        pedido.id ||
+        "—";
+
+
+    const cliente =
+        pedido.cliente ||
+        usuario.nome ||
+        pedido.nome_cliente ||
+        "—";
+
+
+    const email =
+        pedido.email ||
+        usuario.email ||
+        "—";
+
+
+    const telefone =
+        pedido.telefone ||
+        usuario.telefone ||
+        "—";
+
+
+    const cpf =
+        pedido.cpf ||
+        usuario.cpf ||
+        "—";
+
+
+    const pagamento =
+        pedido.pagamento ||
+        pedido.forma_pagamento ||
+        pedido.metodo_pagamento ||
+        "—";
+
+
+    const data =
+        formatarDataPedido(
+            pedido.data_pedido
+        );
+
+
+    const atualizado =
+        formatarDataPedido(
+            pedido.updated_at ||
+            pedido.atualizado_em ||
+            pedido.data_atualizacao
+        );
+
+
+    const status =
+        pedido.status || "";
+
+
+    /* CABEÇALHO */
+
+    const elementoNumero =
+        document.getElementById(
+            "pedidoModalNumero"
+        );
+
+    if (elementoNumero) {
+
+        elementoNumero.textContent =
+            `Pedido #${numero}`;
+
+    }
+
+
+    const identificacao =
+        document.getElementById(
+            "pedidoModalIdentificacao"
+        );
+
+    if (identificacao) {
+
+        identificacao.textContent =
+            "Informações completas do pedido";
+
+    }
+
+
+    /* CLIENTE */
+
+    definirTexto(
+        "pedidoModalCliente",
+        cliente
+    );
+
+    definirTexto(
+        "pedidoModalEmail",
+        email
+    );
+
+    definirTexto(
+        "pedidoModalTelefone",
+        telefone
+    );
+
+    definirTexto(
+        "pedidoModalCpf",
+        cpf
+    );
+
+
+    /* PEDIDO */
+
+    const selectStatus =
+        document.getElementById(
+            "pedidoModalStatus"
+        );
+
+    if (selectStatus) {
+
+        selectStatus.value =
+            status;
+
+    }
+
+
+    definirTexto(
+        "pedidoModalPagamento",
+        pagamento
+    );
+
+    definirTexto(
+        "pedidoModalData",
+        data
+    );
+
+    definirTexto(
+        "pedidoModalAtualizado",
+        atualizado
+    );
+
+
+    /* ITENS */
+
+    preencherItensPedido(
+        pedido
+    );
+
+
+    /* ENTREGA */
+
+    preencherEnderecoPedido(
+        pedido
+    );
+
+
+    /* OBSERVAÇÕES */
+
+    const observacoes =
+        pedido.observacoes ||
+        pedido.observacao ||
+        pedido.notas ||
+        pedido.nota ||
+        "—";
+
+
+    definirTexto(
+        "pedidoModalObservacoes",
+        observacoes
+    );
+
+
+    /* RESUMO */
+
+    const subtotal =
+        calcularSubtotalPedido(
+            pedido
+        );
+
+
+    const frete =
+        Number(
+            pedido.frete ||
+            pedido.valor_frete ||
+            0
+        );
+
+
+    const desconto =
+        Number(
+            pedido.desconto ||
+            pedido.valor_desconto ||
+            0
+        );
+
+
+    const total =
+        Number(
+            pedido.total ||
+            pedido.valor ||
+            subtotal + frete - desconto
+        );
+
+
+    definirTexto(
+        "pedidoModalSubtotal",
+        formatarMoeda(subtotal)
+    );
+
+
+    definirTexto(
+        "pedidoModalFrete",
+        formatarMoeda(frete)
+    );
+
+
+    definirTexto(
+        "pedidoModalDesconto",
+        formatarMoeda(desconto)
+    );
+
+
+    definirTexto(
+        "pedidoModalTotal",
+        formatarMoeda(total)
+    );
+
+}
+
+
+/*==================================================
+        ITENS DO PEDIDO
+==================================================*/
+
+function preencherItensPedido(pedido) {
+
+    const tabela =
+        document.getElementById(
+            "pedidoModalItens"
+        );
+
+
+    if (!tabela) {
+        return;
+    }
+
+
+    const itens =
+        Array.isArray(pedido.itens)
+            ? pedido.itens
+            : Array.isArray(pedido.pedido_itens)
+                ? pedido.pedido_itens
+                : [];
+
+
+    if (itens.length === 0) {
+
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    Nenhum item encontrado neste pedido.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    tabela.innerHTML =
+        itens.map(item => {
+
+            const nome =
+                item.produto_nome ||
+                item.nome ||
+                item.produto?.nome ||
+                "Produto";
+
+
+            const quantidade =
+                Number(
+                    item.quantidade || 0
+                );
+
+
+            const preco =
+                Number(
+                    item.preco_unitario ||
+                    item.preco ||
+                    item.valor_unitario ||
+                    0
+                );
+
+
+            const total =
+                quantidade * preco;
+
+
+            return `
+                <tr>
+
+                    <td>
+                        ${escaparHTML(nome)}
+                    </td>
+
+                    <td>
+                        ${quantidade}
+                    </td>
+
+                    <td>
+                        ${formatarMoeda(preco)}
+                    </td>
+
+                    <td>
+                        ${formatarMoeda(total)}
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+
+}
+
+
+/*==================================================
+        ENDEREÇO
+==================================================*/
+
+function preencherEnderecoPedido(pedido) {
+
+    const elemento =
+        document.getElementById(
+            "pedidoModalEndereco"
+        );
+
+
+    if (!elemento) {
+        return;
+    }
+
+
+    const endereco =
+        pedido.endereco_entrega ||
+        pedido.endereco ||
+        pedido.endereco_entrega_completo ||
+        pedido.dados_entrega;
+
+
+    if (!endereco) {
+
+        elemento.textContent =
+            "Nenhum endereço informado.";
+
+        return;
+
+    }
+
+
+    if (typeof endereco === "string") {
+
+        elemento.textContent =
+            endereco;
+
+        return;
+
+    }
+
+
+    const partes = [
+
+        endereco.rua,
+
+        endereco.numero &&
+            `nº ${endereco.numero}`,
+
+        endereco.complemento,
+
+        endereco.bairro,
+
+        endereco.cidade,
+
+        endereco.estado,
+
+        endereco.cep &&
+            `CEP ${endereco.cep}`
+
+    ].filter(Boolean);
+
+
+    elemento.textContent =
+        partes.length
+            ? partes.join(", ")
+            : "Nenhum endereço informado.";
+
+}
+
+
+/*==================================================
+        SUBTOTAL
+==================================================*/
+
+function calcularSubtotalPedido(pedido) {
+
+    if (
+        pedido.subtotal !== undefined &&
+        pedido.subtotal !== null
+    ) {
+
+        return Number(
+            pedido.subtotal
+        ) || 0;
+
+    }
+
+
+    const itens =
+        Array.isArray(pedido.itens)
+            ? pedido.itens
+            : Array.isArray(pedido.pedido_itens)
+                ? pedido.pedido_itens
+                : [];
+
+
+    return itens.reduce(
+        (total, item) => {
+
+            const quantidade =
+                Number(
+                    item.quantidade || 0
+                );
+
+
+            const preco =
+                Number(
+                    item.preco_unitario ||
+                    item.preco ||
+                    0
+                );
+
+
+            return total +
+                (quantidade * preco);
+
+        },
+        0
+    );
+
+}
+
+
+/*==================================================
+        ERRO
+==================================================*/
+
+function preencherModalPedidoErro(mensagem) {
+
+    definirTexto(
+        "pedidoModalNumero",
+        "Pedido"
+    );
+
+
+    definirTexto(
+        "pedidoModalIdentificacao",
+        mensagem || "Erro ao carregar pedido."
+    );
+
+
+    const tabela =
+        document.getElementById(
+            "pedidoModalItens"
+        );
+
+
+    if (tabela) {
+
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    Não foi possível carregar os itens.
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+/*==================================================
+        AUXILIARES
+==================================================*/
+
+function definirTexto(id, valor) {
+
+    const elemento =
+        document.getElementById(id);
+
+
+    if (!elemento) {
+        return;
+    }
+
+
+    elemento.textContent =
+        valor !== undefined &&
+        valor !== null &&
+        String(valor).trim() !== ""
+            ? String(valor)
+            : "—";
+
+}
+
+
+function formatarDataPedido(data) {
+
+    if (!data) {
+        return "—";
+    }
+
+
+    const dataObj =
+        new Date(data);
+
+
+    if (Number.isNaN(
+        dataObj.getTime()
+    )) {
+
+        return String(data);
+
+    }
+
+
+    return dataObj.toLocaleString(
+        "pt-BR",
+        {
+            dateStyle: "short",
+            timeStyle: "short"
+        }
+    );
+
+}
+
+
+/*==================================================
+        FECHAR MODAL
+==================================================*/
+
+function fecharModalDetalhesPedido() {
+
+    if (!modalDetalhesPedido) {
+        return;
+    }
+
+
+    modalDetalhesPedido.classList.remove(
+        "ativo"
+    );
+
+
+    modalDetalhesPedido.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    pedidoAtualAdmin = null;
+
+}
+
+
+fecharModalPedido?.addEventListener(
+    "click",
+    fecharModalDetalhesPedido
+);
+
+
+btnFecharPedidoModal?.addEventListener(
+    "click",
+    fecharModalDetalhesPedido
+);
+
+
+/* FECHAR CLICANDO FORA */
+
+modalDetalhesPedido?.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target ===
+            modalDetalhesPedido
+        ) {
+
+            fecharModalDetalhesPedido();
+
+        }
+
+    }
+);
+
+
+/* ESC */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            modalDetalhesPedido?.classList.contains(
+                "ativo"
+            )
+        ) {
+
+            fecharModalDetalhesPedido();
+
+        }
+
+    }
+);
+
+
+/*==================================================
+        SALVAR STATUS
+==================================================*/
+
+btnSalvarStatusPedido?.addEventListener(
+    "click",
+    async () => {
+
+        if (!pedidoAtualAdmin) {
+
+            alert(
+                "Nenhum pedido selecionado."
+            );
+
+            return;
+
+        }
+
+
+        const selectStatus =
+            document.getElementById(
+                "pedidoModalStatus"
+            );
+
+
+        const novoStatus =
+            selectStatus?.value || "";
+
+
+        if (!novoStatus) {
+
+            alert(
+                "Selecione um status."
+            );
+
+            return;
+
+        }
+
+
+        const tokenAtual =
+            localStorage.getItem(
+                "tokenCial"
+            );
+
+
+        if (!tokenAtual) {
+
+            alert(
+                "Sua sessão expirou. Faça login novamente."
+            );
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return;
+
+        }
+
+
+        try {
+
+            btnSalvarStatusPedido.disabled =
+                true;
+
+
+            btnSalvarStatusPedido.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Salvando...
+            `;
+
+
+            const resposta = await fetch(
+                `${API_BASE}/admin/pedidos/${pedidoAtualAdmin.id}/status`,
+                {
+                    method: "PATCH",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        Accept:
+                            "application/json",
+
+                        Authorization:
+                            `Bearer ${tokenAtual}`
+
+                    },
+
+                    body: JSON.stringify({
+                        status: novoStatus
+                    })
+
+                }
+            );
+
+
+            const resultado =
+                await resposta.json();
+
+
+            if (!resposta.ok || !resultado.ok) {
+
+                throw new Error(
+                    resultado.erro ||
+                    "Não foi possível atualizar o status."
+                );
+
+            }
+
+
+            pedidoAtualAdmin.status =
+                novoStatus;
+
+
+            alert(
+                "Status do pedido atualizado com sucesso!"
+            );
+
+
+            await carregarPedidosAdmin();
+
+            await carregarDashboardAdmin();
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao salvar status:",
+                erro
+            );
+
+
+            alert(
+                `Erro ao salvar status: ${erro.message}`
+            );
+
+
+        } finally {
+
+            btnSalvarStatusPedido.disabled =
+                false;
+
+            btnSalvarStatusPedido.innerHTML = `
+                <i class="fa-solid fa-floppy-disk"></i>
+                Salvar status
+            `;
+
+        }
+
+    }
+);
 
 function formatarMoeda(valor) {
   return Number(valor).toLocaleString("pt-BR", {

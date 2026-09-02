@@ -1799,13 +1799,488 @@
 
             </section>
 
-        </main>
+     
 
+                    </main>
+
+
+        <!--==================================================
+                MODAL — DETALHES DO PEDIDO
+        ==================================================-->
+
+        <div
+            id="modalDetalhesPedido"
+            class="modal-pedido"
+            aria-hidden="true"
+        >
+
+            <div
+                class="modal-pedido-conteudo"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="pedidoModalNumero"
+            >
+
+                <!-- CABEÇALHO -->
+
+                <div class="modal-pedido-header">
+
+                    <div>
+
+                        <span class="modal-pedido-kicker">
+                            DETALHES DO PEDIDO
+                        </span>
+
+                        <h2 id="pedidoModalNumero">
+                            Pedido #—
+                        </h2>
+
+                        <p id="pedidoModalIdentificacao">
+                            —
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="fecharModalPedido"
+                        class="modal-pedido-fechar"
+                        aria-label="Fechar"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+
+                </div>
+
+
+                <!-- CORPO -->
+
+                <div class="modal-pedido-corpo">
+
+
+                    <!-- =========================
+                         CLIENTE
+                    ========================== -->
+
+                    <section class="modal-pedido-bloco">
+
+                        <div class="modal-pedido-titulo">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            <div>
+
+                                <h3>
+                                    Cliente
+                                </h3>
+
+                                <p>
+                                    Informações do cliente do pedido
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="pedido-dados-grid">
+
+                            <div class="pedido-campo">
+
+                                <span>Nome</span>
+
+                                <strong id="pedidoModalCliente">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="pedido-campo">
+
+                                <span>E-mail</span>
+
+                                <strong id="pedidoModalEmail">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="pedido-campo">
+
+                                <span>Telefone</span>
+
+                                <strong id="pedidoModalTelefone">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="pedido-campo">
+
+                                <span>CPF</span>
+
+                                <strong id="pedidoModalCpf">
+                                    —
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================
+                         PEDIDO
+                    ========================== -->
+
+                    <section class="modal-pedido-bloco">
+
+                        <div class="modal-pedido-titulo">
+
+                            <i class="fa-solid fa-receipt"></i>
+
+                            <div>
+
+                                <h3>
+                                    Informações do pedido
+                                </h3>
+
+                                <p>
+                                    Status, pagamento e datas
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="pedido-dados-grid">
+
+                            <div class="pedido-campo">
+
+                                <span>Status</span>
+
+                                <select
+                                    id="pedidoModalStatus"
+                                    class="pedido-status-select"
+                                >
+
+                                    <option value="">
+                                        —
+                                    </option>
+
+                                    <option value="aguardando_pagamento">
+                                        Aguardando pagamento
+                                    </option>
+
+                                    <option value="pagamento_aprovado">
+                                        Pagamento aprovado
+                                    </option>
+
+                                    <option value="em_preparacao">
+                                        Em preparação
+                                    </option>
+
+                                    <option value="enviado">
+                                        Enviado
+                                    </option>
+
+                                    <option value="entregue">
+                                        Entregue
+                                    </option>
+
+                                    <option value="cancelado">
+                                        Cancelado
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="pedido-campo">
+
+                                <span>Pagamento</span>
+
+                                <strong id="pedidoModalPagamento">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="pedido-campo">
+
+                                <span>Data do pedido</span>
+
+                                <strong id="pedidoModalData">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="pedido-campo">
+
+                                <span>Última atualização</span>
+
+                                <strong id="pedidoModalAtualizado">
+                                    —
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================
+                         PRODUTOS
+                    ========================== -->
+
+                    <section class="modal-pedido-bloco">
+
+                        <div class="modal-pedido-titulo">
+
+                            <i class="fa-solid fa-box-open"></i>
+
+                            <div>
+
+                                <h3>
+                                    Produtos
+                                </h3>
+
+                                <p>
+                                    Itens incluídos neste pedido
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="pedido-itens-container">
+
+                            <table class="pedido-itens-tabela">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Produto
+                                        </th>
+
+                                        <th>
+                                            Quantidade
+                                        </th>
+
+                                        <th>
+                                            Preço unitário
+                                        </th>
+
+                                        <th>
+                                            Total
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody id="pedidoModalItens">
+
+                                    <tr>
+
+                                        <td colspan="4">
+                                            Nenhum item carregado.
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================
+                         ENTREGA
+                    ========================== -->
+
+                    <section class="modal-pedido-bloco">
+
+                        <div class="modal-pedido-titulo">
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                            <div>
+
+                                <h3>
+                                    Entrega
+                                </h3>
+
+                                <p>
+                                    Endereço de entrega do pedido
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="pedidoModalEndereco"
+                            class="pedido-endereco"
+                        >
+                            —
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================
+                         OBSERVAÇÕES
+                    ========================== -->
+
+                    <section class="modal-pedido-bloco">
+
+                        <div class="modal-pedido-titulo">
+
+                            <i class="fa-solid fa-note-sticky"></i>
+
+                            <div>
+
+                                <h3>
+                                    Observações
+                                </h3>
+
+                                <p>
+                                    Informações adicionais do pedido
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="pedidoModalObservacoes"
+                            class="pedido-observacoes"
+                        >
+                            —
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================
+                         RESUMO
+                    ========================== -->
+
+                    <section class="pedido-resumo">
+
+                        <div class="pedido-resumo-linha">
+
+                            <span>
+                                Subtotal
+                            </span>
+
+                            <strong id="pedidoModalSubtotal">
+                                R$ 0,00
+                            </strong>
+
+                        </div>
+
+
+                        <div class="pedido-resumo-linha">
+
+                            <span>
+                                Frete
+                            </span>
+
+                            <strong id="pedidoModalFrete">
+                                R$ 0,00
+                            </strong>
+
+                        </div>
+
+
+                        <div class="pedido-resumo-linha">
+
+                            <span>
+                                Desconto
+                            </span>
+
+                            <strong id="pedidoModalDesconto">
+                                R$ 0,00
+                            </strong>
+
+                        </div>
+
+
+                        <div class="pedido-resumo-total">
+
+                            <span>
+                                Total do pedido
+                            </span>
+
+                            <strong id="pedidoModalTotal">
+                                R$ 0,00
+                            </strong>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+
+                <!-- RODAPÉ DO MODAL -->
+
+                <div class="modal-pedido-footer">
+
+                    <button
+                        type="button"
+                        id="btnFecharPedidoModal"
+                        class="btn-modal-secundario"
+                    >
+                        Fechar
+                    </button>
+
+
+                    <button
+                        type="button"
+                        id="btnSalvarStatusPedido"
+                        class="btn-modal-principal"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Salvar status
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
 
 
         <!--==========================
                 FOOTER
         ==========================-->
+
 
         <footer class="admin-footer">
 

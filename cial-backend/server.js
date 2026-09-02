@@ -2382,6 +2382,7 @@ app.post(
         0
       );
 
+<<<<<<< Updated upstream
       const numeroPedido = `PED-${Date.now()}`;
 
       const { data: pedido, error: erroPedido } =
@@ -2439,6 +2440,9 @@ app.post(
         }
       });
     } catch (erro) {
+=======
+    catch (err) {
+>>>>>>> Stashed changes
       console.error(
         'Erro ao criar pedido a partir do carrinho:',
         erro
@@ -2450,7 +2454,7 @@ app.post(
         detalhes: erro.message
       });
     }
-  }
+  
 );
 
 

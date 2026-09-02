@@ -314,6 +314,10 @@ if (secao === "categorias") {
     carregarCategorias();
 }
 
+if (secao === "dashboard") {
+    carregarDashboardAdmin();
+}
+
     });
 });
 
@@ -4349,6 +4353,208 @@ async function excluirProduto(id) {
   }
 }
 
+
+/*==================================================
+            DASHBOARD ADMINISTRATIVO
+==================================================*/
+
+async function carregarDashboardAdmin() {
+
+  try {
+
+    const tokenAtual =
+      localStorage.getItem("tokenCial");
+
+    if (!tokenAtual) {
+      throw new Error(
+        "Token não encontrado. Faça login novamente."
+      );
+    }
+
+    const resposta = await fetch(
+      `${API_BASE}/admin/dashboard`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${tokenAtual}`
+        }
+      }
+    );
+
+    const resultado =
+      await resposta.json();
+
+    if (resposta.status === 401) {
+
+      localStorage.removeItem("tokenCial");
+      localStorage.removeItem("usuarioCial");
+
+      alert(
+        resultado.erro ||
+        "Sua sessão expirou. Faça login novamente."
+      );
+
+      window.location.href =
+        "../cadastro/login.html";
+
+      return;
+    }
+
+    if (!resposta.ok || !resultado.ok) {
+      throw new Error(
+        resultado.erro ||
+        "Erro ao carregar Dashboard."
+      );
+    }
+
+    const dados =
+      resultado.data || {};
+
+    /* =========================
+       CARDS
+    ========================= */
+
+    const totalProdutos =
+      document.getElementById("totalProdutos");
+
+    const totalPedidos =
+      document.getElementById("totalPedidos");
+
+    const totalClientes =
+      document.getElementById("totalClientes");
+
+    const faturamento =
+      document.getElementById("faturamento");
+
+    const pedidosHoje =
+      document.getElementById("pedidosHoje");
+
+    const estoqueBaixo =
+      document.getElementById("estoqueBaixo");
+
+
+    if (totalProdutos) {
+      totalProdutos.textContent =
+        dados.totalProdutos ?? 0;
+    }
+
+    if (totalPedidos) {
+      totalPedidos.textContent =
+        dados.totalPedidos ?? 0;
+    }
+
+    if (totalClientes) {
+      totalClientes.textContent =
+        dados.totalClientes ?? 0;
+    }
+
+    if (faturamento) {
+      faturamento.textContent =
+        formatarMoeda(dados.faturamento ?? 0);
+    }
+
+    if (pedidosHoje) {
+      pedidosHoje.textContent =
+        dados.pedidosHoje ?? 0;
+    }
+
+    if (estoqueBaixo) {
+      estoqueBaixo.textContent =
+        dados.estoqueBaixo ?? 0;
+    }
+
+
+    /* =========================
+       ÚLTIMOS PEDIDOS
+    ========================= */
+
+    const tabela =
+      document.getElementById("ultimosPedidos");
+
+    if (!tabela) {
+      return;
+    }
+
+    const pedidos =
+      Array.isArray(dados.ultimosPedidos)
+        ? dados.ultimosPedidos
+        : [];
+
+
+    if (pedidos.length === 0) {
+
+      tabela.innerHTML = `
+        <tr>
+          <td colspan="5">
+            Nenhum pedido encontrado.
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+
+    tabela.innerHTML =
+      pedidos.map(pedido => {
+
+        const data =
+          pedido.data_pedido
+            ? new Date(
+                pedido.data_pedido
+              ).toLocaleDateString("pt-BR")
+            : "-";
+
+      const status =
+    pedido.status || "";
+
+const cliente =
+    pedido.cliente || "";
+
+        return `
+          <tr>
+
+            <td>
+              #${pedido.id}
+            </td>
+
+            <td>
+              ${cliente}
+            </td>
+
+            <td>
+              ${status}
+            </td>
+
+            <td>
+              ${formatarMoeda(
+                pedido.total || 0
+              )}
+            </td>
+
+            <td>
+              ${data}
+            </td>
+
+          </tr>
+        `;
+
+      }).join("");
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar Dashboard:",
+      erro
+    );
+
+  }
+
+}
+
+
 function formatarMoeda(valor) {
   return Number(valor).toLocaleString("pt-BR", {
     style: "currency",
@@ -4906,10 +5112,12 @@ btnAtualizarUsuarios?.addEventListener(
 document.addEventListener(
   "DOMContentLoaded",
   () => {
+
     mostrarSecao("dashboard");
 
-    carregarProdutosAdmin();
-  }
-  
-)
+    carregarDashboardAdmin();
 
+    carregarProdutosAdmin();
+
+  }
+);

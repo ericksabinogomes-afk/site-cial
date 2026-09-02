@@ -2780,6 +2780,316 @@ app.put(
 
 
 
+/*==========================================================
+    DASHBOARD ADMINISTRATIVO
+==========================================================*/
+
+app.get(
+    "/admin/dashboard",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
+
+        try {
+
+            /*==================================================
+                PRODUTOS
+            ==================================================*/
+
+            const {
+                data: produtos,
+                error: erroProdutos
+            } = await supabase
+                .from("produtos")
+                .select("id, nome, estoque, ativo, preco")
+                .eq("ativo", true);
+
+            if (erroProdutos) {
+                throw erroProdutos;
+            }
+
+
+            /*==================================================
+                CLIENTES
+            ==================================================*/
+
+            const {
+                count: totalClientes,
+                error: erroClientes
+            } = await supabase
+                .from("usuarios")
+                .select("id", {
+                    count: "exact",
+                    head: true
+                })
+                .eq("perfil", "cliente");
+
+            if (erroClientes) {
+                throw erroClientes;
+            }
+
+
+            /*==================================================
+                PEDIDOS
+            ==================================================*/
+
+            const {
+                data: pedidos,
+                error: erroPedidos
+            } = await supabase
+                .from("pedidos")
+                .select(`
+                    *,
+                    pedido_itens (
+                        id,
+                        produto_nome,
+                        quantidade,
+                        preco_unitario
+                    )
+                `)
+                .order("data_pedido", {
+                    ascending: false
+                });
+
+            if (erroPedidos) {
+                throw erroPedidos;
+            }
+
+
+            /*==================================================
+                TOTAL DE PEDIDOS
+            ==================================================*/
+
+            const totalPedidos =
+                (pedidos || []).length;
+
+
+            /*==================================================
+                PEDIDOS DE HOJE
+            ==================================================*/
+
+            const inicioHoje =
+                new Date();
+
+            inicioHoje.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+            const fimHoje =
+                new Date();
+
+            fimHoje.setHours(
+                23,
+                59,
+                59,
+                999
+            );
+
+
+            const pedidosHoje =
+                (pedidos || []).filter(pedido => {
+
+                    if (!pedido.data_pedido) {
+                        return false;
+                    }
+
+                    const data =
+                        new Date(
+                            pedido.data_pedido
+                        );
+
+                    return (
+                        data >= inicioHoje &&
+                        data <= fimHoje
+                    );
+
+                }).length;
+
+
+            /*==================================================
+                FATURAMENTO
+            ==================================================*/
+
+            let faturamento = 0;
+
+            (pedidos || []).forEach(pedido => {
+
+                const itens =
+                    pedido.pedido_itens || [];
+
+                itens.forEach(item => {
+
+                    const quantidade =
+                        Number(
+                            item.quantidade
+                        ) || 0;
+
+                    const preco =
+                        Number(
+                            item.preco_unitario
+                        ) || 0;
+
+                    faturamento +=
+                        quantidade * preco;
+
+                });
+
+            });
+
+
+            /*==================================================
+                ESTOQUE BAIXO
+            ==================================================*/
+
+            const estoqueBaixo =
+                (produtos || []).filter(
+                    produto =>
+                        String(
+                            produto.estoque || ""
+                        ).trim().toLowerCase()
+                        === "estoque baixo"
+                ).length;
+
+
+                       /*==================================================
+                ÚLTIMOS PEDIDOS
+            ==================================================*/
+
+            const pedidosRecentes =
+                (pedidos || []).slice(0, 5);
+
+            /* Buscar nomes dos clientes */
+
+            const idsClientes = [
+                ...new Set(
+                    pedidosRecentes
+                        .map(pedido => pedido.usuario_id)
+                        .filter(Boolean)
+                )
+            ];
+
+            let clientesMap = {};
+
+            if (idsClientes.length > 0) {
+
+                const {
+                    data: clientes,
+                    error: erroClientesNomes
+                } = await supabase
+                    .from("usuarios")
+                    .select("id, nome")
+                    .in("id", idsClientes);
+
+                if (erroClientesNomes) {
+                    throw erroClientesNomes;
+                }
+
+                (clientes || []).forEach(cliente => {
+                    clientesMap[cliente.id] = cliente.nome;
+                });
+            }
+
+
+            const ultimosPedidos =
+                pedidosRecentes.map(pedido => {
+
+                    let total = 0;
+
+                    (
+                        pedido.pedido_itens || []
+                    ).forEach(item => {
+
+                        const quantidade =
+                            Number(item.quantidade) || 0;
+
+                        const preco =
+                            Number(item.preco_unitario) || 0;
+
+                        total += quantidade * preco;
+                    });
+
+
+                    return {
+
+                        id: pedido.id,
+
+                        usuario_id:
+                            pedido.usuario_id,
+
+                       cliente:
+    clientesMap[pedido.usuario_id] || null,
+
+status:
+    pedido.status ||
+    pedido.situacao ||
+    pedido.estado ||
+    null,
+
+                        data_pedido:
+                            pedido.data_pedido,
+
+                        total
+                    };
+
+                });
+
+            /*==================================================
+                RESPOSTA
+            ==================================================*/
+
+            return res.json({
+
+                ok: true,
+
+                data: {
+
+                    totalProdutos:
+                        (produtos || []).length,
+
+                    totalPedidos,
+
+                    totalClientes:
+                        totalClientes || 0,
+
+                    faturamento,
+
+                    pedidosHoje,
+
+                    estoqueBaixo,
+
+                    ultimosPedidos
+
+                }
+
+            });
+
+
+        } catch (err) {
+
+            console.error(
+                "Erro ao carregar Dashboard:",
+                err
+            );
+
+            return res.status(500).json({
+
+                ok: false,
+
+                erro:
+                    err.message ||
+                    "Erro ao carregar Dashboard"
+
+            });
+
+        }
+
+    }
+);
+
+
 /* ==============
     SERVIDOR 
     SEMPRE COLOCAR ATRAS DELE!!!

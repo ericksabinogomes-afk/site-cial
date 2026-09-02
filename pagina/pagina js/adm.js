@@ -1215,17 +1215,17 @@ const filtrosProdutos = {
         ]
     },
 
-    "linha-eletrica": {
-        aplicacao: [
-            "Uso Doméstico",
-            "Uso Profissional",
-            "Jardinagem",
-            "Paisagismo"
-        ],
-        linha: [
-            "Elétrica"
-        ]
-    },
+   "linha-eletrica": {
+    aplicacao: [
+        "Uso Doméstico",
+        "Uso Profissional",
+        "Jardinagem",
+        "Paisagismo"
+    ],
+    linha: [
+        "Elétrica"
+    ]
+},
 
     aspiradores: {
         aplicacao: [

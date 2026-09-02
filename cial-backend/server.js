@@ -188,6 +188,8 @@ app.put("/meus-dados/:id", autenticarToken, async (req, res) => {
       });
     }
 
+
+
     return res.json({ ok: true });
   } catch (err) {
     return res.status(500).json({
@@ -1131,6 +1133,10 @@ if (categoriasSelecionadas.length > 0) {
 
   /* Verificar se todas as categorias existem */
 
+  console.log("🔎 CATEGORIAS SELECIONADAS:", categoriasSelecionadas);
+console.log("🔎 CATEGORIAS ENCONTRADAS NO BANCO:", categoriasBanco);
+
+
   if (
     !categoriasBanco ||
     categoriasBanco.length !==
@@ -1214,6 +1220,7 @@ app.put(
       nome,
       codigo,
       categoria,
+      categorias,
       preco,
       estoque,
       imagem,
@@ -1362,6 +1369,85 @@ app.put(
         });
       }
 
+
+
+      // ==========================================================
+      // ATUALIZAR CATEGORIAS DO PRODUTO
+      // ==========================================================
+
+      if (Array.isArray(categorias)) {
+
+        // Remove as relações antigas
+        const { error: erroRemoverCategorias } = await supabase
+          .from("produto_categorias")
+          .delete()
+          .eq("produto_id", produtoId);
+
+        if (erroRemoverCategorias) {
+          console.error(
+            "Erro ao remover categorias antigas:",
+            erroRemoverCategorias
+          );
+
+          return res.status(500).json({
+            ok: false,
+            erro: erroRemoverCategorias.message
+          });
+        }
+
+        // Buscar IDs das novas categorias
+        const categoriasSelecionadas =
+          categorias.filter(Boolean);
+
+        if (categoriasSelecionadas.length > 0) {
+
+          const { data: categoriasBanco, error: erroCategorias } =
+            await supabase
+              .from("categorias")
+              .select("id, slug")
+              .in("slug", categoriasSelecionadas);
+
+          if (erroCategorias) {
+            console.error(
+              "Erro ao buscar categorias:",
+              erroCategorias
+            );
+
+            return res.status(500).json({
+              ok: false,
+              erro: erroCategorias.message
+            });
+          }
+
+          const relacoesCategorias =
+            (categoriasBanco || []).map(categoria => ({
+              produto_id: produtoId,
+              categoria_id: categoria.id
+            }));
+
+          if (relacoesCategorias.length > 0) {
+
+            const { error: erroInserirCategorias } =
+              await supabase
+                .from("produto_categorias")
+                .insert(relacoesCategorias);
+
+            if (erroInserirCategorias) {
+              console.error(
+                "Erro ao inserir categorias:",
+                erroInserirCategorias
+              );
+
+              return res.status(500).json({
+                ok: false,
+                erro: erroInserirCategorias.message
+              });
+            }
+          }
+        }
+      }
+      
+      
       return res.json({
         ok: true,
         data

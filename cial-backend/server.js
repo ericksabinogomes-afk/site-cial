@@ -388,19 +388,81 @@ async function exigirAdmin(req, res, next) {
 // Listar produtos (apenas ativos)
 app.get('/produtos', async (req, res) => {
   try {
-    const { data, error } = await supabase
+
+    // Buscar produtos ativos
+    const { data: produtos, error: erroProdutos } = await supabase
       .from('produtos')
       .select('*')
       .eq('ativo', true)
       .order('created_at', { ascending: false });
 
-    if (error) {
-      return res.status(500).json({ erro: error.message });
+    if (erroProdutos) {
+      return res.status(500).json({
+        ok: false,
+        erro: erroProdutos.message
+      });
     }
 
-    res.json({ ok: true, data });
+    // Buscar categorias relacionadas aos produtos
+    const { data: relacoes, error: erroRelacoes } = await supabase
+      .from('produto_categorias')
+      .select('produto_id, categoria_id');
+
+    if (erroRelacoes) {
+      return res.status(500).json({
+        ok: false,
+        erro: erroRelacoes.message
+      });
+    }
+
+    // Buscar categorias
+    const { data: categorias, error: erroCategorias } = await supabase
+      .from('categorias')
+      .select('id, slug');
+
+    if (erroCategorias) {
+      return res.status(500).json({
+        ok: false,
+        erro: erroCategorias.message
+      });
+    }
+
+    // Montar as categorias de cada produto
+    const produtosComCategorias = (produtos || []).map(produto => {
+
+      const categoriasDoProduto = (relacoes || [])
+        .filter(relacao => relacao.produto_id === produto.id)
+        .map(relacao => {
+
+          const categoria = (categorias || [])
+            .find(cat => cat.id === relacao.categoria_id);
+
+          return categoria ? categoria.slug : null;
+
+        })
+        .filter(Boolean);
+
+      return {
+        ...produto,
+        categorias: categoriasDoProduto
+      };
+
+    });
+
+    res.json({
+      ok: true,
+      data: produtosComCategorias
+    });
+
   } catch (err) {
-    res.status(500).json({ erro: err.message });
+
+    console.error('Erro ao listar produtos públicos:', err);
+
+    res.status(500).json({
+      ok: false,
+      erro: err.message
+    });
+
   }
 });
 
@@ -1375,39 +1437,57 @@ app.put(
       // ATUALIZAR CATEGORIAS DO PRODUTO
       // ==========================================================
 
+          // ==========================================================
+      // ATUALIZAR CATEGORIAS DO PRODUTO
+      // ==========================================================
+
       if (Array.isArray(categorias)) {
 
-        // Remove as relações antigas
-        const { error: erroRemoverCategorias } = await supabase
-          .from("produto_categorias")
-          .delete()
-          .eq("produto_id", produtoId);
-
-        if (erroRemoverCategorias) {
-          console.error(
-            "Erro ao remover categorias antigas:",
-            erroRemoverCategorias
-          );
-
-          return res.status(500).json({
-            ok: false,
-            erro: erroRemoverCategorias.message
-          });
-        }
-
-        // Buscar IDs das novas categorias
         const categoriasSelecionadas =
-          categorias.filter(Boolean);
+          categorias
+            .filter(Boolean)
+            .map(slug => String(slug).trim());
 
-        if (categoriasSelecionadas.length > 0) {
+        console.log(
+          "🔎 CATEGORIAS RECEBIDAS NO PUT:",
+          categoriasSelecionadas
+        );
 
-          const { data: categoriasBanco, error: erroCategorias } =
+        // Se não houver categorias selecionadas,
+        // remove todas as relações do produto.
+        if (categoriasSelecionadas.length === 0) {
+
+          const { error: erroRemoverCategorias } =
             await supabase
-              .from("categorias")
-              .select("id, slug")
-              .in("slug", categoriasSelecionadas);
+              .from("produto_categorias")
+              .delete()
+              .eq("produto_id", produtoId);
+
+          if (erroRemoverCategorias) {
+            console.error(
+              "Erro ao remover categorias:",
+              erroRemoverCategorias
+            );
+
+            return res.status(500).json({
+              ok: false,
+              erro: erroRemoverCategorias.message
+            });
+          }
+
+        } else {
+
+          // Buscar TODAS as categorias selecionadas
+          const {
+            data: categoriasBanco,
+            error: erroCategorias
+          } = await supabase
+            .from("categorias")
+            .select("id, slug")
+            .in("slug", categoriasSelecionadas);
 
           if (erroCategorias) {
+
             console.error(
               "Erro ao buscar categorias:",
               erroCategorias
@@ -1419,31 +1499,87 @@ app.put(
             });
           }
 
+          console.log(
+            "🔎 CATEGORIAS ENCONTRADAS NO BANCO:",
+            categoriasBanco
+          );
+
+          // IMPORTANTE:
+          // Só altera as relações se TODAS as categorias
+          // selecionadas realmente existirem.
+          if (
+            !categoriasBanco ||
+            categoriasBanco.length !==
+              categoriasSelecionadas.length
+          ) {
+
+            console.error(
+              "❌ CATEGORIAS NÃO ENCONTRADAS:",
+              {
+                selecionadas: categoriasSelecionadas,
+                encontradas: categoriasBanco
+              }
+            );
+
+            return res.status(400).json({
+              ok: false,
+              erro:
+                "Uma ou mais categorias selecionadas não foram encontradas."
+            });
+          }
+
+          // Montar relações
           const relacoesCategorias =
-            (categoriasBanco || []).map(categoria => ({
+            categoriasBanco.map(categoria => ({
               produto_id: produtoId,
               categoria_id: categoria.id
             }));
 
-          if (relacoesCategorias.length > 0) {
+          // Agora sim remove as relações antigas
+          const {
+            error: erroRemoverCategorias
+          } = await supabase
+            .from("produto_categorias")
+            .delete()
+            .eq("produto_id", produtoId);
 
-            const { error: erroInserirCategorias } =
-              await supabase
-                .from("produto_categorias")
-                .insert(relacoesCategorias);
+          if (erroRemoverCategorias) {
 
-            if (erroInserirCategorias) {
-              console.error(
-                "Erro ao inserir categorias:",
-                erroInserirCategorias
-              );
+            console.error(
+              "Erro ao remover categorias antigas:",
+              erroRemoverCategorias
+            );
 
-              return res.status(500).json({
-                ok: false,
-                erro: erroInserirCategorias.message
-              });
-            }
+            return res.status(500).json({
+              ok: false,
+              erro: erroRemoverCategorias.message
+            });
           }
+
+          // Gravar TODAS as novas relações
+          const {
+            error: erroInserirCategorias
+          } = await supabase
+            .from("produto_categorias")
+            .insert(relacoesCategorias);
+
+          if (erroInserirCategorias) {
+
+            console.error(
+              "Erro ao inserir categorias:",
+              erroInserirCategorias
+            );
+
+            return res.status(500).json({
+              ok: false,
+              erro: erroInserirCategorias.message
+            });
+          }
+
+          console.log(
+            "✅ CATEGORIAS SALVAS:",
+            relacoesCategorias
+          );
         }
       }
       

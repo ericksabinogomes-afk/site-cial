@@ -2978,6 +2978,8 @@ app.post(
             id,
             nome,
             email,
+            cpf,
+            telefone,
             asaas_customer_id
           `)
           .eq('id', usuarioId)
@@ -2990,16 +2992,55 @@ app.post(
           });
         }
 
-        if (!usuario.asaas_customer_id) {
-          return res.status(409).json({
-            ok: false,
-            erro:
-              'Seu cadastro financeiro ainda não foi criado. Atualize o cadastro ou entre em contato com o suporte.'
-          });
+      let customerId =
+        usuario.asaas_customer_id;
+
+      if (!customerId) {
+        const respostaCliente =
+          await axios.post(
+            `${process.env.ASAAS_BASE_URL}/customers`,
+            {
+              name: usuario.nome,
+              email: usuario.email,
+              cpfCnpj: String(usuario.cpf || '')
+                .replace(/\D/g, ''),
+              mobilePhone: String(usuario.telefone || '')
+                .replace(/\D/g, '') || undefined,
+              externalReference: String(usuario.id)
+            },
+            {
+              headers: {
+                access_token:
+                  process.env.ASAAS_API_KEY,
+                'Content-Type':
+                  'application/json'
+              }
+            }
+          );
+
+        customerId = respostaCliente.data.id;
+
+        const {
+          error: erroSalvarCustomerId
+        } = await supabase
+          .from('usuarios')
+          .update({
+            asaas_customer_id: customerId
+          })
+          .eq('id', usuario.id);
+
+        if (erroSalvarCustomerId) {
+          throw erroSalvarCustomerId;
         }
 
-        const customerId =
-          usuario.asaas_customer_id;
+        console.log(
+          'Cliente criado no Asaas e vinculado ao usuário:',
+          {
+            usuarioId: usuario.id,
+            customerId
+          }
+        );
+      }
       const {
         data: pedido,
         error: erroPedido

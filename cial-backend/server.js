@@ -2990,14 +2990,63 @@ status:
     PAGAMENTOS ASAAS
 ==========================================================*/
 
+async function buscarPedidoDoUsuarioPorPagamento(
+  usuarioId,
+  pagamentoId
+) {
+  const { data: pedido, error } = await supabase
+    .from('pedidos')
+    .select(`
+      id,
+      usuario_id,
+      numero,
+      valor,
+      status,
+      gateway,
+      gateway_payment_id,
+      gateway_status,
+      paid_at
+    `)
+    .eq('usuario_id', usuarioId)
+    .eq('gateway', 'asaas')
+    .eq('gateway_payment_id', pagamentoId)
+    .single();
+
+  if (error || !pedido) {
+    return null;
+  }
+
+  return pedido;
+}
+
+
+/*==========================================================
+    CONSULTAR COBRANÇA DO USUÁRIO
+==========================================================*/
+
 app.get(
   '/api/asaas/cobrancas/:id',
+  autenticarToken,
   async (req, res) => {
     try {
-      const { id } = req.params;
+      const { id: pagamentoId } = req.params;
+      const usuarioId = Number(req.usuario.id);
+
+      const pedido =
+        await buscarPedidoDoUsuarioPorPagamento(
+          usuarioId,
+          pagamentoId
+        );
+
+      if (!pedido) {
+        return res.status(404).json({
+          ok: false,
+          erro: 'Cobrança não encontrada para este usuário.'
+        });
+      }
 
       const resposta = await axios.get(
-        `${process.env.ASAAS_BASE_URL}/payments/${id}`,
+        `${process.env.ASAAS_BASE_URL}/payments/${pagamentoId}`,
         {
           headers: {
             access_token:
@@ -3006,9 +3055,11 @@ app.get(
         }
       );
 
-      return res.status(200).json(
-        resposta.data
-      );
+      return res.status(200).json({
+        ok: true,
+        pedidoId: pedido.id,
+        pagamento: resposta.data
+      });
     } catch (erro) {
       console.error(
         'Erro ao consultar cobrança Asaas:',
@@ -3030,13 +3081,17 @@ app.get(
   }
 );
 
+
+/*==========================================================
+    CRIAR COBRANÇA PIX
+==========================================================*/
+
 app.post(
   '/api/asaas/cobrancas/pix',
   autenticarToken,
   async (req, res) => {
     try {
       const {
-        customerId,
         pedidoId,
         descricao
       } = req.body;
@@ -3044,14 +3099,84 @@ app.post(
       const usuarioId =
         Number(req.usuario.id);
 
-      if (!customerId || !pedidoId) {
+      if (!pedidoId) {
         return res.status(400).json({
           ok: false,
-          erro:
-            'customerId e pedidoId são obrigatórios.'
+          erro: 'pedidoId é obrigatório.'
         });
       }
+        const {
+          data: usuario,
+          error: erroUsuario
+        } = await supabase
+          .from('usuarios')
+          .select(`
+            id,
+            nome,
+            email,
+            cpf,
+            telefone,
+            asaas_customer_id
+          `)
+          .eq('id', usuarioId)
+          .single();
 
+        if (erroUsuario || !usuario) {
+          return res.status(404).json({
+            ok: false,
+            erro: 'Usuário autenticado não encontrado.'
+          });
+        }
+
+      let customerId =
+        usuario.asaas_customer_id;
+
+      if (!customerId) {
+        const respostaCliente =
+          await axios.post(
+            `${process.env.ASAAS_BASE_URL}/customers`,
+            {
+              name: usuario.nome,
+              email: usuario.email,
+              cpfCnpj: String(usuario.cpf || '')
+                .replace(/\D/g, ''),
+              mobilePhone: String(usuario.telefone || '')
+                .replace(/\D/g, '') || undefined,
+              externalReference: String(usuario.id)
+            },
+            {
+              headers: {
+                access_token:
+                  process.env.ASAAS_API_KEY,
+                'Content-Type':
+                  'application/json'
+              }
+            }
+          );
+
+        customerId = respostaCliente.data.id;
+
+        const {
+          error: erroSalvarCustomerId
+        } = await supabase
+          .from('usuarios')
+          .update({
+            asaas_customer_id: customerId
+          })
+          .eq('id', usuario.id);
+
+        if (erroSalvarCustomerId) {
+          throw erroSalvarCustomerId;
+        }
+
+        console.log(
+          'Cliente criado no Asaas e vinculado ao usuário:',
+          {
+            usuarioId: usuario.id,
+            customerId
+          }
+        );
+      }
       const {
         data: pedido,
         error: erroPedido
@@ -3098,6 +3223,18 @@ app.post(
         });
       }
 
+      const valorPedido = Number(pedido.valor);
+
+      if (
+        !Number.isFinite(valorPedido) ||
+        valorPedido <= 0
+      ) {
+        return res.status(400).json({
+          ok: false,
+          erro: 'O valor do pedido é inválido.'
+        });
+      }
+
       const hoje = new Date()
         .toISOString()
         .split('T')[0];
@@ -3107,7 +3244,7 @@ app.post(
         {
           customer: customerId,
           billingType: 'PIX',
-          value: Number(pedido.valor),
+          value: valorPedido,
           dueDate: hoje,
           description:
             descricao ||
@@ -3136,7 +3273,8 @@ app.post(
           gateway_status:
             resposta.data.status
         })
-        .eq('id', pedido.id);
+        .eq('id', pedido.id)
+        .is('gateway_payment_id', null);
 
       if (erroAtualizarPedido) {
         throw erroAtualizarPedido;
@@ -3178,14 +3316,43 @@ app.post(
   }
 );
 
+
+/*==========================================================
+    BUSCAR QR CODE PIX DO USUÁRIO
+==========================================================*/
+
 app.get(
   '/api/asaas/cobrancas/:id/pix-qrcode',
+  autenticarToken,
   async (req, res) => {
     try {
-      const { id } = req.params;
+      const { id: pagamentoId } = req.params;
+      const usuarioId = Number(req.usuario.id);
+
+      const pedido =
+        await buscarPedidoDoUsuarioPorPagamento(
+          usuarioId,
+          pagamentoId
+        );
+
+      if (!pedido) {
+        return res.status(404).json({
+          ok: false,
+          erro:
+            'Cobrança Pix não encontrada para este usuário.'
+        });
+      }
+
+      if (pedido.status === 'pago') {
+        return res.status(409).json({
+          ok: false,
+          erro:
+            'Este pedido já está pago.'
+        });
+      }
 
       const resposta = await axios.get(
-        `${process.env.ASAAS_BASE_URL}/payments/${id}/pixQrCode`,
+        `${process.env.ASAAS_BASE_URL}/payments/${pagamentoId}/pixQrCode`,
         {
           headers: {
             access_token:
@@ -3194,9 +3361,11 @@ app.get(
         }
       );
 
-      return res.status(200).json(
-        resposta.data
-      );
+      return res.status(200).json({
+        ok: true,
+        pedidoId: pedido.id,
+        pix: resposta.data
+      });
     } catch (erro) {
       console.error(
         'Erro ao buscar QR Code Pix:',
@@ -3218,6 +3387,11 @@ app.get(
   }
 );
 
+
+/*==========================================================
+    WEBHOOK ASAAS
+==========================================================*/
+
 app.post(
   '/api/asaas/webhook',
   async (req, res) => {
@@ -3230,6 +3404,10 @@ app.post(
         tokenRecebido !==
           process.env.ASAAS_WEBHOOK_TOKEN
       ) {
+        console.error(
+          'Webhook Asaas rejeitado: token inválido.'
+        );
+
         return res.status(401).json({
           ok: false,
           erro:
@@ -3238,128 +3416,194 @@ app.post(
       }
 
       const evento = req.body;
+      const tipoEvento = evento?.event;
+      const pagamentoEvento = evento?.payment;
 
       console.log(
         'Webhook Asaas recebido:',
-        JSON.stringify(evento, null, 2)
+        {
+          eventoId: evento?.id,
+          tipoEvento,
+          pagamentoId: pagamentoEvento?.id
+        }
       );
 
-      const tipoEvento =
-        evento.event;
+      if (!pagamentoEvento?.id) {
+        return res.sendStatus(200);
+      }
 
-      const pagamento =
-        evento.payment;
+      const eventosDePagamento =
+        [
+          'PAYMENT_RECEIVED',
+          'PAYMENT_CONFIRMED'
+        ];
 
-      if (!pagamento?.id) {
+      if (
+        !eventosDePagamento.includes(
+          tipoEvento
+        )
+      ) {
+        return res.sendStatus(200);
+      }
+
+      const pagamentoAsaas = await axios.get(
+        `${process.env.ASAAS_BASE_URL}/payments/${pagamentoEvento.id}`,
+        {
+          headers: {
+            access_token:
+              process.env.ASAAS_API_KEY
+          }
+        }
+      );
+
+      const dadosPagamento =
+        pagamentoAsaas.data;
+
+      if (dadosPagamento.status !== 'PAID') {
+        console.warn(
+          'Webhook recebido, mas pagamento ainda não está PAID:',
+          {
+            pagamentoId: dadosPagamento.id,
+            status: dadosPagamento.status
+          }
+        );
+
+        return res.sendStatus(200);
+      }
+
+      const pedidoId = Number(
+        dadosPagamento.externalReference
+      );
+
+      if (!Number.isInteger(pedidoId)) {
+        console.error(
+          'externalReference inválida:',
+          dadosPagamento.externalReference
+        );
+
+        return res.sendStatus(200);
+      }
+
+      const {
+        data: pedido,
+        error: erroBuscarPedido
+      } = await supabase
+        .from('pedidos')
+        .select(`
+          id,
+          usuario_id,
+          numero,
+          valor,
+          gateway_payment_id,
+          status
+        `)
+        .eq('id', pedidoId)
+        .single();
+
+      if (
+        erroBuscarPedido ||
+        !pedido
+      ) {
+        console.error(
+          'Pedido não encontrado no webhook:',
+          {
+            pedidoId,
+            erro: erroBuscarPedido
+          }
+        );
+
         return res.sendStatus(200);
       }
 
       if (
-        tipoEvento === 'PAYMENT_RECEIVED' ||
-        tipoEvento === 'PAYMENT_CONFIRMED'
+        pedido.gateway_payment_id !==
+        dadosPagamento.id
       ) {
-        const pedidoId = Number(
-          pagamento.externalReference
-        );
-
-        if (
-          !Number.isInteger(pedidoId)
-        ) {
-          console.error(
-            'externalReference inválida:',
-            pagamento.externalReference
-          );
-
-          return res.sendStatus(200);
-        }
-
-        const {
-          data: pedido,
-          error: erroBuscarPedido
-        } = await supabase
-          .from('pedidos')
-          .select(`
-            id,
-            usuario_id,
-            gateway_payment_id,
-            status
-          `)
-          .eq('id', pedidoId)
-          .single();
-
-        if (
-          erroBuscarPedido ||
-          !pedido
-        ) {
-          console.error(
-            'Pedido não encontrado:',
-            pedidoId,
-            erroBuscarPedido
-          );
-
-          return res.sendStatus(200);
-        }
-
-        if (
-          pedido.gateway_payment_id !==
-          pagamento.id
-        ) {
-          console.error(
-            'Pagamento não corresponde ao pedido:',
-            {
-              pedidoId,
-              pagamentoRecebido:
-                pagamento.id,
-              pagamentoEsperado:
-                pedido.gateway_payment_id
-            }
-          );
-
-          return res.sendStatus(200);
-        }
-
-        const {
-          error: erroAtualizarPedido
-        } = await supabase
-          .from('pedidos')
-          .update({
-            status: 'pago',
-            gateway_status:
-              pagamento.status,
-            paid_at:
-              new Date().toISOString()
-          })
-          .eq('id', pedidoId)
-          .neq('status', 'pago');
-
-        if (erroAtualizarPedido) {
-          throw erroAtualizarPedido;
-        }
-
-        console.log(
-          'Pedido atualizado como pago:',
+        console.error(
+          'Pagamento não corresponde ao pedido:',
           {
             pedidoId,
-            pagamentoId:
-              pagamento.id,
-            statusAsaas:
-              pagamento.status
+            pagamentoRecebido:
+              dadosPagamento.id,
+            pagamentoEsperado:
+              pedido.gateway_payment_id
           }
         );
+
+        return res.sendStatus(200);
       }
+
+      const valorPedido = Number(pedido.valor);
+      const valorRecebido = Number(
+        dadosPagamento.value
+      );
+
+      if (
+        !Number.isFinite(valorRecebido) ||
+        valorPedido !== valorRecebido
+      ) {
+        console.error(
+          'Valor do pagamento diferente do pedido:',
+          {
+            pedidoId,
+            pagamentoId: dadosPagamento.id,
+            valorEsperado: valorPedido,
+            valorRecebido
+          }
+        );
+
+        return res.sendStatus(200);
+      }
+
+      const dataPagamento =
+        dadosPagamento.paymentDate
+          ? new Date(
+              dadosPagamento.paymentDate
+            ).toISOString()
+          : new Date().toISOString();
+
+      const {
+        error: erroAtualizarPedido
+      } = await supabase
+        .from('pedidos')
+        .update({
+          status: 'pago',
+          gateway_status:
+            dadosPagamento.status,
+          paid_at: dataPagamento
+        })
+        .eq('id', pedidoId)
+        .neq('status', 'pago');
+
+      if (erroAtualizarPedido) {
+        throw erroAtualizarPedido;
+      }
+
+      console.log(
+        'Pedido atualizado como pago:',
+        {
+          pedidoId,
+          numeroPedido: pedido.numero,
+          pagamentoId:
+            dadosPagamento.id,
+          statusAsaas:
+            dadosPagamento.status,
+          valor: valorRecebido
+        }
+      );
 
       return res.sendStatus(200);
     } catch (erro) {
       console.error(
         'Erro no webhook Asaas:',
-        erro
+        erro.response?.data ||
+          erro.message
       );
 
       return res.sendStatus(500);
     }
   }
 );
-
 /*==========================================================
     PEDIDOS - ADMINISTRATIVO
 ==========================================================*/

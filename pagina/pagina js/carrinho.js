@@ -553,12 +553,7 @@ btnFinish?.addEventListener(
                         Authorization: `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        customerId:
-                            usuario.asaas_customer_id ||
-                            "cus_000008956030",
-
                         pedidoId: pedido.id,
-
                         descricao:
                             `Pedido ${pedido.numero} - Cial Site`
                     })
@@ -583,7 +578,13 @@ btnFinish?.addEventListener(
              * 3. Busca o QR Code da cobrança criada.
              */
             const respostaQrCode = await fetch(
-                `${API_CARRINHO}/api/asaas/cobrancas/${pagamento.id}/pix-qrcode`
+                `${API_CARRINHO}/api/asaas/cobrancas/${pagamento.id}/pix-qrcode`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
             );
 
             const dadosQrCode =
@@ -613,11 +614,26 @@ btnFinish?.addEventListener(
                 );
             }
 
+            const dadosPix =
+                dadosQrCode.pix || dadosQrCode;
+
+            if (!dadosPix.encodedImage) {
+                throw new Error(
+                    "A API não retornou a imagem do QR Code Pix."
+                );
+            }
+
+            if (!dadosPix.payload) {
+                throw new Error(
+                    "A API não retornou o código Pix copia e cola."
+                );
+            }
+
             pixQrCode.src =
-                `data:image/png;base64,${dadosQrCode.encodedImage}`;
+                `data:image/png;base64,${dadosPix.encodedImage}`;
 
             pixCopiaCola.value =
-                dadosQrCode.payload || "";
+                dadosPix.payload;
 
             if (pixDescricao) {
                 pixDescricao.textContent =
@@ -627,10 +643,10 @@ btnFinish?.addEventListener(
 
             if (
                 pixValidade &&
-                dadosQrCode.expirationDate
+                dadosPix.expirationDate
             ) {
                 pixValidade.textContent =
-                    `Válido até: ${dadosQrCode.expirationDate}`;
+                    `Válido até: ${dadosPix.expirationDate}`;
             }
 
             if (pixStatus) {

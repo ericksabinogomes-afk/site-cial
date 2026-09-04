@@ -177,69 +177,32 @@
 
                     Observações
 
-                </label>
+          </label>
 
-                <textarea
-                    id="obs"
-                    placeholder="Deseja informar alguma observação sobre o pedido?"></textarea>
+      <textarea
 
+          id="obs"
+            placeholder="Deseja informar alguma observação sobre o pedido?">
 
-               <!--==========================
-        PAGAMENTO CARTÃO
-===========================-->
+        </textarea>
 
-<div class="cart-payment">
+        <button class="btn-finish" type="button">
 
-    <div class="cart-payment__titulo">
+    <i class="fa-solid fa-check"></i>
 
-        <i class="fa-solid fa-credit-card"></i>
+    Finalizar Pedido
 
-        <span>Pagamento com cartão</span>
+</button>
 
-    </div>
+     <button class="btn-whatsapp">
 
-    <p class="cart-payment__descricao">
+            <i class="fa-brands fa-whatsapp"></i>
 
-        Pague seu pedido com cartão de crédito.
+         Enviar pelo WhatsApp
 
-    </p>
+       </button>
 
-    <button
-        type="button"
-        id="btnCartao"
-        class="btn-cartao"
-    >
-
-        <i class="fa-solid fa-credit-card"></i>
-
-        Pagar com cartão
-
-    </button>
-
-</div>
-
-
-    <button class="btn-finish">
-
-
-      <i class="fa-solid fa-qrcode"></i>
-
-
-        Finalizar Pedido
-
-
-    </button>
-    
-
-                <button class="btn-whatsapp">
-
-                    <i class="fa-brands fa-whatsapp"></i>
-
-                    Enviar pelo WhatsApp
-
-                </button>
-
-            </aside>
+        </aside>
 
         </div>
 
@@ -291,15 +254,251 @@
         </div>  
     </div>
 
-    <!--==========================
-            FOOTER
+        <!--==========================
+            MODAL PAGAMENTO
     ===========================-->
 
-    <footer>
+    <div id="modalPagamento" class="modal-pagamento" hidden>
 
-        <!-- Mesmo footer utilizado no restante do site -->
+        <div class="modal-pagamento__conteudo">
 
-    </footer>
+            <button
+                id="fecharModalPagamento"
+                class="modal-pagamento__fechar"
+                type="button"
+                aria-label="Fechar opções de pagamento"
+            >
+                ×
+            </button>
+
+
+            <div class="modal-pagamento__icone">
+
+                <i class="fa-solid fa-wallet"></i>
+
+            </div>
+
+
+            <h2>
+
+                Finalizar Pedido
+
+            </h2>
+
+
+            <p class="modal-pagamento__descricao">
+
+                Escolha a forma de pagamento desejada.
+
+            </p>
+
+
+            <!-- PIX -->
+
+            <button
+                type="button"
+                id="btnPagamentoPix"
+                class="opcao-pagamento opcao-pagamento--pix"
+            >
+
+                <span class="opcao-pagamento__icone">
+
+                    <i class="fa-brands fa-pix"></i>
+
+                </span>
+
+                <span class="opcao-pagamento__texto">
+
+                    <strong>Pix</strong>
+
+                    <small>
+                        Pagamento rápido e seguro
+                    </small>
+
+                </span>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </button>
+
+
+            <!-- CARTÃO -->
+
+            <button
+                type="button"
+                id="btnPagamentoCartao"
+                class="opcao-pagamento opcao-pagamento--cartao"
+            >
+
+                <span class="opcao-pagamento__icone">
+
+                    <i class="fa-solid fa-credit-card"></i>
+
+                </span>
+
+                <span class="opcao-pagamento__texto">
+
+                    <strong>Cartão de crédito</strong>
+
+                    <small>
+                       Até 5x sem juros
+                    </small>
+
+                </span>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- ==================================================
+     MODAL DE PAGAMENTO COM CARTÃO
+================================================== -->
+
+<div id="modalCartao" class="modal-cartao" hidden>
+
+    <div class="modal-cartao__conteudo">
+
+        <!-- FECHAR -->
+        <button
+            id="fecharModalCartao"
+            class="modal-cartao__fechar"
+            type="button"
+            aria-label="Fechar pagamento com cartão"
+        >
+            ×
+        </button>
+
+        <!-- ÍCONE -->
+        <div class="modal-cartao__icone">
+            <i class="fa-solid fa-credit-card"></i>
+        </div>
+
+        <h2>Pagamento com cartão</h2>
+
+        <p class="modal-cartao__descricao">
+            Preencha os dados do cartão para continuar.
+        </p>
+
+        <!-- NÚMERO -->
+        <div class="campo-cartao">
+            <label for="numeroCartao">
+                Número do cartão
+            </label>
+
+            <input
+                type="text"
+                id="numeroCartao"
+                placeholder="0000 0000 0000 0000"
+                inputmode="numeric"
+                autocomplete="cc-number"
+                maxlength="19"
+            >
+        </div>
+
+        <!-- NOME -->
+        <div class="campo-cartao">
+            <label for="nomeCartao">
+                Nome no cartão
+            </label>
+
+            <input
+                type="text"
+                id="nomeCartao"
+                placeholder="NOME COMPLETO"
+                autocomplete="cc-name"
+            >
+        </div>
+
+        <!-- VALIDADE + CVV -->
+        <div class="cartao-linha">
+
+            <div class="campo-cartao">
+                <label for="validadeCartao">
+                    Validade
+                </label>
+
+                <input
+                    type="text"
+                    id="validadeCartao"
+                    placeholder="MM/AA"
+                    inputmode="numeric"
+                    autocomplete="cc-exp"
+                    maxlength="5"
+                >
+            </div>
+
+            <div class="campo-cartao">
+                <label for="cvvCartao">
+                    CVV
+                </label>
+
+                <input
+                    type="password"
+                    id="cvvCartao"
+                    placeholder="•••"
+                    inputmode="numeric"
+                    autocomplete="cc-csc"
+                    maxlength="4"
+                >
+            </div>
+
+        </div>
+
+        <!-- PARCELAMENTO -->
+        <div class="campo-cartao">
+
+            <label for="parcelasCartao">
+                Parcelamento
+            </label>
+            <select id="parcelasCartao"></select>
+
+        </div>
+
+        <!-- TOTAL -->
+        <div class="modal-cartao__total">
+
+            <span>Total da compra</span>
+
+            <strong id="totalCartao">
+                R$ 0,00
+            </strong>
+
+        </div>
+
+        <!-- SEGURANÇA -->
+        <p class="modal-cartao__seguranca">
+            <i class="fa-solid fa-lock"></i>
+            Seus dados são protegidos e processados com segurança.
+        </p>
+
+        <!-- CONFIRMAR -->
+        <button
+            id="confirmarPagamentoCartao"
+            class="btn-confirmar-cartao"
+            type="button"
+        >
+            <i class="fa-solid fa-lock"></i>
+            Confirmar pagamento
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     FOOTER
+================================================== -->
+
+<footer>
+
+    <!-- Mesmo footer utilizado no restante do site -->
+
+</footer>
 
 
 

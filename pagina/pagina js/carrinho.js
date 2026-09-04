@@ -27,12 +27,38 @@ const btnWhatsapp =
 
 let carrinho = [];
 
+
+
+function obterToken() {
+    return localStorage.getItem("tokenCial");
+}
+
+function formatarPreco(valor) {
+    return Number(valor || 0).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
 // ==================================================
-// PAGAMENTO COM CARTÃO
+// MODAL DE ESCOLHA DE PAGAMENTO
 // ==================================================
 
-const btnCartao =
-    document.getElementById("btnCartao");
+const modalPagamento =
+    document.getElementById("modalPagamento");
+
+const fecharModalPagamento =
+    document.getElementById("fecharModalPagamento");
+
+const btnPagamentoPix =
+    document.getElementById("btnPagamentoPix");
+
+const btnPagamentoCartao =
+    document.getElementById("btnPagamentoCartao");
+
+    // ==================================================
+// ABRIR MODAL DE CARTÃO
+// ==================================================
 
 const modalCartao =
     document.getElementById("modalCartao");
@@ -40,8 +66,42 @@ const modalCartao =
 const fecharModalCartao =
     document.getElementById("fecharModalCartao");
 
-const confirmarPagamentoCartao =
-    document.getElementById("confirmarPagamentoCartao");
+btnPagamentoCartao?.addEventListener(
+    "click",
+    () => {
+
+        if (modalPagamento) {
+            modalPagamento.hidden = true;
+        }
+
+        if (modalCartao) {
+            modalCartao.hidden = false;
+        }
+
+        atualizarOpcoesParcelas();
+        atualizarTotalCartao();
+
+       }
+);
+
+// ==================================================
+// FECHAR MODAL DE CARTÃO
+// ==================================================
+
+fecharModalCartao?.addEventListener(
+    "click",
+    () => {
+
+        if (modalCartao) {
+            modalCartao.hidden = true;
+        }
+
+    }
+);
+
+// ==================================================
+// FORMATAÇÃO DOS CAMPOS DO CARTÃO
+// ==================================================
 
 const numeroCartao =
     document.getElementById("numeroCartao");
@@ -61,19 +121,157 @@ const parcelasCartao =
 const totalCartao =
     document.getElementById("totalCartao");
 
-function obterToken() {
-    return localStorage.getItem("tokenCial");
-}
 
-function formatarPreco(valor) {
-    return Number(valor).toLocaleString(
-        "pt-BR",
-        {
-            style: "currency",
-            currency: "BRL"
+// NÚMERO DO CARTÃO
+numeroCartao?.addEventListener(
+    "input",
+    () => {
+
+        let valor = numeroCartao.value
+            .replace(/\D/g, "")
+            .slice(0, 16);
+
+        valor = valor.replace(
+            /(\d{4})(?=\d)/g,
+            "$1 "
+        );
+
+        numeroCartao.value = valor;
+    }
+);
+
+
+// VALIDADE
+validadeCartao?.addEventListener(
+    "input",
+    () => {
+
+        let valor = validadeCartao.value
+            .replace(/\D/g, "")
+            .slice(0, 4);
+
+        if (valor.length >= 3) {
+            valor =
+                valor.slice(0, 2) +
+                "/" +
+                valor.slice(2);
         }
+
+        validadeCartao.value = valor;
+    }
+);
+
+
+// CVV
+cvvCartao?.addEventListener(
+    "input",
+    () => {
+
+        cvvCartao.value =
+            cvvCartao.value
+                .replace(/\D/g, "")
+                .slice(0, 4);
+    }
+);
+
+// ==================================================
+// ATUALIZAR TOTAL DAS PARCELAS
+// ==================================================
+
+function obterTotalCarrinho() {
+
+    return carrinho.reduce(
+        (total, item) => {
+            return total +
+                Number(item.preco) *
+                Number(item.quantidade);
+        },
+        0
     );
 }
+
+// ==================================================
+// LIMITE DE PARCELAS SEM JUROS
+// ==================================================
+
+function produtoPermite5xSemJuros(item) {
+
+    const nome =
+        String(item.nome || "").toLowerCase();
+
+    return (
+        nome.includes("motosserra") ||
+        nome.includes("roçadeira") ||
+        nome.includes("rocadeira")
+    );
+}
+
+
+function obterMaximoParcelasSemJuros() {
+
+    if (carrinho.length === 0) {
+        return 3;
+    }
+
+    const todosPermitem5x =
+        carrinho.every(
+            item => produtoPermite5xSemJuros(item)
+        );
+
+    return todosPermitem5x ? 5 : 3;
+}
+
+
+function atualizarOpcoesParcelas() {
+
+    if (!parcelasCartao) {
+        return;
+    }
+
+    const maximo =
+        obterMaximoParcelasSemJuros();
+
+    parcelasCartao.innerHTML = "";
+
+    for (let parcela = 1; parcela <= maximo; parcela++) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = parcela;
+
+        option.textContent =
+            `${parcela}x sem juros`;
+
+        parcelasCartao.appendChild(option);
+    }
+
+    parcelasCartao.value = "1";
+}
+
+function atualizarTotalCartao() {
+
+    if (!parcelasCartao || !totalCartao) {
+        return;
+    }
+
+    const total = obterTotalCarrinho();
+
+    const parcelas =
+        Number(parcelasCartao.value) || 1;
+
+    const valorParcela =
+        total / parcelas;
+
+    totalCartao.textContent =
+        `${parcelas}x de ${formatarPreco(valorParcela)}`;
+}
+
+
+parcelasCartao?.addEventListener(
+    "change",
+    atualizarTotalCartao
+);
 
 function redirecionarParaLogin() {
     localStorage.removeItem("tokenCial");
@@ -506,8 +704,31 @@ cartProducts?.addEventListener(
     }
 );
 
+// ==================================================
+// ABRIR MODAL DE ESCOLHA DE PAGAMENTO
+// ==================================================
 
 btnFinish?.addEventListener(
+    "click",
+    event => {
+        event.preventDefault();
+
+        if (modalPagamento) {
+    modalPagamento.hidden = true;
+}
+
+        if (carrinho.length === 0) {
+            alert("Seu carrinho está vazio.");
+            return;
+        }
+
+        if (modalPagamento) {
+            modalPagamento.hidden = false;
+        }
+    }
+);
+
+btnPagamentoPix?.addEventListener(
     "click",
     async event => {
         event.preventDefault();
@@ -819,314 +1040,6 @@ btnWhatsapp?.addEventListener(
     }
 );
 
-// ==================================================
-// ABRIR MODAL DO CARTÃO
-// ==================================================
-
-btnCartao?.addEventListener(
-    "click",
-    () => {
-
-        if (carrinho.length === 0) {
-
-            alert("Seu carrinho está vazio.");
-
-            return;
-        }
-
-        const total =
-            carrinho.reduce(
-                (valor, item) => {
-
-                    return valor +
-                        Number(item.preco) *
-                        Number(item.quantidade);
-
-                },
-                0
-            );
-
-        if (totalCartao) {
-
-            totalCartao.textContent =
-                formatarPreco(total);
-
-        }
-
-        atualizarParcelasCartao();
-
-        if (modalCartao) {
-
-            modalCartao.hidden = false;
-
-        }
-
-    }
-);
-
-// ==================================================
-// PARCELAS DO CARTÃO
-// ==================================================
-
-function atualizarParcelasCartao() {
-
-    if (!parcelasCartao) {
-        return;
-    }
-
-    /*
-     * Regra:
-     *
-     * Motosserra / Roçadeira = até 5x sem juros
-     * Outros produtos = até 3x sem juros
-     */
-
-    let limiteSemJuros = 3;
-
-    const somenteCategoriasEspeciais =
-        carrinho.length > 0 &&
-        carrinho.every(item => {
-
-            const categoria =
-                String(
-                    item.categoria ||
-                    item.categoria_nome ||
-                    ""
-                )
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "");
-
-            return (
-                categoria.includes("motosserra") ||
-                categoria.includes("rocadeira")
-            );
-
-        });
-
-    if (somenteCategoriasEspeciais) {
-
-        limiteSemJuros = 5;
-
-    }
-
-    parcelasCartao.innerHTML = "";
-
-    for (
-        let parcela = 1;
-        parcela <= limiteSemJuros;
-        parcela++
-    ) {
-
-        const option =
-            document.createElement("option");
-
-        option.value = parcela;
-
-        option.textContent =
-            `${parcela}x sem juros`;
-
-        parcelasCartao.appendChild(option);
-
-    }
-
-}
-
-// ==================================================
-// FECHAR MODAL DO CARTÃO
-// ==================================================
-
-fecharModalCartao?.addEventListener(
-    "click",
-    () => {
-
-        if (modalCartao) {
-
-            modalCartao.hidden = true;
-
-        }
-
-    }
-);
-
-// Fechar clicando fora do modal
-
-modalCartao?.addEventListener(
-    "click",
-    event => {
-
-        if (
-            event.target === modalCartao
-        ) {
-
-            modalCartao.hidden = true;
-
-        }
-
-    }
-);
-// Fechar clicando fora do modal
-
-modalCartao?.addEventListener(
-    "click",
-    event => {
-
-        if (
-            event.target === modalCartao
-        ) {
-
-            modalCartao.hidden = true;
-
-        }
-
-    }
-);
-
-// ==================================================
-// FORMATAÇÃO DO NÚMERO DO CARTÃO
-// ==================================================
-
-numeroCartao?.addEventListener(
-    "input",
-    () => {
-
-        let valor =
-            numeroCartao.value
-                .replace(/\D/g, "")
-                .slice(0, 16);
-
-        valor =
-            valor.replace(
-                /(\d{4})(?=\d)/g,
-                "$1 "
-            );
-
-        numeroCartao.value = valor;
-
-    }
-);
-
-
-// ==================================================
-// FORMATAÇÃO DA VALIDADE
-// ==================================================
-
-validadeCartao?.addEventListener(
-    "input",
-    () => {
-
-        let valor =
-            validadeCartao.value
-                .replace(/\D/g, "")
-                .slice(0, 4);
-
-        if (valor.length >= 3) {
-
-            valor =
-                valor.slice(0, 2) +
-                "/" +
-                valor.slice(2);
-
-        }
-
-        validadeCartao.value = valor;
-
-    }
-);
-
-
-// ==================================================
-// CVV
-// ==================================================
-
-cvvCartao?.addEventListener(
-    "input",
-    () => {
-
-        cvvCartao.value =
-            cvvCartao.value
-                .replace(/\D/g, "")
-                .slice(0, 4);
-
-    }
-);
-
-// ==================================================
-// CONFIRMAR PAGAMENTO COM CARTÃO
-// ==================================================
-
-confirmarPagamentoCartao?.addEventListener(
-    "click",
-    () => {
-
-        if (!numeroCartao?.value) {
-
-            alert(
-                "Informe o número do cartão."
-            );
-
-            numeroCartao?.focus();
-
-            return;
-        }
-
-        if (!nomeCartao?.value.trim()) {
-
-            alert(
-                "Informe o nome que está no cartão."
-            );
-
-            nomeCartao?.focus();
-
-            return;
-        }
-
-        if (
-            !validadeCartao?.value ||
-            validadeCartao.value.length !== 5
-        ) {
-
-            alert(
-                "Informe a validade do cartão."
-            );
-
-            validadeCartao?.focus();
-
-            return;
-        }
-
-        if (
-            !cvvCartao?.value ||
-            cvvCartao.value.length < 3
-        ) {
-
-            alert(
-                "Informe o CVV do cartão."
-            );
-
-            cvvCartao?.focus();
-
-            return;
-        }
-
-        const parcelas =
-            Number(
-                parcelasCartao?.value || 1
-            );
-
-        console.log(
-            "Dados preparados para pagamento:",
-            {
-                parcelas
-            }
-        );
-
-        alert(
-            "Dados validados!"
-        );
-
-    }
-);
 
 document.addEventListener(
     "DOMContentLoaded",

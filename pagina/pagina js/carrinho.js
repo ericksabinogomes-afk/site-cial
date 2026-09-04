@@ -50,6 +50,21 @@ const modalPagamento =
 const fecharModalPagamento =
     document.getElementById("fecharModalPagamento");
 
+    // ==================================================
+// FECHAR MODAL DE ESCOLHA DE PAGAMENTO
+// ==================================================
+
+fecharModalPagamento?.addEventListener(
+    "click",
+    () => {
+
+        if (modalPagamento) {
+            modalPagamento.hidden = true;
+        }
+
+    }
+);
+
 const btnPagamentoPix =
     document.getElementById("btnPagamentoPix");
 
@@ -713,10 +728,6 @@ btnFinish?.addEventListener(
     event => {
         event.preventDefault();
 
-        if (modalPagamento) {
-    modalPagamento.hidden = true;
-}
-
         if (carrinho.length === 0) {
             alert("Seu carrinho está vazio.");
             return;
@@ -731,7 +742,12 @@ btnFinish?.addEventListener(
 btnPagamentoPix?.addEventListener(
     "click",
     async event => {
+
         event.preventDefault();
+
+        if (modalPagamento) {
+            modalPagamento.hidden = true;
+        }
 
         if (carrinho.length === 0) {
             alert("Seu carrinho está vazio.");

@@ -12,7 +12,12 @@ const menuItems = document.querySelectorAll(".menu-item");
 const sections = document.querySelectorAll(".admin-section");
 const btnLogout = document.querySelector(".logout");
 const btnSave = document.querySelector(".btn-save");
-const btnAdd = document.querySelectorAll(".btn-add");
+const btnAddProduto = document.querySelectorAll(
+    "#produtos .btn-add"
+);
+const btnAddCategoria = document.querySelector(
+    "#categorias .btn-add"
+);
 const listaClientes = document.getElementById("listaClientes");
 const btnAtualizarUsuarios =document.getElementById("btnAtualizarUsuarios");
 
@@ -521,20 +526,30 @@ const fecharModalProduto =
 
 /* ABRIR */
 
-btnAdd.forEach(botao => {
+btnAddProduto.forEach(botao => {
 
-  botao.addEventListener("click", () => {
+    botao.addEventListener("click", () => {
 
-    if (!modalNovoProduto) {
-      return;
-    }
+        if (!modalNovoProduto) {
+            return;
+        }
 
-    produtoEditandoId = null;
-produtoEditando = null;
+        produtoEditandoId = null;
+        produtoEditando = null;
 
-    modalNovoProduto.classList.add("ativo");
+        modalNovoProduto.classList.add("ativo");
 
-  });
+    });
+
+});
+
+/*==================================================
+        NOVA CATEGORIA — BOTÃO
+==================================================*/
+
+btnAddCategoria?.addEventListener("click", () => {
+
+    abrirModalCategoria();
 
 });
 

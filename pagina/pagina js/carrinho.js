@@ -49,8 +49,7 @@ const modalPagamento =
 
 const fecharModalPagamento =
     document.getElementById("fecharModalPagamento");
-
-    // ==================================================
+  // ==================================================
 // FECHAR MODAL DE ESCOLHA DE PAGAMENTO
 // ==================================================
 
@@ -71,7 +70,7 @@ const btnPagamentoPix =
 const btnPagamentoCartao =
     document.getElementById("btnPagamentoCartao");
 
-    // ==================================================
+ // ==================================================
 // ABRIR MODAL DE CARTÃO
 // ==================================================
 

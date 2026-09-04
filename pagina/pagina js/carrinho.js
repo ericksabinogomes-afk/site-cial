@@ -27,6 +27,40 @@ const btnWhatsapp =
 
 let carrinho = [];
 
+// ==================================================
+// PAGAMENTO COM CARTÃO
+// ==================================================
+
+const btnCartao =
+    document.getElementById("btnCartao");
+
+const modalCartao =
+    document.getElementById("modalCartao");
+
+const fecharModalCartao =
+    document.getElementById("fecharModalCartao");
+
+const confirmarPagamentoCartao =
+    document.getElementById("confirmarPagamentoCartao");
+
+const numeroCartao =
+    document.getElementById("numeroCartao");
+
+const nomeCartao =
+    document.getElementById("nomeCartao");
+
+const validadeCartao =
+    document.getElementById("validadeCartao");
+
+const cvvCartao =
+    document.getElementById("cvvCartao");
+
+const parcelasCartao =
+    document.getElementById("parcelasCartao");
+
+const totalCartao =
+    document.getElementById("totalCartao");
+
 function obterToken() {
     return localStorage.getItem("tokenCial");
 }
@@ -782,6 +816,315 @@ btnWhatsapp?.addEventListener(
             )}`,
             "_blank"
         );
+    }
+);
+
+// ==================================================
+// ABRIR MODAL DO CARTÃO
+// ==================================================
+
+btnCartao?.addEventListener(
+    "click",
+    () => {
+
+        if (carrinho.length === 0) {
+
+            alert("Seu carrinho está vazio.");
+
+            return;
+        }
+
+        const total =
+            carrinho.reduce(
+                (valor, item) => {
+
+                    return valor +
+                        Number(item.preco) *
+                        Number(item.quantidade);
+
+                },
+                0
+            );
+
+        if (totalCartao) {
+
+            totalCartao.textContent =
+                formatarPreco(total);
+
+        }
+
+        atualizarParcelasCartao();
+
+        if (modalCartao) {
+
+            modalCartao.hidden = false;
+
+        }
+
+    }
+);
+
+// ==================================================
+// PARCELAS DO CARTÃO
+// ==================================================
+
+function atualizarParcelasCartao() {
+
+    if (!parcelasCartao) {
+        return;
+    }
+
+    /*
+     * Regra:
+     *
+     * Motosserra / Roçadeira = até 5x sem juros
+     * Outros produtos = até 3x sem juros
+     */
+
+    let limiteSemJuros = 3;
+
+    const somenteCategoriasEspeciais =
+        carrinho.length > 0 &&
+        carrinho.every(item => {
+
+            const categoria =
+                String(
+                    item.categoria ||
+                    item.categoria_nome ||
+                    ""
+                )
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+
+            return (
+                categoria.includes("motosserra") ||
+                categoria.includes("rocadeira")
+            );
+
+        });
+
+    if (somenteCategoriasEspeciais) {
+
+        limiteSemJuros = 5;
+
+    }
+
+    parcelasCartao.innerHTML = "";
+
+    for (
+        let parcela = 1;
+        parcela <= limiteSemJuros;
+        parcela++
+    ) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = parcela;
+
+        option.textContent =
+            `${parcela}x sem juros`;
+
+        parcelasCartao.appendChild(option);
+
+    }
+
+}
+
+// ==================================================
+// FECHAR MODAL DO CARTÃO
+// ==================================================
+
+fecharModalCartao?.addEventListener(
+    "click",
+    () => {
+
+        if (modalCartao) {
+
+            modalCartao.hidden = true;
+
+        }
+
+    }
+);
+
+// Fechar clicando fora do modal
+
+modalCartao?.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target === modalCartao
+        ) {
+
+            modalCartao.hidden = true;
+
+        }
+
+    }
+);
+// Fechar clicando fora do modal
+
+modalCartao?.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target === modalCartao
+        ) {
+
+            modalCartao.hidden = true;
+
+        }
+
+    }
+);
+
+// ==================================================
+// FORMATAÇÃO DO NÚMERO DO CARTÃO
+// ==================================================
+
+numeroCartao?.addEventListener(
+    "input",
+    () => {
+
+        let valor =
+            numeroCartao.value
+                .replace(/\D/g, "")
+                .slice(0, 16);
+
+        valor =
+            valor.replace(
+                /(\d{4})(?=\d)/g,
+                "$1 "
+            );
+
+        numeroCartao.value = valor;
+
+    }
+);
+
+
+// ==================================================
+// FORMATAÇÃO DA VALIDADE
+// ==================================================
+
+validadeCartao?.addEventListener(
+    "input",
+    () => {
+
+        let valor =
+            validadeCartao.value
+                .replace(/\D/g, "")
+                .slice(0, 4);
+
+        if (valor.length >= 3) {
+
+            valor =
+                valor.slice(0, 2) +
+                "/" +
+                valor.slice(2);
+
+        }
+
+        validadeCartao.value = valor;
+
+    }
+);
+
+
+// ==================================================
+// CVV
+// ==================================================
+
+cvvCartao?.addEventListener(
+    "input",
+    () => {
+
+        cvvCartao.value =
+            cvvCartao.value
+                .replace(/\D/g, "")
+                .slice(0, 4);
+
+    }
+);
+
+// ==================================================
+// CONFIRMAR PAGAMENTO COM CARTÃO
+// ==================================================
+
+confirmarPagamentoCartao?.addEventListener(
+    "click",
+    () => {
+
+        if (!numeroCartao?.value) {
+
+            alert(
+                "Informe o número do cartão."
+            );
+
+            numeroCartao?.focus();
+
+            return;
+        }
+
+        if (!nomeCartao?.value.trim()) {
+
+            alert(
+                "Informe o nome que está no cartão."
+            );
+
+            nomeCartao?.focus();
+
+            return;
+        }
+
+        if (
+            !validadeCartao?.value ||
+            validadeCartao.value.length !== 5
+        ) {
+
+            alert(
+                "Informe a validade do cartão."
+            );
+
+            validadeCartao?.focus();
+
+            return;
+        }
+
+        if (
+            !cvvCartao?.value ||
+            cvvCartao.value.length < 3
+        ) {
+
+            alert(
+                "Informe o CVV do cartão."
+            );
+
+            cvvCartao?.focus();
+
+            return;
+        }
+
+        const parcelas =
+            Number(
+                parcelasCartao?.value || 1
+            );
+
+        console.log(
+            "Dados preparados para pagamento:",
+            {
+                parcelas
+            }
+        );
+
+        alert(
+            "Dados validados!"
+        );
+
     }
 );
 

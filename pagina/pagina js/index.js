@@ -943,9 +943,244 @@ function iniciarFavoritoHeader(){
 }
 
 /*==================================================
-            INICIALIZAÇÃO DO SITE
+            CARROSSEL DE BANNERS
 ==================================================*/
 
+function iniciarBannerCarrossel(){
+
+    const carrossel =
+        document.querySelector(".banner-carrossel");
+
+    if(!carrossel){
+        return;
+    }
+
+
+    const slidesContainer =
+        carrossel.querySelector(".banner-slides");
+
+    const slides =
+        carrossel.querySelectorAll(".banner-slide");
+
+    const pontos =
+        carrossel.querySelectorAll(".banner-ponto");
+
+
+    if(
+        !slidesContainer ||
+        slides.length === 0
+    ){
+        return;
+    }
+
+
+    let slideAtual = 0;
+
+    const totalSlides = slides.length;
+
+    /* Tempo de cada banner */
+    const tempoTroca = 5000;
+
+
+    /*==================================================
+                PREPARAÇÃO
+    ==================================================*/
+
+    /* O trilho deixa de deslizar */
+    slidesContainer.style.animation = "none";
+
+    slidesContainer.style.position = "relative";
+
+    slidesContainer.style.width = "100%";
+
+    slidesContainer.style.height = "100%";
+
+
+    /* Todos os banners ficam exatamente
+       no mesmo lugar */
+
+    slides.forEach((slide) => {
+
+        slide.style.position = "absolute";
+
+        slide.style.inset = "0";
+
+        slide.style.width = "100%";
+
+        slide.style.height = "100%";
+
+        slide.style.opacity = "0";
+
+        slide.style.visibility = "hidden";
+
+        slide.style.transition =
+            "opacity 1s ease-in-out";
+
+        slide.style.zIndex = "1";
+
+
+        const imagem =
+            slide.querySelector("img");
+
+        if(imagem){
+
+            imagem.style.transition =
+                "transform 5s ease";
+
+            imagem.style.transform =
+                "scale(1.04)";
+
+        }
+
+    });
+
+
+    /*==================================================
+                    MOSTRAR SLIDE
+    ==================================================*/
+
+    function mostrarSlide(indice){
+
+        slideAtual = indice;
+
+
+        slides.forEach((slide, index) => {
+
+            const imagem =
+                slide.querySelector("img");
+
+
+            if(index === slideAtual){
+
+                /* Banner ativo */
+
+                slide.style.opacity = "1";
+
+                slide.style.visibility = "visible";
+
+                slide.style.zIndex = "2";
+
+
+                /* Pequeno zoom suave */
+
+                if(imagem){
+
+                    imagem.style.transform =
+                        "scale(1)";
+
+                }
+
+            }else{
+
+                /* Esconde os outros */
+
+                slide.style.opacity = "0";
+
+                slide.style.visibility = "hidden";
+
+                slide.style.zIndex = "1";
+
+
+                if(imagem){
+
+                    imagem.style.transform =
+                        "scale(1.04)";
+
+                }
+
+            }
+
+        });
+
+
+        /*==================================================
+                    INDICADORES
+        ==================================================*/
+
+        pontos.forEach((ponto, index) => {
+
+            ponto.classList.toggle(
+                "ativo",
+                index === slideAtual
+            );
+
+        });
+
+    }
+
+
+    /*==================================================
+                    PRÓXIMO SLIDE
+    ==================================================*/
+
+    function proximoSlide(){
+
+        const proximo =
+            (slideAtual + 1) % totalSlides;
+
+        mostrarSlide(proximo);
+
+    }
+
+
+    /*==================================================
+                CLIQUE NAS BOLINHAS
+    ==================================================*/
+
+    pontos.forEach((ponto, index) => {
+
+        ponto.style.cursor = "pointer";
+
+
+        ponto.addEventListener(
+            "click",
+            () => {
+
+                mostrarSlide(index);
+
+                reiniciarTemporizador();
+
+            }
+        );
+
+    });
+
+
+    /*==================================================
+                    TEMPORIZADOR
+    ==================================================*/
+
+    let temporizador =
+        setInterval(
+            proximoSlide,
+            tempoTroca
+        );
+
+
+    function reiniciarTemporizador(){
+
+        clearInterval(temporizador);
+
+        temporizador =
+            setInterval(
+                proximoSlide,
+                tempoTroca
+            );
+
+    }
+
+
+    /*==================================================
+                    INÍCIO
+    ==================================================*/
+
+    mostrarSlide(0);
+
+}
+
+/*==================================================
+            INICIALIZAÇÃO DO SITE
+==================================================*/
 document.addEventListener("DOMContentLoaded", () => {
 
     atualizarFavoritoHeader();
@@ -959,6 +1194,8 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarBotaoWhatsapp();
 
     iniciarHero();
+
+    iniciarBannerCarrossel();
 
     iniciarMarcas();
 

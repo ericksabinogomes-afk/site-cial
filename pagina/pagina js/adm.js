@@ -880,16 +880,20 @@ const imagensAdicionais = urlsImagens.slice(1);
                         "novoProdutoMaisVendido"
                     )?.checked || false,
 
-                novidade:
-                    document.getElementById(
-                        "novoProdutoNovidade"
-                    )?.checked || false,
+               novidade:
+    document.getElementById(
+        "novoProdutoNovidade"
+    )?.checked || false,
 
-                ativo:
-                    document.getElementById(
-                        "novoProdutoAtivo"
-                    )?.checked ?? true
+destaque:
+    document.getElementById(
+        "novoProdutoDestaque"
+    )?.checked || false,
 
+ativo:
+    document.getElementById(
+        "novoProdutoAtivo"
+    )?.checked ?? true
             };
 
 
@@ -5982,7 +5986,16 @@ async function abrirEdicaoProduto(id) {
     const novidade = document.getElementById("novoProdutoNovidade");
     if (novidade) {
         novidade.checked = !!produto.novidade;
+
     }
+
+    const destaque = document.getElementById(
+    "novoProdutoDestaque"
+);
+
+if (destaque) {
+    destaque.checked = !!produto.destaque;
+}
 
     const ativo = document.getElementById("novoProdutoAtivo");
     if (ativo) {

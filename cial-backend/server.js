@@ -1067,6 +1067,7 @@ const {
     codigo,
     categoria,
     categorias,
+   especificacoes,
     preco,
     estoque,
     imagem,
@@ -1118,6 +1119,7 @@ const categoriaFinal =
         imagens: Array.isArray(imagens) ? imagens : [],
         selo: selo || null,
         destaque: !!destaque,
+        especificacoes: especificacoes || {},
         ativo: true,
        descricao: descricao || "",
        funcao: funcao || "",
@@ -1289,6 +1291,7 @@ app.put(
       imagens,
       selo,
       destaque,
+      especificacoes,
       ativo,
       descricao,
       funcao,
@@ -1357,6 +1360,10 @@ app.put(
 
     if (destaque !== undefined) {
       dadosAtualizacao.destaque = Boolean(destaque);
+    }
+    
+   if (especificacoes !== undefined) {
+    dadosAtualizacao.especificacoes = especificacoes || {};
     }
 
     if (ativo !== undefined) {

@@ -173,11 +173,14 @@ async function carregarProdutos() {
             IRRIGAÇÃO
     ========================================*/
 
-    marcaIrrigacao:
-        p.marca_irrigacao || "",
+   marcaIrrigacao:
+    p.marca_irrigacao || "",
 
-    tipoIrrigacao:
-        p.tipo_irrigacao || ""
+tipoIrrigacao:
+    p.tipo_irrigacao || "",
+
+especificacoes:
+    p.especificacoes || {}
 
 }));
 
@@ -234,120 +237,8 @@ function formatarPreco(valor){
 
 
 
-/*==================================================
-            CRIAR CARD
-==================================================*/
 
-function criarCard(produto) {
-  const favorito = estado.favoritos.includes(produto.id);
 
-  return `
-    <article class="card-produto">
-      <div class="card-topo">
-        ${produto.selo ? `
-          <span class="selo">
-            ${produto.selo}
-          </span>
-        ` : ""}
-
-        <button
-          type="button"
-          class="btn-favorito"
-          data-id="${produto.id}"
-          aria-label="Adicionar ${produto.nome} aos favoritos">
-          <i class="${favorito ? "fa-solid" : "fa-regular"} fa-heart"></i>
-        </button>
-      </div>
-
-     <div class="card-imagem">
-    <img
-        src="${produto.imagem || 'https://placehold.co/600x600?text=Sem+imagem'}"
-        alt="${produto.nome}"
-        loading="lazy"
-        onerror="this.onerror=null; this.src='https://placehold.co/600x600?text=Sem+imagem'">
-</div>
-
-      <div class="card-info">
-        <span class="card-categoria">
-          ${produto.categoria}
-        </span>
-
-        <h3 class="card-titulo">
-          ${produto.nome}
-        </h3>
-
-        <div class="card-avaliacao" aria-label="5 estrelas">
-        5/5
-          ★★★★★
-        </div>
-
-        <div class="card-preco">
-          <span class="preco">
-            ${formatarPreco(produto.preco)}
-          </span>
-
-          <span class="parcelamento">
-            ${produto.parcela || ""}
-          </span>
-        </div>
-
-        <div class="card-estoque">
-          <i class="fa-solid fa-circle-check"></i>
-          ${produto.estoque}
-        </div>
-
-        <div class="card-botoes">
-          <button
-            type="button"
-            class="btn-ver"
-            data-id="${produto.id}">
-            Ver produto
-          </button>
-
-          <button
-            type="button"
-            class="btn-carrinho"
-            data-id="${produto.id}">
-            <i class="fa-solid fa-cart-shopping"></i>
-            Adicionar
-          </button>
-        </div>
-      </div>
-    </article>
-  `;
-}
-
-/*==================================================
-            RENDERIZAR PRODUTOS
-==================================================*/
-
-function renderizarProdutos() {
-    elementos.grid.innerHTML = "";
-
-    if (estado.produtosFiltrados.length === 0) {
-        elementos.grid.innerHTML = `
-            <div class="sem-produtos">
-                <i class="fa-solid fa-box-open"></i>
-                <h2>Nenhum produto encontrado</h2>
-                <p>
-                    Tente alterar os filtros ou realizar outra pesquisa.
-                </p>
-            </div>
-        `;
-
-        atualizarTotal();
-        return;
-    }
-
-    estado.produtosFiltrados.forEach(produto => {
-        elementos.grid.insertAdjacentHTML(
-            "beforeend",
-            criarCard(produto)
-        );
-    });
-
-    atualizarTotal();
-}
 
 /*==================================================
         CATEGORIAS DINÂMICAS

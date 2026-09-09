@@ -26,7 +26,7 @@ const btnWhatsapp =
     document.querySelector(".btn-whatsapp");
 
 let carrinho = [];
-
+let pedidoAtualId = null;
 
 
 function obterToken() {
@@ -722,19 +722,63 @@ cartProducts?.addEventListener(
 // ABRIR MODAL DE ESCOLHA DE PAGAMENTO
 // ==================================================
 
+
+
 btnFinish?.addEventListener(
     "click",
-    event => {
+    async event => {
         event.preventDefault();
 
-        if (carrinho.length === 0) {
-            alert("Seu carrinho está vazio.");
+        const token = obterToken();
+
+        if (!token) {
+            redirecionarParaLogin();
             return;
         }
 
-        if (modalPagamento) {
-            modalPagamento.hidden = false;
+        // Cria o pedido UMA VEZ.
+        const respostaPedido = await fetch(
+            `${API_CARRINHO}/pedidos/criar-do-carrinho`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    observacoes:
+                        observation?.value?.trim() || ""
+                })
+            }
+        );
+
+        const resultadoPedido =
+            await lerResposta(respostaPedido);
+
+        const pedido =
+            resultadoPedido.pedido;
+
+        if (!pedido?.id) {
+            throw new Error(
+                "O pedido foi criado, mas o ID não foi retornado."
+            );
         }
+
+        pedidoAtualId =
+            Number(pedido.id);
+
+        localStorage.setItem(
+            "pedidoAtualId",
+            String(pedidoAtualId)
+        );
+
+        console.log(
+            "Pedido criado para pagamento:",
+            pedidoAtualId
+        );
+
+        // Só AGORA abre a escolha de Pix ou cartão.
+        modalPagamento.hidden = false;
     }
 );
 
@@ -797,16 +841,24 @@ btnPagamentoPix?.addEventListener(
                 }
             );
 
-            const resultadoPedido =
-                await lerResposta(respostaPedido);
+            const resultadoPedido = await lerResposta(respostaPedido);
 
-            const pedido = resultadoPedido.pedido;
+            const pedido =
+                resultadoPedido.pedido;
 
             if (!pedido?.id) {
                 throw new Error(
                     "O pedido foi criado, mas o ID não foi retornado."
                 );
             }
+
+            pedidoAtualId =
+                Number(pedido.id);
+
+            localStorage.setItem(
+                "pedidoAtualId",
+                String(pedidoAtualId)
+            );
 
             btnFinish.textContent = "Gerando Pix...";
 
@@ -1059,4 +1111,194 @@ btnWhatsapp?.addEventListener(
 document.addEventListener(
     "DOMContentLoaded",
     carregarCarrinho
+);
+
+const confirmarPagamentoCartao =
+    document.getElementById(
+        "confirmarPagamentoCartao"
+    );
+
+confirmarPagamentoCartao?.addEventListener(
+    "click",
+    async () => {
+        const token = obterToken();
+
+        if (!token) {
+            redirecionarParaLogin();
+            return;
+        }
+
+        const pedidoId = Number(pedidoAtualId);
+
+        console.log(
+            "Pedido enviado para cartão:",
+            pedidoId
+        );
+
+        console.log(
+            "Pedido enviado para cartão:",
+            pedidoId
+            );
+
+        if (!Number.isInteger(pedidoId)) {
+            alert(
+                "Não foi possível identificar o pedido. Tente finalizar a compra novamente."
+            );
+
+            return;
+        }
+
+        const numeroCartao =
+            document.getElementById(
+                "numeroCartao"
+            )?.value
+                .trim();
+
+        const nomeCartao =
+            document.getElementById(
+                "nomeCartao"
+            )?.value
+                .trim();
+
+        const validadeCartao =
+            document.getElementById(
+                "validadeCartao"
+            )?.value
+                .trim();
+
+        const cvvCartao =
+            document.getElementById(
+                "cvvCartao"
+            )?.value
+                .trim();
+
+        const parcelas =
+            Number(
+                document.getElementById(
+                    "parcelasCartao"
+                )?.value || 1
+            );
+
+        if (
+            !numeroCartao ||
+            !nomeCartao ||
+            !validadeCartao ||
+            !cvvCartao
+        ) {
+            alert(
+                "Preencha todos os dados do cartão."
+            );
+
+            return;
+        }
+
+        if (
+            !/^\d{2}\/\d{2}$/.test(
+                validadeCartao
+            )
+        ) {
+            alert(
+                "Informe a validade no formato MM/AA."
+            );
+
+            return;
+        }
+
+        confirmarPagamentoCartao.disabled = true;
+        confirmarPagamentoCartao.textContent =
+            "Processando pagamento...";
+
+        try {
+            const resposta = await fetch(
+                `${API_CARRINHO}/api/asaas/cobrancas/cartao`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                        Authorization:
+                            `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        pedidoId,
+                        parcelas,
+                        numeroCartao,
+                        nomeCartao,
+                        validadeCartao,
+                        cvvCartao
+                    })
+                }
+            );
+
+            const resultado =
+                await lerResposta(resposta);
+
+            const pagamento =
+                resultado.pagamento;
+
+            if (!pagamento?.id) {
+                throw new Error(
+                    "O pagamento não foi criado corretamente."
+                );
+            }
+
+            if (pagamento.status === "CONFIRMED") {
+                localStorage.removeItem("carrinho");
+                localStorage.removeItem("carrinho_itens");
+
+                alert(
+                    "Pagamento aprovado com sucesso!"
+                );
+
+                
+                window.location.href = "../cadastro/area-cliente.html";
+                return;
+
+                
+            }
+
+            alert(
+                "Pagamento em processamento. Aguarde a confirmação."
+            );
+
+            const modalCartao =
+                document.getElementById(
+                    "modalCartao"
+                );
+
+            if (modalCartao) {
+                modalCartao.hidden = true;
+            }
+
+            document.getElementById(
+                "numeroCartao"
+            ).value = "";
+
+            document.getElementById(
+                "nomeCartao"
+            ).value = "";
+
+            document.getElementById(
+                "validadeCartao"
+            ).value = "";
+
+            document.getElementById(
+                "cvvCartao"
+            ).value = "";
+
+        } catch (erro) {
+            console.error(
+                "Erro ao processar pagamento por cartão:",
+                erro
+            );
+
+            alert(
+                `Não foi possível processar o cartão:\n${erro.message}`
+            );
+        } finally {
+            confirmarPagamentoCartao.disabled = false;
+            confirmarPagamentoCartao.innerHTML =
+                '<i class="fa-solid fa-lock"></i> Confirmar pagamento';
+        }
+    }
 );

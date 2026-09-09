@@ -3325,6 +3325,366 @@ app.post(
 
 
 /*==========================================================
+    CRIAR COBRANÇA CARTÃO DE CRÉDITO
+==========================================================*/
+
+app.post(
+  '/api/asaas/cobrancas/cartao',
+  autenticarToken,
+  async (req, res) => {
+    try {
+      console.log(
+  'ROTA CARTÃO FOI CHAMADA:',
+  {
+    pedidoId: req.body.pedidoId,
+    parcelas: req.body.parcelas,
+    temNumeroCartao:
+      Boolean(req.body.numeroCartao),
+    temNomeCartao:
+      Boolean(req.body.nomeCartao),
+    temValidade:
+      Boolean(req.body.validadeCartao),
+    temCvv:
+      Boolean(req.body.cvvCartao)
+  }
+);
+      const {
+        pedidoId,
+        parcelas = 1,
+        numeroCartao,
+        nomeCartao,
+        validadeCartao,
+        cvvCartao
+      } = req.body;;
+
+      if (
+        !numeroCartao ||
+        !nomeCartao ||
+        !validadeCartao ||
+        !cvvCartao
+      ) {
+        return res.status(400).json({
+          ok: false,
+          erro:
+            'Informe todos os dados do cartão.'
+        });
+      }
+
+      const usuarioId =
+        Number(req.usuario.id);
+
+      if (!pedidoId) {
+        return res.status(400).json({
+          ok: false,
+          erro: 'pedidoId é obrigatório.'
+        });
+      }
+
+      const quantidadeParcelas =
+        Number(parcelas);
+
+      if (
+        !Number.isInteger(
+          quantidadeParcelas
+        ) ||
+        quantidadeParcelas < 1 ||
+        quantidadeParcelas > 12
+      ) {
+        return res.status(400).json({
+          ok: false,
+          erro:
+            'Informe uma quantidade de parcelas entre 1 e 12.'
+        });
+      }
+
+      const {
+        data: usuario,
+        error: erroUsuario
+      } = await supabase
+        .from('usuarios')
+        .select(`
+          id,
+          nome,
+          email,
+          cpf,
+          telefone,
+          asaas_customer_id
+        `)
+        .eq('id', usuarioId)
+        .single();
+
+      if (erroUsuario || !usuario) {
+        return res.status(404).json({
+          ok: false,
+          erro:
+            'Usuário autenticado não encontrado.'
+        });
+      }
+      const cpfRaw = String(usuario.cpf || '').replace(/\D/g, '');
+      if (cpfRaw.length !== 11) {
+        return res.status(400).json({
+          ok: false,
+          erro: 'O usuário precisa ter um CPF válido cadastrado.'
+        });
+      }
+
+      const cpfParaAsaas = cpfRaw;
+
+      if (!usuario.asaas_customer_id) {
+        return res.status(409).json({
+          ok: false,
+          erro:
+            'Cliente Asaas não encontrado. Gere um Pix primeiro para criar seu cadastro de pagamento.'
+        });
+      }
+
+      const {
+        data: pedido,
+        error: erroPedido
+      } = await supabase
+        .from('pedidos')
+        .select(`
+          id,
+          usuario_id,
+          numero,
+          valor,
+          status,
+          gateway_payment_id
+        `)
+        .eq('id', pedidoId)
+        .eq('usuario_id', usuarioId)
+        .single();
+
+      if (erroPedido || !pedido) {
+        return res.status(404).json({
+          ok: false,
+          erro: 'Pedido não encontrado.'
+        });
+      }
+
+      if (pedido.gateway_payment_id) {
+        return res.status(409).json({
+          ok: false,
+          erro:
+            'Este pedido já possui uma cobrança criada.',
+          pagamentoId:
+            pedido.gateway_payment_id
+        });
+      }
+
+      if (
+        pedido.status !==
+        'aguardando_pagamento'
+      ) {
+        return res.status(409).json({
+          ok: false,
+          erro:
+            `Pedido não pode ser pago. ` +
+            `Status atual: ${pedido.status}`
+        });
+      }
+
+      const valorPedido =
+        Number(pedido.valor);
+
+      if (
+        !Number.isFinite(valorPedido) ||
+        valorPedido <= 0
+      ) {
+        return res.status(400).json({
+          ok: false,
+          erro: 'O valor do pedido é inválido.'
+        });
+      }
+
+      const hoje = new Date()
+        .toISOString()
+        .split('T')[0];
+
+      /*
+       * Esta cobrança é criada no Asaas.
+       * Na próxima etapa vamos usar o link seguro
+       * para o cliente preencher os dados do cartão.
+       */
+
+      console.log(
+  'Enviando cobrança de cartão para o Asaas:',
+  {
+    pedidoId: pedido.id,
+    valor: valorPedido,
+    parcelas: quantidadeParcelas,
+    customerId:
+      usuario.asaas_customer_id,
+    cpfInformado:
+      Boolean(usuario.cpf),
+    telefoneInformado:
+      Boolean(usuario.telefone)
+  }
+);
+console.log(
+  'Dados do titular do cartão (holder):',
+  {
+    nome: usuario.nome,
+    email: usuario.email,
+    cpfRaw: usuario.cpf,
+    cpfEnviado: cpfParaAsaas,
+    telefone: usuario.telefone
+  }
+);
+      const resposta = await axios.post(
+        `${process.env.ASAAS_BASE_URL}/payments`,
+        {
+          customer:
+            usuario.asaas_customer_id,
+          billingType:
+            'CREDIT_CARD',
+          value: valorPedido,
+          dueDate: hoje,
+          installmentCount:
+            quantidadeParcelas,
+          installmentValue:
+            Number(
+              (
+                valorPedido /
+                quantidadeParcelas
+              ).toFixed(2)
+            ),
+          description:
+  `Pedido ${pedido.numero} - Cial Site`,
+externalReference:
+  String(pedido.id),
+
+creditCard: {
+  holderName:
+    String(nomeCartao).trim(),
+  number:
+    String(numeroCartao)
+      .replace(/\D/g, ''),
+  expiryMonth:
+    String(validadeCartao)
+      .split('/')[0]
+      .trim(),
+  expiryYear:
+    `20${String(validadeCartao)
+      .split('/')[1]
+      .trim()}`,
+  ccv:
+    String(cvvCartao)
+      .replace(/\D/g, '')
+},
+
+creditCardHolderInfo: {
+  name: usuario.nome,
+  email: usuario.email,
+  cpfCnpj: cpfParaAsaas,
+  postalCode: '01001000',
+  addressNumber: '1',
+  phone:
+    String(usuario.telefone || '11900000000')
+      .replace(/\D/g, '')
+},
+
+remoteIp:
+  String(
+    req.headers['x-forwarded-for'] ||
+    req.socket.remoteAddress ||
+    ''
+  )
+    .split(',')[0]
+    .trim()
+        },
+        {
+          headers: {
+            access_token:
+              process.env.ASAAS_API_KEY,
+            'Content-Type':
+              'application/json'
+          }
+        }
+      );
+      console.log(
+        'Resposta do Asaas para cartão:',
+        {
+          pagamentoId: resposta.data?.id,
+          status: resposta.data?.status
+        }
+      );
+      const {
+        error: erroAtualizarPedido
+      } = await supabase
+        .from('pedidos')
+        .update({
+          gateway: 'asaas',
+          gateway_payment_id:
+            resposta.data.id,
+          gateway_status:
+            resposta.data.status,
+          metodo_pagamento:
+            'cartao_credito',
+          parcelas:
+            quantidadeParcelas,
+          status:
+            resposta.data.status === 'CONFIRMED'
+              ? 'pago'
+              : 'aguardando_pagamento',
+          paid_at:
+            resposta.data.status === 'CONFIRMED'
+              ? new Date().toISOString()
+              : null
+              
+        })
+        
+        .eq('id', pedido.id)
+        .is('gateway_payment_id', null);
+
+      if (erroAtualizarPedido) {
+        throw erroAtualizarPedido;
+      }
+if (resposta.data.status === "CONFIRMED") {
+    const { error: erroLimparCarrinho } =
+        await supabase
+            .from("carrinho_itens")
+            .delete()
+            .eq("usuario_id", usuarioId);
+
+    if (erroLimparCarrinho) {
+        console.error(
+            "Erro ao limpar carrinho:",
+            erroLimparCarrinho
+        );
+    } else {
+        console.log(
+            "Carrinho limpo para usuarioId:",
+            usuarioId
+        );
+    }
+}
+      return res.status(201).json({
+        ok: true,
+        pagamento: resposta.data
+      });
+    } catch (erro) {
+      console.error(
+        'Erro ao criar cobrança por cartão:',
+        erro.response?.data ||
+          erro.message
+      );
+
+      return res.status(
+        erro.response?.status || 500
+      ).json({
+        ok: false,
+        erro:
+          'Não foi possível criar a cobrança por cartão.',
+        detalhes:
+          erro.response?.data ||
+          erro.message
+      });
+    }
+  }
+);
+
+/*==========================================================
     BUSCAR QR CODE PIX DO USUÁRIO
 ==========================================================*/
 

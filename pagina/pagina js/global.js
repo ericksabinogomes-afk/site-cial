@@ -570,4 +570,835 @@ function renderizarProdutos() {
             .map(criarCardProdutoGlobal)
             .join("");
 
+
+                sincronizarBotoesCarrinho();
+                
 }
+
+/* ==========================================================
+   MODAL GLOBAL DE PRODUTO
+   ========================================================== */
+
+async function abrirModalProduto(id) {
+
+    const produto = estado.produtos.find(
+        p => Number(p.id) === Number(id)
+    );
+
+    if (!produto) {
+        console.warn("Produto não encontrado:", id);
+        return;
+    }
+
+    const modal = document.getElementById("modalProdutoGlobal");
+
+    if (!modal) {
+        console.warn("Modal global de produto não encontrado no HTML.");
+        return;
+    }
+
+    const nome = produto.nome || "Produto";
+    const descricao = produto.descricao || "";
+    const preco = formatarPrecoCard(produto.preco);
+
+    let especificacoes = produto.especificacoes || {};
+
+    // Caso venha como JSON do Supabase
+    if (typeof especificacoes === "string") {
+        try {
+            especificacoes = JSON.parse(especificacoes);
+        } catch (erro) {
+            especificacoes = {};
+        }
+    }
+
+    if (
+        !especificacoes ||
+        typeof especificacoes !== "object" ||
+        Array.isArray(especificacoes)
+    ) {
+        especificacoes = {};
+    }
+
+    const imagem =
+        produto.imagem ||
+        produto.imagem_url ||
+        produto.foto ||
+        "IMAGENS/produto-sem-imagem.png";
+
+    const categoria = produto.categoria || "";
+
+    /* ------------------------------------------------------
+       INFORMAÇÕES PRINCIPAIS
+       ------------------------------------------------------ */
+
+    const elementoNome = modal.querySelector("[data-modal-nome]");
+    const elementoDescricao = modal.querySelector("[data-modal-descricao]");
+    const elementoPreco = modal.querySelector("[data-modal-preco]");
+    const elementoImagem = modal.querySelector("[data-modal-imagem]");
+    const elementoCategoria =
+    modal.querySelector("[data-modal-categoria]");
+
+const containerMiniaturas =
+    modal.querySelector("[data-modal-miniaturas]");
+
+    if (elementoNome) {
+        elementoNome.textContent = nome;
+    }
+
+    if (elementoDescricao) {
+        elementoDescricao.textContent = descricao;
+    }
+
+    if (elementoPreco) {
+        elementoPreco.textContent = preco;
+    }
+
+    if (elementoCategoria) {
+        elementoCategoria.textContent = categoria;
+    }
+
+   if (elementoImagem) {
+    elementoImagem.src = imagem;
+    elementoImagem.alt = nome;
+}
+
+
+/* ------------------------------------------------------
+   GALERIA DE IMAGENS
+   ------------------------------------------------------ */
+
+const imagensProduto = [
+    produto.imagem,
+    ...(Array.isArray(produto.imagens)
+        ? produto.imagens
+        : [])
+].filter(Boolean);
+
+
+/* Remove duplicadas */
+const imagensUnicas = [
+    ...new Set(imagensProduto)
+];
+
+
+/* Garante pelo menos a imagem principal */
+if (imagensUnicas.length === 0) {
+    imagensUnicas.push(
+        "IMAGENS/produto-sem-imagem.png"
+    );
+}
+
+
+/* Define imagem principal */
+if (elementoImagem) {
+    elementoImagem.src = imagensUnicas[0];
+    elementoImagem.alt = nome;
+}
+
+
+/* Cria miniaturas */
+if (containerMiniaturas) {
+
+    containerMiniaturas.innerHTML = "";
+
+    imagensUnicas.forEach(
+        (urlImagem, indice) => {
+
+            const miniatura =
+                document.createElement("button");
+
+            miniatura.type = "button";
+
+            miniatura.className =
+                "modal-produto-miniatura" +
+                (
+                    indice === 0
+                        ? " ativa"
+                        : ""
+                );
+
+            miniatura.innerHTML = `
+                <img
+                    src="${escaparHTML(urlImagem)}"
+                    alt="${escaparHTML(nome)} — imagem ${indice + 1}"
+                >
+            `;
+
+            miniatura.addEventListener(
+                "click",
+                () => {
+
+                    if (elementoImagem) {
+                        elementoImagem.src =
+                            urlImagem;
+                    }
+
+                    containerMiniaturas
+                        .querySelectorAll(
+                            ".modal-produto-miniatura"
+                        )
+                        .forEach(item => {
+                            item.classList.remove(
+                                "ativa"
+                            );
+                        });
+
+                    miniatura.classList.add(
+                        "ativa"
+                    );
+                }
+            );
+
+            containerMiniaturas.appendChild(
+                miniatura
+            );
+        }
+    );
+}
+
+    /* ------------------------------------------------------
+       ESPECIFICAÇÕES TÉCNICAS
+       ------------------------------------------------------ */
+
+    const containerEspecificacoes =
+        modal.querySelector("[data-modal-especificacoes]");
+
+    if (containerEspecificacoes) {
+
+        containerEspecificacoes.innerHTML = "";
+
+        Object.entries(especificacoes).forEach(
+            ([chave, valor]) => {
+
+                if (
+                    valor === null ||
+                    valor === undefined ||
+                    String(valor).trim() === ""
+                ) {
+                    return;
+                }
+
+                const nomeEspecificacao =
+                    formatarNomeEspecificacao(chave);
+
+                const item =
+                    document.createElement("div");
+
+                item.className =
+                    "modal-especificacao";
+
+                item.innerHTML = `
+                    <span class="modal-especificacao-nome">
+                        ${escaparHTML(nomeEspecificacao)}
+                    </span>
+
+                    <span class="modal-especificacao-valor">
+                        ${escaparHTML(String(valor))}
+                    </span>
+                `;
+
+                containerEspecificacoes.appendChild(item);
+            }
+        );
+
+        if (!containerEspecificacoes.children.length) {
+
+            containerEspecificacoes.innerHTML = `
+                <div class="modal-sem-especificacoes">
+                    Nenhuma especificação técnica cadastrada.
+                </div>
+            `;
+        }
+    }
+
+    
+/* ------------------------------------------------------
+   SISTEMA GLOBAL DO CARRINHO
+   CARD + MODAL USAM A MESMA LÓGICA
+   ------------------------------------------------------ */
+
+async function verificarProdutoNoCarrinho(produtoId) {
+
+    if (
+        typeof obterCarrinhoAtual !==
+        "function"
+    ) {
+        return false;
+    }
+
+    try {
+
+        const carrinho =
+            await obterCarrinhoAtual();
+
+        if (!Array.isArray(carrinho)) {
+            return false;
+        }
+
+        return carrinho.some(
+            item =>
+                Number(item.produto_id) ===
+                Number(produtoId)
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao verificar carrinho:",
+            erro
+        );
+
+        return false;
+    }
+}
+
+
+/* ------------------------------------------------------
+   ATUALIZAR VISUAL DO BOTÃO
+   ------------------------------------------------------ */
+
+function atualizarBotaoCarrinhoGlobal(
+    botao,
+    produtoNoCarrinho,
+    estadoTemporario = ""
+) {
+
+    if (!botao) {
+        return;
+    }
+
+
+    /* ADICIONADO */
+
+    if (estadoTemporario === "adicionado") {
+
+        botao.innerHTML =
+            '<i class="fa-solid fa-check"></i> Adicionado ao carrinho';
+
+        botao.classList.add("adicionado");
+        botao.classList.remove("remover");
+
+        return;
+    }
+
+
+    /* REMOVIDO */
+
+    if (estadoTemporario === "removido") {
+
+        botao.innerHTML =
+            '<i class="fa-solid fa-check"></i> Removido do carrinho';
+
+        botao.classList.remove("adicionado");
+        botao.classList.remove("remover");
+
+        return;
+    }
+
+
+    /* PRODUTO JÁ ESTÁ NO CARRINHO */
+
+    if (produtoNoCarrinho) {
+
+        botao.innerHTML =
+            '<i class="fa-solid fa-trash"></i> Remover do carrinho';
+
+        botao.classList.add("remover");
+        botao.classList.remove("adicionado");
+
+        return;
+    }
+
+
+    /* PRODUTO NÃO ESTÁ NO CARRINHO */
+
+    botao.innerHTML =
+        '<i class="fa-solid fa-cart-plus"></i> Adicionar ao carrinho';
+
+    botao.classList.remove("remover");
+    botao.classList.remove("adicionado");
+}
+
+
+/* ------------------------------------------------------
+   MOSTRAR FEEDBACK TEMPORÁRIO
+   ------------------------------------------------------ */
+
+function mostrarFeedbackCarrinho(
+    produto,
+    foiAdicionado
+) {
+
+    const botoes = document.querySelectorAll(
+        `.btn-carrinho[data-id="${Number(produto.id)}"]`
+    );
+
+    botoes.forEach(botao => {
+
+        atualizarBotaoCarrinhoGlobal(
+            botao,
+            foiAdicionado,
+            foiAdicionado
+                ? "adicionado"
+                : "removido"
+        );
+
+    });
+
+
+    const botaoModal =
+        document.querySelector(
+            "[data-modal-carrinho]"
+        );
+
+
+    if (
+        botaoModal &&
+        Number(botaoModal.dataset.id) ===
+        Number(produto.id)
+    ) {
+
+        atualizarBotaoCarrinhoGlobal(
+            botaoModal,
+            foiAdicionado,
+            foiAdicionado
+                ? "adicionado"
+                : "removido"
+        );
+    }
+
+
+    setTimeout(() => {
+
+        sincronizarBotoesCarrinho(produto);
+
+    }, 1500);
+}
+
+
+/* ------------------------------------------------------
+   SINCRONIZAR CARD + MODAL
+   ------------------------------------------------------ */
+
+async function sincronizarBotoesCarrinho(
+    produto = null
+) {
+
+    if (produto) {
+
+        const estaNoCarrinho =
+            await verificarProdutoNoCarrinho(
+                produto.id
+            );
+
+
+        document
+            .querySelectorAll(
+                `.btn-carrinho[data-id="${Number(produto.id)}"]`
+            )
+            .forEach(botao => {
+
+                atualizarBotaoCarrinhoGlobal(
+                    botao,
+                    estaNoCarrinho
+                );
+
+            });
+
+
+        const botaoModal =
+            document.querySelector(
+                "[data-modal-carrinho]"
+            );
+
+
+        if (
+            botaoModal &&
+            Number(botaoModal.dataset.id) ===
+            Number(produto.id)
+        ) {
+
+            atualizarBotaoCarrinhoGlobal(
+                botaoModal,
+                estaNoCarrinho
+            );
+        }
+
+        return;
+    }
+
+
+    /* SINCRONIZA TODOS OS CARDS */
+
+    const botoes =
+        document.querySelectorAll(
+            ".btn-carrinho"
+        );
+
+
+    for (const botao of botoes) {
+
+        const id =
+            Number(botao.dataset.id);
+
+        if (!id) {
+            continue;
+        }
+
+        const estaNoCarrinho =
+            await verificarProdutoNoCarrinho(id);
+
+        atualizarBotaoCarrinhoGlobal(
+            botao,
+            estaNoCarrinho
+        );
+    }
+}
+
+
+/* ------------------------------------------------------
+   ADICIONAR / REMOVER
+   FUNÇÃO ÚNICA PARA CARD E MODAL
+   ------------------------------------------------------ */
+
+async function alternarCarrinhoProduto(
+    produto,
+    botao
+) {
+
+    if (!produto || !botao) {
+        return;
+    }
+
+
+    botao.disabled = true;
+
+
+    try {
+
+        const estaNoCarrinho =
+            await verificarProdutoNoCarrinho(
+                produto.id
+            );
+
+
+        /* ==========================================
+           REMOVER
+           ========================================== */
+
+        if (estaNoCarrinho) {
+
+            if (
+                typeof removerDoCarrinho !==
+                "function"
+            ) {
+
+                console.warn(
+                    "Função removerDoCarrinho não encontrada."
+                );
+
+                return;
+            }
+
+
+            const sucesso =
+                await removerDoCarrinho(
+                    Number(produto.id)
+                );
+
+
+            if (sucesso) {
+
+                mostrarFeedbackCarrinho(
+                    produto,
+                    false
+                );
+            }
+
+
+            return;
+        }
+
+
+        /* ==========================================
+           ADICIONAR
+           ========================================== */
+
+        if (
+            typeof adicionarAoCarrinho !==
+            "function"
+        ) {
+
+            console.warn(
+                "Função adicionarAoCarrinho não encontrada."
+            );
+
+            return;
+        }
+
+
+        const sucesso =
+            await adicionarAoCarrinho(
+                produto
+            );
+
+
+        if (sucesso) {
+
+            mostrarFeedbackCarrinho(
+                produto,
+                true
+            );
+        }
+
+    } finally {
+
+        botao.disabled = false;
+
+    }
+}
+
+
+/* ------------------------------------------------------
+   BOTÃO DO MODAL
+   ------------------------------------------------------ */
+
+const botaoCarrinho =
+    modal.querySelector(
+        "[data-modal-carrinho]"
+    );
+
+
+if (botaoCarrinho) {
+
+    botaoCarrinho.dataset.id =
+        produto.id;
+
+
+    sincronizarBotoesCarrinho(
+        produto
+    );
+
+
+    botaoCarrinho.onclick =
+        async function(event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            await alternarCarrinhoProduto(
+                produto,
+                botaoCarrinho
+            );
+
+        };
+}
+
+    /* ------------------------------------------------------
+   BOTÃO FAVORITO
+   ------------------------------------------------------ */
+
+const botaoFavorito =
+    modal.querySelector("[data-modal-favorito]");
+
+if (botaoFavorito) {
+
+    const favoritado =
+        Array.isArray(estado.favoritos) &&
+        estado.favoritos.includes(
+            Number(produto.id)
+        );
+
+    const icone =
+        botaoFavorito.querySelector("i");
+
+    botaoFavorito.dataset.id =
+        produto.id;
+
+    botaoFavorito.classList.toggle(
+        "ativo",
+        favoritado
+    );
+
+    if (icone) {
+
+        icone.classList.toggle(
+            "fa-solid",
+            favoritado
+        );
+
+        icone.classList.toggle(
+            "fa-regular",
+            !favoritado
+        );
+
+    }
+
+    botaoFavorito.onclick =
+        async function(event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const id =
+                Number(produto.id);
+
+            await alternarFavorito(id);
+
+            const agoraFavoritado =
+                estado.favoritos.includes(id);
+
+            botaoFavorito.classList.toggle(
+                "ativo",
+                agoraFavoritado
+            );
+
+            if (icone) {
+
+                icone.classList.toggle(
+                    "fa-solid",
+                    agoraFavoritado
+                );
+
+                icone.classList.toggle(
+                    "fa-regular",
+                    !agoraFavoritado
+                );
+
+            }
+
+        };
+
+}
+
+    /* ------------------------------------------------------
+       ABRIR MODAL
+       ------------------------------------------------------ */
+
+    modal.classList.add("ativo");
+
+    document.body.classList.add("modal-aberto");
+}
+
+
+/* ==========================================================
+   FECHAR MODAL GLOBAL
+   ========================================================== */
+
+function fecharModalProduto() {
+
+    const modal =
+        document.getElementById("modalProdutoGlobal");
+
+    if (!modal) return;
+
+    modal.classList.remove("ativo");
+
+    document.body.classList.remove("modal-aberto");
+}
+
+
+/* ==========================================================
+   EVENTOS DO BOTÃO "VER PRODUTO"
+   ========================================================== */
+
+document.addEventListener("click", function (event) {
+
+    const botao =
+        event.target.closest(".btn-ver");
+
+    if (!botao) return;
+
+    const id = botao.dataset.id;
+
+    if (!id) {
+        console.warn(
+            "Botão Ver produto sem data-id."
+        );
+        return;
+    }
+
+    abrirModalProduto(id);
+
+});
+
+
+/* ==========================================================
+   FECHAMENTO DO MODAL
+   ========================================================== */
+
+document.addEventListener("click", function (event) {
+
+    const modal =
+        document.getElementById("modalProdutoGlobal");
+
+    if (!modal) return;
+
+    if (
+        event.target.matches(
+            "[data-modal-fechar]"
+        )
+    ) {
+        fecharModalProduto();
+    }
+
+    if (
+        event.target === modal
+    ) {
+        fecharModalProduto();
+    }
+
+});
+
+
+/* ==========================================================
+   ESC — FECHAR MODAL
+   ========================================================== */
+
+document.addEventListener("keydown", function (event) {
+
+    if (event.key !== "Escape") return;
+
+    fecharModalProduto();
+
+});
+/* ==========================================================
+   EVENTO DO CARRINHO NOS CARDS
+   USA A MESMA LÓGICA DO MODAL
+   ========================================================== */
+
+document.addEventListener("click", async function (event) {
+
+    const botao = event.target.closest(".btn-carrinho");
+
+    if (!botao) return;
+
+    console.log("🔥 CLIQUE NO CARD DETECTADO", botao);
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const id = Number(botao.dataset.id);
+
+    if (!id) {
+        console.warn("Botão do carrinho sem data-id.");
+        return;
+    }
+
+    const produto = estado.produtos.find(
+        p => Number(p.id) === id
+    );
+
+    if (!produto) {
+        console.warn("Produto não encontrado para o carrinho:", id);
+        return;
+    }
+
+    await alternarCarrinhoProduto(
+        produto,
+        botao
+    );
+
+});

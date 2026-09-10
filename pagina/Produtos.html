@@ -588,97 +588,131 @@
 </main>
 
 <!--==================================
-        MODAL DO PRODUTO
+        MODAL GLOBAL DE PRODUTO
 ===================================-->
 
-<div id="modalProduto" class="modal-produto">
+<div
+    id="modalProdutoGlobal"
+    class="modal-produto-global"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalProdutoNome"
+>
 
     <div class="modal-produto-conteudo">
 
+        <!-- FECHAR -->
+
         <button
             type="button"
-            id="fecharModalProduto"
-            class="modal-produto-fechar">
+            class="modal-produto-fechar"
+            data-modal-fechar
+            aria-label="Fechar"
+        >
             <i class="fa-solid fa-xmark"></i>
         </button>
 
-        <div class="modal-produto-corpo">
 
-            <!-- GALERIA -->
-            <div class="modal-produto-galeria">
+        <!-- IMAGEM -->
 
-                <div class="modal-produto-imagem-principal">
-                    <img
-                        id="modalImagemPrincipal"
-                        src=""
-                        alt="Produto">
-                </div>
+      <div class="modal-produto-imagem-area">
+
+    <img
+        data-modal-imagem
+        src="imagem/produto-sem-imagem.png"
+        alt="Produto"
+    >
+
+    <div
+        class="modal-produto-miniaturas"
+        data-modal-miniaturas
+    ></div>
+
+</div>
+
+
+        <!-- INFORMAÇÕES -->
+
+        <div class="modal-produto-informacoes">
+
+            <span
+                class="modal-produto-categoria"
+                data-modal-categoria
+            ></span>
+
+
+            <h2
+                id="modalProdutoNome"
+                data-modal-nome
+            >
+                Produto
+            </h2>
+
+
+            <div
+                class="modal-produto-descricao"
+                data-modal-descricao
+            ></div>
+
+
+            <!-- ESPECIFICAÇÕES -->
+
+            <div class="modal-produto-bloco">
+
+                <h3>
+                    <i class="fa-solid fa-list-check"></i>
+                    Especificações técnicas
+                </h3>
 
                 <div
-                    id="modalMiniaturas"
-                    class="modal-produto-miniaturas">
-                </div>
+                    class="modal-produto-especificacoes"
+                    data-modal-especificacoes
+                ></div>
 
             </div>
 
-            <!-- INFORMAÇÕES -->
-            <div class="modal-produto-info">
 
-                <span
-                    id="modalCategoria"
-                    class="modal-produto-categoria">
+            <!-- PREÇO -->
+
+            <div class="modal-produto-preco-area">
+
+                <span class="modal-produto-preco-label">
+                    Por apenas
                 </span>
 
-                <h2 id="modalNomeProduto"></h2>
+                <strong
+                    class="modal-produto-preco"
+                    data-modal-preco
+                >
+                    R$ 0,00
+                </strong>
 
-                <div
-                    id="modalCodigoProduto"
-                    class="modal-produto-codigo">
-                </div>
+            </div>
 
-                <div
-                    id="modalPrecoProduto"
-                    class="modal-produto-preco">
-                </div>
 
-                <div
-                    id="modalEstoqueProduto"
-                    class="modal-produto-estoque">
-                </div>
+            <!-- AÇÕES -->
 
-                <p
-                    id="modalDescricaoProduto"
-                    class="modal-produto-descricao">
-                </p>
+            <div class="modal-produto-acoes">
 
-                <!--==================================
-                   ESPECIFICAÇÕES DO PRODUTO
-                ===================================-->
+                <button
+                    type="button"
+                    class="modal-produto-favorito"
+                    data-modal-favorito
+                >
+                    <i class="fa-regular fa-heart"></i>
+                    Favoritar
+                </button>
 
-               <div
-                    id="modalEspecificacoes"
-                    class="modal-especificacoes">
-                </div>
 
-                <div class="modal-produto-acoes">
+                <button
+                    type="button"
+                    class="modal-produto-carrinho"
+                    data-modal-carrinho
+                >
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    Adicionar ao carrinho
+                </button>
 
-                    <button
-                        type="button"
-                        id="modalFavoritarProduto"
-                        class="modal-btn-favorito">
-                        <i class="fa-regular fa-heart"></i>
-                        Favoritar
-                    </button>
-
-                    <button
-                        type="button"
-                        id="modalAdicionarCarrinho"
-                        class="modal-btn-carrinho">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        Adicionar ao carrinho
-                    </button>
-
-                </div>
 
             </div>
 

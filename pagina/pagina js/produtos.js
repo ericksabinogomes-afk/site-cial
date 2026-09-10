@@ -188,7 +188,7 @@ especificacoes:
     ordenarProdutos();
     atualizarTotal();
     renderizarProdutos();
-    abrirProdutoDaUrl();
+  
   } catch (erro) {
     console.error("Erro ao carregar produtos:", erro);
   }
@@ -1598,6 +1598,79 @@ return true;
     }
 }
 
+async function removerDoCarrinho(produtoId) {
+
+    const token =
+        localStorage.getItem("tokenCial");
+
+    if (!token) {
+        window.location.href =
+            "../cadastro/login.html";
+
+        return false;
+    }
+
+    try {
+
+        const resposta =
+            await fetch(
+                `${API_CARRINHO}/carrinho/${produtoId}`,
+                {
+                    method: "DELETE",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        const resultado =
+            await resposta.json();
+
+        if (resposta.status === 401) {
+
+            localStorage.removeItem(
+                "tokenCial"
+            );
+
+            localStorage.removeItem(
+                "usuarioCial"
+            );
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return false;
+        }
+
+        if (!resposta.ok || !resultado.ok) {
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao remover do carrinho"
+            );
+        }
+
+        if (window.atualizarContadorCarrinho) {
+
+            await window.atualizarContadorCarrinho();
+
+        }
+
+        return true;
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao remover do carrinho:",
+            erro
+        );
+
+        return false;
+    }
+}
+
 async function obterCarrinhoAtual(){
 
     const token =
@@ -1648,917 +1721,10 @@ async function obterCarrinhoAtual(){
 }
 
 function iniciarCarrinho() {
-    document.addEventListener(
-        "click",
-        event => {
-            const botao =
-                event.target.closest(
-                    ".btn-carrinho"
-                );
-
-            if (!botao) {
-                return;
-            }
-
-            const id =
-                Number(botao.dataset.id);
-
-            const produto =
-                estado.produtos.find(
-                    item =>
-                        Number(item.id) === id
-                );
-
-            if (!produto) {
-                console.error(
-                    "Produto não encontrado:",
-                    id
-                );
-
-                return;
-            }
-
-           adicionarAoCarrinho(produto).then(sucesso => {
-
-    if(sucesso){
-
-        alert(
-            `${produto.nome} foi adicionado ao carrinho.`
-        );
-
-    }
-
-});
-        }
-    );
+    // O carrinho dos produtos é controlado
+    // pelo sistema global do global.js.
 }
 
-/*==================================================
-        ABRIR PRODUTO PELA URL
-==================================================*/
-
-function abrirProdutoDaUrl() {
-
-    const parametros = new URLSearchParams(
-        window.location.search
-    );
-
-    const id = Number(
-        parametros.get("produto")
-    );
-
-    if (!id) {
-        return;
-    }
-
-    const produto = estado.produtos.find(
-        item => Number(item.id) === id
-    );
-
-    if (!produto) {
-        console.error(
-            "Produto da URL não encontrado:",
-            id
-        );
-        return;
-    }
-
-    abrirModalProduto(id);
-}
-
-/*==================================================
-        MODAL DO PRODUTO
-        MODAL INTELIGENTE POR CATEGORIA
-==================================================*/
-
-let produtoModalAtual = null;
-
-
-function abrirModalProduto(id){
-
-    const produto = estado.produtos.find(
-        item => item.id === id
-    );
-
-
-    if(!produto){
-
-        console.error(
-            "Produto não encontrado:",
-            id
-        );
-
-        return;
-
-    }
-
-
-    produtoModalAtual = produto;
-
-
-        /*==================================================
-        BOTÕES DO MODAL
-        FAVORITO + CARRINHO
-    ==================================================*/
-
-    const btnFavoritarModal =
-        document.getElementById(
-            "modalFavoritarProduto"
-        );
-
-    const btnCarrinhoModal =
-        document.getElementById(
-            "modalAdicionarCarrinho"
-        );
-
-
-    /*========================================
-        FAVORITAR
-    ========================================*/
-
-    if(btnFavoritarModal){
-
-        const favoritado =
-            estado.favoritos.includes(
-                Number(produto.id)
-            );
-
-        const icone =
-            btnFavoritarModal.querySelector("i");
-
-        btnFavoritarModal.classList.toggle(
-            "ativo",
-            favoritado
-        );
-
-        if(icone){
-
-            icone.classList.toggle(
-                "fa-solid",
-                favoritado
-            );
-
-            icone.classList.toggle(
-                "fa-regular",
-                !favoritado
-            );
-
-            icone.style.color =
-                favoritado
-                    ? "#E53935"
-                    : "";
-
-        }
-
-
-        btnFavoritarModal.onclick = async function(event){
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            const id =
-                Number(
-                    produtoModalAtual.id
-                );
-
-            await alternarFavorito(id);
-
-
-            const agoraFavoritado =
-                estado.favoritos.includes(id);
-
-            btnFavoritarModal.classList.toggle(
-                "ativo",
-                agoraFavoritado
-            );
-
-            if(icone){
-
-                icone.classList.toggle(
-                    "fa-solid",
-                    agoraFavoritado
-                );
-
-                icone.classList.toggle(
-                    "fa-regular",
-                    !agoraFavoritado
-                );
-
-                icone.style.color =
-                    agoraFavoritado
-                        ? "#E53935"
-                        : "";
-
-            }
-
-        };
-
-    }
-
-
-btnCarrinhoModal.onclick = async function(event){
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    if(!produtoModalAtual){
-        return;
-    }
-
-    const id =
-        Number(
-            produtoModalAtual.id
-        );
-
-    const token =
-        localStorage.getItem("tokenCial");
-
-    if(!token){
-        window.location.href =
-            "../cadastro/login.html";
-        return;
-    }
-
-
-    /*========================================
-        CONSULTAR CARRINHO REAL
-    ========================================*/
-
-    const carrinho =
-        await obterCarrinhoAtual();
-
-    const jaEstavaNoCarrinho =
-        carrinho.some(item =>
-            Number(
-                item.produto_id ??
-                item.id
-            ) === id
-        );
-
-
-    /*========================================
-        REMOVER
-    ========================================*/
-
-    if(jaEstavaNoCarrinho){
-
-        try{
-
-            const resposta =
-                await fetch(
-                    `${API_CARRINHO}/carrinho/${id}`,
-                    {
-                        method:"DELETE",
-
-                        headers:{
-                            Authorization:
-                                `Bearer ${token}`
-                        }
-                    }
-                );
-
-            const resultado =
-                await resposta.json();
-
-            if(
-                !resposta.ok ||
-                !resultado.ok
-            ){
-                throw new Error(
-                    resultado.erro ||
-                    "Erro ao remover do carrinho"
-                );
-            }
-
-
-            if(
-                window.atualizarContadorCarrinho
-            ){
-
-                await window.atualizarContadorCarrinho();
-
-            }
-
-
-            btnCarrinhoModal.innerHTML = `
-                <i class="fa-solid fa-trash"></i>
-                Removido do carrinho
-            `;
-
-            btnCarrinhoModal.classList.remove(
-                "adicionado"
-            );
-
-
-        }catch(erro){
-
-            console.error(
-                "Erro ao remover do carrinho:",
-                erro
-            );
-
-            return;
-        }
-
-    }
-
-
-    /*========================================
-        ADICIONAR
-    ========================================*/
-
-    else{
-
-        const sucesso =
-            await adicionarAoCarrinho(
-                produtoModalAtual
-            );
-
-        if(!sucesso){
-            return;
-        }
-
-
-        btnCarrinhoModal.innerHTML = `
-            <i class="fa-solid fa-check"></i>
-            Adicionado ao carrinho
-        `;
-
-        btnCarrinhoModal.classList.add(
-            "adicionado"
-        );
-
-    }
-
-
-    /*========================================
-        VOLTAR AO NORMAL
-    ========================================*/
-
-    setTimeout(() => {
-
-        btnCarrinhoModal.innerHTML = `
-            <i class="fa-solid fa-cart-shopping"></i>
-            Adicionar ao carrinho
-        `;
-
-        btnCarrinhoModal.classList.remove(
-            "adicionado"
-        );
-
-    }, 1500);
-
-};
-    /*========================================
-                ELEMENTOS
-    ========================================*/
-
-    const modal =
-        document.getElementById("modalProduto");
-
-
-    const imagemPrincipal =
-        document.getElementById(
-            "modalImagemPrincipal"
-        );
-
-
-    const miniaturas =
-        document.getElementById(
-            "modalMiniaturas"
-        );
-
-
-    const categoria =
-        document.getElementById(
-            "modalCategoria"
-        );
-
-
-    const nome =
-        document.getElementById(
-            "modalNomeProduto"
-        );
-
-
-    const preco =
-        document.getElementById(
-            "modalPrecoProduto"
-        );
-
-
-    const estoque =
-        document.getElementById(
-            "modalEstoqueProduto"
-        );
-
-
-    const descricao =
-        document.getElementById(
-            "modalDescricaoProduto"
-        );
-
-
-    /*========================================
-            INFORMAÇÕES PRINCIPAIS
-    ========================================*/
-
-    categoria.textContent =
-        produto.categoria || "";
-
-
-    nome.textContent =
-        produto.nome || "";
-
-
-    preco.textContent =
-        formatarPreco(
-            produto.preco || 0
-        );
-
-
-    estoque.innerHTML = `
-        <i class="fa-solid fa-circle-check"></i>
-        ${produto.estoque || "Em estoque"}
-    `;
-
-
-    descricao.textContent =
-        produto.descricao ||
-        produto.funcao ||
-        "Entre em contato com a CIAL Asa Sul para mais informações sobre este produto.";
-
-
-    /*========================================
-        ESPECIFICAÇÕES INTELIGENTES
-    ========================================*/
-
-    const especificacoes =
-        obterEspecificacoesProduto(
-            produto
-        );
-
-
-    renderizarEspecificacoesModal(
-        especificacoes
-    );
-
-
-    /*========================================
-            GALERIA DE IMAGENS
-    ========================================*/
-
-    const imagens = [
-
-        produto.imagem,
-
-        ...(Array.isArray(produto.imagens)
-            ? produto.imagens
-            : [])
-
-    ].filter(Boolean);
-
-
-    if(imagens.length === 0){
-
-        imagens.push(
-            "imagens/produto-sem-imagem.png"
-        );
-
-    }
-
-
-    imagemPrincipal.src =
-        imagens[0];
-
-
-    imagemPrincipal.alt =
-        produto.nome || "Produto";
-
-
-    miniaturas.innerHTML = "";
-
-
-    imagens.forEach(
-        (imagem, indice) => {
-
-            const miniatura =
-                document.createElement(
-                    "button"
-                );
-
-
-            miniatura.type =
-                "button";
-
-
-            miniatura.className =
-                "modal-produto-miniatura" +
-                (
-                    indice === 0
-                        ? " ativa"
-                        : ""
-                );
-
-
-            miniatura.innerHTML = `
-                <img
-                    src="${imagem}"
-                    alt="${produto.nome || "Produto"} — imagem ${indice + 1}"
-                >
-            `;
-
-
-            miniatura.addEventListener(
-                "click",
-                () => {
-
-                    imagemPrincipal.src =
-                        imagem;
-
-
-                    miniaturas
-                        .querySelectorAll(
-                            ".modal-produto-miniatura"
-                        )
-                        .forEach(
-                            item =>
-                                item.classList.remove(
-                                    "ativa"
-                                )
-                        );
-
-
-                    miniatura.classList.add(
-                        "ativa"
-                    );
-
-                }
-            );
-
-
-            miniaturas.appendChild(
-                miniatura
-            );
-
-        }
-    );
-
-
-    /*========================================
-                ABRIR MODAL
-    ========================================*/
-
-    modal.classList.add(
-        "ativo"
-    );
-
-
-    document.body.style.overflow =
-        "hidden";
-
-}
-
-
-/*==================================================
-        ESPECIFICAÇÕES POR CATEGORIA
-==================================================*/
-
-function obterEspecificacoesProduto(
-    produto
-){
-
-    const especificacoes = [];
-
-
-    const categoria =
-        String(
-            produto.categoria || ""
-        )
-        .trim()
-        .toLowerCase();
-
-
-    /*========================================
-                    STIHL
-    ========================================*/
-
-    if(
-        categoria.includes("stihl") ||
-        categoria.includes("motosserra") ||
-        categoria.includes("rocadeira") ||
-        categoria.includes("soprador") ||
-        categoria.includes("lavajato")
-    ){
-
-        adicionarEspecificacao(
-            especificacoes,
-            "Descrição",
-            produto.descricaoStihl
-        );
-
-
-        adicionarEspecificacao(
-            especificacoes,
-            "Aplicação",
-            produto.aplicacaoStihl
-        );
-
-    }
-
-
-    /*========================================
-                    BOMBAS
-    ========================================*/
-
-    if(
-        categoria.includes("bomba")
-    ){
-
-        adicionarEspecificacao(
-            especificacoes,
-            "Marca",
-            produto.marcaBomba
-        );
-
-
-        adicionarEspecificacao(
-            especificacoes,
-            "Potência",
-            produto.potenciaBomba
-        );
-
-
-        adicionarEspecificacao(
-            especificacoes,
-            "Vazão",
-            produto.vazaoBomba
-        );
-
-
-        adicionarEspecificacao(
-            especificacoes,
-            "Aplicação",
-            produto.aplicacaoBomba
-        );
-
-    }
-
-
-    /*========================================
-                  IRRIGAÇÃO
-    ========================================*/
-
-    if(
-        categoria.includes("irrig")
-    ){
-
-        adicionarEspecificacao(
-            especificacoes,
-            "Marca",
-            produto.marcaIrrigacao
-        );
-
-
-        adicionarEspecificacao(
-            especificacoes,
-            "Tipo",
-            produto.tipoIrrigacao
-        );
-
-    }
-
-
-    return especificacoes;
-
-}
-
-
-/*==================================================
-        ADICIONAR ESPECIFICAÇÃO
-==================================================*/
-
-function adicionarEspecificacao(
-    lista,
-    nome,
-    valor
-){
-
-    if(
-        valor === undefined ||
-        valor === null ||
-        String(valor).trim() === ""
-    ){
-
-        return;
-
-    }
-
-
-    lista.push({
-
-        nome,
-
-        valor:
-            String(valor).trim()
-
-    });
-
-}
-
-
-/*==================================================
-        RENDERIZAR ESPECIFICAÇÕES
-==================================================*/
-
-function renderizarEspecificacoesModal(
-    especificacoes
-){
-
-    const container =
-        document.getElementById(
-            "modalEspecificacoes"
-        );
-
-
-    if(!container){
-
-        console.warn(
-            "Container #modalEspecificacoes não encontrado no modal."
-        );
-
-        return;
-
-    }
-
-
-    if(
-        !especificacoes ||
-        especificacoes.length === 0
-    ){
-
-        container.innerHTML = "";
-
-        container.style.display =
-            "none";
-
-        return;
-
-    }
-
-
-    container.innerHTML = `
-
-        <div class="modal-especificacoes-titulo">
-
-            <i class="fa-solid fa-list-check"></i>
-
-            Especificações
-
-        </div>
-
-
-        <div class="modal-especificacoes-lista">
-
-            ${especificacoes
-                .map(
-                    item => `
-
-                    <div class="modal-especificacao">
-
-                        <span class="modal-especificacao-nome">
-
-                            ${item.nome}
-
-                        </span>
-
-
-                        <span class="modal-especificacao-valor">
-
-                            ${item.valor}
-
-                        </span>
-
-                    </div>
-
-                `
-                )
-                .join("")}
-
-        </div>
-
-    `;
-
-
-    container.style.display =
-        "";
-
-}
-
-
-/*==================================================
-        FECHAR MODAL
-==================================================*/
-
-function fecharModalProduto(){
-
-    const modal =
-        document.getElementById("modalProduto");
-
-    modal.classList.remove("ativo");
-
-    document.body.style.overflow = "";
-
-    produtoModalAtual = null;
-}
-
-
-/*==================================================
-        EVENTO VER PRODUTO
-==================================================*/
-
-function iniciarModalProduto(){
-
-    document.addEventListener(
-        "click",
-        event => {
-
-            const botao =
-                event.target.closest(".btn-ver");
-
-            if(!botao){
-                return;
-            }
-
-            const id =
-                Number(botao.dataset.id);
-
-            abrirModalProduto(id);
-
-        }
-    );
-
-
-    /* BOTÃO X */
-
-    const fechar =
-        document.getElementById("fecharModalProduto");
-
-    if(fechar){
-
-        fechar.addEventListener(
-            "click",
-            fecharModalProduto
-        );
-
-    }
-
-
-    /* CLICAR FORA DO CONTEÚDO */
-
-    const modal =
-        document.getElementById("modalProduto");
-
-    if(modal){
-
-        modal.addEventListener(
-            "click",
-            event => {
-
-                if(
-                    event.target === modal
-                ){
-
-                    fecharModalProduto();
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* TECLA ESC */
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if(
-                event.key === "Escape" &&
-                modal &&
-                modal.classList.contains("ativo")
-            ){
-
-                fecharModalProduto();
-
-            }
-
-        }
-    );
-
-}
 
 /*==================================================
                 INICIALIZAÇÃO
@@ -2590,7 +1756,7 @@ async function iniciarSistema(){
 
     iniciarCarrinho();
 
-    iniciarModalProduto();
+
 
 }
 

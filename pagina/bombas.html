@@ -663,34 +663,42 @@
 
 </main>
 
-<!--==================================
-        MODAL DO PRODUTO
-===================================-->
+<!-- ==================================================
+     MODAL GLOBAL DO PRODUTO
+================================================== -->
 
-<div id="modalProduto" class="modal-produto">
+<div
+    id="modalProdutoGlobal"
+    class="modal-produto-global">
 
     <div class="modal-produto-conteudo">
 
+        <!-- BOTÃO FECHAR -->
+
         <button
             type="button"
-            id="fecharModalProduto"
-            class="modal-produto-fechar">
+            class="modal-produto-fechar"
+            data-modal-fechar
+            aria-label="Fechar">
 
             <i class="fa-solid fa-xmark"></i>
 
         </button>
 
 
-        <div class="modal-produto-corpo">
+        
 
-            <!-- GALERIA -->
 
-            <div class="modal-produto-galeria">
+            <!-- ==================================================
+                 GALERIA
+            ================================================== -->
+
+            <div class="modal-produto-imagem-area">
 
                 <div class="modal-produto-imagem-principal">
 
                     <img
-                        id="modalImagemPrincipal"
+                        data-modal-imagem
                         src=""
                         alt="Produto">
 
@@ -698,97 +706,94 @@
 
 
                 <div
-                    id="modalMiniaturas"
-                    class="modal-produto-miniaturas">
-
+                    class="modal-produto-miniaturas"
+                    data-modal-miniaturas>
                 </div>
 
             </div>
 
 
-            <!-- INFORMAÇÕES -->
+            <!-- ==================================================
+                 INFORMAÇÕES
+            ================================================== -->
 
-            <div class="modal-produto-info">
+            <div class="modal-produto-informacoes">
 
                 <span
-                    id="modalCategoria"
-                    class="modal-produto-categoria">
-
+                    class="modal-produto-categoria"
+                    data-modal-categoria>
                 </span>
 
 
-                <h2 id="modalNomeProduto"></h2>
+                <h2 data-modal-nome></h2>
 
 
                 <div
-                    id="modalCodigoProduto"
-                    class="modal-produto-codigo">
+                    class="modal-produto-descricao"
+                    data-modal-descricao>
+                </div>
+
+
+                <!-- ESPECIFICAÇÕES -->
+
+                <div class="modal-especificacoes">
+
+                    <div class="modal-especificacoes-titulo">
+
+                        <i class="fa-solid fa-list-check"></i>
+
+                        Especificações técnicas
+
+                    </div>
+
+
+                    <div
+                        class="modal-especificacoes-lista"
+                        data-modal-especificacoes>
+                    </div>
 
                 </div>
 
 
-                <div
-                    id="modalPrecoProduto"
-                    class="modal-produto-preco">
+                <!-- PREÇO -->
 
+                <div
+                    class="modal-produto-preco"
+                    data-modal-preco>
                 </div>
 
 
-                <div
-                    id="modalEstoqueProduto"
-                    class="modal-produto-estoque">
-
-                </div>
-
-
-                <p
-                    id="modalDescricaoProduto"
-                    class="modal-produto-descricao">
-
-                </p>
-
-
-                <!--==================================
-                   ESPECIFICAÇÕES DO PRODUTO
-                ===================================-->
-
-                <div
-                    id="modalEspecificacoes"
-                    class="modal-especificacoes">
-
-                </div>
-
+                <!-- BOTÕES -->
 
                 <div class="modal-produto-acoes">
 
-                    <button
-                        type="button"
-                        id="modalFavoritarProduto"
-                        class="modal-btn-favorito">
+                   <button
+    type="button"
+    class="modal-produto-favorito"
+    data-modal-favorito
+    aria-label="Favoritar produto">
 
-                        <i class="fa-regular fa-heart"></i>
+    <i class="fa-regular fa-heart"></i>
 
-                        Favoritar
-
-                    </button>
+</button>
 
 
-                    <button
-                        type="button"
-                        id="modalAdicionarCarrinho"
-                        class="modal-btn-carrinho">
+                   <button
+    type="button"
+    class="modal-produto-carrinho"
+    data-modal-carrinho>
 
-                        <i class="fa-solid fa-cart-shopping"></i>
+    <i class="fa-solid fa-cart-shopping"></i>
 
-                        Adicionar ao carrinho
+    Adicionar ao carrinho
 
-                    </button>
+</button>
 
                 </div>
 
             </div>
 
-        </div>
+        
 
     </div>
 
@@ -884,6 +889,7 @@
 
 <script src="../pagina/pagina js/bombas.js"></script>
 <script src="pagina js/header-usuario.js"></script>
+<script src="pagina js/global.js"></script>
 
 </body>
 

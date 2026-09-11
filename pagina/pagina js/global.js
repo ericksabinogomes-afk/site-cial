@@ -802,7 +802,7 @@ if (containerMiniaturas) {
             }
         );
 
-        if (!containerEspecificacoes.children.length) {
+                if (!containerEspecificacoes.children.length) {
 
             containerEspecificacoes.innerHTML = `
                 <div class="modal-sem-especificacoes">
@@ -811,6 +811,12 @@ if (containerMiniaturas) {
             `;
         }
     }
+
+} // FECHA abrirModalProduto()
+
+    
+/* ------------------------------------------------------
+   SISTEMA GLOBAL DO CARRINHO
 
     
 /* ------------------------------------------------------
@@ -1280,7 +1286,7 @@ if (botaoFavorito) {
     modal.classList.add("ativo");
 
     document.body.classList.add("modal-aberto");
-}
+
 
 
 /* ==========================================================

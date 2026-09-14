@@ -1136,3 +1136,53 @@ td{
         height: 180px;
     }
 }
+
+/* =====================================================
+   MODAL DE GARANTIA
+===================================================== */
+
+#modalGarantia > div {
+    animation: abrirModalGarantia .25s ease;
+}
+
+#modalGarantia > div > div {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#modalGarantia h2 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+#modalGarantia p {
+    margin-bottom: 16px;
+    color: #555;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+#modalGarantia strong {
+    color: #222;
+}
+
+#modalGarantia button {
+    font-family: 'Montserrat', sans-serif;
+}
+
+#modalGarantia button:hover {
+    opacity: .9;
+}
+
+@keyframes abrirModalGarantia {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}

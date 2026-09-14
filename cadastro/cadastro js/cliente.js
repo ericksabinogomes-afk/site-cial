@@ -597,23 +597,406 @@ async function iniciarOrcamentos() {
     });
 
 }
+
 /* =====================================================
    GARANTIAS
 ===================================================== */
 
-function iniciarGarantias() {
+async function carregarGarantias() {
 
-    btnGarantia.forEach(botao => {
+    const lista =
+        document.getElementById("listaGarantias");
 
-        botao.addEventListener("click", () => {
+    if (!lista) return;
 
-            alert("Visualização da garantia em desenvolvimento.");
+    const token =
+        localStorage.getItem("tokenCial");
+
+    if (!token) {
+
+        lista.innerHTML = `
+            <tr>
+                <td colspan="5">
+                    Faça login para visualizar suas garantias.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "http://localhost:4000/garantias",
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+        const resultado =
+            await response.json();
+
+        if (
+            !response.ok ||
+            !resultado.ok
+        ) {
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar garantias."
+            );
+        }
+
+        const garantias =
+            resultado.data || [];
+
+        lista.innerHTML = "";
+
+        if (garantias.length === 0) {
+
+            lista.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        Você ainda não possui garantias.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        garantias.forEach((garantia) => {
+
+            const dataCompra =
+                garantia.data_compra
+                    ? new Date(
+                        `${garantia.data_compra}T00:00:00`
+                    ).toLocaleDateString(
+                        "pt-BR"
+                    )
+                    : "-";
+
+            const vencimento =
+                garantia.vencimento
+                    ? new Date(
+                        `${garantia.vencimento}T00:00:00`
+                    ).toLocaleDateString(
+                        "pt-BR"
+                    )
+                    : "-";
+
+            const hoje =
+                new Date();
+
+            const dataVencimento =
+                garantia.vencimento
+                    ? new Date(
+                        `${garantia.vencimento}T00:00:00`
+                    )
+                    : null;
+
+            const garantiaAtiva =
+                dataVencimento &&
+                dataVencimento >= hoje;
+
+            const statusTexto =
+                garantiaAtiva
+                    ? "Ativa"
+                    : "Vencida";
+
+            const tr =
+                document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>
+                    ${garantia["nome do produto"] || "-"}
+                </td>
+
+                <td>
+                    ${dataCompra}
+                </td>
+
+                <td>
+                    <span class="status ${
+                        garantiaAtiva
+                            ? "andamento"
+                            : "cancelado"
+                    }">
+                        ${statusTexto}
+                    </span>
+                </td>
+
+                <td>
+                    ${vencimento}
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="btn-garantia"
+                        data-id="${garantia.id}"
+                    >
+                        Ver Garantia
+                    </button>
+
+                </td>
+            `;
+
+            const botao =
+                tr.querySelector(
+                    ".btn-garantia"
+                );
+
+           botao.addEventListener(
+    "click",
+    () => {
+
+        const modalExistente =
+            document.getElementById("modalGarantia");
+
+        if (modalExistente) {
+            modalExistente.remove();
+        }
+
+        const modal =
+            document.createElement("div");
+
+        modal.id = "modalGarantia";
+
+        modal.innerHTML = `
+            <div style="
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.65);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                padding: 20px;
+            ">
+
+                <div style="
+                    background: #fff;
+                    width: 100%;
+                    max-width: 600px;
+                    border-radius: 18px;
+                    padding: 30px;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+                    position: relative;
+                    font-family: Arial, sans-serif;
+                ">
+
+                    <button
+                        type="button"
+                        id="fecharModalGarantia"
+                        style="
+                            position: absolute;
+                            top: 15px;
+                            right: 18px;
+                            border: none;
+                            background: none;
+                            font-size: 25px;
+                            cursor: pointer;
+                        "
+                    >
+                        ×
+                    </button>
+
+                    <div style="
+                        text-align: center;
+                        margin-bottom: 25px;
+                    ">
+
+                        <div style="
+                            font-size: 42px;
+                            margin-bottom: 8px;
+                        ">
+                            🛡️
+                        </div>
+
+                        <h2 style="
+                            margin: 0;
+                            color: #552b04;
+                        ">
+                            Garantia CIAL Asa Sul
+                        </h2>
+
+                        <p style="
+                            margin-top: 8px;
+                            color: #777;
+                        ">
+                            Documento de garantia do produto
+                        </p>
+
+                    </div>
+
+                    <div style="
+                        border-top: 1px solid #eee;
+                        padding-top: 20px;
+                    ">
+
+                        <p>
+                            <strong>Produto:</strong><br>
+                            ${garantia["nome do produto"] || "-"}
+                        </p>
+
+                        <p>
+                            <strong>Número da garantia:</strong><br>
+                            #${garantia.id}
+                        </p>
+
+                        <p>
+                            <strong>Pedido:</strong><br>
+                            #${garantia.pedido_id || "-"}
+                        </p>
+
+                        <p>
+                            <strong>Unidade:</strong><br>
+                            ${garantia.unidade || "-"}
+                        </p>
+
+                        <p>
+                            <strong>Data da compra:</strong><br>
+                            ${dataCompra}
+                        </p>
+
+                        <p>
+                            <strong>Período de garantia:</strong><br>
+                            ${garantia.meses_garantia || 12} meses
+                        </p>
+
+                        <p>
+                            <strong>Vencimento:</strong><br>
+                            ${vencimento}
+                        </p>
+
+                        <p>
+                            <strong>Status:</strong><br>
+
+                            <span style="
+                                display: inline-block;
+                                margin-top: 5px;
+                                padding: 6px 14px;
+                                border-radius: 20px;
+                                background: ${
+                                    garantiaAtiva
+                                        ? "#e8f7ed"
+                                        : "#fdeaea"
+                                };
+                                color: ${
+                                    garantiaAtiva
+                                        ? "#218739"
+                                        : "#c62828"
+                                };
+                                font-weight: 600;
+                            ">
+                                ${statusTexto}
+                            </span>
+
+                        </p>
+
+                    </div>
+
+                    <div style="
+                        margin-top: 25px;
+                        display: flex;
+                        justify-content: flex-end;
+                    ">
+
+                        <button
+                            type="button"
+                            id="fecharModalGarantia2"
+                            style="
+                                border: none;
+                                background: #552b04;
+                                color: white;
+                                padding: 12px 22px;
+                                border-radius: 10px;
+                                cursor: pointer;
+                                font-weight: 600;
+                            "
+                        >
+                            Fechar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const fechar =
+            () => modal.remove();
+
+        document
+            .getElementById("fecharModalGarantia")
+            .addEventListener(
+                "click",
+                fechar
+            );
+
+        document
+            .getElementById("fecharModalGarantia2")
+            .addEventListener(
+                "click",
+                fechar
+            );
+
+        modal
+            .firstElementChild
+            .addEventListener(
+                "click",
+                (event) => {
+
+                    if (
+                        event.target ===
+                        modal.firstElementChild
+                    ) {
+                        fechar();
+                    }
+
+                }
+            );
+
+    }
+);
+
+            lista.appendChild(tr);
 
         });
 
-    });
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar garantias:",
+            erro
+        );
+
+        lista.innerHTML = `
+            <tr>
+                <td colspan="5">
+                    Não foi possível carregar suas garantias.
+                </td>
+            </tr>
+        `;
+    }
+}
+
+
+function iniciarGarantias() {
+
+    carregarGarantias();
 
 }
+
 /* =====================================================
    MEUS DADOS
 ===================================================== */

@@ -1945,6 +1945,69 @@ app.get("/pedidos", autenticarToken, async (req, res) => {
 
 
 /*==========================================================
+  GARANTIAS DO CLIENTE
+==========================================================*/
+
+app.get("/garantias", autenticarToken, async (req, res) => {
+
+  try {
+
+    const usuarioId =
+      Number(req.usuario.id);
+
+    const {
+      data: garantias,
+      error
+    } = await supabase
+      .from("garantias")
+      .select(`
+        id,
+        pedido_id,
+        unidade,
+        usuario_id,
+        "nome do produto",
+        data_compra,
+        meses_garantia,
+        vencimento
+      `)
+      .eq("usuario_id", usuarioId)
+      .order("data_compra", {
+        ascending: false
+      });
+
+    if (error) {
+
+      console.error(
+        "Erro ao buscar garantias:",
+        error
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: error.message
+      });
+    }
+
+    return res.json({
+      ok: true,
+      data: garantias || []
+    });
+
+  } catch (err) {
+
+    console.error(
+      "Erro inesperado ao buscar garantias:",
+      err
+    );
+
+    return res.status(500).json({
+      ok: false,
+      erro: err.message
+    });
+  }
+});
+
+/*==========================================================
   ORÇAMENTOS DO CLIENTE
 ==========================================================*/
 
@@ -3754,6 +3817,187 @@ app.get(
   }
 );
 
+/*==========================================================
+    CRIAR GARANTIAS DO PEDIDO
+==========================================================*/
+
+async function criarGarantiasDoPedido(pedidoId) {
+
+  console.log(
+    'Iniciando criação das garantias do pedido:',
+    pedidoId
+  );
+
+  // Buscar o pedido e seus itens
+  const {
+    data: pedido,
+    error: erroPedido
+  } = await supabase
+    .from('pedidos')
+    .select(`
+      id,
+      usuario_id,
+      data_pedido,
+      pedido_itens (
+        id,
+        produto_id,
+        produto_nome,
+        quantidade
+      )
+    `)
+    .eq('id', pedidoId)
+    .single();
+
+  if (erroPedido || !pedido) {
+    throw erroPedido ||
+      new Error('Pedido não encontrado.');
+  }
+
+  if (!pedido.usuario_id) {
+    throw new Error(
+      'Pedido não possui usuário vinculado.'
+    );
+  }
+
+  const dataCompra =
+    pedido.data_pedido
+      ? new Date(pedido.data_pedido)
+          .toISOString()
+          .split('T')[0]
+      : new Date()
+          .toISOString()
+          .split('T')[0];
+
+  const garantias = [];
+
+  /*
+   * Cada unidade comprada gera
+   * uma garantia individual.
+   */
+  for (const item of pedido.pedido_itens || []) {
+
+    const quantidade =
+      Number(item.quantidade);
+
+    if (
+      !Number.isInteger(quantidade) ||
+      quantidade <= 0
+    ) {
+      continue;
+    }
+
+    for (
+      let unidade = 1;
+      unidade <= quantidade;
+      unidade++
+    ) {
+
+      // Data de vencimento = 12 meses
+      // após a data da compra
+      const vencimento =
+        new Date(dataCompra);
+
+      vencimento.setFullYear(
+        vencimento.getFullYear() + 1
+      );
+
+      const dataVencimento =
+        vencimento
+          .toISOString()
+          .split('T')[0];
+
+      garantias.push({
+        usuario_id: pedido.usuario_id,
+
+        "nome do produto":
+          item.produto_nome,
+
+        data_compra:
+          dataCompra,
+
+        meses_garantia:
+          12,
+
+        vencimento:
+          dataVencimento
+      });
+    }
+  }
+
+  if (garantias.length === 0) {
+    console.log(
+      'Nenhuma garantia para criar no pedido:',
+      pedidoId
+    );
+
+    return [];
+  }
+
+  /*
+   * Verificar quantas garantias já existem
+   * para este cliente/produto/data.
+   *
+   * Isso ajuda a evitar duplicações caso
+   * o webhook seja recebido novamente.
+   */
+  const {
+    data: garantiasExistentes,
+    error: erroExistentes
+  } = await supabase
+    .from('garantias')
+    .select('id, usuario_id, "nome do produto", data_compra')
+    .eq('usuario_id', pedido.usuario_id)
+    .eq('data_compra', dataCompra);
+
+  if (erroExistentes) {
+    throw erroExistentes;
+  }
+
+  const existentes =
+    garantiasExistentes || [];
+
+  /*
+   * Como a tabela de garantias ainda não possui
+   * pedido_id/pedido_item_id, fazemos a criação
+   * somente quando ainda não houver garantias
+   * correspondentes para esse pedido.
+   */
+  if (existentes.length >= garantias.length) {
+
+    console.log(
+      'Garantias aparentemente já criadas:',
+      {
+        pedidoId,
+        quantidade: existentes.length
+      }
+    );
+
+    return existentes;
+  }
+
+  const {
+    data: novasGarantias,
+    error: erroGarantias
+  } = await supabase
+    .from('garantias')
+    .insert(garantias)
+    .select();
+
+  if (erroGarantias) {
+    throw erroGarantias;
+  }
+
+  console.log(
+    'Garantias criadas com sucesso:',
+    {
+      pedidoId,
+      quantidade:
+        novasGarantias?.length || 0
+    }
+  );
+
+  return novasGarantias || [];
+}
 
 /*==========================================================
     WEBHOOK ASAAS
@@ -3945,6 +4189,187 @@ app.post(
       if (erroAtualizarPedido) {
         throw erroAtualizarPedido;
       }
+
+      // ==========================================================
+      // CRIAR GARANTIAS AUTOMATICAMENTE APÓS PAGAMENTO
+      // ==========================================================
+
+      await criarGarantiasDoPedido(pedidoId);
+
+      console.log(
+        'Garantias do pedido processadas:',
+        pedidoId
+      );
+
+    /*==========================================================
+    CRIAR GARANTIAS DO PEDIDO
+==========================================================*/
+
+async function criarGarantiasDoPedido(pedidoId) {
+
+  console.log(
+    'Iniciando criação das garantias do pedido:',
+    pedidoId
+  );
+
+  // Buscar pedido e itens
+  const {
+    data: pedido,
+    error: erroPedido
+  } = await supabase
+    .from('pedidos')
+    .select(`
+      id,
+      usuario_id,
+      data_pedido,
+      pedido_itens (
+        id,
+        produto_id,
+        produto_nome,
+        quantidade
+      )
+    `)
+    .eq('id', pedidoId)
+    .single();
+
+  if (erroPedido || !pedido) {
+    throw erroPedido ||
+      new Error('Pedido não encontrado.');
+  }
+
+  if (!pedido.usuario_id) {
+    throw new Error(
+      'Pedido não possui usuário vinculado.'
+    );
+  }
+
+  const dataCompra =
+    pedido.data_pedido
+      ? new Date(pedido.data_pedido)
+          .toISOString()
+          .split('T')[0]
+      : new Date()
+          .toISOString()
+          .split('T')[0];
+
+  const garantias = [];
+
+  let contadorUnidade = 0;
+
+  /*
+   * Cada unidade comprada gera
+   * uma garantia individual.
+   */
+  for (const item of pedido.pedido_itens || []) {
+
+    const quantidade =
+      Number(item.quantidade);
+
+    if (
+      !Number.isInteger(quantidade) ||
+      quantidade <= 0
+    ) {
+      continue;
+    }
+
+   for (
+  let unidadeProduto = 1;
+  unidadeProduto <= quantidade;
+  unidadeProduto++
+) {
+
+  contadorUnidade++;
+
+  const unidade = contadorUnidade;
+
+      const vencimento =
+        new Date(dataCompra);
+
+      vencimento.setFullYear(
+        vencimento.getFullYear() + 1
+      );
+
+      const dataVencimento =
+        vencimento
+          .toISOString()
+          .split('T')[0];
+
+      garantias.push({
+        pedido_id: pedido.id,
+
+        unidade,
+
+        usuario_id:
+          pedido.usuario_id,
+
+        "nome do produto":
+          item.produto_nome,
+
+        data_compra:
+          dataCompra,
+
+        meses_garantia:
+          12,
+
+        vencimento:
+          dataVencimento
+      });
+    }
+  }
+
+  if (garantias.length === 0) {
+
+    console.log(
+      'Nenhuma garantia para criar no pedido:',
+      pedidoId
+    );
+
+    return [];
+  }
+
+  /*
+   * UPSERT COM PROTEÇÃO CONTRA DUPLICAÇÃO
+   *
+   * A trava criada no banco usa:
+   * pedido_id + unidade
+   *
+   * Portanto, se o Asaas enviar o mesmo
+   * webhook novamente, a garantia existente
+   * não será duplicada.
+   */
+  const {
+    data: garantiasCriadas,
+    error: erroGarantias
+  } = await supabase
+    .from('garantias')
+    .upsert(
+      garantias,
+      {
+        onConflict:
+          'pedido_id,unidade',
+        ignoreDuplicates:
+          true
+      }
+    )
+    .select();
+
+  if (erroGarantias) {
+    throw erroGarantias;
+  }
+
+  console.log(
+    'Garantias processadas com sucesso:',
+    {
+      pedidoId,
+      quantidadeSolicitada:
+        garantias.length,
+      novasGarantias:
+        garantiasCriadas?.length || 0
+    }
+  );
+
+  return garantiasCriadas || [];
+}
 
       console.log(
         'Pedido atualizado como pago:',

@@ -325,7 +325,13 @@ if (secao === "dashboard") {
 
 if (secao === "pedidos") {
     carregarPedidosAdmin();
+
 }
+
+if (secao === "relatorios") {
+    carregarRelatoriosAdmin();
+}
+
 
     });
 });
@@ -4577,6 +4583,131 @@ const cliente =
 
 }
 
+/*==================================================
+        RELATÓRIOS ADMINISTRATIVOS
+==================================================*/
+
+async function carregarRelatoriosAdmin() {
+
+    const faturamento =
+        document.getElementById(
+            "relatorioFaturamento"
+        );
+
+    const produtosVendidos =
+        document.getElementById(
+            "relatorioProdutosVendidos"
+        );
+
+    const novosClientes =
+        document.getElementById(
+            "relatorioNovosClientes"
+        );
+
+    const produtosAtivos =
+        document.getElementById(
+            "relatorioProdutosAtivos"
+        );
+
+    if (
+        !faturamento &&
+        !produtosVendidos &&
+        !novosClientes &&
+        !produtosAtivos
+    ) {
+        return;
+    }
+
+    const tokenAtual =
+        localStorage.getItem("tokenCial");
+
+    if (!tokenAtual) {
+        return;
+    }
+
+    try {
+
+        const resposta = await fetch(
+            `${API_BASE}/admin/relatorios`,
+            {
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    Authorization:
+                        `Bearer ${tokenAtual}`
+                }
+            }
+        );
+
+        const resultado =
+            await resposta.json();
+
+        if (resposta.status === 401) {
+
+            localStorage.removeItem("tokenCial");
+            localStorage.removeItem("usuarioCial");
+
+            alert(
+                resultado.erro ||
+                "Sua sessão expirou. Faça login novamente."
+            );
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return;
+        }
+
+        if (
+            !resposta.ok ||
+            !resultado.ok
+        ) {
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar relatórios."
+            );
+        }
+
+        const dados =
+            resultado.data || {};
+
+        if (faturamento) {
+            faturamento.textContent =
+                formatarMoeda(
+                    dados.faturamentoMensal || 0
+                );
+        }
+
+        if (produtosVendidos) {
+            produtosVendidos.textContent =
+                dados.produtosVendidos || 0;
+        }
+
+        if (novosClientes) {
+            novosClientes.textContent =
+                dados.novosClientes || 0;
+        }
+
+        if (produtosAtivos) {
+            produtosAtivos.textContent =
+                dados.produtosAtivos || 0;
+        }
+
+        console.log(
+            "Relatórios carregados:",
+            dados
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar relatórios:",
+            erro
+        );
+
+    }
+
+}
 
 /*==================================================
         PEDIDOS — ADMINISTRATIVO

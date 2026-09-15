@@ -3409,6 +3409,173 @@ status:
 
 
 /*==========================================================
+    RELATÓRIOS ADMINISTRATIVOS
+==========================================================*/
+
+app.get(
+    "/admin/relatorios",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
+
+        try {
+
+            const agora = new Date();
+
+            // Primeiro dia do mês atual
+            const inicioMes = new Date(
+                agora.getFullYear(),
+                agora.getMonth(),
+                1
+            );
+
+            // Primeiro dia do próximo mês
+            const inicioProximoMes = new Date(
+                agora.getFullYear(),
+                agora.getMonth() + 1,
+                1
+            );
+
+            /*==================================================
+                PEDIDOS PAGOS DO MÊS
+            ==================================================*/
+
+            const {
+                data: pedidos,
+                error: erroPedidos
+            } = await supabase
+                .from("pedidos")
+                .select(`
+                    id,
+                    status,
+                    data_pedido,
+                    paid_at,
+                    pedido_itens (
+                        quantidade,
+                        preco_unitario
+                    )
+                `)
+                .eq("status", "pago")
+                .gte(
+                    "data_pedido",
+                    inicioMes.toISOString()
+                )
+                .lt(
+                    "data_pedido",
+                    inicioProximoMes.toISOString()
+                );
+
+            if (erroPedidos) {
+                throw erroPedidos;
+            }
+
+            /*==================================================
+                FATURAMENTO DO MÊS
+            ==================================================*/
+
+            let faturamentoMensal = 0;
+            let produtosVendidos = 0;
+
+            (pedidos || []).forEach(pedido => {
+
+                (pedido.pedido_itens || []).forEach(item => {
+
+                    const quantidade =
+                        Number(item.quantidade) || 0;
+
+                    const preco =
+                        Number(item.preco_unitario) || 0;
+
+                    faturamentoMensal +=
+                        quantidade * preco;
+
+                    produtosVendidos +=
+                        quantidade;
+
+                });
+
+            });
+
+            /*==================================================
+                NOVOS CLIENTES DO MÊS
+            ==================================================*/
+
+            const {
+                count: novosClientes,
+                error: erroClientes
+            } = await supabase
+                .from("usuarios")
+                .select("id", {
+                    count: "exact",
+                    head: true
+                })
+                .eq("perfil", "cliente")
+                .gte(
+                    "created_at",
+                    inicioMes.toISOString()
+                )
+                .lt(
+                    "created_at",
+                    inicioProximoMes.toISOString()
+                );
+
+            if (erroClientes) {
+                throw erroClientes;
+            }
+
+            /*==================================================
+                PRODUTOS ATIVOS
+            ==================================================*/
+
+            const {
+                count: produtosAtivos,
+                error: erroProdutos
+            } = await supabase
+                .from("produtos")
+                .select("id", {
+                    count: "exact",
+                    head: true
+                })
+                .eq("ativo", true);
+
+            if (erroProdutos) {
+                throw erroProdutos;
+            }
+
+            /*==================================================
+                RESPOSTA
+            ==================================================*/
+
+            return res.json({
+                ok: true,
+                data: {
+                    faturamentoMensal,
+                    produtosVendidos,
+                    novosClientes: novosClientes || 0,
+                    produtosAtivos: produtosAtivos || 0
+                }
+            });
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao carregar relatórios:",
+                erro
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro:
+                    erro.message ||
+                    "Erro ao carregar relatórios"
+            });
+
+        }
+
+    }
+);
+
+/*==========================================================
     PAGAMENTOS ASAAS
 ==========================================================*/
 

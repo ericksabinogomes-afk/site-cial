@@ -1944,6 +1944,61 @@ app.get("/pedidos", autenticarToken, async (req, res) => {
 });
 
 
+// ==========================================================
+// BUSCAR UM PEDIDO ESPECÍFICO DO CLIENTE
+// ==========================================================
+
+app.get("/pedidos/:id", autenticarToken, async (req, res) => {
+  try {
+    const pedidoId = Number(req.params.id);
+
+    if (!Number.isInteger(pedidoId) || pedidoId <= 0) {
+      return res.status(400).json({
+        ok: false,
+        erro: "ID do pedido inválido"
+      });
+    }
+
+    const { data, error } = await supabase
+      .from("pedidos")
+      .select(`
+        *,
+        pedido_itens (
+          id,
+          produto_nome,
+          quantidade,
+          preco_unitario
+        )
+      `)
+      .eq("id", pedidoId)
+      .eq("usuario_id", req.usuario.id)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({
+        ok: false,
+        erro: "Pedido não encontrado"
+      });
+    }
+
+    return res.json({
+      ok: true,
+      data
+    });
+
+  } catch (err) {
+    console.error(
+      "Erro ao buscar pedido específico:",
+      err
+    );
+
+    return res.status(500).json({
+      ok: false,
+      erro: err.message
+    });
+  }
+});
+
 /*==========================================================
   GARANTIAS DO CLIENTE
 ==========================================================*/
@@ -2006,6 +2061,303 @@ app.get("/garantias", autenticarToken, async (req, res) => {
     });
   }
 });
+/*==========================================================
+  PREPARAR GARANTIAS DO PEDIDO
+==========================================================*/
+
+app.post(
+  "/garantias/:pedidoId/preparar",
+  autenticarToken,
+  async (req, res) => {
+
+    try {
+
+      const pedidoId =
+        Number(req.params.pedidoId);
+
+      const usuarioId =
+        Number(req.usuario.id);
+
+      if (
+        !Number.isInteger(pedidoId) ||
+        pedidoId <= 0
+      ) {
+        return res.status(400).json({
+          ok: false,
+          erro: "ID do pedido inválido"
+        });
+      }
+
+      // Conferir se o pedido pertence ao cliente
+      const {
+        data: pedido,
+        error: erroPedido
+      } = await supabase
+        .from("pedidos")
+        .select(`
+          id,
+          usuario_id,
+          status
+        `)
+        .eq("id", pedidoId)
+        .eq("usuario_id", usuarioId)
+        .single();
+
+      if (erroPedido || !pedido) {
+        return res.status(404).json({
+          ok: false,
+          erro: "Pedido não encontrado"
+        });
+      }
+
+      // Garantia só pode ser preparada
+      // depois que o pagamento foi confirmado
+      if (pedido.status !== "pago") {
+        return res.status(400).json({
+          ok: false,
+          erro: "O pedido ainda não está pago"
+        });
+      }
+
+      // Criar/buscar as garantias do pedido
+      const garantias =
+        await criarGarantiasDoPedido(pedidoId);
+
+      return res.json({
+        ok: true,
+        data: garantias
+      });
+
+    } catch (err) {
+
+      console.error(
+        "Erro ao preparar garantias:",
+        err
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: err.message
+      });
+    }
+  }
+);
+
+/*==========================================================
+  ASSINAR GARANTIAS DO PEDIDO
+==========================================================*/
+
+app.post(
+  "/garantias/:pedidoId/assinar",
+  autenticarToken,
+  async (req, res) => {
+
+    try {
+
+      const pedidoId =
+        Number(req.params.pedidoId);
+
+      const usuarioId =
+        Number(req.usuario.id);
+
+      const { garantias } =
+        req.body;
+
+      // ----------------------------------------------------
+      // VALIDAÇÕES BÁSICAS
+      // ----------------------------------------------------
+
+      if (
+        !Number.isInteger(pedidoId) ||
+        pedidoId <= 0
+      ) {
+        return res.status(400).json({
+          ok: false,
+          erro: "ID do pedido inválido"
+        });
+      }
+
+      if (
+        !Array.isArray(garantias) ||
+        garantias.length === 0
+      ) {
+        return res.status(400).json({
+          ok: false,
+          erro: "Nenhuma garantia foi enviada para assinatura"
+        });
+      }
+
+      // ----------------------------------------------------
+      // CONFERIR SE O PEDIDO PERTENCE AO CLIENTE
+      // ----------------------------------------------------
+
+      const {
+        data: pedido,
+        error: erroPedido
+      } = await supabase
+        .from("pedidos")
+        .select(`
+          id,
+          usuario_id,
+          status
+        `)
+        .eq("id", pedidoId)
+        .eq("usuario_id", usuarioId)
+        .single();
+
+      if (erroPedido || !pedido) {
+
+        return res.status(404).json({
+          ok: false,
+          erro: "Pedido não encontrado"
+        });
+
+      }
+
+      // ----------------------------------------------------
+      // SÓ PODE ASSINAR DEPOIS DO PAGAMENTO
+      // ----------------------------------------------------
+
+      if (pedido.status !== "pago") {
+
+        return res.status(400).json({
+          ok: false,
+          erro: "O pedido ainda não está pago"
+        });
+
+      }
+
+      // ----------------------------------------------------
+      // IP DO CLIENTE
+      // ----------------------------------------------------
+
+      const ipAssinatura =
+        req.ip ||
+        req.headers["x-forwarded-for"] ||
+        null;
+
+      // ----------------------------------------------------
+      // GRAVAR CADA ASSINATURA
+      // ----------------------------------------------------
+
+      for (const garantia of garantias) {
+
+        const unidade =
+          Number(garantia.unidade);
+
+        const assinatura =
+          garantia.assinatura;
+
+        if (
+          !Number.isInteger(unidade) ||
+          unidade <= 0
+        ) {
+          return res.status(400).json({
+            ok: false,
+            erro: "Unidade de garantia inválida"
+          });
+        }
+
+        if (
+          typeof assinatura !== "string" ||
+          !assinatura.startsWith("data:image/png;base64,")
+        ) {
+          return res.status(400).json({
+            ok: false,
+            erro:
+              `Assinatura inválida na unidade ${unidade}`
+          });
+        }
+
+        // Proteção contra envio exageradamente grande
+        if (assinatura.length > 5_000_000) {
+          return res.status(400).json({
+            ok: false,
+            erro:
+              `Assinatura da unidade ${unidade} é muito grande`
+          });
+        }
+
+        const {
+          data: garantiaEncontrada,
+          error: erroGarantia
+        } = await supabase
+          .from("garantias")
+          .select("id")
+          .eq("pedido_id", pedidoId)
+          .eq("unidade", unidade)
+          .eq("usuario_id", usuarioId)
+          .single();
+
+        if (
+          erroGarantia ||
+          !garantiaEncontrada
+        ) {
+
+          return res.status(404).json({
+            ok: false,
+            erro:
+              `Garantia da unidade ${unidade} não encontrada`
+          });
+
+        }
+
+        const {
+          error: erroAtualizacao
+        } = await supabase
+          .from("garantias")
+          .update({
+            assinatura,
+            assinado_em:
+              new Date().toISOString(),
+            ip_assinatura:
+              ipAssinatura,
+            status: "ativa"
+          })
+          .eq("id", garantiaEncontrada.id);
+
+        if (erroAtualizacao) {
+          throw erroAtualizacao;
+        }
+
+      }
+
+      // ----------------------------------------------------
+      // SUCESSO
+      // ----------------------------------------------------
+
+      console.log(
+        "Garantias assinadas com sucesso:",
+        {
+          pedidoId,
+          usuarioId,
+          quantidade:
+            garantias.length
+        }
+      );
+
+      return res.json({
+        ok: true,
+        mensagem:
+          "Todas as garantias foram assinadas com sucesso"
+      });
+
+    } catch (err) {
+
+      console.error(
+        "Erro ao salvar assinaturas das garantias:",
+        err
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: err.message
+      });
+
+    }
+
+  }
+);
 
 /*==========================================================
   ORÇAMENTOS DO CLIENTE
@@ -3824,11 +4176,11 @@ app.get(
 async function criarGarantiasDoPedido(pedidoId) {
 
   console.log(
-    'Iniciando criação das garantias do pedido:',
+    'Preparando garantias do pedido:',
     pedidoId
   );
 
-  // Buscar o pedido e seus itens
+  // Buscar pedido + itens
   const {
     data: pedido,
     error: erroPedido
@@ -3859,6 +4211,49 @@ async function criarGarantiasDoPedido(pedidoId) {
     );
   }
 
+  /*
+   * Buscar categorias dos produtos.
+   *
+   * A garantia será criada somente para:
+   * - máquinas STIHL
+   * - bombas
+   */
+
+  const produtoIds = [
+    ...(pedido.pedido_itens || [])
+  ]
+    .map(item => item.produto_id)
+    .filter(Boolean);
+
+  let produtosComCategorias = [];
+
+  if (produtoIds.length > 0) {
+
+    const {
+      data: produtos,
+      error: erroProdutos
+    } = await supabase
+      .from('produtos')
+      .select(`
+        id,
+        categoria,
+        produto_categorias (
+          categoria_id,
+          categorias (
+            slug
+          )
+        )
+      `)
+      .in('id', produtoIds);
+
+    if (erroProdutos) {
+      throw erroProdutos;
+    }
+
+    produtosComCategorias =
+      produtos || [];
+  }
+
   const dataCompra =
     pedido.data_pedido
       ? new Date(pedido.data_pedido)
@@ -3869,12 +4264,61 @@ async function criarGarantiasDoPedido(pedidoId) {
           .split('T')[0];
 
   const garantias = [];
+  let contadorUnidade = 0;
 
   /*
-   * Cada unidade comprada gera
+   * Cada unidade elegível recebe
    * uma garantia individual.
    */
   for (const item of pedido.pedido_itens || []) {
+
+    const produto =
+      produtosComCategorias.find(
+        p => p.id === item.produto_id
+      );
+
+    const categorias =
+      produto?.produto_categorias || [];
+
+    const slugs =
+      categorias
+        .map(relacao =>
+          relacao?.categorias?.slug
+        )
+        .filter(Boolean)
+        .map(slug =>
+          String(slug).toLowerCase()
+        );
+
+    const categoriaLegada =
+      produto?.categoria
+        ? String(produto.categoria)
+            .toLowerCase()
+        : '';
+
+    const textoCategorias = [
+      ...slugs,
+      categoriaLegada
+    ].join(' ');
+
+    /*
+     * Identificar produtos que possuem garantia.
+     *
+     * Não usamos o nome do produto para decidir.
+     */
+    const possuiGarantia =
+      textoCategorias.includes('stihl') ||
+      textoCategorias.includes('motosserra') ||
+      textoCategorias.includes('rocadeira') ||
+      textoCategorias.includes('roçadeira') ||
+      textoCategorias.includes('soprador') ||
+      textoCategorias.includes('aparador') ||
+      textoCategorias.includes('cortador') ||
+      textoCategorias.includes('bomba');
+
+    if (!possuiGarantia) {
+      continue;
+    }
 
     const quantidade =
       Number(item.quantidade);
@@ -3887,13 +4331,14 @@ async function criarGarantiasDoPedido(pedidoId) {
     }
 
     for (
-      let unidade = 1;
-      unidade <= quantidade;
-      unidade++
-    ) {
+  let unidadeProduto = 1;
+  unidadeProduto <= quantidade;
+  unidadeProduto++
+) {
+    contadorUnidade++;
 
-      // Data de vencimento = 12 meses
-      // após a data da compra
+    const unidade = contadorUnidade;
+
       const vencimento =
         new Date(dataCompra);
 
@@ -3907,6 +4352,8 @@ async function criarGarantiasDoPedido(pedidoId) {
           .split('T')[0];
 
       garantias.push({
+        pedido_id: pedido.id,
+        unidade,
         usuario_id: pedido.usuario_id,
 
         "nome do produto":
@@ -3919,14 +4366,18 @@ async function criarGarantiasDoPedido(pedidoId) {
           12,
 
         vencimento:
-          dataVencimento
+          dataVencimento,
+
+        status:
+          'pendente'
       });
     }
   }
 
   if (garantias.length === 0) {
+
     console.log(
-      'Nenhuma garantia para criar no pedido:',
+      'Nenhuma garantia necessária para o pedido:',
       pedidoId
     );
 
@@ -3934,38 +4385,36 @@ async function criarGarantiasDoPedido(pedidoId) {
   }
 
   /*
-   * Verificar quantas garantias já existem
-   * para este cliente/produto/data.
-   *
-   * Isso ajuda a evitar duplicações caso
-   * o webhook seja recebido novamente.
+   * Verificar garantias já existentes
+   * para este pedido.
    */
   const {
-    data: garantiasExistentes,
+    data: existentes,
     error: erroExistentes
   } = await supabase
     .from('garantias')
-    .select('id, usuario_id, "nome do produto", data_compra')
-    .eq('usuario_id', pedido.usuario_id)
-    .eq('data_compra', dataCompra);
+    .select('*')
+    .eq('pedido_id', pedido.id)
+    .order('unidade', {
+      ascending: true
+    });
 
   if (erroExistentes) {
     throw erroExistentes;
   }
 
-  const existentes =
-    garantiasExistentes || [];
-
   /*
-   * Como a tabela de garantias ainda não possui
-   * pedido_id/pedido_item_id, fazemos a criação
-   * somente quando ainda não houver garantias
-   * correspondentes para esse pedido.
+   * Se já existem, usamos as existentes.
+   * Isso evita duplicação caso o processo
+   * seja chamado novamente.
    */
-  if (existentes.length >= garantias.length) {
+  if (
+    existentes &&
+    existentes.length >= garantias.length
+  ) {
 
     console.log(
-      'Garantias aparentemente já criadas:',
+      'Garantias já preparadas:',
       {
         pedidoId,
         quantidade: existentes.length
@@ -3988,7 +4437,7 @@ async function criarGarantiasDoPedido(pedidoId) {
   }
 
   console.log(
-    'Garantias criadas com sucesso:',
+    'Garantias preparadas com sucesso:',
     {
       pedidoId,
       quantidade:
@@ -4190,187 +4639,7 @@ app.post(
         throw erroAtualizarPedido;
       }
 
-      // ==========================================================
-      // CRIAR GARANTIAS AUTOMATICAMENTE APÓS PAGAMENTO
-      // ==========================================================
-
-      await criarGarantiasDoPedido(pedidoId);
-
-      console.log(
-        'Garantias do pedido processadas:',
-        pedidoId
-      );
-
-    /*==========================================================
-    CRIAR GARANTIAS DO PEDIDO
-==========================================================*/
-
-async function criarGarantiasDoPedido(pedidoId) {
-
-  console.log(
-    'Iniciando criação das garantias do pedido:',
-    pedidoId
-  );
-
-  // Buscar pedido e itens
-  const {
-    data: pedido,
-    error: erroPedido
-  } = await supabase
-    .from('pedidos')
-    .select(`
-      id,
-      usuario_id,
-      data_pedido,
-      pedido_itens (
-        id,
-        produto_id,
-        produto_nome,
-        quantidade
-      )
-    `)
-    .eq('id', pedidoId)
-    .single();
-
-  if (erroPedido || !pedido) {
-    throw erroPedido ||
-      new Error('Pedido não encontrado.');
-  }
-
-  if (!pedido.usuario_id) {
-    throw new Error(
-      'Pedido não possui usuário vinculado.'
-    );
-  }
-
-  const dataCompra =
-    pedido.data_pedido
-      ? new Date(pedido.data_pedido)
-          .toISOString()
-          .split('T')[0]
-      : new Date()
-          .toISOString()
-          .split('T')[0];
-
-  const garantias = [];
-
-  let contadorUnidade = 0;
-
-  /*
-   * Cada unidade comprada gera
-   * uma garantia individual.
-   */
-  for (const item of pedido.pedido_itens || []) {
-
-    const quantidade =
-      Number(item.quantidade);
-
-    if (
-      !Number.isInteger(quantidade) ||
-      quantidade <= 0
-    ) {
-      continue;
-    }
-
-   for (
-  let unidadeProduto = 1;
-  unidadeProduto <= quantidade;
-  unidadeProduto++
-) {
-
-  contadorUnidade++;
-
-  const unidade = contadorUnidade;
-
-      const vencimento =
-        new Date(dataCompra);
-
-      vencimento.setFullYear(
-        vencimento.getFullYear() + 1
-      );
-
-      const dataVencimento =
-        vencimento
-          .toISOString()
-          .split('T')[0];
-
-      garantias.push({
-        pedido_id: pedido.id,
-
-        unidade,
-
-        usuario_id:
-          pedido.usuario_id,
-
-        "nome do produto":
-          item.produto_nome,
-
-        data_compra:
-          dataCompra,
-
-        meses_garantia:
-          12,
-
-        vencimento:
-          dataVencimento
-      });
-    }
-  }
-
-  if (garantias.length === 0) {
-
-    console.log(
-      'Nenhuma garantia para criar no pedido:',
-      pedidoId
-    );
-
-    return [];
-  }
-
-  /*
-   * UPSERT COM PROTEÇÃO CONTRA DUPLICAÇÃO
-   *
-   * A trava criada no banco usa:
-   * pedido_id + unidade
-   *
-   * Portanto, se o Asaas enviar o mesmo
-   * webhook novamente, a garantia existente
-   * não será duplicada.
-   */
-  const {
-    data: garantiasCriadas,
-    error: erroGarantias
-  } = await supabase
-    .from('garantias')
-    .upsert(
-      garantias,
-      {
-        onConflict:
-          'pedido_id,unidade',
-        ignoreDuplicates:
-          true
-      }
-    )
-    .select();
-
-  if (erroGarantias) {
-    throw erroGarantias;
-  }
-
-  console.log(
-    'Garantias processadas com sucesso:',
-    {
-      pedidoId,
-      quantidadeSolicitada:
-        garantias.length,
-      novasGarantias:
-        garantiasCriadas?.length || 0
-    }
-  );
-
-  return garantiasCriadas || [];
-}
-
+ 
       console.log(
         'Pedido atualizado como pago:',
         {

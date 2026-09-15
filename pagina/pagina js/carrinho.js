@@ -28,6 +28,669 @@ const btnWhatsapp =
 let carrinho = [];
 let pedidoAtualId = null;
 
+// ==========================================================
+// SISTEMA DE ASSINATURA DAS GARANTIAS
+// ==========================================================
+
+let garantiasPendentes = [];
+let indiceGarantiaAtual = 0;
+let assinaturaCanvas = null;
+let assinaturaContexto = null;
+let assinaturaDesenhando = false;
+let assinaturaTemConteudo = false;
+
+
+// ==========================================================
+// CRIAR MODAL DE ASSINATURA
+// ==========================================================
+
+function criarModalAssinaturaGarantia() {
+
+    if (document.getElementById("modalAssinaturaGarantia")) {
+        return;
+    }
+
+    const modal = document.createElement("div");
+
+    modal.id = "modalAssinaturaGarantia";
+
+    modal.innerHTML = `
+        <div class="assinatura-overlay">
+
+            <div class="assinatura-modal">
+
+                <button
+                    type="button"
+                    id="fecharModalAssinatura"
+                    class="assinatura-fechar"
+                    aria-label="Fechar"
+                >
+                    &times;
+                </button>
+
+                <div class="assinatura-header">
+
+                    <i class="fa-solid fa-file-signature"></i>
+
+                    <h2>
+                        Assinatura da Garantia
+                    </h2>
+
+                    <p id="assinaturaProgresso">
+                        Garantia 1 de 1
+                    </p>
+
+                </div>
+
+
+                <div class="assinatura-info">
+
+                    <h3 id="assinaturaProduto">
+                        Produto
+                    </h3>
+
+                    <p>
+                        Este produto possui
+                        <strong>1 ano de garantia</strong>.
+                    </p>
+
+                    <p id="assinaturaUnidade">
+                        Unidade 1
+                    </p>
+
+                </div>
+
+
+                <div class="assinatura-area">
+
+                    <p>
+                        Assine no espaço abaixo:
+                    </p>
+
+                    <canvas
+                        id="canvasAssinatura"
+                        width="600"
+                        height="220"
+                    ></canvas>
+
+                </div>
+
+
+                <div class="assinatura-acoes">
+
+                    <button
+                        type="button"
+                        id="limparAssinatura"
+                        class="btn-limpar-assinatura"
+                    >
+                        <i class="fa-solid fa-eraser"></i>
+                        Limpar
+                    </button>
+
+                    <button
+                        type="button"
+                        id="confirmarAssinatura"
+                        class="btn-confirmar-assinatura"
+                        disabled
+                    >
+                        <i class="fa-solid fa-check"></i>
+                        Confirmar e Assinar
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    configurarCanvasAssinatura();
+}
+
+
+// ==========================================================
+// CONFIGURAR CANVAS
+// ==========================================================
+
+function configurarCanvasAssinatura() {
+
+    assinaturaCanvas =
+        document.getElementById("canvasAssinatura");
+
+    if (!assinaturaCanvas) {
+        return;
+    }
+
+    assinaturaContexto =
+        assinaturaCanvas.getContext("2d");
+
+    assinaturaContexto.lineWidth = 2;
+    assinaturaContexto.lineCap = "round";
+    assinaturaContexto.lineJoin = "round";
+
+    function obterPosicao(evento) {
+
+        const rect =
+            assinaturaCanvas.getBoundingClientRect();
+
+        let clientX;
+        let clientY;
+
+        if (evento.touches && evento.touches.length) {
+
+            clientX =
+                evento.touches[0].clientX;
+
+            clientY =
+                evento.touches[0].clientY;
+
+        } else {
+
+            clientX =
+                evento.clientX;
+
+            clientY =
+                evento.clientY;
+        }
+
+        return {
+            x:
+                (clientX - rect.left) *
+                (assinaturaCanvas.width / rect.width),
+
+            y:
+                (clientY - rect.top) *
+                (assinaturaCanvas.height / rect.height)
+        };
+    }
+
+
+    function iniciarAssinatura(evento) {
+
+        evento.preventDefault();
+
+        assinaturaDesenhando = true;
+
+        const posicao =
+            obterPosicao(evento);
+
+        assinaturaContexto.beginPath();
+
+        assinaturaContexto.moveTo(
+            posicao.x,
+            posicao.y
+        );
+    }
+
+
+    function desenharAssinatura(evento) {
+
+        if (!assinaturaDesenhando) {
+            return;
+        }
+
+        evento.preventDefault();
+
+        const posicao =
+            obterPosicao(evento);
+
+        assinaturaContexto.lineTo(
+            posicao.x,
+            posicao.y
+        );
+
+        assinaturaContexto.stroke();
+
+        assinaturaTemConteudo = true;
+
+        const botao =
+            document.getElementById(
+                "confirmarAssinatura"
+            );
+
+        if (botao) {
+            botao.disabled = false;
+        }
+    }
+
+
+    function finalizarAssinatura() {
+
+        assinaturaDesenhando = false;
+
+        assinaturaContexto.closePath();
+    }
+
+
+    assinaturaCanvas.addEventListener(
+        "mousedown",
+        iniciarAssinatura
+    );
+
+    assinaturaCanvas.addEventListener(
+        "mousemove",
+        desenharAssinatura
+    );
+
+    assinaturaCanvas.addEventListener(
+        "mouseup",
+        finalizarAssinatura
+    );
+
+    assinaturaCanvas.addEventListener(
+        "mouseleave",
+        finalizarAssinatura
+    );
+
+
+    assinaturaCanvas.addEventListener(
+        "touchstart",
+        iniciarAssinatura,
+        { passive: false }
+    );
+
+    assinaturaCanvas.addEventListener(
+        "touchmove",
+        desenharAssinatura,
+        { passive: false }
+    );
+
+    assinaturaCanvas.addEventListener(
+        "touchend",
+        finalizarAssinatura,
+        { passive: false }
+    );
+
+
+    document
+        .getElementById("limparAssinatura")
+        ?.addEventListener(
+            "click",
+            limparCanvasAssinatura
+        );
+
+
+    document
+        .getElementById("confirmarAssinatura")
+        ?.addEventListener(
+            "click",
+            confirmarAssinaturaAtual
+        );
+
+
+    document
+        .getElementById("fecharModalAssinatura")
+        ?.addEventListener(
+            "click",
+            () => {
+
+                const modal =
+                    document.getElementById(
+                        "modalAssinaturaGarantia"
+                    );
+
+                if (modal) {
+                    modal.hidden = true;
+                }
+            }
+        );
+}
+
+
+// ==========================================================
+// LIMPAR ASSINATURA
+// ==========================================================
+
+function limparCanvasAssinatura() {
+
+    if (!assinaturaCanvas || !assinaturaContexto) {
+        return;
+    }
+
+    assinaturaContexto.clearRect(
+        0,
+        0,
+        assinaturaCanvas.width,
+        assinaturaCanvas.height
+    );
+
+    assinaturaTemConteudo = false;
+
+    const botao =
+        document.getElementById(
+            "confirmarAssinatura"
+        );
+
+    if (botao) {
+        botao.disabled = true;
+    }
+}
+
+
+// ==========================================================
+// ABRIR GARANTIA
+// ==========================================================
+
+function abrirModalAssinaturaGarantia() {
+
+    if (!garantiasPendentes.length) {
+
+        window.location.href =
+            "../cadastro/area-cliente.html";
+
+        return;
+    }
+
+    criarModalAssinaturaGarantia();
+
+    indiceGarantiaAtual = 0;
+
+    mostrarGarantiaAtual();
+}
+
+
+// ==========================================================
+// MOSTRAR GARANTIA ATUAL
+// ==========================================================
+
+function mostrarGarantiaAtual() {
+
+    const garantia =
+        garantiasPendentes[indiceGarantiaAtual];
+
+    if (!garantia) {
+        finalizarAssinaturasGarantia();
+        return;
+    }
+
+
+    const modal =
+        document.getElementById(
+            "modalAssinaturaGarantia"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+
+    const produto =
+        document.getElementById(
+            "assinaturaProduto"
+        );
+
+    const progresso =
+        document.getElementById(
+            "assinaturaProgresso"
+        );
+
+    const unidade =
+        document.getElementById(
+            "assinaturaUnidade"
+        );
+
+
+    if (produto) {
+
+        produto.textContent =
+            garantia.nome;
+    }
+
+
+    if (progresso) {
+
+        progresso.textContent =
+            `Garantia ${indiceGarantiaAtual + 1} de ${garantiasPendentes.length}`;
+    }
+
+
+    if (unidade) {
+
+        unidade.textContent =
+            `Unidade ${garantia.unidade}`;
+    }
+
+
+    limparCanvasAssinatura();
+
+    modal.hidden = false;
+}
+
+
+// ==========================================================
+// CONFIRMAR ASSINATURA ATUAL
+// ==========================================================
+
+async function confirmarAssinaturaAtual() {
+
+    if (
+        !assinaturaCanvas ||
+        !assinaturaTemConteudo
+    ) {
+
+        alert(
+            "Faça sua assinatura antes de continuar."
+        );
+
+        return;
+    }
+
+
+    const botao =
+        document.getElementById(
+            "confirmarAssinatura"
+        );
+
+    if (botao) {
+
+        botao.disabled = true;
+
+        botao.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
+    }
+
+
+    const assinatura =
+        assinaturaCanvas.toDataURL(
+            "image/png"
+        );
+
+
+    garantiasPendentes[
+        indiceGarantiaAtual
+    ].assinatura = assinatura;
+
+
+    indiceGarantiaAtual++;
+
+
+    if (
+        indiceGarantiaAtual <
+        garantiasPendentes.length
+    ) {
+
+        mostrarGarantiaAtual();
+
+        return;
+    }
+
+
+    await finalizarAssinaturasGarantia();
+}
+
+
+// ==========================================================
+// FINALIZAR ASSINATURAS
+// ==========================================================
+
+async function finalizarAssinaturasGarantia() {
+
+    const modal =
+        document.getElementById(
+            "modalAssinaturaGarantia"
+        );
+
+    if (modal) {
+        modal.hidden = true;
+    }
+
+    const token = obterToken();
+
+    if (!token) {
+        alert(
+            "Sua sessão expirou. Faça login novamente."
+        );
+
+        redirecionarParaLogin();
+        return;
+    }
+
+    if (!garantiasPendentes.length) {
+        alert(
+            "Nenhuma garantia foi encontrada para assinatura."
+        );
+        return;
+    }
+
+    // ------------------------------------------------------
+    // CONFIRMAR QUE TODAS AS GARANTIAS POSSUEM ASSINATURA
+    // ------------------------------------------------------
+
+    const todasAssinadas =
+        garantiasPendentes.every(
+            garantia =>
+                typeof garantia.assinatura === "string" &&
+                garantia.assinatura.startsWith(
+                    "data:image/png;base64,"
+                )
+        );
+
+    if (!todasAssinadas) {
+
+        alert(
+            "Ainda existem garantias que não foram assinadas."
+        );
+
+        return;
+    }
+
+    // ------------------------------------------------------
+    // PEDIDO
+    // ------------------------------------------------------
+
+    const pedidoId =
+        Number(
+            garantiasPendentes[0].pedidoId
+        );
+
+    if (
+        !Number.isInteger(pedidoId) ||
+        pedidoId <= 0
+    ) {
+        alert(
+            "Não foi possível identificar o pedido."
+        );
+        return;
+    }
+
+    try {
+
+        console.log(
+            "Enviando assinaturas para o servidor...",
+            {
+                pedidoId,
+                quantidade:
+                    garantiasPendentes.length
+            }
+        );
+
+        // --------------------------------------------------
+        // SALVAR TODAS AS ASSINATURAS
+        // --------------------------------------------------
+
+        const resposta =
+            await fetch(
+                `${API_CARRINHO}/garantias/${pedidoId}/assinar`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        Authorization:
+                            `Bearer ${token}`
+                    },
+
+                    body: JSON.stringify({
+                        garantias:
+                            garantiasPendentes.map(
+                                garantia => ({
+                                    unidade:
+                                        garantia.unidade,
+
+                                    assinatura:
+                                        garantia.assinatura
+                                })
+                            )
+                    })
+                }
+            );
+
+        const resultado =
+            await lerResposta(resposta);
+
+        console.log(
+            "Assinaturas salvas:",
+            resultado
+        );
+
+        // --------------------------------------------------
+        // AGORA SIM PODE LIMPAR O CARRINHO
+        // --------------------------------------------------
+
+        localStorage.removeItem(
+            "carrinho"
+        );
+
+        localStorage.removeItem(
+            "carrinho_itens"
+        );
+
+        localStorage.removeItem(
+            "pedidoAtualId"
+        );
+
+        garantiasPendentes = [];
+        indiceGarantiaAtual = 0;
+
+        alert(
+            "Todas as garantias foram assinadas e registradas com sucesso!"
+        );
+
+        window.location.href =
+            "../cadastro/area-cliente.html";
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao salvar assinaturas:",
+            erro
+        );
+
+        // Reabre o modal para não perder
+        // as assinaturas que estão em memória.
+        if (modal) {
+            modal.hidden = false;
+        }
+
+        alert(
+            `Não foi possível registrar as garantias:\n${erro.message}`
+        );
+    }
+}
 
 function obterToken() {
     return localStorage.getItem("tokenCial");
@@ -318,6 +981,222 @@ async function lerResposta(resposta) {
     }
 
     return resultado;
+}
+
+// ==================================================
+// VERIFICAR PAGAMENTO DO PEDIDO
+// ==================================================
+
+async function verificarPagamentoPedido(pedidoId) {
+    const token = obterToken();
+
+    if (!token || !Number.isInteger(Number(pedidoId))) {
+        return false;
+    }
+
+    try {
+        const resposta = await fetch(
+            `${API_CARRINHO}/pedidos/${pedidoId}`,
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+        const resultado =
+            await lerResposta(resposta);
+
+        const pedido =
+            resultado.pedido ||
+            resultado.data;
+
+        return pedido?.status === "pago";
+
+    } catch (erro) {
+        console.error(
+            "Erro ao verificar pagamento:",
+            erro
+        );
+
+        return false;
+    }
+}
+
+// ==================================================
+// PREPARAR E ABRIR GARANTIAS
+// ==================================================
+
+async function prepararEabrirGarantias(
+    pedidoId,
+    modalParaFechar = null
+) {
+
+    const token = obterToken();
+
+    if (!token) {
+        redirecionarParaLogin();
+        return false;
+    }
+
+    try {
+
+        console.log(
+            "Preparando garantias do pedido:",
+            pedidoId
+        );
+
+        const resposta = await fetch(
+            `${API_CARRINHO}/garantias/${pedidoId}/preparar`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+
+                    Authorization:
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+        const resultado =
+            await lerResposta(resposta);
+
+        const garantias =
+            Array.isArray(resultado.data)
+                ? resultado.data
+                : [];
+
+        console.log(
+            "Garantias recebidas:",
+            garantias
+        );
+
+        garantiasPendentes =
+            garantias.map(garantia => ({
+                nome:
+                    garantia["nome do produto"],
+
+                unidade:
+                    garantia.unidade,
+
+                pedidoId,
+
+                garantiaId:
+                    garantia.id
+            }));
+
+        console.log(
+            "Garantias pendentes:",
+            garantiasPendentes
+        );
+
+        // Fechar o modal de pagamento
+        if (modalParaFechar) {
+            modalParaFechar.hidden = true;
+        }
+
+        // Pedido sem produtos com garantia
+        if (!garantiasPendentes.length) {
+
+            localStorage.removeItem(
+                "carrinho"
+            );
+
+            localStorage.removeItem(
+                "carrinho_itens"
+            );
+
+            localStorage.removeItem(
+                "pedidoAtualId"
+            );
+
+            alert(
+                "Pagamento aprovado! Este pedido não possui produtos com garantia."
+            );
+
+            window.location.href =
+                "../cadastro/area-cliente.html";
+
+            return false;
+        }
+
+        // Abrir modal de assinatura
+        abrirModalAssinaturaGarantia();
+
+        return true;
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao preparar garantias:",
+            erro
+        );
+
+        alert(
+            `Pagamento aprovado, mas não foi possível preparar as garantias:\n${erro.message}`
+        );
+
+        return false;
+    }
+}
+
+
+// ==================================================
+// AGUARDAR PAGAMENTO E ABRIR GARANTIAS
+// ==================================================
+
+async function aguardarPagamentoEPedirGarantias(
+    pedidoId,
+    modalParaFechar = null
+) {
+
+    console.log(
+        "Aguardando confirmação do pagamento:",
+        pedidoId
+    );
+
+    const maxTentativas = 60;
+
+    for (
+        let tentativa = 0;
+        tentativa < maxTentativas;
+        tentativa++
+    ) {
+
+        const pago =
+            await verificarPagamentoPedido(
+                pedidoId
+            );
+
+        if (pago) {
+
+            console.log(
+                "Pagamento confirmado!",
+                pedidoId
+            );
+
+            await prepararEabrirGarantias(
+                pedidoId,
+                modalParaFechar
+            );
+
+            return true;
+        }
+
+        await new Promise(
+            resolve =>
+                setTimeout(resolve, 3000)
+        );
+    }
+
+    console.warn(
+        "Pagamento ainda não confirmado após o tempo de espera."
+    );
+
+    return false;
 }
 
 async function carregarCarrinho() {
@@ -817,50 +1696,18 @@ btnPagamentoPix?.addEventListener(
             return;
         }
 
-        const observacoes = observation?.value?.trim() || "";
+ const pedidoId = Number(pedidoAtualId);
 
-        btnFinish.disabled = true;
-        btnFinish.textContent = "Criando pedido...";
+if (!Number.isInteger(pedidoId)) {
+    throw new Error(
+        "Não foi possível identificar o pedido. Finalize a compra novamente."
+    );
+}
 
-        try {
-            /*
-             * 1. Cria pedido + itens usando o carrinho salvo
-             *    no Supabase. O backend recalcula o valor.
-             */
-            const respostaPedido = await fetch(
-                `${API_CARRINHO}/pedidos/criar-do-carrinho`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        observacoes
-                    })
-                }
-            );
+btnFinish.disabled = true;
+btnFinish.textContent = "Gerando Pix...";
 
-            const resultadoPedido = await lerResposta(respostaPedido);
-
-            const pedido =
-                resultadoPedido.pedido;
-
-            if (!pedido?.id) {
-                throw new Error(
-                    "O pedido foi criado, mas o ID não foi retornado."
-                );
-            }
-
-            pedidoAtualId =
-                Number(pedido.id);
-
-            localStorage.setItem(
-                "pedidoAtualId",
-                String(pedidoAtualId)
-            );
-
-            btnFinish.textContent = "Gerando Pix...";
+try {
 
             /*
              * 2. Cria a cobrança usando o ID do pedido.
@@ -874,11 +1721,11 @@ btnPagamentoPix?.addEventListener(
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`
                     },
-                    body: JSON.stringify({
-                        pedidoId: pedido.id,
-                        descricao:
-                            `Pedido ${pedido.numero} - Cial Site`
-                    })
+                body: JSON.stringify({
+    pedidoId,
+    descricao:
+        `Pedido ${pedidoId} - Cial Site`
+})
                 }
             );
 
@@ -959,8 +1806,7 @@ btnPagamentoPix?.addEventListener(
 
             if (pixDescricao) {
                 pixDescricao.textContent =
-                    `Pedido ${pedido.numero} — ` +
-                    `${formatarPreco(pedido.valor)}`;
+                 `Pedido ${pedidoId}`;
             }
 
             if (
@@ -979,13 +1825,30 @@ btnPagamentoPix?.addEventListener(
             console.log(
                 "Pedido e pagamento criados:",
                 {
-                    pedidoId: pedido.id,
-                    numeroPedido: pedido.numero,
+                    pedidoId: pedidoId,
+                    numeroPedido: pedidoId,
                     pagamentoId: pagamento.id
                 }
             );
 
-            modalPix.hidden = false;
+       modalPix.hidden = false;
+
+// ==================================================
+// AGUARDAR PAGAMENTO PIX
+// ==================================================
+
+aguardarPagamentoEPedirGarantias(
+    pedidoId,
+    modalPix
+).then(confirmado => {
+
+    if (!confirmado && pixStatus) {
+        pixStatus.textContent =
+            "Pagamento ainda não confirmado. Você pode continuar acompanhando.";
+    }
+
+});
+
         } catch (erro) {
             console.error(
                 "Erro ao finalizar compra:",
@@ -1242,49 +2105,75 @@ confirmarPagamentoCartao?.addEventListener(
                 );
             }
 
-            if (pagamento.status === "CONFIRMED") {
-                localStorage.removeItem("carrinho");
-                localStorage.removeItem("carrinho_itens");
+// ==================================================
+// AGUARDAR CONFIRMAÇÃO DO PAGAMENTO
+// ==================================================
 
-                alert(
-                    "Pagamento aprovado com sucesso!"
-                );
+console.log(
+    "Pagamento recebido pela Asaas:",
+    pagamento.status,
+    pedidoId
+);
 
-                
-                window.location.href = "../cadastro/area-cliente.html";
-                return;
+if (confirmarPagamentoCartao) {
+    confirmarPagamentoCartao.textContent =
+        "Aguardando confirmação...";
+}
 
-                
-            }
+// Aguarda o webhook/backend confirmar que o pedido
+// realmente foi marcado como pago.
+const confirmado =
+    await aguardarPagamentoEPedirGarantias(
+        pedidoId,
+        modalCartao
+    );
 
-            alert(
-                "Pagamento em processamento. Aguarde a confirmação."
-            );
+if (!confirmado) {
 
-            const modalCartao =
-                document.getElementById(
-                    "modalCartao"
-                );
+    alert(
+        "O pagamento ainda não foi confirmado. Você pode continuar acompanhando o pedido."
+    );
 
-            if (modalCartao) {
-                modalCartao.hidden = true;
-            }
+} else {
 
-            document.getElementById(
-                "numeroCartao"
-            ).value = "";
+    console.log(
+        "Pagamento confirmado e garantias encaminhadas para assinatura:",
+        pedidoId
+    );
+}
 
-            document.getElementById(
-                "nomeCartao"
-            ).value = "";
+// ==================================================
+// LIMPAR DADOS DO CARTÃO
+// ==================================================
 
-            document.getElementById(
-                "validadeCartao"
-            ).value = "";
+const campoNumero =
+    document.getElementById("numeroCartao");
 
-            document.getElementById(
-                "cvvCartao"
-            ).value = "";
+const campoNome =
+    document.getElementById("nomeCartao");
+
+const campoValidade =
+    document.getElementById("validadeCartao");
+
+const campoCvv =
+    document.getElementById("cvvCartao");
+
+if (campoNumero) {
+    campoNumero.value = "";
+}
+
+if (campoNome) {
+    campoNome.value = "";
+}
+
+if (campoValidade) {
+    campoValidade.value = "";
+}
+
+if (campoCvv) {
+    campoCvv.value = "";
+}
+
 
         } catch (erro) {
             console.error(

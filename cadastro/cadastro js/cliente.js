@@ -584,18 +584,462 @@ if (tituloFavoritos) {
    ORÇAMENTOS
 ===================================================== */
 
-async function iniciarOrcamentos() {
+async function carregarOrcamentos() {
 
-    btnOrcamento.forEach(botao => {
+    const lista =
+        document.getElementById("listaOrcamentos");
 
-        botao.addEventListener("click", () => {
+    if (!lista) return;
 
-            alert("Visualização do orçamento em desenvolvimento.");
+    const token =
+        localStorage.getItem("tokenCial");
 
-        });
+    if (!token) {
 
-    });
+        lista.innerHTML = `
+            <tr>
+                <td colspan="5">
+                    Faça login para visualizar seus orçamentos.
+                </td>
+            </tr>
+        `;
 
+        return;
+    }
+
+    lista.innerHTML = `
+        <tr>
+            <td colspan="5">
+                Carregando orçamentos...
+            </td>
+        </tr>
+    `;
+
+    try {
+
+        const response =
+            await fetch(
+                "http://localhost:4000/orcamentos",
+                {
+                    headers: {
+                        Authorization:
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        const resultado =
+            await response.json();
+
+        if (
+            !response.ok ||
+            !resultado.ok
+        ) {
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar orçamentos."
+            );
+
+        }
+
+        const orcamentos =
+            resultado.data || [];
+
+        lista.innerHTML = "";
+
+        if (orcamentos.length === 0) {
+
+            lista.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        Você ainda não possui orçamentos.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        orcamentos.forEach(
+            orcamento => {
+
+                const data =
+                    orcamento.data_solicitacao
+                        ? new Date(
+                            orcamento.data_solicitacao
+                        ).toLocaleDateString(
+                            "pt-BR"
+                        )
+                        : "-";
+
+                const validade =
+                    orcamento.validade
+                        ? new Date(
+                            orcamento.validade
+                        ).toLocaleDateString(
+                            "pt-BR"
+                        )
+                        : "-";
+
+                const statusMap = {
+
+                    analise:
+                        "EM ANÁLISE",
+
+                    em_analise:
+                        "EM ANÁLISE",
+
+                    aprovado:
+                        "APROVADO",
+
+                    recusado:
+                        "RECUSADO",
+
+                    finalizado:
+                        "FINALIZADO"
+
+                };
+
+                const status =
+                    statusMap[
+                        orcamento.status
+                    ] ||
+                    "EM ANÁLISE";
+
+                const tr =
+                    document.createElement("tr");
+
+                tr.innerHTML = `
+
+                    <td>
+                        #${
+                            orcamento.numero ||
+                            orcamento.id
+                        }
+                    </td>
+
+                    <td>
+                        ${data}
+                    </td>
+
+                    <td>
+                        <span class="status andamento">
+                            ${status}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${validade}
+                    </td>
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="btn-orcamento"
+                            data-id="${
+                                orcamento.id
+                            }"
+                        >
+                            Visualizar
+                        </button>
+
+                    </td>
+
+                `;
+
+                tr
+                    .querySelector(
+                        ".btn-orcamento"
+                    )
+                    .addEventListener(
+                        "click",
+                        () => {
+
+                       abrirOrcamentoCliente(
+                         orcamento.id
+                                     );
+
+                        }
+                    );
+
+                lista.appendChild(tr);
+
+            }
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar orçamentos:",
+            erro
+        );
+
+        lista.innerHTML = `
+            <tr>
+                <td colspan="5">
+                    Não foi possível carregar os orçamentos.
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+function iniciarOrcamentos() {
+
+    carregarOrcamentos();
+
+}
+
+async function abrirOrcamentoCliente(id) {
+
+    const token =
+        localStorage.getItem("tokenCial");
+
+    if (!token) {
+        alert("Faça login para visualizar o orçamento.");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `http://localhost:4000/orcamentos/${id}`,
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+        const resultado =
+            await response.json();
+
+        if (
+            !response.ok ||
+            !resultado.ok
+        ) {
+            throw new Error(
+                resultado.erro ||
+                "Não foi possível carregar o orçamento."
+            );
+        }
+
+        const orcamento =
+            resultado.data;
+
+        const itens =
+            orcamento.itens || [];
+
+        const textosStatus = {
+            analise: "EM ANÁLISE",
+            em_analise: "EM ANÁLISE",
+            aprovado: "APROVADO",
+            recusado: "RECUSADO",
+            finalizado: "FINALIZADO"
+        };
+
+        const status =
+            textosStatus[
+                orcamento.status
+            ] || "EM ANÁLISE";
+
+        const data =
+            orcamento.data_solicitacao
+                ? new Date(
+                    orcamento.data_solicitacao
+                ).toLocaleDateString("pt-BR")
+                : "-";
+
+        const validade =
+            orcamento.validade
+                ? new Date(
+                    orcamento.validade
+                ).toLocaleDateString("pt-BR")
+                : "-";
+
+        const total =
+            Number(
+                orcamento.total || 0
+            );
+
+        const modalExistente =
+            document.getElementById(
+                "modalOrcamentoCliente"
+            );
+
+        if (modalExistente) {
+            modalExistente.remove();
+        }
+
+        const modal =
+            document.createElement("div");
+
+        modal.id =
+            "modalOrcamentoCliente";
+
+        modal.innerHTML = `
+            <div class="modal-orcamento-cliente-overlay">
+
+                <div class="modal-orcamento-cliente">
+
+                    <button
+                        type="button"
+                        class="fechar-modal-orcamento-cliente"
+                        aria-label="Fechar"
+                    >
+                        ×
+                    </button>
+
+                    <div class="modal-orcamento-cliente-header">
+
+                        <h2>
+                            📄 Orçamento
+                        </h2>
+
+                        <strong>
+                            #${String(
+                                orcamento.id
+                            ).padStart(5, "0")}
+                        </strong>
+
+                    </div>
+
+                    <div class="orcamento-cliente-info">
+
+                        <div>
+                            <span>Data</span>
+                            <strong>${data}</strong>
+                        </div>
+
+                        <div>
+                            <span>Validade</span>
+                            <strong>${validade}</strong>
+                        </div>
+
+                        <div>
+                            <span>Status</span>
+                            <strong>${status}</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="orcamento-cliente-itens">
+
+                        <h3>
+                            Produtos
+                        </h3>
+
+                        ${
+                            itens.length
+                                ? itens.map(item => `
+                                    <div class="orcamento-cliente-item">
+
+                                        <div>
+                                            <strong>
+                                                ${item.produto_nome || item.nome || "Produto"}
+                                            </strong>
+
+                                            <small>
+                                                Quantidade:
+                                                ${item.quantidade || 0}
+                                            </small>
+                                        </div>
+
+                                        <strong>
+                                            R$
+                                            ${Number(
+                                                item.preco_unitario || 0
+                                            ).toLocaleString(
+                                                "pt-BR",
+                                                {
+                                                    minimumFractionDigits: 2
+                                                }
+                                            )}
+                                        </strong>
+
+                                    </div>
+                                `).join("")
+                                : `
+                                    <p>
+                                        Nenhum item encontrado.
+                                    </p>
+                                `
+                        }
+
+                    </div>
+
+                    <div class="orcamento-cliente-total">
+
+                        <span>
+                            Total
+                        </span>
+
+                        <strong>
+                            R$
+                            ${total.toLocaleString(
+                                "pt-BR",
+                                {
+                                    minimumFractionDigits: 2
+                                }
+                            )}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const fechar =
+            modal.querySelector(
+                ".fechar-modal-orcamento-cliente"
+            );
+
+        fechar?.addEventListener(
+            "click",
+            () => modal.remove()
+        );
+
+        modal
+            .querySelector(
+                ".modal-orcamento-cliente-overlay"
+            )
+            ?.addEventListener(
+                "click",
+                evento => {
+
+                    if (
+                        evento.target.classList.contains(
+                            "modal-orcamento-cliente-overlay"
+                        )
+                    ) {
+                        modal.remove();
+                    }
+
+                }
+            );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao abrir orçamento:",
+            erro
+        );
+
+        alert(
+            erro.message ||
+            "Não foi possível visualizar o orçamento."
+        );
+    }
 }
 
 /* =====================================================

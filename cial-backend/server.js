@@ -2392,7 +2392,169 @@ app.get("/orcamentos", autenticarToken, async (req, res) => {
 
 
 
+/*==========================================================
+    BUSCAR ORÇAMENTO ESPECÍFICO — ADMINISTRATIVO
+==========================================================*/
 
+app.get(
+  "/admin/orcamentos/:id",
+  autenticarToken,
+  exigirAdmin,
+  async (req, res) => {
+
+
+    try {
+
+      const orcamentoId =
+        Number.parseInt(req.params.id, 10);
+
+      if (
+        !Number.isInteger(orcamentoId) ||
+        orcamentoId <= 0
+      ) {
+        return res.status(400).json({
+          ok: false,
+          erro: "ID do orçamento inválido"
+        });
+      }
+
+
+      /*====================================================
+          BUSCAR ORÇAMENTO + CLIENTE
+      ====================================================*/
+
+      const {
+        data: orcamento,
+        error: erroOrcamento
+      } = await supabase
+        .from("orcamentos")
+        .select(`
+          *,
+          usuarios (
+            id,
+            nome,
+            email,
+            telefone
+          )
+        `)
+        .eq("id", orcamentoId)
+        .single();
+
+
+      if (erroOrcamento || !orcamento) {
+
+        return res.status(404).json({
+          ok: false,
+          erro: "Orçamento não encontrado"
+        });
+
+      }
+
+
+      /*====================================================
+          BUSCAR ITENS DO ORÇAMENTO
+      ====================================================*/
+
+      const {
+        data: itens,
+        error: erroItens
+      } = await supabase
+        .from("orcamento_itens")
+        .select(`
+          id,
+          produto_id,
+          produto_nome,
+          quantidade,
+          preco_unitario
+        `)
+        .eq("orcamento_id", orcamentoId)
+        .order("id", {
+          ascending: true
+        });
+
+
+      if (erroItens) {
+
+        console.error(
+          "Erro ao buscar itens do orçamento:",
+          erroItens
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroItens.message
+        });
+
+      }
+
+
+      /*====================================================
+          CALCULAR TOTAL
+      ====================================================*/
+
+      const itensFinal =
+        (itens || []).map(item => {
+
+          const quantidade =
+            Number(item.quantidade) || 0;
+
+          const precoUnitario =
+            Number(item.preco_unitario) || 0;
+
+          const subtotal =
+            quantidade * precoUnitario;
+
+          return {
+            ...item,
+            quantidade,
+            preco_unitario: precoUnitario,
+            subtotal
+          };
+
+        });
+
+
+      const valorTotal =
+        itensFinal.reduce(
+          (total, item) =>
+            total + item.subtotal,
+          0
+        );
+
+
+      /*====================================================
+          RETORNAR ORÇAMENTO COMPLETO
+      ====================================================*/
+
+      return res.json({
+        ok: true,
+
+        data: {
+          ...orcamento,
+
+          itens: itensFinal,
+
+          valor_total: valorTotal
+        }
+      });
+
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao buscar orçamento administrativo:",
+        erro
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: "Erro interno ao buscar orçamento."
+      });
+
+    }
+
+  }
+);
 
 /*==========================================================
     CONTROLE DE USUÁRIOS
@@ -3097,7 +3259,211 @@ app.post(
   }
 );
 
+/*==========================================================
+    CRIAR ORÇAMENTO A PARTIR DO CARRINHO
+==========================================================*/
 
+app.post(
+  "/orcamentos/criar-do-carrinho",
+  autenticarToken,
+  async (req, res) => {
+    try {
+
+      const usuarioId = req.usuario.id;
+
+      /*
+       * Busca o carrinho diretamente no Supabase.
+       * O preço NÃO vem do navegador.
+       */
+      const {
+        data: itensCarrinho,
+        error: erroCarrinho
+      } = await supabase
+        .from("carrinho_itens")
+        .select(`
+          produto_id,
+          quantidade,
+          produtos (
+            id,
+            nome,
+            preco,
+            ativo
+          )
+        `)
+        .eq("usuario_id", usuarioId);
+
+      if (erroCarrinho) {
+        throw erroCarrinho;
+      }
+
+      if (!itensCarrinho || itensCarrinho.length === 0) {
+        return res.status(400).json({
+          ok: false,
+          erro: "Seu carrinho está vazio."
+        });
+      }
+
+
+      /*
+       * Validação dos produtos
+       */
+      const itensOrcamento = itensCarrinho.map(item => {
+
+        const produto = item.produtos;
+
+        if (!produto || !produto.ativo) {
+          throw new Error(
+            `Produto inválido ou inativo: ${item.produto_id}`
+          );
+        }
+
+        const quantidade = Number(item.quantidade);
+        const precoUnitario = Number(produto.preco);
+
+        if (
+          !Number.isInteger(quantidade) ||
+          quantidade <= 0
+        ) {
+          throw new Error(
+            `Quantidade inválida para o produto ${produto.nome}.`
+          );
+        }
+
+        if (
+          !Number.isFinite(precoUnitario) ||
+          precoUnitario < 0
+        ) {
+          throw new Error(
+            `Preço inválido para o produto ${produto.nome}.`
+          );
+        }
+
+        return {
+          produto_id: produto.id,
+          produto_nome: produto.nome,
+          quantidade,
+          preco_unitario: precoUnitario
+        };
+
+      });
+
+
+      /*
+       * Calcula o valor total
+       */
+      const valorTotal = itensOrcamento.reduce(
+        (total, item) => {
+          return total +
+            item.quantidade * item.preco_unitario;
+        },
+        0
+      );
+
+
+      /*
+       * Gera número do orçamento
+       */
+      const numeroOrcamento =
+        `ORC-${Date.now()}`;
+
+
+      /*
+       * Cria o orçamento principal
+       */
+      const {
+        data: orcamento,
+        error: erroOrcamento
+      } = await supabase
+        .from("orcamentos")
+        .insert({
+          usuario_id: usuarioId,
+          numero: numeroOrcamento,
+          status: "analise",
+          data_solicitacao: new Date()
+            .toISOString()
+            .split("T")[0],
+          observacoes:
+            req.body.observacoes || null
+        })
+        .select()
+        .single();
+
+      if (erroOrcamento) {
+        throw erroOrcamento;
+      }
+
+
+      /*
+       * Cria os itens do orçamento
+       */
+      const itensParaInserir =
+        itensOrcamento.map(item => ({
+          orcamento_id: orcamento.id,
+          produto_id: item.produto_id,
+          produto_nome: item.produto_nome,
+          quantidade: item.quantidade,
+          preco_unitario: item.preco_unitario
+        }));
+
+
+      const {
+        error: erroItens
+      } = await supabase
+        .from("orcamento_itens")
+        .insert(itensParaInserir);
+
+      if (erroItens) {
+        /*
+         * Se os itens falharem, remove o orçamento
+         * que acabou de ser criado.
+         */
+        await supabase
+          .from("orcamentos")
+          .delete()
+          .eq("id", orcamento.id);
+
+        throw erroItens;
+      }
+
+
+      console.log(
+        "Orçamento criado no Supabase:",
+        {
+          id: orcamento.id,
+          numero: orcamento.numero,
+          valor: valorTotal,
+          usuarioId
+        }
+      );
+
+
+      return res.status(201).json({
+        ok: true,
+        orcamento: {
+          id: orcamento.id,
+          numero: orcamento.numero,
+          valor: valorTotal,
+          status: orcamento.status
+        }
+      });
+
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao criar orçamento a partir do carrinho:",
+        erro
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: "Não foi possível criar o orçamento.",
+        detalhes: erro.message
+      });
+
+    }
+  }
+);
 
 /*==========================================================
     DASHBOARD ADMINISTRATIVO
@@ -5040,6 +5406,545 @@ app.patch(
     }
 );
 
+    /*==========================================================
+  BUSCAR ORÇAMENTO ESPECÍFICO — CLIENTE
+==========================================================*/
+
+app.get(
+  "/orcamentos/:id",
+  autenticarToken,
+  async (req, res) => {
+
+    try {
+
+      const orcamentoId =
+        Number.parseInt(req.params.id, 10);
+
+      if (
+        !Number.isInteger(orcamentoId) ||
+        orcamentoId <= 0
+      ) {
+
+        return res.status(400).json({
+          ok: false,
+          erro: "ID do orçamento inválido"
+        });
+
+      }
+
+      const {
+        data: orcamento,
+        error: erroOrcamento
+      } = await supabase
+
+        .from("orcamentos")
+
+        .select("*")
+
+        .eq("id", orcamentoId)
+
+        .eq(
+          "usuario_id",
+          req.usuario.id
+        )
+
+        .single();
+
+
+      if (
+        erroOrcamento ||
+        !orcamento
+      ) {
+
+        return res.status(404).json({
+          ok: false,
+          erro: "Orçamento não encontrado"
+        });
+
+      }
+
+
+      const {
+        data: itens,
+        error: erroItens
+      } = await supabase
+
+        .from("orcamento_itens")
+
+        .select("*")
+
+        .eq(
+          "orcamento_id",
+          orcamentoId
+        );
+
+
+      if (erroItens) {
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroItens.message
+        });
+
+      }
+
+
+      const listaItens =
+        itens || [];
+
+
+      const subtotal =
+        listaItens.reduce(
+          (total, item) => {
+
+            const quantidade =
+              Number(
+                item.quantidade || 0
+              );
+
+            const preco =
+              Number(
+                item.preco_unitario || 0
+              );
+
+            return total +
+              quantidade * preco;
+
+          },
+          0
+        );
+
+
+      const total =
+        Number(
+          orcamento.total || subtotal
+        );
+
+
+      return res.json({
+
+        ok: true,
+
+        data: {
+
+          ...orcamento,
+
+          itens:
+            listaItens,
+
+          subtotal,
+
+          total
+
+        }
+
+      });
+
+    } catch (err) {
+
+      console.error(
+        "Erro ao buscar orçamento do cliente:",
+        err
+      );
+
+      return res.status(500).json({
+
+        ok: false,
+
+        erro: err.message
+
+      });
+
+    }
+
+  }
+);
+
+
+/*==========================================================
+    ALTERAR STATUS DO ORÇAMENTO — ADMINISTRATIVO
+==========================================================*/
+
+app.put(
+    "/admin/orcamentos/:id/status",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
+
+        try {
+
+            const orcamentoId =
+                Number.parseInt(req.params.id, 10);
+
+            const novoStatus =
+                String(req.body.status || "")
+                    .trim()
+                    .toLowerCase();
+
+
+            /* ==========================================
+               VALIDAR ID
+            ========================================== */
+
+            if (
+                !Number.isInteger(orcamentoId) ||
+                orcamentoId <= 0
+            ) {
+
+                return res.status(400).json({
+                    ok: false,
+                    erro: "ID do orçamento inválido"
+                });
+
+            }
+
+
+            /* ==========================================
+               STATUS PERMITIDOS
+            ========================================== */
+
+            const statusPermitidos = [
+                "analise",
+                "em_analise",
+                "aprovado",
+                "recusado",
+                "finalizado"
+            ];
+
+
+            if (
+                !statusPermitidos.includes(
+                    novoStatus
+                )
+            ) {
+
+                return res.status(400).json({
+                    ok: false,
+                    erro: "Status de orçamento inválido"
+                });
+
+            }
+
+
+            /* ==========================================
+               NORMALIZAR EM ANÁLISE
+            ========================================== */
+
+            const statusFinal =
+                novoStatus === "em_analise"
+                    ? "analise"
+                    : novoStatus;
+
+
+            /* ==========================================
+               ATUALIZAR NO SUPABASE
+            ========================================== */
+
+            const {
+                data,
+                error
+            } = await supabase
+
+                .from("orcamentos")
+
+                .update({
+                    status: statusFinal
+                })
+
+                .eq(
+                    "id",
+                    orcamentoId
+                )
+
+                .select("*")
+
+                .single();
+
+
+            /* ==========================================
+               ERRO DO BANCO
+            ========================================== */
+
+            if (error) {
+
+                console.error(
+                    "Erro ao atualizar status do orçamento:",
+                    error
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+
+            }
+
+
+            /* ==========================================
+               SUCESSO
+            ========================================== */
+
+            return res.json({
+
+                ok: true,
+
+                mensagem:
+                    "Status do orçamento atualizado com sucesso.",
+
+                data
+
+            });
+
+
+        } catch (err) {
+
+            console.error(
+                "Erro inesperado ao alterar status do orçamento:",
+                err
+            );
+
+            return res.status(500).json({
+
+                ok: false,
+
+                erro: err.message
+
+            });
+
+        }
+
+    }
+);
+
+
+/*==========================================================
+    ORÇAMENTOS - ADMINISTRATIVO
+==========================================================*/
+
+// LISTAR TODOS OS ORÇAMENTOS
+app.get(
+    "/admin/orcamentos",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
+
+        try {
+
+            // ==========================================
+            // BUSCA OS ORÇAMENTOS
+            // ==========================================
+
+            const {
+                data: orcamentos,
+                error: erroOrcamentos
+            } = await supabase
+                .from("orcamentos")
+                .select(`
+                    *,
+                    usuarios (
+                        id,
+                        nome,
+                        email,
+                        telefone
+                    )
+                `)
+                .order(
+                    "data_solicitacao",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+            if (erroOrcamentos) {
+
+                console.error(
+                    "Erro ao listar orçamentos:",
+                    erroOrcamentos
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    erro: erroOrcamentos.message
+                });
+
+            }
+
+
+            const listaOrcamentos =
+                orcamentos || [];
+
+
+            // ==========================================
+            // SEM ORÇAMENTOS
+            // ==========================================
+
+            if (
+                listaOrcamentos.length === 0
+            ) {
+
+                return res.json({
+                    ok: true,
+                    data: []
+                });
+
+            }
+
+
+            // ==========================================
+            // BUSCA TODOS OS ITENS DOS ORÇAMENTOS
+            // ==========================================
+
+            const idsOrcamentos =
+                listaOrcamentos.map(
+                    orcamento => orcamento.id
+                );
+
+
+            const {
+                data: itens,
+                error: erroItens
+            } = await supabase
+                .from("orcamento_itens")
+                .select(`
+                    id,
+                    orcamento_id,
+                    produto_id,
+                    produto_nome,
+                    quantidade,
+                    preco_unitario
+                `)
+                .in(
+                    "orcamento_id",
+                    idsOrcamentos
+                );
+
+
+            if (erroItens) {
+
+                console.error(
+                    "Erro ao buscar itens dos orçamentos:",
+                    erroItens
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    erro: erroItens.message
+                });
+
+            }
+
+
+            // ==========================================
+            // CALCULA O VALOR DE CADA ORÇAMENTO
+            // ==========================================
+
+            const itensOrcamentos =
+                itens || [];
+
+
+            const dadosFinais =
+                listaOrcamentos.map(
+                    orcamento => {
+
+                        const itensDoOrcamento =
+                            itensOrcamentos.filter(
+                                item =>
+                                    Number(
+                                        item.orcamento_id
+                                    ) ===
+                                    Number(
+                                        orcamento.id
+                                    )
+                            );
+
+
+                        const valorTotal =
+                            itensDoOrcamento.reduce(
+                                (
+                                    total,
+                                    item
+                                ) => {
+
+                                    const quantidade =
+                                        Number(
+                                            item.quantidade
+                                        ) || 0;
+
+
+                                    const precoUnitario =
+                                        Number(
+                                            item.preco_unitario
+                                        ) || 0;
+
+
+                                    return total +
+                                        (
+                                            quantidade *
+                                            precoUnitario
+                                        );
+
+                                },
+                                0
+                            );
+
+
+                        return {
+
+                            ...orcamento,
+
+                            // Valor calculado pelos itens
+                            valor: valorTotal,
+
+                            // Status amigável para o painel
+                            status:
+                                orcamento.status ===
+                                "analise"
+                                    ? "EM ANÁLISE"
+                                    : (
+                                        orcamento.status ||
+                                        "EM ANÁLISE"
+                                    )
+
+                        };
+
+                    }
+                );
+
+
+            // ==========================================
+            // RESPOSTA
+            // ==========================================
+
+            return res.json({
+
+                ok: true,
+
+                data: dadosFinais
+
+            });
+
+
+        } catch (err) {
+
+            console.error(
+                "Erro inesperado ao listar orçamentos:",
+                err
+            );
+
+            return res.status(500).json({
+
+                ok: false,
+
+                erro:
+                    "Erro interno ao listar orçamentos."
+
+            });
+
+        }
+
+    }
+);
 
 /* ==============
     SERVIDOR 

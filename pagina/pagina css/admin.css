@@ -4025,3 +4025,1314 @@ thead th:last-child{
     }
 
 }
+/* ============================================================
+   PEDIDOS — ABAS PEDIDOS / ORÇAMENTOS
+============================================================ */
+
+.pedidos-abas{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    width:100%;
+
+    margin-bottom:22px;
+    padding:6px;
+
+    background:#F1F2F4;
+
+    border:1px solid var(--borda);
+    border-radius:13px;
+
+}
+
+
+.pedido-aba{
+
+    min-height:44px;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:9px;
+
+    padding:0 22px;
+
+    border:0;
+    border-radius:9px;
+
+    background:transparent;
+
+    color:#777777;
+
+    font-family:"Montserrat",sans-serif;
+    font-size:12px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:
+        background .22s ease,
+        color .22s ease,
+        box-shadow .22s ease,
+        transform .22s ease;
+
+}
+
+
+.pedido-aba i{
+
+    font-size:14px;
+
+    transition:.22s ease;
+
+}
+
+
+.pedido-aba:hover{
+
+    color:var(--laranja);
+
+    background:#FFF8F1;
+
+}
+
+
+.pedido-aba.ativa{
+
+    background:var(--laranja);
+
+    color:var(--branco);
+
+    box-shadow:
+        0 5px 15px rgba(245,130,32,.22);
+
+}
+
+
+.pedido-aba.ativa i{
+
+    color:var(--branco);
+
+}
+
+
+.pedido-aba.ativa:hover{
+
+    background:var(--laranja-escuro);
+
+    color:var(--branco);
+
+    transform:translateY(-1px);
+
+}
+
+
+/* ============================================================
+   TABELA — ORÇAMENTOS
+============================================================ */
+
+#painelOrcamentos{
+
+    width:100%;
+
+}
+
+
+#painelOrcamentos .table-container{
+
+    overflow:hidden;
+
+}
+
+
+#listaOrcamentos tr{
+
+    transition:
+        background .2s ease,
+        transform .2s ease;
+
+}
+
+
+#listaOrcamentos tr:hover{
+
+    background:#FFF8F2;
+
+}
+
+
+#listaOrcamentos td{
+
+    height:62px;
+
+}
+
+
+#listaOrcamentos td:first-child{
+
+    color:var(--preto);
+
+    font-weight:800;
+
+}
+
+
+/* ============================================================
+   STATUS — ORÇAMENTO
+============================================================ */
+
+.status-orcamento{
+
+    display:inline-flex;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:7px;
+
+    min-height:30px;
+
+    padding:0 12px;
+
+    border-radius:20px;
+
+    background:#FFF3E8;
+
+    border:1px solid #F5D0AA;
+
+    color:var(--laranja);
+
+    font-size:10px;
+
+    font-weight:800;
+
+    letter-spacing:.2px;
+
+}
+
+
+.status-orcamento::before{
+
+    content:"";
+
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:var(--laranja);
+
+    box-shadow:
+        0 0 0 4px rgba(245,130,32,.10);
+
+}
+
+
+/* ============================================================
+   BOTÃO — VER ORÇAMENTO
+============================================================ */
+
+.btn-ver-orcamento{
+
+    min-height:36px;
+
+    display:inline-flex;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:8px;
+
+    padding:0 13px;
+
+    border:1px solid #F5D0AA;
+
+    border-radius:9px;
+
+    background:#FFF8F1;
+
+    color:var(--laranja);
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:11px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.btn-ver-orcamento i{
+
+    font-size:12px;
+
+}
+
+
+.btn-ver-orcamento:hover{
+
+    background:var(--laranja);
+
+    border-color:var(--laranja);
+
+    color:var(--branco);
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 6px 15px rgba(245,130,32,.20);
+
+}
+
+
+/* ============================================================
+   MODAL — DETALHES DO ORÇAMENTO
+============================================================ */
+
+.modal-orcamento{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:11000;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:25px;
+
+    background:rgba(0,0,0,.70);
+
+    backdrop-filter:blur(7px);
+
+}
+
+
+.modal-orcamento.ativo{
+
+    display:flex;
+
+}
+
+
+.modal-orcamento-conteudo{
+
+    width:100%;
+
+    max-width:1050px;
+
+    max-height:92vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow:hidden;
+
+    background:var(--branco);
+
+    border:1px solid #F3C59D;
+
+    border-radius:22px;
+
+    box-shadow:
+        0 30px 90px rgba(0,0,0,.32);
+
+    animation:
+        aparecerOrcamento .22s ease;
+
+}
+
+
+@keyframes aparecerOrcamento{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(15px)
+            scale(.98);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* ============================================================
+   CABEÇALHO DO MODAL
+============================================================ */
+
+.modal-orcamento-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:25px;
+
+    padding:26px 30px 23px;
+
+    border-bottom:1px solid var(--borda);
+
+    background:var(--branco);
+
+}
+
+
+.modal-orcamento-kicker{
+
+    display:block;
+
+    margin-bottom:7px;
+
+    color:var(--laranja);
+
+    font-size:10px;
+
+    font-weight:800;
+
+    letter-spacing:.10em;
+
+}
+
+
+.modal-orcamento-header h2{
+
+    color:var(--preto);
+
+    font-size:25px;
+
+    font-weight:800;
+
+}
+
+
+.modal-orcamento-header p{
+
+    margin-top:6px;
+
+    color:var(--texto-suave);
+
+    font-size:12px;
+
+}
+
+
+.modal-orcamento-fechar{
+
+    width:40px;
+    height:40px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:#FFF3E8;
+
+    color:var(--laranja);
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+
+}
+
+
+.modal-orcamento-fechar:hover{
+
+    background:var(--laranja);
+
+    color:var(--branco);
+
+    transform:rotate(90deg);
+
+}
+
+
+/* ============================================================
+   CORPO
+============================================================ */
+
+.modal-orcamento-corpo{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:28px 30px;
+
+}
+
+
+.modal-orcamento-corpo::-webkit-scrollbar{
+
+    width:7px;
+
+}
+
+
+.modal-orcamento-corpo::-webkit-scrollbar-thumb{
+
+    background:#D7D7D7;
+
+    border-radius:10px;
+
+}
+
+
+.modal-orcamento-corpo::-webkit-scrollbar-thumb:hover{
+
+    background:var(--laranja);
+
+}
+
+
+/* ============================================================
+   BLOCOS
+============================================================ */
+
+.modal-orcamento-bloco{
+
+    margin-bottom:22px;
+
+    padding:22px;
+
+    border:1px solid var(--borda);
+
+    border-radius:15px;
+
+    background:var(--branco);
+
+}
+
+
+.modal-orcamento-titulo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:13px;
+
+    margin-bottom:20px;
+
+}
+
+
+.modal-orcamento-titulo > i{
+
+    width:42px;
+    height:42px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
+    border-radius:11px;
+
+    background:#FFF3E8;
+
+    color:var(--laranja);
+
+    font-size:17px;
+
+}
+
+
+.modal-orcamento-titulo h3{
+
+    color:var(--preto);
+
+    font-size:15px;
+
+    font-weight:800;
+
+}
+
+
+.modal-orcamento-titulo p{
+
+    margin-top:4px;
+
+    color:var(--texto-suave);
+
+    font-size:11px;
+
+}
+
+
+/* ============================================================
+   STATUS BOX
+============================================================ */
+
+.orcamento-status-box{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    padding:14px 16px;
+
+    border:1px solid #F5D0AA;
+
+    border-radius:11px;
+
+    background:#FFF8F1;
+
+}
+
+
+.orcamento-status-label{
+
+    color:#777777;
+
+    font-size:11px;
+
+    font-weight:700;
+
+}
+
+
+.orcamento-status-box strong{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    color:var(--laranja);
+
+    font-size:11px;
+
+    font-weight:800;
+
+}
+
+
+.orcamento-status-box strong::before{
+
+    content:"";
+
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:var(--laranja);
+
+}
+
+
+/* ============================================================
+   DADOS DO CLIENTE
+============================================================ */
+
+.orcamento-dados-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:12px;
+
+}
+
+
+.orcamento-campo{
+
+    min-height:68px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    gap:6px;
+
+    padding:13px 15px;
+
+    border:1px solid #EEEEEE;
+
+    border-radius:10px;
+
+    background:#FAFAFA;
+
+}
+
+
+.orcamento-campo span{
+
+    color:#999999;
+
+    font-size:9px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.04em;
+
+}
+
+
+.orcamento-campo strong{
+
+    color:var(--texto);
+
+    font-size:12px;
+
+    font-weight:700;
+
+    word-break:break-word;
+
+}
+
+
+/* ============================================================
+   TABELA DE ITENS
+============================================================ */
+
+.orcamento-itens-container{
+
+    width:100%;
+
+    overflow-x:auto;
+
+    border:1px solid #EEEEEE;
+
+    border-radius:11px;
+
+}
+
+
+.orcamento-itens-tabela{
+
+    width:100%;
+
+    min-width:650px;
+
+    border-collapse:collapse;
+
+}
+
+
+.orcamento-itens-tabela thead{
+
+    background:#FFF3E8;
+
+}
+
+
+.orcamento-itens-tabela th{
+
+    padding:12px 15px;
+
+    color:#777777;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    text-align:left;
+
+}
+
+
+.orcamento-itens-tabela td{
+
+    padding:14px 15px;
+
+    border-bottom:1px solid #EEEEEE;
+
+    color:#555555;
+
+    font-size:11px;
+
+}
+
+
+.orcamento-itens-tabela tbody tr:last-child td{
+
+    border-bottom:0;
+
+}
+
+
+.orcamento-itens-tabela tbody tr:hover{
+
+    background:#FFF9F4;
+
+}
+
+
+.orcamento-itens-tabela td:first-child{
+
+    color:var(--texto);
+
+    font-weight:700;
+
+}
+
+
+/* ============================================================
+   OBSERVAÇÕES
+============================================================ */
+
+.orcamento-observacoes{
+
+    min-height:70px;
+
+    padding:15px;
+
+    border:1px solid #EEEEEE;
+
+    border-radius:10px;
+
+    background:#FAFAFA;
+
+    color:#666666;
+
+    font-size:11px;
+
+    line-height:1.6;
+
+    white-space:pre-wrap;
+
+}
+
+
+/* ============================================================
+   RESUMO / TOTAL
+============================================================ */
+
+.orcamento-resumo{
+
+    margin-top:4px;
+
+    padding:20px;
+
+    border:1px solid #F3C59D;
+
+    border-radius:15px;
+
+    background:#FFF8F1;
+
+}
+
+
+.orcamento-resumo-linha{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    padding-bottom:12px;
+
+    color:#777777;
+
+    font-size:11px;
+
+}
+
+
+.orcamento-resumo-linha strong{
+
+    color:var(--texto);
+
+    font-size:12px;
+
+    font-weight:700;
+
+}
+
+
+.orcamento-resumo-total{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    padding-top:14px;
+
+    border-top:1px solid #F5D0AA;
+
+}
+
+
+.orcamento-resumo-total span{
+
+    color:var(--preto);
+
+    font-size:13px;
+
+    font-weight:800;
+
+}
+
+
+.orcamento-resumo-total strong{
+
+    color:var(--laranja);
+
+    font-size:23px;
+
+    font-weight:900;
+
+}
+
+
+/* ============================================================
+   RODAPÉ
+============================================================ */
+
+.modal-orcamento-footer{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+    padding:17px 30px;
+
+    border-top:1px solid var(--borda);
+
+    background:#FAFAFA;
+
+}
+
+
+.btn-orcamento-secundario{
+
+    min-height:42px;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:0 20px;
+
+    border:1px solid #D8D8D8;
+
+    border-radius:9px;
+
+    background:var(--branco);
+
+    color:#666666;
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:11px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+
+}
+
+
+.btn-orcamento-secundario:hover{
+
+    background:#EEEEEE;
+
+    border-color:#CCCCCC;
+
+}
+
+
+/* ============================================================
+   RESPONSIVO — ORÇAMENTOS
+============================================================ */
+
+@media(max-width:800px){
+
+    .pedidos-abas{
+
+        overflow-x:auto;
+
+    }
+
+
+    .pedido-aba{
+
+        flex:1;
+
+        min-width:145px;
+
+    }
+
+
+    .modal-orcamento{
+
+        padding:15px;
+
+    }
+
+
+    .modal-orcamento-conteudo{
+
+        max-height:95vh;
+
+        border-radius:18px;
+
+    }
+
+
+    .modal-orcamento-header{
+
+        padding:21px;
+
+    }
+
+
+    .modal-orcamento-corpo{
+
+        padding:20px;
+
+    }
+
+
+    .modal-orcamento-bloco{
+
+        padding:18px;
+
+    }
+
+
+    .orcamento-dados-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .modal-orcamento-footer{
+
+        padding:15px 20px;
+
+    }
+
+}
+
+
+@media(max-width:500px){
+
+    .pedidos-abas{
+
+        padding:5px;
+
+    }
+
+
+    .pedido-aba{
+
+        min-width:0;
+
+        padding:0 13px;
+
+        font-size:10px;
+
+    }
+
+
+    .pedido-aba i{
+
+        font-size:12px;
+
+    }
+
+
+    .modal-orcamento-header h2{
+
+        font-size:20px;
+
+    }
+
+
+    .modal-orcamento-kicker{
+
+        font-size:9px;
+
+    }
+
+
+    .orcamento-resumo-total strong{
+
+        font-size:19px;
+
+    }
+
+}
+
+/* ============================================================
+   CONTROLE DE STATUS DO ORÇAMENTO
+============================================================ */
+
+.orcamento-alterar-status{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+}
+
+
+/* LABEL */
+
+.orcamento-alterar-status label{
+
+    color:var(--texto);
+
+    font-size:11px;
+
+    font-weight:800;
+
+}
+
+
+/* SELECT */
+
+.orcamento-alterar-status select{
+
+    min-height:38px;
+
+    padding:0 34px 0 12px;
+
+    border:1px solid #D8D8D8;
+
+    border-radius:9px;
+
+    background:var(--branco);
+
+    color:var(--texto);
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    outline:none;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+
+}
+
+
+.orcamento-alterar-status select:hover{
+
+    border-color:var(--laranja);
+
+}
+
+
+.orcamento-alterar-status select:focus{
+
+    border-color:var(--laranja);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(245,130,32,.10);
+
+}
+
+
+/* BOTÃO SALVAR */
+
+.btn-orcamento-principal{
+
+    min-height:38px;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:7px;
+
+    padding:0 15px;
+
+    border:0;
+
+    border-radius:9px;
+
+    background:var(--laranja);
+
+    color:var(--branco);
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:11px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 4px 12px
+        rgba(245,130,32,.18);
+
+    transition:.2s ease;
+
+}
+
+
+.btn-orcamento-principal:hover{
+
+    background:var(--laranja-escuro);
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 7px 18px
+        rgba(245,130,32,.25);
+
+}
+
+
+.btn-orcamento-principal:active{
+
+    transform:translateY(0);
+
+}
+
+
+.btn-orcamento-principal:disabled{
+
+    opacity:.65;
+
+    cursor:wait;
+
+    transform:none;
+
+    box-shadow:none;
+
+}
+
+
+.btn-orcamento-principal i{
+
+    font-size:11px;
+
+}
+
+
+/* ============================================================
+   STATUS — ORGANIZAÇÃO DO BLOCO
+============================================================ */
+
+.orcamento-status-box{
+
+    flex-wrap:wrap;
+
+}
+
+
+.orcamento-status-box > .orcamento-alterar-status{
+
+    flex:1;
+
+}
+
+
+/* ============================================================
+   RESPONSIVO
+============================================================ */
+
+@media(max-width:800px){
+
+    .orcamento-alterar-status{
+
+        width:100%;
+
+        justify-content:flex-start;
+
+    }
+
+}
+
+
+@media(max-width:500px){
+
+    .orcamento-alterar-status{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .orcamento-alterar-status select,
+    .btn-orcamento-principal{
+
+        width:100%;
+
+    }
+
+}

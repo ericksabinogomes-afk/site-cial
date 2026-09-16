@@ -4710,6 +4710,83 @@ async function carregarRelatoriosAdmin() {
 }
 
 /*==================================================
+        ABAS — PEDIDOS / ORÇAMENTOS
+==================================================*/
+
+function inicializarAbasPedidos() {
+
+    const abas =
+        document.querySelectorAll("[data-aba-pedido]");
+
+    const painelPedidos =
+        document.getElementById("painelPedidos");
+
+    const painelOrcamentos =
+        document.getElementById("painelOrcamentos");
+
+
+    if (
+        !abas.length ||
+        !painelPedidos ||
+        !painelOrcamentos
+    ) {
+        return;
+    }
+
+
+    abas.forEach(aba => {
+
+        aba.addEventListener("click", () => {
+
+            const tipo =
+                aba.dataset.abaPedido;
+
+
+            // Remove estado ativo
+            abas.forEach(item => {
+                item.classList.remove("ativa");
+            });
+
+
+            // Ativa a aba clicada
+            aba.classList.add("ativa");
+
+
+            // ==========================
+            // PEDIDOS
+            // ==========================
+
+            if (tipo === "pedidos") {
+
+                painelPedidos.style.display = "";
+                painelOrcamentos.style.display = "none";
+
+                carregarPedidosAdmin();
+
+                return;
+            }
+
+
+            // ==========================
+            // ORÇAMENTOS
+            // ==========================
+
+            if (tipo === "orcamentos") {
+
+                painelPedidos.style.display = "none";
+                painelOrcamentos.style.display = "";
+
+                carregarOrcamentosAdmin();
+
+            }
+
+        });
+
+    });
+
+}
+
+/*==================================================
         PEDIDOS — ADMINISTRATIVO
 ==================================================*/
 
@@ -4925,6 +5002,987 @@ async function carregarPedidosAdmin() {
 
 }
 
+/*==================================================
+        ORÇAMENTOS — ADMINISTRATIVO
+==================================================*/
+
+async function carregarOrcamentosAdmin() {
+
+    const tabela =
+        document.getElementById("listaOrcamentos");
+
+    if (!tabela) {
+        return;
+    }
+
+    const tokenAtual =
+        localStorage.getItem("tokenCial");
+
+    if (!tokenAtual) {
+
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    Sessão não encontrada.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    tabela.innerHTML = `
+        <tr>
+            <td colspan="6">
+                Carregando orçamentos...
+            </td>
+        </tr>
+    `;
+
+    try {
+
+        const resposta = await fetch(
+            `${API_BASE}/admin/orcamentos`,
+            {
+                method: "GET",
+
+                headers: {
+                    Accept: "application/json",
+                    Authorization:
+                        `Bearer ${tokenAtual}`
+                }
+            }
+        );
+
+        const resultado =
+            await resposta.json();
+
+        if (resposta.status === 401) {
+
+            localStorage.removeItem(
+                "tokenCial"
+            );
+
+            localStorage.removeItem(
+                "usuarioCial"
+            );
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return;
+        }
+
+        if (
+            !resposta.ok ||
+            !resultado.ok
+        ) {
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar orçamentos."
+            );
+        }
+
+        const orcamentos =
+            Array.isArray(resultado.data)
+                ? resultado.data
+                : [];
+
+        if (orcamentos.length === 0) {
+
+            tabela.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        Nenhum orçamento encontrado.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        tabela.innerHTML =
+            orcamentos.map(orcamento => {
+
+                const numero =
+                    orcamento.numero || "-";
+
+                const cliente =
+                    orcamento.cliente ||
+                    orcamento.usuarios?.nome ||
+                    "-";
+
+                const data =
+                    orcamento.data_solicitacao
+                        ? new Date(
+                            orcamento.data_solicitacao
+                        ).toLocaleDateString(
+                            "pt-BR"
+                        )
+                        : "-";
+
+                const valor =
+                    formatarMoeda(
+                        orcamento.valor || 0
+                    );
+
+                const status =
+                    orcamento.status ||
+                    "EM ANÁLISE";
+
+                return `
+                    <tr>
+
+                        <td>
+                            ${escaparHTML(numero)}
+                        </td>
+
+                        <td>
+                            ${escaparHTML(cliente)}
+                        </td>
+
+                        <td>
+                            ${data}
+                        </td>
+
+                        <td>
+                            ${valor}
+                        </td>
+
+                        <td>
+                            ${escaparHTML(status)}
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="btn-acao-pedido"
+                                onclick="verOrcamentoAdmin(${orcamento.id})"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                                Ver
+                            </button>
+
+                        </td>
+
+                    </tr>
+                `;
+
+            }).join("");
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar orçamentos:",
+            erro
+        );
+
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    ${escaparHTML(
+                        erro.message
+                    )}
+                </td>
+            </tr>
+        `;
+    }
+}
+
+
+/*==================================================
+        VER ORÇAMENTO — ADMINISTRATIVO
+==================================================*/
+
+async function verOrcamentoAdmin(id) {
+
+    try {
+
+        if (!id) {
+            alert("Orçamento inválido.");
+            return;
+        }
+
+
+       const modal =
+    document.getElementById(
+        "modalDetalhesOrcamento"
+    );
+
+
+if (!modal) {
+    alert(
+        "Modal de orçamento não encontrado."
+    );
+    return;
+}
+
+
+modal.dataset.orcamentoId = id;
+
+
+        // ==========================================
+        // ABRE O MODAL
+        // ==========================================
+
+        modal.classList.add("ativo");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        // ==========================================
+        // CARREGANDO
+        // ==========================================
+
+        const numero =
+            document.getElementById(
+                "orcamentoModalNumero"
+            );
+
+        const identificacao =
+            document.getElementById(
+                "orcamentoModalIdentificacao"
+            );
+
+        const itens =
+            document.getElementById(
+                "orcamentoModalItens"
+            );
+
+
+        if (numero) {
+            numero.textContent =
+                "Carregando orçamento...";
+        }
+
+
+        if (identificacao) {
+            identificacao.textContent =
+                "Buscando informações...";
+        }
+
+
+        if (itens) {
+            itens.innerHTML = `
+                <tr>
+                    <td colspan="4">
+                        Carregando itens...
+                    </td>
+                </tr>
+            `;
+        }
+
+
+        // ==========================================
+        // TOKEN
+        // ==========================================
+
+        const tokenAtual =
+            localStorage.getItem(
+                "tokenCial"
+            );
+
+
+        if (!tokenAtual) {
+
+            throw new Error(
+                "Sessão não encontrada."
+            );
+
+        }
+
+
+        // ==========================================
+        // BUSCA O ORÇAMENTO
+        // ==========================================
+
+        const resposta =
+            await fetch(
+                `${API_BASE}/admin/orcamentos/${id}`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        Accept:
+                            "application/json",
+
+                        Authorization:
+                            `Bearer ${tokenAtual}`
+                    }
+                }
+            );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if (
+            !resposta.ok ||
+            !resultado.ok
+        ) {
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao carregar orçamento."
+            );
+
+        }
+
+
+        const orcamento =
+            resultado.data;
+
+
+        console.log(
+            "📄 ORÇAMENTO CARREGADO:",
+            orcamento
+        );
+
+
+        // ==========================================
+        // CLIENTE
+        // ==========================================
+
+        const cliente =
+            orcamento.usuarios || {};
+
+
+        const campoCliente =
+            document.getElementById(
+                "orcamentoModalCliente"
+            );
+
+        const campoEmail =
+            document.getElementById(
+                "orcamentoModalEmail"
+            );
+
+        const campoTelefone =
+            document.getElementById(
+                "orcamentoModalTelefone"
+            );
+
+        const campoData =
+            document.getElementById(
+                "orcamentoModalData"
+            );
+
+
+        if (campoCliente) {
+
+            campoCliente.textContent =
+                cliente.nome ||
+                orcamento.cliente ||
+                "Não informado";
+
+        }
+
+
+        if (campoEmail) {
+
+            campoEmail.textContent =
+                cliente.email ||
+                "Não informado";
+
+        }
+
+
+        if (campoTelefone) {
+
+            campoTelefone.textContent =
+                cliente.telefone ||
+                "Não informado";
+
+        }
+
+
+        if (campoData) {
+
+            campoData.textContent =
+                orcamento.data_solicitacao
+                    ? new Date(
+                        orcamento.data_solicitacao
+                    ).toLocaleDateString(
+                        "pt-BR"
+                    )
+                    : "Não informada";
+
+        }
+
+
+        // ==========================================
+        // CABEÇALHO
+        // ==========================================
+
+        if (numero) {
+
+            numero.textContent =
+                orcamento.numero ||
+                `#${orcamento.id}`;
+
+        }
+
+
+        if (identificacao) {
+
+            identificacao.textContent =
+                "Solicitação de orçamento";
+
+        }
+
+
+        // ==========================================
+        // STATUS
+        // ==========================================
+
+     const campoStatus =
+    document.getElementById(
+        "orcamentoModalStatus"
+    );
+
+const statusOriginal =
+    orcamento.status ||
+    "analise";
+
+const textosStatus = {
+    analise: "EM ANÁLISE",
+    em_analise: "EM ANÁLISE",
+    aprovado: "APROVADO",
+    recusado: "RECUSADO",
+    finalizado: "FINALIZADO"
+};
+
+const statusTexto =
+    textosStatus[statusOriginal] ||
+    "EM ANÁLISE";
+
+const selectStatus =
+    document.getElementById(
+        "selectStatusOrcamento"
+    );
+
+if (selectStatus) {
+
+    selectStatus.value =
+        statusOriginal === "analise"
+            ? "em_analise"
+            : statusOriginal;
+
+}
+
+if (campoStatus) {
+
+    campoStatus.textContent =
+        statusTexto;
+
+}
+
+        // ==========================================
+        // ITENS
+        // ==========================================
+
+        const listaItens =
+            Array.isArray(
+                orcamento.itens
+            )
+                ? orcamento.itens
+                : [];
+
+
+        if (!itens) {
+            return;
+        }
+
+
+        if (listaItens.length === 0) {
+
+            itens.innerHTML = `
+                <tr>
+                    <td colspan="4">
+                        Nenhum item encontrado.
+                    </td>
+                </tr>
+            `;
+
+        } else {
+
+            itens.innerHTML =
+                listaItens
+                    .map(item => {
+
+                        const quantidade =
+                            Number(
+                                item.quantidade
+                            ) || 0;
+
+
+                        const precoUnitario =
+                            Number(
+                                item.preco_unitario
+                            ) || 0;
+
+
+                        const subtotal =
+                            Number(
+                                item.subtotal
+                            ) ||
+                            (
+                                quantidade *
+                                precoUnitario
+                            );
+
+
+                        return `
+                            <tr>
+
+                                <td>
+                                    ${escaparHTML(
+                                        item.produto_nome ||
+                                        "Produto"
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${quantidade}
+                                </td>
+
+                                <td>
+                                    ${formatarMoeda(
+                                        precoUnitario
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${formatarMoeda(
+                                        subtotal
+                                    )}
+                                </td>
+
+                            </tr>
+                        `;
+
+                    })
+                    .join("");
+
+        }
+
+
+        // ==========================================
+        // TOTAL
+        // ==========================================
+
+        const valorTotal =
+            Number(
+                orcamento.valor_total
+            ) || 0;
+
+
+        const campoSubtotal =
+            document.getElementById(
+                "orcamentoModalSubtotal"
+            );
+
+
+        const campoTotal =
+            document.getElementById(
+                "orcamentoModalTotal"
+            );
+
+
+        if (campoSubtotal) {
+
+            campoSubtotal.textContent =
+                formatarMoeda(
+                    valorTotal
+                );
+
+        }
+
+
+        if (campoTotal) {
+
+            campoTotal.textContent =
+                formatarMoeda(
+                    valorTotal
+                );
+
+        }
+
+
+        // ==========================================
+        // OBSERVAÇÕES
+        // ==========================================
+
+        const campoObservacoes =
+            document.getElementById(
+                "orcamentoModalObservacoes"
+            );
+
+
+        if (campoObservacoes) {
+
+            campoObservacoes.textContent =
+                orcamento.observacoes ||
+                "Nenhuma observação informada.";
+
+        }
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao visualizar orçamento:",
+            erro
+        );
+
+
+        const modal =
+            document.getElementById(
+                "modalDetalhesOrcamento"
+            );
+
+
+        if (modal) {
+
+            modal.classList.remove(
+                "ativo"
+            );
+
+            modal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+        }
+
+
+        alert(
+            `Erro ao carregar orçamento: ${erro.message}`
+        );
+
+    }
+
+}
+
+
+/*==================================================
+        FECHAR MODAL — ORÇAMENTO
+==================================================*/
+
+function fecharModalOrcamento() {
+
+    const modal =
+        document.getElementById(
+            "modalDetalhesOrcamento"
+        );
+
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal.classList.remove(
+        "ativo"
+    );
+
+
+    modal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+}
+
+
+/*==================================================
+        IMPRIMIR ORÇAMENTO
+==================================================*/
+
+function imprimirOrcamento() {
+
+    const conteudo =
+        document.querySelector(
+            "#modalDetalhesOrcamento .modal-orcamento-conteudo"
+        );
+
+    if (!conteudo) {
+
+        alert(
+            "Conteúdo do orçamento não encontrado."
+        );
+
+        return;
+    }
+
+
+    const numero =
+        document.getElementById(
+            "orcamentoModalNumero"
+        )?.textContent.trim() || "Orçamento";
+
+
+    const janela =
+        window.open(
+            "",
+            "_blank",
+            "width=1000,height=800"
+        );
+
+
+    if (!janela) {
+
+        alert(
+            "O navegador bloqueou a janela de impressão. Permita pop-ups para continuar."
+        );
+
+        return;
+    }
+
+
+    janela.document.write(`
+
+        <!DOCTYPE html>
+
+        <html lang="pt-BR">
+
+        <head>
+
+            <meta charset="UTF-8">
+
+            <title>
+                ${numero}
+            </title>
+
+            <style>
+
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+
+                    font-family:
+                        Arial,
+                        Helvetica,
+                        sans-serif;
+
+                    color: #222;
+
+                    margin: 30px;
+
+                    background: #fff;
+                }
+
+
+                h1,
+                h2,
+                h3 {
+
+                    color: #222;
+                }
+
+
+                table {
+
+                    width: 100%;
+
+                    border-collapse:
+                        collapse;
+
+                    margin-top: 15px;
+                }
+
+
+                th,
+                td {
+
+                    border:
+                        1px solid #ddd;
+
+                    padding: 10px;
+
+                    text-align: left;
+                }
+
+
+                th {
+
+                    background:
+                        #f5f5f5;
+
+                    font-weight: 700;
+                }
+
+
+                button,
+                .modal-orcamento-fechar {
+
+                    display:
+                        none !important;
+                }
+
+
+                .modal-orcamento-footer {
+
+                    display:
+                        none !important;
+                }
+
+
+                @media print {
+
+                    body {
+
+                        margin: 15mm;
+                    }
+
+                }
+
+            </style>
+
+        </head>
+
+
+        <body>
+
+            ${conteudo.innerHTML}
+
+        </body>
+
+        </html>
+
+    `);
+
+
+    janela.document.close();
+
+
+    janela.onload = () => {
+
+        janela.focus();
+
+        janela.print();
+
+        janela.close();
+
+    };
+
+}
+
+
+/*==================================================
+        SALVAR ORÇAMENTO EM PDF
+==================================================*/
+
+function salvarOrcamentoPDF() {
+
+    /*
+     * O navegador abrirá a janela de impressão.
+     * Nela, o administrador poderá escolher
+     * "Salvar como PDF".
+     */
+
+    imprimirOrcamento();
+
+}
+
+
+/*==================================================
+        EVENTOS — MODAL ORÇAMENTO
+==================================================*/
+
+const fecharModalOrcamentoBtn =
+    document.getElementById(
+        "fecharModalOrcamento"
+    );
+
+
+const btnFecharOrcamentoModal =
+    document.getElementById(
+        "btnFecharOrcamentoModal"
+    );
+
+
+const btnImprimirOrcamento =
+    document.getElementById(
+        "btnImprimirOrcamento"
+    );
+
+
+const btnPdfOrcamento =
+    document.getElementById(
+        "btnPdfOrcamento"
+    );
+
+
+/*==================================================
+        FECHAR
+==================================================*/
+
+fecharModalOrcamentoBtn?.addEventListener(
+    "click",
+    fecharModalOrcamento
+);
+
+
+btnFecharOrcamentoModal?.addEventListener(
+    "click",
+    fecharModalOrcamento
+);
+
+
+/*==================================================
+        IMPRIMIR
+==================================================*/
+
+btnImprimirOrcamento?.addEventListener(
+    "click",
+    imprimirOrcamento
+);
+
+
+/*==================================================
+        SALVAR PDF
+==================================================*/
+
+btnPdfOrcamento?.addEventListener(
+    "click",
+    salvarOrcamentoPDF
+);
+
+
+/*==================================================
+        FECHAR CLICANDO FORA
+==================================================*/
+
+const modalDetalhesOrcamento =
+    document.getElementById(
+        "modalDetalhesOrcamento"
+    );
+
+
+modalDetalhesOrcamento?.addEventListener(
+    "click",
+    evento => {
+
+        if (
+            evento.target ===
+            modalDetalhesOrcamento
+        ) {
+
+            fecharModalOrcamento();
+
+        }
+
+    }
+);
 
 /*==================================================
         MODAL — DETALHES DO PEDIDO
@@ -6501,6 +7559,214 @@ btnAtualizarUsuarios?.addEventListener(
 );
 
 
+/*==================================================
+        ALTERAR STATUS DO ORÇAMENTO
+==================================================*/
+
+async function salvarStatusOrcamentoAdmin() {
+
+    const select =
+        document.getElementById(
+            "selectStatusOrcamento"
+        );
+
+    if (!select) {
+        alert("Campo de status não encontrado.");
+        return;
+    }
+
+    const novoStatus = select.value;
+
+    if (!novoStatus) {
+        alert("Selecione uma situação.");
+        return;
+    }
+
+    /*
+     * Recupera o orçamento que está aberto
+     */
+    const modal =
+        document.getElementById(
+            "modalDetalhesOrcamento"
+        );
+
+    const id =
+        modal?.dataset?.orcamentoId;
+
+    if (!id) {
+        alert(
+            "Não foi possível identificar o orçamento."
+        );
+        return;
+    }
+
+    const tokenAtual =
+        localStorage.getItem(
+            "tokenCial"
+        );
+
+    if (!tokenAtual) {
+        alert("Sessão expirada.");
+        return;
+    }
+
+    const botao =
+        document.getElementById(
+            "btnSalvarStatusOrcamento"
+        );
+
+    try {
+
+        if (botao) {
+
+            botao.disabled = true;
+
+            botao.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Salvando...
+            `;
+
+        }
+
+
+        const resposta =
+            await fetch(
+                `${API_BASE}/admin/orcamentos/${id}/status`,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        Accept:
+                            "application/json",
+
+                        Authorization:
+                            `Bearer ${tokenAtual}`
+                    },
+
+                    body: JSON.stringify({
+                        status: novoStatus
+                    })
+                }
+            );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if (
+            !resposta.ok ||
+            !resultado.ok
+        ) {
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao atualizar o status."
+            );
+
+        }
+
+
+        /*
+         * Atualiza o status visual
+         */
+        const campoStatus =
+            document.getElementById(
+                "orcamentoModalStatus"
+            );
+
+
+        const textosStatus = {
+
+            em_analise:
+                "EM ANÁLISE",
+
+            aprovado:
+                "APROVADO",
+
+            recusado:
+                "RECUSADO",
+
+            finalizado:
+                "FINALIZADO"
+
+        };
+
+
+        if (campoStatus) {
+
+            campoStatus.textContent =
+                textosStatus[novoStatus] ||
+                novoStatus;
+
+        }
+
+
+        alert(
+            "Situação do orçamento atualizada com sucesso!"
+        );
+
+
+        /*
+         * Atualiza a lista de orçamentos
+         */
+        if (
+            typeof carregarOrcamentosAdmin ===
+            "function"
+        ) {
+
+            carregarOrcamentosAdmin();
+
+        }
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao alterar status do orçamento:",
+            erro
+        );
+
+        alert(
+            `Erro ao atualizar situação: ${erro.message}`
+        );
+
+
+    } finally {
+
+        if (botao) {
+
+            botao.disabled = false;
+
+            botao.innerHTML = `
+                <i class="fa-solid fa-floppy-disk"></i>
+                Salvar situação
+            `;
+
+        }
+
+    }
+
+}
+
+
+/*==================================================
+        CONECTAR BOTÃO DE STATUS
+==================================================*/
+
+document
+    .getElementById(
+        "btnSalvarStatusOrcamento"
+    )
+    ?.addEventListener(
+        "click",
+        salvarStatusOrcamentoAdmin
+    );
+
+
 
 /*==================================================
                 INICIALIZAÇÃO
@@ -6515,6 +7781,8 @@ document.addEventListener(
     carregarDashboardAdmin();
 
     carregarProdutosAdmin();
+
+    inicializarAbasPedidos();
 
   }
 );

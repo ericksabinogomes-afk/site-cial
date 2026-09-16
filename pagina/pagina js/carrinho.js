@@ -1922,51 +1922,184 @@ copiarCodigoPix?.addEventListener(
 );
 
 
+// ==========================================================
+// SOLICITAR ORÇAMENTO PELO CARRINHO
+// ==========================================================
+
 btnWhatsapp?.addEventListener(
     "click",
-    () => {
+    async event => {
+
+        event.preventDefault();
+
         if (carrinho.length === 0) {
             alert("Seu carrinho está vazio.");
             return;
         }
 
-        let mensagem =
-            "Olá! Gostaria de fazer este pedido:\n\n";
+        const token = obterToken();
 
-        carrinho.forEach(item => {
-            const subtotal =
-                Number(item.preco) *
-                Number(item.quantidade);
+        if (!token) {
+            redirecionarParaLogin();
+            return;
+        }
+
+        const observacoes =
+            observation?.value?.trim() || "";
+
+        btnWhatsapp.disabled = true;
+        btnWhatsapp.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Criando orçamento...';
+
+        try {
+
+            // ==================================================
+            // 1. CRIAR ORÇAMENTO NO SUPABASE PELO BACKEND
+            // ==================================================
+
+            const resposta = await fetch(
+                `${API_CARRINHO}/orcamentos/criar-do-carrinho`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+
+                    body: JSON.stringify({
+                        observacoes
+                    })
+                }
+            );
+
+            const resultado =
+                await lerResposta(resposta);
+
+            const orcamento =
+                resultado.orcamento;
+
+            if (!orcamento?.id) {
+                throw new Error(
+                    "O orçamento foi criado, mas o ID não foi retornado."
+                );
+            }
+
+
+            // ==================================================
+            // 2. MONTAR MENSAGEM PARA A CIAL
+            // ==================================================
+
+            let mensagem =
+                "📋 *NOVO ORÇAMENTO — CIAL ASA SUL*\n\n";
 
             mensagem +=
-                `Produto: ${item.nome}\n`;
+                `🧾 Orçamento: *${orcamento.numero}*\n`;
 
             mensagem +=
-                `Quantidade: ${item.quantidade}\n`;
+                `📊 Status: *EM ANÁLISE*\n\n`;
 
             mensagem +=
-                `Subtotal: ${formatarPreco(subtotal)}\n\n`;
-        });
+                "🛒 *PRODUTOS SOLICITADOS*\n\n";
 
-        const total =
-            carrinho.reduce((valor, item) => {
-                return valor +
+
+            carrinho.forEach(item => {
+
+                const subtotal =
                     Number(item.preco) *
                     Number(item.quantidade);
-            }, 0);
 
-        mensagem +=
-            `Total: ${formatarPreco(total)}`;
+                mensagem +=
+                    `• *${item.nome}*\n`;
 
-        const numero =
-            "5561999999999";
+                mensagem +=
+                    `  Quantidade: ${item.quantidade}\n`;
 
-        window.open(
-            `https://wa.me/${numero}?text=${encodeURIComponent(
-                mensagem
-            )}`,
-            "_blank"
-        );
+                mensagem +=
+                    `  Valor: ${formatarPreco(subtotal)}\n\n`;
+            });
+
+
+            const total =
+                carrinho.reduce(
+                    (valor, item) => {
+
+                        return valor +
+                            Number(item.preco) *
+                            Number(item.quantidade);
+
+                    },
+                    0
+                );
+
+
+            mensagem +=
+                `💰 *Total estimado: ${formatarPreco(total)}*\n`;
+
+
+            if (observacoes) {
+
+                mensagem +=
+                    `\n📝 *Observação do cliente:*\n${observacoes}\n`;
+            }
+
+
+            mensagem +=
+                "\n🏪 CIAL Asa Sul";
+
+
+            // ==================================================
+            // 3. ABRIR WHATSAPP DA LOJA
+            // ==================================================
+
+            const numero =
+                "5561998112731"; // Número da CIAL Asa Sul
+
+            window.open(
+                `https://wa.me/${numero}?text=${encodeURIComponent(
+                    mensagem
+                )}`,
+                "_blank"
+            );
+
+
+            // ==================================================
+            // 4. AVISAR CLIENTE
+            // ==================================================
+
+            alert(
+                `Orçamento ${orcamento.numero} criado com sucesso!\n\n` +
+                "Ele foi registrado e a mensagem foi preparada para o WhatsApp da CIAL."
+            );
+
+
+            console.log(
+                "Orçamento criado:",
+                orcamento
+            );
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao solicitar orçamento:",
+                erro
+            );
+
+            alert(
+                erro.message ||
+                "Não foi possível criar o orçamento."
+            );
+
+        } finally {
+
+            btnWhatsapp.disabled = false;
+
+            btnWhatsapp.innerHTML =
+                '<i class="fa-brands fa-whatsapp"></i> Solicitar orçamento';
+
+        }
+
     }
 );
 

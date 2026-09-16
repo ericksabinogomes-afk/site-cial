@@ -379,53 +379,122 @@
                 </div>
 
             </section>
-                        <!--==========================
-                    PEDIDOS
-            ==========================-->
+           
+           
+ <!--==========================
+        PEDIDOS
+==========================-->
 
-            <section id="pedidos" class="admin-section">
+<section id="pedidos" class="admin-section">
 
-                <div class="section-header">
+    <div class="section-header">
+        <h2>Pedidos</h2>
+    </div>
 
-                    <h2>Pedidos</h2>
+    <!-- ABAS -->
+    <div class="pedidos-abas">
 
-                </div>
+        <button
+            type="button"
+            class="pedido-aba ativa"
+            data-aba-pedido="pedidos">
 
-                <div class="table-container">
+            <i class="fa-solid fa-cart-shopping"></i>
+            Pedidos
 
-                    <table>
+        </button>
 
-                        <thead>
+        <button
+            type="button"
+            class="pedido-aba"
+            data-aba-pedido="orcamentos">
 
-                            <tr>
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            Orçamentos
 
-                                <th>Pedido</th>
+        </button>
 
-                                <th>Cliente</th>
+    </div>
 
-                                <th>Pagamento</th>
 
-                                <th>Status</th>
+    <!-- ==========================
+            ABA PEDIDOS
+    =========================== -->
 
-                                <th>Data</th>
+    <div
+        id="painelPedidos"
+        class="painel-pedido-aba">
 
-                                <th>Valor</th>
+        <div class="table-container">
 
-                                <th>Ações</th>
+            <table>
 
-                            </tr>
+                <thead>
 
-                        </thead>
+                    <tr>
 
-                        <tbody id="listaPedidos">
+                        <th>Pedido</th>
+                        <th>Cliente</th>
+                        <th>Pagamento</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th>Valor</th>
+                        <th>Ações</th>
 
-                        </tbody>
+                    </tr>
 
-                    </table>
+                </thead>
 
-                </div>
+                <tbody id="listaPedidos">
 
-            </section>
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================
+            ABA ORÇAMENTOS
+    =========================== -->
+
+    <div
+        id="painelOrcamentos"
+        class="painel-pedido-aba"
+        style="display: none;">
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Orçamento</th>
+                        <th>Cliente</th>
+                        <th>Data</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="listaOrcamentos">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
 
 
 
@@ -2286,6 +2355,396 @@
             </div>
 
         </div>
+
+                <!--==================================================
+                MODAL — DETALHES DO ORÇAMENTO
+        ==================================================-->
+
+        <div
+            id="modalDetalhesOrcamento"
+            class="modal-orcamento"
+            aria-hidden="true"
+        >
+
+            <div
+                class="modal-orcamento-conteudo"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="orcamentoModalNumero"
+            >
+
+                <!-- =========================
+                     CABEÇALHO
+                ========================== -->
+
+                <div class="modal-orcamento-header">
+
+                    <div>
+
+                        <span class="modal-orcamento-kicker">
+                            DETALHES DO ORÇAMENTO
+                        </span>
+
+                        <h2 id="orcamentoModalNumero">
+                            Orçamento #—
+                        </h2>
+
+                        <p id="orcamentoModalIdentificacao">
+                            Solicitação de orçamento
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="fecharModalOrcamento"
+                        class="modal-orcamento-fechar"
+                        aria-label="Fechar"
+                    >
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                    </button>
+
+                </div>
+
+
+                <!-- =========================
+                     CORPO
+                ========================== -->
+
+                <div class="modal-orcamento-corpo">
+
+
+                    <!-- =========================
+                         STATUS
+                    ========================== -->
+
+                    <section class="modal-orcamento-bloco">
+
+                        <div class="modal-orcamento-titulo">
+
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                            <div>
+
+                                <h3>
+                                    Situação do orçamento
+                                </h3>
+
+                                <p>
+                                    Acompanhe o status desta solicitação.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="orcamento-status-box">
+
+                            <span class="orcamento-status-label">
+                                Status
+                            </span>
+
+                            <div class="orcamento-alterar-status">
+
+    <label for="selectStatusOrcamento">
+        Alterar situação
+    </label>
+
+    <select id="selectStatusOrcamento">
+        <option value="em_analise">EM ANÁLISE</option>
+        <option value="aprovado">APROVADO</option>
+        <option value="recusado">RECUSADO</option>
+        <option value="finalizado">FINALIZADO</option>
+    </select>
+
+    <button
+        type="button"
+        id="btnSalvarStatusOrcamento"
+        class="btn-orcamento-principal"
+    >
+        <i class="fa-solid fa-floppy-disk"></i>
+        Salvar situação
+    </button>
+
+</div>
+
+                            <strong id="orcamentoModalStatus">
+                                EM ANÁLISE
+                            </strong>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================
+                         CLIENTE
+                    ========================== -->
+
+                    <section class="modal-orcamento-bloco">
+
+                        <div class="modal-orcamento-titulo">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            <div>
+
+                                <h3>
+                                    Cliente
+                                </h3>
+
+                                <p>
+                                    Informações do cliente.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="orcamento-dados-grid">
+
+
+                            <div class="orcamento-campo">
+
+                                <span>
+                                    Nome
+                                </span>
+
+                                <strong id="orcamentoModalCliente">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="orcamento-campo">
+
+                                <span>
+                                    E-mail
+                                </span>
+
+                                <strong id="orcamentoModalEmail">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="orcamento-campo">
+
+                                <span>
+                                    Telefone
+                                </span>
+
+                                <strong id="orcamentoModalTelefone">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="orcamento-campo">
+
+                                <span>
+                                    Data da solicitação
+                                </span>
+
+                                <strong id="orcamentoModalData">
+                                    —
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================
+                         PRODUTOS
+                    ========================== -->
+
+                    <section class="modal-orcamento-bloco">
+
+                        <div class="modal-orcamento-titulo">
+
+                            <i class="fa-solid fa-box-open"></i>
+
+                            <div>
+
+                                <h3>
+                                    Produtos solicitados
+                                </h3>
+
+                                <p>
+                                    Itens incluídos neste orçamento.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="orcamento-itens-container">
+
+                            <table class="orcamento-itens-tabela">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Produto
+                                        </th>
+
+                                        <th>
+                                            Quantidade
+                                        </th>
+
+                                        <th>
+                                            Preço unitário
+                                        </th>
+
+                                        <th>
+                                            Subtotal
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody id="orcamentoModalItens">
+
+                                    <tr>
+
+                                        <td colspan="4">
+                                            Nenhum item carregado.
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================
+                         OBSERVAÇÕES
+                    ========================== -->
+
+                    <section class="modal-orcamento-bloco">
+
+                        <div class="modal-orcamento-titulo">
+
+                            <i class="fa-solid fa-note-sticky"></i>
+
+                            <div>
+
+                                <h3>
+                                    Observações
+                                </h3>
+
+                                <p>
+                                    Informações adicionais da solicitação.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="orcamentoModalObservacoes"
+                            class="orcamento-observacoes"
+                        >
+                            —
+                        </div>
+
+                    </section>
+
+
+                    <!-- =========================
+                         RESUMO
+                    ========================== -->
+
+                    <section class="orcamento-resumo">
+
+                        <div class="orcamento-resumo-linha">
+
+                            <span>
+                                Total dos produtos
+                            </span>
+
+                            <strong id="orcamentoModalSubtotal">
+                                R$ 0,00
+                            </strong>
+
+                        </div>
+
+
+                        <div class="orcamento-resumo-total">
+
+                            <span>
+                                Valor total
+                            </span>
+
+                            <strong id="orcamentoModalTotal">
+                                R$ 0,00
+                            </strong>
+
+                        </div>
+
+                    </section>
+
+
+                </div>
+
+
+                <!-- =========================
+                     RODAPÉ
+                ========================== -->
+
+                <div class="modal-orcamento-footer">
+
+    <button
+        type="button"
+        id="btnImprimirOrcamento"
+        class="btn-orcamento-secundario"
+    >
+        <i class="fa-solid fa-print"></i>
+        Imprimir
+    </button>
+
+
+    <button
+        type="button"
+        id="btnPdfOrcamento"
+        class="btn-orcamento-secundario"
+    >
+        <i class="fa-solid fa-file-pdf"></i>
+        Salvar PDF
+    </button>
+
+
+    <button
+        type="button"
+        id="btnFecharOrcamentoModal"
+        class="btn-orcamento-secundario"
+    >
+        Fechar
+    </button>
+
+</div>
 
 
         <!--==========================

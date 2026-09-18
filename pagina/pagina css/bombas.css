@@ -993,21 +993,6 @@ ul{
     border-color:#F58220;
 
 }
-/*==================================================
-                GRID DOS PRODUTOS
-==================================================*/
-
-.grid-produtos{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-
-    gap:30px;
-
-}
-
-
 
 /*==================================================
                 FOOTER

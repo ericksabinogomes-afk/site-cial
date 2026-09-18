@@ -943,27 +943,7 @@ ul{
     gap:35px;
 
 }
-.categoria-card::before{
 
-    content:"";
-
-    position:absolute;
-
-    top:0;
-
-    left:0;
-
-    width:100%;
-
-    height:6px;
-
-    background:var(--laranja);
-
-    transform:scaleX(0);
-
-    transition:.35s;
-
-}
 /*==================================================
                 CARD
 ==================================================*/
@@ -1096,49 +1076,7 @@ ul{
     overflow:hidden;
 
 }
-/*==================================================
-            DETALHES FUNDO
-==================================================*/
 
-.stihl-home::before{
-
-    content:"";
-
-    position:absolute;
-
-    width:500px;
-
-    height:500px;
-
-    border-radius:50%;
-
-    background:rgba(245,130,32,.05);
-
-    top:-180px;
-
-    right:-180px;
-
-}
-
-.stihl-home::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:280px;
-
-    height:280px;
-
-    border:2px dashed rgba(245,130,32,.12);
-
-    border-radius:50%;
-
-    bottom:-100px;
-
-    left:-100px;
-
-}
 /*==================================================
             DETALHES FUNDO
 ==================================================*/

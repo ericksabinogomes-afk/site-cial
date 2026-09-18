@@ -3,6 +3,13 @@
     cadastro.js
 ==========================================================*/
 
+/*==========================================================
+            URL DA API
+==========================================================*/
+
+const API_BASE =
+    window.API_BASE_URL ||
+    "http://localhost:4000";
 
 /*==========================================================
     ELEMENTOS
@@ -481,7 +488,7 @@ form.addEventListener("submit", async function(event){
     const nomeFantasiaValor = document.getElementById("nomeFantasia")?.value || "";
 
     try {
-        const response = await fetch("http://localhost:4000/cadastro", {
+      const response = await fetch(`${API_BASE}/cadastro`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

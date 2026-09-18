@@ -12,6 +12,14 @@ const CONFIG = {
 
 };
 
+/*==================================================
+            URL DA API
+==================================================*/
+
+const API_BASE =
+    window.API_BASE_URL ||
+    "http://localhost:4000";
+
 const nomesCategoriasBombas = {
   "bombas-centrifugas": "Bombas Centrífugas",
   "bombas-perifericas": "Bombas Periféricas",
@@ -142,7 +150,7 @@ async function carregarProdutos(){
         console.log("🔄 Carregando produtos do backend...");
 
         const resposta = await fetch(
-            "http://localhost:4000/produtos"
+         `${API_BASE}/produtos`
         );
 
         if(!resposta.ok){
@@ -773,10 +781,10 @@ async function carregarCategorias(){
 
     try{
 
-        const resposta =
-            await fetch(
-                "http://localhost:4000/categorias"
-            );
+       const resposta =
+    await fetch(
+        `${API_BASE}/categorias`
+    );
 
 
         if(!resposta.ok){
@@ -1257,7 +1265,7 @@ function iniciarOrdenacao(){
                 FAVORITOS
 ==================================================*/
 
-const API_FAVORITOS = "http://localhost:4000";
+const API_FAVORITOS = API_BASE;
 
 async function carregarFavoritos(){
 
@@ -1567,157 +1575,443 @@ function iniciarFavoritos(){
     }
 
 }
+
 /*==================================================
                 CARRINHO
 ==================================================*/
 
-function carregarCarrinho(){
-
-    const carrinho = localStorage.getItem("carrinho");
-
-    if(carrinho){
-
-        estado.carrinho = JSON.parse(carrinho);
-
-    }
-
-}
-
-
-
-function salvarCarrinho(){
-
-    localStorage.setItem(
-
-        "carrinho",
-
-        JSON.stringify(estado.carrinho)
-
-    );
-
-}
-
-
-
-function adicionarCarrinho(id){
-
-    const item = estado.carrinho.find(
-
-        produto=>produto.id===id
-
-    );
-
-
-
-    if(item){
-
-        item.quantidade++;
-
-    }
-
-    else{
-
-        estado.carrinho.push({
-
-            id,
-
-            quantidade:1
-
-        });
-
-    }
-
-
-
-    salvarCarrinho();
-
-    atualizarCarrinho();
-
-}
-
-
-
-function atualizarCarrinho(){
-
-    const quantidade = estado.carrinho.reduce(
-
-        (total,item)=>total+item.quantidade,
-
-        0
-
-    );
-
-
-
-    const contador = document.getElementById(
-
-        "contadorCarrinho"
-
-    );
-
-
-
-    if(contador){
-
-        contador.textContent=quantidade;
-
-    }
-
-}
-
+const API_CARRINHO = API_BASE;
 
 
 /*==================================================
-        COMPATIBILIDADE COM CARRINHO GLOBAL
+        CARREGAR CARRINHO DO BANCO
 ==================================================*/
 
-async function obterCarrinhoAtual(){
+async function carregarCarrinho() {
 
-    return estado.carrinho.map(item => ({
+    const token =
+        localStorage.getItem("tokenCial");
 
-        produto_id: Number(item.id),
+    if (!token) {
 
-        quantidade: Number(item.quantidade) || 1
+        return [];
 
-    }));
+    }
+
+    try {
+
+        const resposta =
+            await fetch(
+                `${API_CARRINHO}/carrinho`,
+                {
+                    headers: {
+                        Authorization:
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+
+        /*------------------------------------------
+                TOKEN INVÁLIDO
+        ------------------------------------------*/
+
+        if (resposta.status === 401) {
+
+            localStorage.removeItem(
+                "tokenCial"
+            );
+
+            localStorage.removeItem(
+                "usuarioCial"
+            );
+
+            return [];
+
+        }
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if (
+            !resposta.ok ||
+            !resultado.ok
+        ) {
+
+            return [];
+
+        }
+
+
+        return Array.isArray(
+            resultado.data
+        )
+            ? resultado.data
+            : [];
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar carrinho:",
+            erro
+        );
+
+        return [];
+
+    }
 
 }
 
 
-async function adicionarAoCarrinho(produto){
+/*==================================================
+        ADICIONAR PRODUTO AO CARRINHO
+==================================================*/
 
-    if(!produto){
+async function adicionarAoCarrinho(produto) {
+
+    if (!produto) {
+
         return false;
+
     }
 
-    adicionarCarrinho(
-        Number(produto.id)
-    );
 
-    return true;
+    const token =
+        localStorage.getItem("tokenCial");
+
+
+    /*------------------------------------------
+                USUÁRIO NÃO LOGADO
+    ------------------------------------------*/
+
+    if (!token) {
+
+        window.location.href =
+            "../cadastro/login.html";
+
+        return false;
+
+    }
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                `${API_CARRINHO}/carrinho`,
+                {
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        Authorization:
+                            `Bearer ${token}`
+
+                    },
+
+                    body: JSON.stringify({
+
+                        produto_id:
+                            Number(produto.id),
+
+                        quantidade: 1
+
+                    })
+
+                }
+            );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        /*------------------------------------------
+                TOKEN EXPIRADO
+        ------------------------------------------*/
+
+        if (resposta.status === 401) {
+
+            localStorage.removeItem(
+                "tokenCial"
+            );
+
+            localStorage.removeItem(
+                "usuarioCial"
+            );
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return false;
+
+        }
+
+
+        /*------------------------------------------
+                ERRO DA API
+        ------------------------------------------*/
+
+        if (
+            !resposta.ok ||
+            !resultado.ok
+        ) {
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao adicionar ao carrinho"
+            );
+
+        }
+
+
+        /*------------------------------------------
+                ATUALIZAR CONTADOR DO HEADER
+        ------------------------------------------*/
+
+        if (
+            window.atualizarContadorCarrinho
+        ) {
+
+            await window
+                .atualizarContadorCarrinho();
+
+        }
+
+
+        return true;
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao adicionar ao carrinho:",
+            erro
+        );
+
+        return false;
+
+    }
 
 }
 
 
-async function removerDoCarrinho(produtoId){
+/*==================================================
+        REMOVER PRODUTO DO CARRINHO
+==================================================*/
 
-    const id = Number(produtoId);
+async function removerDoCarrinho(produtoId) {
 
-    const indice = estado.carrinho.findIndex(
-        item => Number(item.id) === id
-    );
+    const token =
+        localStorage.getItem("tokenCial");
 
-    if(indice === -1){
+
+    /*------------------------------------------
+                USUÁRIO NÃO LOGADO
+    ------------------------------------------*/
+
+    if (!token) {
+
+        window.location.href =
+            "../cadastro/login.html";
+
         return false;
+
     }
 
-    estado.carrinho.splice(indice,1);
 
-    salvarCarrinho();
+    const id =
+        Number(produtoId);
 
-    atualizarCarrinho();
 
-    return true;
+    if (
+        !Number.isInteger(id) ||
+        id <= 0
+    ) {
+
+        console.warn(
+            "Produto inválido para remoção:",
+            produtoId
+        );
+
+        return false;
+
+    }
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                `${API_CARRINHO}/carrinho/${id}`,
+                {
+                    method: "DELETE",
+
+                    headers: {
+
+                        Authorization:
+                            `Bearer ${token}`
+
+                    }
+                }
+            );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        /*------------------------------------------
+                TOKEN EXPIRADO
+        ------------------------------------------*/
+
+        if (resposta.status === 401) {
+
+            localStorage.removeItem(
+                "tokenCial"
+            );
+
+            localStorage.removeItem(
+                "usuarioCial"
+            );
+
+            window.location.href =
+                "../cadastro/login.html";
+
+            return false;
+
+        }
+
+
+        /*------------------------------------------
+                ERRO DA API
+        ------------------------------------------*/
+
+        if (
+            !resposta.ok ||
+            !resultado.ok
+        ) {
+
+            throw new Error(
+                resultado.erro ||
+                "Erro ao remover do carrinho"
+            );
+
+        }
+
+
+        /*------------------------------------------
+                ATUALIZAR CONTADOR
+        ------------------------------------------*/
+
+        if (
+            window.atualizarContadorCarrinho
+        ) {
+
+            await window
+                .atualizarContadorCarrinho();
+
+        }
+
+
+        return true;
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao remover do carrinho:",
+            erro
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/*==================================================
+        OBTER CARRINHO ATUAL
+==================================================*/
+
+async function obterCarrinhoAtual() {
+
+    const token =
+        localStorage.getItem("tokenCial");
+
+
+    if (!token) {
+
+        return [];
+
+    }
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                `${API_CARRINHO}/carrinho`,
+                {
+                    headers: {
+
+                        Authorization:
+                            `Bearer ${token}`
+
+                    }
+                }
+            );
+
+
+        /*------------------------------------------
+                TOKEN INVÁLIDO
+        ------------------------------------------*/
+
+        if (resposta.status === 401) {
+
+            return [];
+
+        }
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if (
+            !resposta.ok ||
+            !resultado.ok
+        ) {
+
+            return [];
+
+        }
+
+
+        return Array.isArray(
+            resultado.data
+        )
+            ? resultado.data
+            : [];
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao consultar carrinho:",
+            erro
+        );
+
+        return [];
+
+    }
 
 }
 

@@ -8,6 +8,14 @@ const senhaInput = document.getElementById("senha");
 const toggleSenha = document.getElementById("toggleSenha");
 
 /*==================================================
+            URL DA API
+==================================================*/
+
+const API_BASE =
+    window.API_BASE_URL ||
+    "http://localhost:4000";
+
+/*==================================================
         MOSTRAR / OCULTAR SENHA
 ==================================================*/
 
@@ -57,7 +65,7 @@ async function realizarLogin(usuarioDigitado, senhaDigitada) {
   botaoLogin.textContent = "Entrando...";
 
   try {
-    const response = await fetch("http://localhost:4000/login", {
+   const response = await fetch(`${API_BASE}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

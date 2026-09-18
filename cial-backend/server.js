@@ -380,6 +380,416 @@ async function exigirAdmin(req, res, next) {
   }
 }
 
+/*==========================================================
+    CONFIGURAÇÕES DO SITE
+==========================================================*/
+
+
+/*==========================================================
+    CONFIGURAÇÕES PÚBLICAS
+    Usadas pelo site inteiro
+==========================================================*/
+
+app.get(
+    "/configuracoes",
+    async (req, res) => {
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabase
+                .from("configuracoes")
+                .select(`
+                    id,
+                    nome_empresa,
+                    whatsapp,
+                    telefone,
+                    email,
+                    instagram,
+                    facebook,
+                    endereco,
+                    pix
+                `)
+                .eq("id", 1)
+                .maybeSingle();
+
+
+            /*------------------------------------------
+                ERRO DO SUPABASE
+            ------------------------------------------*/
+
+            if (error) {
+
+                console.error(
+                    "Erro ao carregar configurações:",
+                    error
+                );
+
+                return res.status(500).json({
+
+                    ok: false,
+
+                    erro:
+                        "Não foi possível carregar as configurações."
+
+                });
+
+            }
+
+
+            /*------------------------------------------
+                NENHUMA CONFIGURAÇÃO CADASTRADA
+            ------------------------------------------*/
+
+            if (!data) {
+
+                return res.json({
+
+                    ok: true,
+
+                    data: {
+
+                        nome_empresa: "",
+                        whatsapp: "",
+                        telefone: "",
+                        email: "",
+                        instagram: "",
+                        facebook: "",
+                        endereco: "",
+                        pix: ""
+
+                    }
+
+                });
+
+            }
+
+
+            /*------------------------------------------
+                SUCESSO
+            ------------------------------------------*/
+
+            return res.json({
+
+                ok: true,
+
+                data
+
+            });
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro inesperado ao carregar configurações:",
+                erro
+            );
+
+            return res.status(500).json({
+
+                ok: false,
+
+                erro:
+                    "Erro interno ao carregar configurações."
+
+            });
+
+        }
+
+    }
+);
+
+
+
+/*==========================================================
+    CONFIGURAÇÕES ADMINISTRATIVAS
+    Carregar configurações
+==========================================================*/
+
+app.get(
+    "/admin/configuracoes",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabase
+                .from("configuracoes")
+                .select(`
+                    id,
+                    nome_empresa,
+                    whatsapp,
+                    telefone,
+                    email,
+                    instagram,
+                    facebook,
+                    endereco,
+                    pix
+                `)
+                .eq("id", 1)
+                .maybeSingle();
+
+
+            /*------------------------------------------
+                ERRO DO SUPABASE
+            ------------------------------------------*/
+
+            if (error) {
+
+                console.error(
+                    "Erro ao carregar configurações administrativas:",
+                    error
+                );
+
+                return res.status(500).json({
+
+                    ok: false,
+
+                    erro:
+                        "Não foi possível carregar as configurações."
+
+                });
+
+            }
+
+
+            /*------------------------------------------
+                NENHUMA CONFIGURAÇÃO CADASTRADA
+            ------------------------------------------*/
+
+            if (!data) {
+
+                return res.json({
+
+                    ok: true,
+
+                    data: {
+
+                        nome_empresa: "",
+                        whatsapp: "",
+                        telefone: "",
+                        email: "",
+                        instagram: "",
+                        facebook: "",
+                        endereco: "",
+                        pix: ""
+
+                    }
+
+                });
+
+            }
+
+
+            /*------------------------------------------
+                SUCESSO
+            ------------------------------------------*/
+
+            return res.json({
+
+                ok: true,
+
+                data
+
+            });
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro inesperado no carregamento administrativo:",
+                erro
+            );
+
+            return res.status(500).json({
+
+                ok: false,
+
+                erro:
+                    "Erro interno ao carregar configurações."
+
+            });
+
+        }
+
+    }
+);
+
+
+
+/*==========================================================
+    CONFIGURAÇÕES ADMINISTRATIVAS
+    Salvar configurações
+==========================================================*/
+
+app.put(
+    "/admin/configuracoes",
+    autenticarToken,
+    exigirAdmin,
+    async (req, res) => {
+
+        try {
+
+            const {
+
+                nome_empresa,
+                whatsapp,
+                telefone,
+                email,
+                instagram,
+                facebook,
+                endereco,
+                pix
+
+            } = req.body;
+
+
+            /*------------------------------------------
+                DADOS NORMALIZADOS
+            ------------------------------------------*/
+
+            const dados = {
+
+                id: 1,
+
+                nome_empresa:
+                    String(
+                        nome_empresa || ""
+                    ).trim(),
+
+                whatsapp:
+                    String(
+                        whatsapp || ""
+                    ).trim(),
+
+                telefone:
+                    String(
+                        telefone || ""
+                    ).trim(),
+
+                email:
+                    String(
+                        email || ""
+                    ).trim(),
+
+                instagram:
+                    String(
+                        instagram || ""
+                    ).trim(),
+
+                facebook:
+                    String(
+                        facebook || ""
+                    ).trim(),
+
+                endereco:
+                    String(
+                        endereco || ""
+                    ).trim(),
+
+                pix:
+                    String(
+                        pix || ""
+                    ).trim()
+
+            };
+
+
+            /*------------------------------------------
+                SALVAR NO SUPABASE
+            ------------------------------------------*/
+
+            const {
+                data,
+                error
+            } = await supabase
+                .from("configuracoes")
+                .upsert(
+                    dados,
+                    {
+                        onConflict: "id"
+                    }
+                )
+                .select(`
+                    id,
+                    nome_empresa,
+                    whatsapp,
+                    telefone,
+                    email,
+                    instagram,
+                    facebook,
+                    endereco,
+                    pix
+                `)
+                .single();
+
+
+            /*------------------------------------------
+                ERRO DO SUPABASE
+            ------------------------------------------*/
+
+            if (error) {
+
+                console.error(
+                    "Erro ao salvar configurações:",
+                    error
+                );
+
+                return res.status(500).json({
+
+                    ok: false,
+
+                    erro:
+                        error.message ||
+                        "Não foi possível salvar as configurações."
+
+                });
+
+            }
+
+
+            /*------------------------------------------
+                SUCESSO
+            ------------------------------------------*/
+
+            return res.json({
+
+                ok: true,
+
+                mensagem:
+                    "Configurações salvas com sucesso.",
+
+                data
+
+            });
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro inesperado ao salvar configurações:",
+                erro
+            );
+
+            return res.status(500).json({
+
+                ok: false,
+
+                erro:
+                    "Erro interno ao salvar configurações."
+
+            });
+
+        }
+
+    }
+);
 
 /*==========================================================
     ROTAS DE PRODUTOS

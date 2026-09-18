@@ -1,5 +1,7 @@
 
-const API_CARRINHO = "http://localhost:4000";
+const API_CARRINHO =
+    window.API_BASE_URL ||
+    "http://localhost:4000";
 
 const cartProducts =
     document.querySelector(".cart-products");

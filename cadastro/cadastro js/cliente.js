@@ -482,7 +482,7 @@ if (tituloFavoritos) {
                 botaoVerProduto.dataset.produtoId;
 
                 window.location.href =
-                `../pagina/produtos.html?produto=${produtoId}`;
+               `../pagina/Produtos.html?produto=${produtoId}`;
 
 });
 

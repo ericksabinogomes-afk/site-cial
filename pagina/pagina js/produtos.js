@@ -12,7 +12,13 @@ const CONFIG = {
 
 };
 
+/*==================================================
+            URL DA API
+==================================================*/
 
+const API_BASE =
+    window.API_BASE_URL ||
+    "http://localhost:4000";
 
 /*==================================================
                     ELEMENTOS
@@ -75,7 +81,7 @@ const estado = {
 
 async function carregarProdutos() {
   try {
-    const API_BASE = "http://localhost:4000";
+ 
     const res = await fetch(`${API_BASE}/produtos`);
     const json = await res.json();
 
@@ -320,10 +326,10 @@ async function carregarCategoriasProdutos(){
 
     try{
 
-        const resposta =
-            await fetch(
-                "http://localhost:4000/categorias"
-            );
+      const resposta =
+    await fetch(
+        `${API_BASE}/categorias`
+    );
 
 
         if(!resposta.ok){
@@ -1244,7 +1250,7 @@ function iniciarOrdenacao(){
                 FAVORITOS - CONTA DO CLIENTE
 ==================================================*/
 
-const API_FAVORITOS = "http://localhost:4000";
+const API_FAVORITOS = API_BASE;
 
 
 function obterToken(){
@@ -1525,8 +1531,7 @@ function iniciarFavoritos(){
                 CARRINHO
 ==================================================*/
 
-const API_CARRINHO =
-    "http://localhost:4000";
+const API_CARRINHO = API_BASE;
 
 async function adicionarAoCarrinho(produto) {
     const token =

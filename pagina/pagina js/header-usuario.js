@@ -96,6 +96,7 @@ console.log("perfil normalizado:", perfil);
 ==================================================*/
 
 const API_CARRINHO_HEADER =
+    window.API_BASE_URL ||
     "http://localhost:4000";
 
 async function atualizarContadorCarrinho() {

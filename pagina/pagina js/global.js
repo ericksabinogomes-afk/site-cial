@@ -44,7 +44,7 @@ function aplicarConfiguracoesSite() {
 
 async function carregarConfiguracoesSite() {
     try {
-        const resposta = await fetch("http://localhost:4000/configuracoes");
+       const resposta = await fetch("/configuracoes");
 
         if (!resposta.ok) {
             throw new Error("Não foi possível carregar as configurações.");

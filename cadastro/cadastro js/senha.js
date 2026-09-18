@@ -16,7 +16,9 @@ const stepEmail = document.getElementById('step-email');
 const stepCode = document.getElementById('step-code');
 const stepPassword = document.getElementById('step-password');
 
-const API_URL = 'http://localhost:4000';
+const API_BASE =
+    window.API_BASE_URL ||
+    "http://localhost:4000";
 
 /*==================================================
                 ENVIAR CÓDIGO
@@ -41,7 +43,7 @@ btnEnviar.addEventListener('click', async () => {
   btnEnviar.textContent = 'Enviando...';
   
   try {
-    const response = await fetch(`${API_URL}/api/recuperar-senha`, {
+   const response = await fetch(`${API_BASE}/api/recuperar-senha`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
@@ -89,7 +91,7 @@ btnValidar.addEventListener('click', async () => {
   btnValidar.textContent = 'Validando...';
   
   try {
-    const response = await fetch(`${API_URL}/api/validar-codigo`, {
+   const response = await fetch(`${API_BASE}/api/validar-codigo`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, codigo })
@@ -143,7 +145,7 @@ btnAlterar.addEventListener('click', async () => {
   btnAlterar.textContent = 'Alterando...';
   
   try {
-    const response = await fetch(`${API_URL}/api/atualizar-senha`, {
+   const response = await fetch(`${API_BASE}/api/atualizar-senha`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

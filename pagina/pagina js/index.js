@@ -661,7 +661,7 @@ function criarCardDestaque(produto)
                 </h3>
                 
                 <a
-                    href="produtos.html"
+                    href="Produtos.html"
                     class="btn-laranja">
 
                     Ver Produto

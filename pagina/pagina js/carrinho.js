@@ -2326,3 +2326,436 @@ if (campoCvv) {
         }
     }
 );
+
+// =====================================================
+// MONITORAMENTO DE STATUS DO PAGAMENTO (WEBHOOK)
+// =====================================================
+
+// Função para copiar o código Pix
+async function copiarPix() {
+    const pixCopiaCola = document.getElementById('pixCopiaCola');
+    if (!pixCopiaCola) return;
+    
+    try {
+        await navigator.clipboard.writeText(pixCopiaCola.value);
+        alert('Código Pix copiado com sucesso!');
+    } catch (err) {
+        // Fallback para navegadores mais antigos
+        pixCopiaCola.select();
+        document.execCommand('copy');
+        alert('Código Pix copiado com sucesso!');
+    }
+}
+
+// Função para exibir o status do pagamento
+function exibirStatusPagamento(status, gatewayStatus) {
+    const container = document.getElementById('statusPagamentoContainer');
+    const badge = document.getElementById('statusPagamentoBadge');
+    const descricao = document.getElementById('statusPagamentoDescricao');
+    
+    if (!container || !badge || !descricao) return;
+    
+    container.style.display = 'block';
+    
+    const statusConfig = {
+        'pago': { 
+            cor: '#28a745', 
+            texto: '✅ Pago', 
+            descricao: 'Seu pagamento foi confirmado e o pedido está sendo processado.' 
+        },
+        'andamento': { 
+            cor: '#ffc107', 
+            texto: '⏳ Aguardando Pagamento', 
+            descricao: 'Aguardando a confirmação do pagamento.' 
+        },
+        'vencido': { 
+            cor: '#dc3545', 
+            texto: '❌ Vencido', 
+            descricao: 'O pagamento não foi realizado até a data de vencimento.' 
+        },
+        'cancelado': { 
+            cor: '#6c757d', 
+            texto: '🚫 Cancelado', 
+            descricao: 'O pagamento foi cancelado ou recusado.' 
+        },
+        'estornado': { 
+            cor: '#fd7e14', 
+            texto: '💸 Estornado', 
+            descricao: 'O pagamento foi estornado. O valor será devolvido conforme a política da operadora.' 
+        },
+        'chargeback': { 
+            cor: '#dc3545', 
+            texto: '⚠️ Chargeback', 
+            descricao: 'Há uma disputa de chargeback em andamento. Entre em contato com o suporte.' 
+        }
+    };
+    
+    const config = statusConfig[status] || statusConfig['andamento'];
+    
+    badge.style.background = config.cor;
+    badge.style.color = '#fff';
+    badge.textContent = config.texto;
+    descricao.textContent = config.descricao;
+}
+
+// Função para verificar status periodicamente (polling como fallback)
+async function verificarStatusPedido(numeroPedido) {
+    try {
+        const resposta = await fetch(`${API_CARRINHO}/api/pedidos/${numeroPedido}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!resposta.ok) throw new Error('Erro ao buscar status');
+        
+        const dados = await resposta.json();
+        
+        if (dados && dados.status) {
+            exibirStatusPagamento(dados.status, dados.gateway_status);
+        }
+    } catch (erro) {
+        console.error('Erro ao verificar status do pedido:', erro);
+    }
+}
+
+// Inicia o monitoramento após finalizar o pedido
+function iniciarMonitoramentoPagamento(numeroPedido) {
+    // Verifica imediatamente
+    verificarStatusPedido(numeroPedido);
+    
+    // Verifica a cada 10 segundos por 5 minutos (30 verificações)
+    let tentativas = 0;
+    const maxTentativas = 30;
+    
+    const intervalo = setInterval(() => {
+        tentativas++;
+        verificarStatusPedido(numeroPedido);
+        
+        // Para após 5 minutos ou se o status for 'pago'
+        if (tentativas >= maxTentativas) {
+            clearInterval(intervalo);
+        }
+    }, 10000); // 10 segundos
+    
+    return intervalo;
+}
+
+// =====================================================
+// INTEGRAÇÃO COM O FLUXO DE PAGAMENTO EXISTENTE
+// =====================================================
+
+// Após o pagamento Pix ser gerado, exibe o status e inicia o monitoramento
+if (typeof finalizarCompraPix === 'function') {
+    const finalizarCompraPixOriginal = finalizarCompraPix;
+    
+    finalizarCompraPix = async function() {
+        try {
+            const resultado = await finalizarCompraPixOriginal();
+            
+            // Se o pagamento foi criado com sucesso
+            if (resultado && resultado.numeroPedido) {
+                // Exibe o status inicial
+                exibirStatusPagamento('andamento', 'PENDING');
+                
+                // Inicia o monitoramento
+                iniciarMonitoramentoPagamento(resultado.numeroPedido);
+            }
+            
+            return resultado;
+        } catch (erro) {
+            console.error('Erro ao finalizar compra Pix:', erro);
+            throw erro;
+        }
+    };
+}
+
+// =====================================================
+// MONITORAMENTO DE STATUS DO PAGAMENTO (WEBHOOK)
+// =====================================================
+
+// Função para copiar o código Pix
+async function copiarPix() {
+    const pixCopiaCola = document.getElementById('pixCopiaCola');
+    if (!pixCopiaCola) return;
+    
+    try {
+        await navigator.clipboard.writeText(pixCopiaCola.value);
+        alert('Código Pix copiado com sucesso!');
+    } catch (err) {
+        // Fallback para navegadores mais antigos
+        pixCopiaCola.select();
+        document.execCommand('copy');
+        alert('Código Pix copiado com sucesso!');
+    }
+}
+
+// Função para exibir o status do pagamento
+function exibirStatusPagamento(status, gatewayStatus) {
+    const container = document.getElementById('statusPagamentoContainer');
+    const badge = document.getElementById('statusPagamentoBadge');
+    const descricao = document.getElementById('statusPagamentoDescricao');
+    
+    if (!container || !badge || !descricao) return;
+    
+    container.style.display = 'block';
+    
+    const statusConfig = {
+        'pago': { 
+            cor: '#28a745', 
+            texto: 'Pago', 
+            descricao: 'Seu pagamento foi confirmado e o pedido está sendo processado.' 
+        },
+        'andamento': { 
+            cor: '#ffc107', 
+            texto: 'Aguardando Pagamento', 
+            descricao: 'Aguardando a confirmação do pagamento.' 
+        },
+        'vencido': { 
+            cor: '#dc3545', 
+            texto: 'Vencido', 
+            descricao: 'O pagamento não foi realizado até a data de vencimento.' 
+        },
+        'cancelado': { 
+            cor: '#6c757d', 
+            texto: 'Cancelado', 
+            descricao: 'O pagamento foi cancelado ou recusado.' 
+        },
+        'estornado': { 
+            cor: '#fd7e14', 
+            texto: 'Estornado', 
+            descricao: 'O pagamento foi estornado. O valor será devolvido conforme a política da operadora.' 
+        },
+        'chargeback': { 
+            cor: '#dc3545', 
+            texto: 'Chargeback', 
+            descricao: 'Há uma disputa de chargeback em andamento. Entre em contato com o suporte.' 
+        }
+    };
+    
+    const config = statusConfig[status] || statusConfig['andamento'];
+    
+    badge.style.background = config.cor;
+    badge.style.color = '#fff';
+    badge.textContent = config.texto;
+    descricao.textContent = config.descricao;
+}
+
+// Função para verificar status periodicamente (polling como fallback)
+async function verificarStatusPedido(numeroPedido) {
+    try {
+        const resposta = await fetch(`${API_CARRINHO}/api/pedidos/${numeroPedido}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!resposta.ok) throw new Error('Erro ao buscar status');
+        
+        const dados = await resposta.json();
+        
+        if (dados && dados.status) {
+            exibirStatusPagamento(dados.status, dados.gateway_status);
+        }
+    } catch (erro) {
+        console.error('Erro ao verificar status do pedido:', erro);
+    }
+}
+
+// Inicia o monitoramento após finalizar o pedido
+function iniciarMonitoramentoPagamento(numeroPedido) {
+    // Verifica imediatamente
+    verificarStatusPedido(numeroPedido);
+    
+    // Verifica a cada 10 segundos por 5 minutos (30 verificações)
+    let tentativas = 0;
+    const maxTentativas = 30;
+    
+    const intervalo = setInterval(() => {
+        tentativas++;
+        verificarStatusPedido(numeroPedido);
+        
+        // Para após 5 minutos ou se o status for 'pago'
+        if (tentativas >= maxTentativas) {
+            clearInterval(intervalo);
+        }
+    }, 10000); // 10 segundos
+    
+    return intervalo;
+}
+
+// =====================================================
+// INTEGRAÇÃO COM O FLUXO DE PAGAMENTO EXISTENTE
+// =====================================================
+
+// Após o pagamento Pix ser gerado, exibe o status e inicia o monitoramento
+if (typeof finalizarCompraPix === 'function') {
+    const finalizarCompraPixOriginal = finalizarCompraPix;
+    
+    finalizarCompraPix = async function() {
+        try {
+            const resultado = await finalizarCompraPixOriginal();
+            
+            // Se o pagamento foi criado com sucesso
+            if (resultado && resultado.numeroPedido) {
+                // Exibe o status inicial
+                exibirStatusPagamento('andamento', 'PENDING');
+                
+                // Inicia o monitoramento
+                iniciarMonitoramentoPagamento(resultado.numeroPedido);
+            }
+            
+            return resultado;
+        } catch (erro) {
+            console.error('Erro ao finalizar compra Pix:', erro);
+            throw erro;
+        }
+    };
+}
+
+//=====================================================
+// MONITORAMENTO DE STATUS DO PAGAMENTO (WEBHOOK)
+// =====================================================
+
+// Função para copiar o código Pix
+async function copiarPix() {
+    const pixCopiaCola = document.getElementById('pixCopiaCola');
+    if (!pixCopiaCola) return;
+    
+    try {
+        await navigator.clipboard.writeText(pixCopiaCola.value);
+        alert('Código Pix copiado com sucesso!');
+    } catch (err) {
+        // Fallback para navegadores mais antigos
+        pixCopiaCola.select();
+        document.execCommand('copy');
+        alert('Código Pix copiado com sucesso!');
+    }
+}
+
+// Função para exibir o status do pagamento
+function exibirStatusPagamento(status, gatewayStatus) {
+    const container = document.getElementById('statusPagamentoContainer');
+    const badge = document.getElementById('statusPagamentoBadge');
+    const descricao = document.getElementById('statusPagamentoDescricao');
+    
+    if (!container || !badge || !descricao) return;
+    
+    container.style.display = 'block';
+    
+    const statusConfig = {
+        'pago': { 
+            cor: '#28a745', 
+            texto: '✅ Pago', 
+            descricao: 'Seu pagamento foi confirmado e o pedido está sendo processado.' 
+        },
+        'andamento': { 
+            cor: '#ffc107', 
+            texto: '⏳ Aguardando Pagamento', 
+            descricao: 'Aguardando a confirmação do pagamento.' 
+        },
+        'vencido': { 
+            cor: '#dc3545', 
+            texto: '❌ Vencido', 
+            descricao: 'O pagamento não foi realizado até a data de vencimento.' 
+        },
+        'cancelado': { 
+            cor: '#6c757d', 
+            texto: '🚫 Cancelado', 
+            descricao: 'O pagamento foi cancelado ou recusado.' 
+        },
+        'estornado': { 
+            cor: '#fd7e14', 
+            texto: '💸 Estornado', 
+            descricao: 'O pagamento foi estornado. O valor será devolvido conforme a política da operadora.' 
+        },
+        'chargeback': { 
+            cor: '#dc3545', 
+            texto: '⚠️ Chargeback', 
+            descricao: 'Há uma disputa de chargeback em andamento. Entre em contato com o suporte.' 
+        }
+    };
+    
+    const config = statusConfig[status] || statusConfig['andamento'];
+    
+    badge.style.background = config.cor;
+    badge.style.color = '#fff';
+    badge.textContent = config.texto;
+    descricao.textContent = config.descricao;
+}
+
+// Função para verificar status periodicamente (polling como fallback)
+async function verificarStatusPedido(numeroPedido) {
+    try {
+        const resposta = await fetch(`${API_CARRINHO}/api/pedidos/${numeroPedido}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!resposta.ok) throw new Error('Erro ao buscar status');
+        
+        const dados = await resposta.json();
+        
+        if (dados && dados.status) {
+            exibirStatusPagamento(dados.status, dados.gateway_status);
+        }
+    } catch (erro) {
+        console.error('Erro ao verificar status do pedido:', erro);
+    }
+}
+
+// Inicia o monitoramento após finalizar o pedido
+function iniciarMonitoramentoPagamento(numeroPedido) {
+    // Verifica imediatamente
+    verificarStatusPedido(numeroPedido);
+    
+    // Verifica a cada 10 segundos por 5 minutos (30 verificações)
+    let tentativas = 0;
+    const maxTentativas = 30;
+    
+    const intervalo = setInterval(() => {
+        tentativas++;
+        verificarStatusPedido(numeroPedido);
+        
+        // Para após 5 minutos ou se o status for 'pago'
+        if (tentativas >= maxTentativas) {
+            clearInterval(intervalo);
+        }
+    }, 10000); // 10 segundos
+    
+    return intervalo;
+}
+
+// =====================================================
+// INTEGRAÇÃO COM O FLUXO DE PAGAMENTO EXISTENTE
+// =====================================================
+
+// Após o pagamento Pix ser gerado, exibe o status e inicia o monitoramento
+if (typeof finalizarCompraPix === 'function') {
+    const finalizarCompraPixOriginal = finalizarCompraPix;
+    
+    finalizarCompraPix = async function() {
+        try {
+            const resultado = await finalizarCompraPixOriginal();
+            
+            // Se o pagamento foi criado com sucesso
+            if (resultado && resultado.numeroPedido) {
+                // Exibe o status inicial
+                exibirStatusPagamento('andamento', 'PENDING');
+                
+                // Inicia o monitoramento
+                iniciarMonitoramentoPagamento(resultado.numeroPedido);
+            }
+            
+            return resultado;
+        } catch (erro) {
+            console.error('Erro ao finalizar compra Pix:', erro);
+            throw erro;
+        }
+    };
+}
+

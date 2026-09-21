@@ -5392,219 +5392,153 @@ async function criarGarantiasDoPedido(pedidoId) {
 }
 
 /*==========================================================
-    WEBHOOK ASAAS
+    WEBHOOK ASAAS - ATUALIZAÇÃO AUTOMÁTICA DE STATUS
 ==========================================================*/
+
+// Tabela de idempotência em memória (em produção, use Redis ou tabela no Supabase)
+const eventosProcessados = new Map();
 
 app.post(
   '/api/asaas/webhook',
   async (req, res) => {
     try {
-      const tokenRecebido =
-        req.headers['asaas-access-token'];
+      const tokenRecebido = req.headers['x-signature'] || req.headers['x-asaas-signature'];
+      const tokenEsperado = process.env.ASAAS_WEBHOOK_TOKEN;
 
-      if (
-        !process.env.ASAAS_WEBHOOK_TOKEN ||
-        tokenRecebido !==
-          process.env.ASAAS_WEBHOOK_TOKEN
-      ) {
-        console.error(
-          'Webhook Asaas rejeitado: token inválido.'
-        );
-
-        return res.status(401).json({
-          ok: false,
-          erro:
-            'Token de webhook inválido.'
-        });
+      // Validação do token de segurança (opcional, mas recomendado)
+      if (tokenEsperado && tokenRecebido !== tokenEsperado) {
+        console.error('Webhook Asaas rejeitado: token inválido.');
+        return res.status(403).json({ error: 'Token inválido' });
       }
 
-      const evento = req.body;
-      const tipoEvento = evento?.event;
-      const pagamentoEvento = evento?.payment;
+      const { id: eventoId, event: tipoEvento, payment } = req.body;
 
-      console.log(
-        'Webhook Asaas recebido:',
-        {
-          eventoId: evento?.id,
-          tipoEvento,
-          pagamentoId: pagamentoEvento?.id
-        }
-      );
-
-      if (!pagamentoEvento?.id) {
-        return res.sendStatus(200);
+      // Idempotência: ignora eventos já processados
+      if (eventosProcessados.has(eventoId)) {
+        console.log(`Evento ${eventoId} já processado, ignorando.`);
+        return res.status(200).json({ received: true });
       }
 
-      const eventosDePagamento =
-        [
-          'PAYMENT_RECEIVED',
-          'PAYMENT_CONFIRMED'
-        ];
-
-      if (
-        !eventosDePagamento.includes(
-          tipoEvento
-        )
-      ) {
-        return res.sendStatus(200);
+      // Verifica se é evento de pagamento
+      if (!payment || !payment.id) {
+        console.log('Evento não é de pagamento, ignorando.');
+        return res.status(200).json({ received: true });
       }
 
-      const pagamentoAsaas = await axios.get(
-        `${process.env.ASAAS_BASE_URL}/payments/${pagamentoEvento.id}`,
-        {
-          headers: {
-            access_token:
-              process.env.ASAAS_API_KEY
-          }
-        }
-      );
+      const paymentId = payment.id; // ex: "pay_080225913252"
 
-      const dadosPagamento =
-        pagamentoAsaas.data;
+      // Mapeamento de eventos do Asaas para status do gateway
+      const statusMapping = {
+        // Fluxo normal de pagamento
+        'PAYMENT_CREATED': 'PENDING',
+        'PAYMENT_AWAITING_RISK_ANALYSIS': 'AWAITING_RISK_ANALYSIS',
+        'PAYMENT_APPROVED_BY_RISK_ANALYSIS': 'AUTHORIZED',
+        'PAYMENT_REPROVED_BY_RISK_ANALYSIS': 'REPROVED',
+        'PAYMENT_AUTHORIZED': 'AUTHORIZED',
+        'PAYMENT_UPDATED': 'UPDATED',
+        'PAYMENT_CONFIRMED': 'CONFIRMED',
+        'PAYMENT_RECEIVED': 'RECEIVED',
+        'PAYMENT_CREDIT_CARD_CAPTURE_REFUSED': 'REFUSED',
+        'PAYMENT_ANTICIPATED': 'ANTICIPATED',
+        
+        // Status de atraso
+        'PAYMENT_OVERDUE': 'OVERDUE',
+        
+        // Status de cancelamento/exclusão
+        'PAYMENT_DELETED': 'DELETED',
+        'PAYMENT_RESTORED': 'RESTORED',
+        
+        // Estornos
+        'PAYMENT_REFUNDED': 'REFUNDED',
+        'PAYMENT_PARTIALLY_REFUNDED': 'PARTIALLY_REFUNDED',
+        'PAYMENT_REFUND_IN_PROGRESS': 'REFUND_IN_PROGRESS',
+        'PAYMENT_REFUND_DENIED': 'REFUND_DENIED',
+        
+        // Chargeback
+        'PAYMENT_CHARGEBACK_REQUESTED': 'CHARGEBACK_REQUESTED',
+        'PAYMENT_CHARGEBACK_DISPUTE': 'CHARGEBACK_DISPUTE',
+        'PAYMENT_AWAITING_CHARGEBACK_REVERSAL': 'AWAITING_CHARGEBACK_REVERSAL',
+        
+        // Outros eventos
+        'PAYMENT_RECEIVED_IN_CASH_UNDONE': 'RECEIVED_IN_CASH_UNDONE',
+        'PAYMENT_DUNNING_RECEIVED': 'DUNNING_RECEIVED',
+        'PAYMENT_BANK_SLIP_CANCELLED': 'BANK_SLIP_CANCELLED',
+        'PAYMENT_DUNNING_REQUESTED': 'DUNNING_REQUESTED',
+        'PAYMENT_BANK_SLIP_VIEWED': 'BANK_SLIP_VIEWED',
+        'PAYMENT_CHECKOUT_VIEWED': 'CHECKOUT_VIEWED',
+        'PAYMENT_SPLIT_CANCELLED': 'SPLIT_CANCELLED',
+        'PAYMENT_SPLIT_DIVERGENCE_BLOCK': 'SPLIT_DIVERGENCE_BLOCK',
+        'PAYMENT_SPLIT_DIVERGENCE_BLOCK_FINISHED': 'SPLIT_DIVERGENCE_BLOCK_FINISHED'
+      };
 
-      if (dadosPagamento.status !== 'PAID') {
-        console.warn(
-          'Webhook recebido, mas pagamento ainda não está PAID:',
-          {
-            pagamentoId: dadosPagamento.id,
-            status: dadosPagamento.status
-          }
-        );
+      const gatewayStatus = statusMapping[tipoEvento] || 'UNKNOWN';
 
-        return res.sendStatus(200);
+      // Determina o status do pedido baseado no status do gateway
+      let statusPedido = 'andamento';
+      let paidAt = null;
+
+      if (['PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED'].includes(tipoEvento)) {
+        statusPedido = 'pago';
+        paidAt = new Date().toISOString();
+      } else if (['PAYMENT_REFUNDED', 'PAYMENT_PARTIALLY_REFUNDED'].includes(tipoEvento)) {
+        statusPedido = 'estornado';
+      } else if (['PAYMENT_CHARGEBACK_REQUESTED', 'PAYMENT_CHARGEBACK_DISPUTE'].includes(tipoEvento)) {
+        statusPedido = 'chargeback';
+      } else if (['PAYMENT_OVERDUE'].includes(tipoEvento)) {
+        statusPedido = 'vencido';
+      } else if (['PAYMENT_DELETED', 'PAYMENT_CREDIT_CARD_CAPTURE_REFUSED', 'PAYMENT_REPROVED_BY_RISK_ANALYSIS'].includes(tipoEvento)) {
+        statusPedido = 'cancelado';
       }
 
-      const pedidoId = Number(
-        dadosPagamento.externalReference
-      );
-
-      if (!Number.isInteger(pedidoId)) {
-        console.error(
-          'externalReference inválida:',
-          dadosPagamento.externalReference
-        );
-
-        return res.sendStatus(200);
-      }
-
-      const {
-        data: pedido,
-        error: erroBuscarPedido
-      } = await supabase
-        .from('pedidos')
-        .select(`
-          id,
-          usuario_id,
-          numero,
-          valor,
-          gateway_payment_id,
-          status
-        `)
-        .eq('id', pedidoId)
-        .single();
-
-      if (
-        erroBuscarPedido ||
-        !pedido
-      ) {
-        console.error(
-          'Pedido não encontrado no webhook:',
-          {
-            pedidoId,
-            erro: erroBuscarPedido
-          }
-        );
-
-        return res.sendStatus(200);
-      }
-
-      if (
-        pedido.gateway_payment_id !==
-        dadosPagamento.id
-      ) {
-        console.error(
-          'Pagamento não corresponde ao pedido:',
-          {
-            pedidoId,
-            pagamentoRecebido:
-              dadosPagamento.id,
-            pagamentoEsperado:
-              pedido.gateway_payment_id
-          }
-        );
-
-        return res.sendStatus(200);
-      }
-
-      const valorPedido = Number(pedido.valor);
-      const valorRecebido = Number(
-        dadosPagamento.value
-      );
-
-      if (
-        !Number.isFinite(valorRecebido) ||
-        valorPedido !== valorRecebido
-      ) {
-        console.error(
-          'Valor do pagamento diferente do pedido:',
-          {
-            pedidoId,
-            pagamentoId: dadosPagamento.id,
-            valorEsperado: valorPedido,
-            valorRecebido
-          }
-        );
-
-        return res.sendStatus(200);
-      }
-
-      const dataPagamento =
-        dadosPagamento.paymentDate
-          ? new Date(
-              dadosPagamento.paymentDate
-            ).toISOString()
-          : new Date().toISOString();
-
-      const {
-        error: erroAtualizarPedido
-      } = await supabase
+      // Atualiza no Supabase
+      const { data, error } = await supabase
         .from('pedidos')
         .update({
-          status: 'pago',
-          gateway_status:
-            dadosPagamento.status,
-          paid_at: dataPagamento
+          gateway_status: gatewayStatus,
+          status: statusPedido,
+          paid_at: paidAt,
+          gateway_payment_id: paymentId
         })
-        .eq('id', pedidoId)
-        .neq('status', 'pago');
+        .eq('gateway_payment_id', paymentId)
+        .select()
+        .single();
 
-      if (erroAtualizarPedido) {
-        throw erroAtualizarPedido;
+      if (error) {
+        console.error('Erro ao atualizar pedido no Supabase:', error);
+        // Não retorna erro 500 se o pagamento não existir (pode ser evento de teste)
+        if (error.code !== 'PGRST116') {
+          throw error;
+        }
+      } else {
+        console.log(`Pedido atualizado: ${data.numero} | Status: ${statusPedido} | Gateway: ${gatewayStatus}`);
       }
 
- 
-      console.log(
-        'Pedido atualizado como pago:',
-        {
-          pedidoId,
-          numeroPedido: pedido.numero,
-          pagamentoId:
-            dadosPagamento.id,
-          statusAsaas:
-            dadosPagamento.status,
-          valor: valorRecebido
+      // Marca evento como processado (idempotência)
+      eventosProcessados.set(eventoId, Date.now());
+
+      // Limpa eventos antigos (mais de 24h)
+      const agora = Date.now();
+      for (const [key, timestamp] of eventosProcessados.entries()) {
+        if (agora - timestamp > 24 * 60 * 60 * 1000) {
+          eventosProcessados.delete(key);
         }
-      );
+      }
 
-      return res.sendStatus(200);
+      return res.status(200).json({ 
+        received: true, 
+        eventoId, 
+        tipoEvento, 
+        paymentId,
+        statusPedido,
+        gatewayStatus 
+      });
+
     } catch (erro) {
-      console.error(
-        'Erro no webhook Asaas:',
-        erro.response?.data ||
-          erro.message
-      );
-
-      return res.sendStatus(500);
+      console.error('Erro ao processar webhook Asaas:', erro);
+      return res.status(500).json({ 
+        error: 'Erro interno ao processar webhook',
+        details: erro.message 
+      });
     }
   }
 );

@@ -488,6 +488,22 @@
     </div>
 
 </div>
+<!-- Status do Pagamento (após finalizar pedido) -->
+<div id="statusPagamentoContainer" style="display: none; margin-top: 20px; padding: 20px; border-radius: 8px; background: #f8f9fa;">
+    <h3>Status do Pagamento</h3>
+    <div id="statusPagamentoBadge" style="display: inline-block; padding: 8px 16px; border-radius: 4px; font-weight: bold;">
+        <!-- Status será inserido via JavaScript -->
+    </div>
+    <p id="statusPagamentoDescricao" style="margin-top: 10px; color: #666;"></p>
+    <div id="pixQrCodeContainer" style="margin-top: 20px; text-align: center;">
+        <!-- QR Code Pix será exibido aqui -->
+    </div>
+    <div id="pixCopiaColaContainer" style="margin-top: 15px;">
+        <label for="pixCopiaCola">Pix Copia e Cola:</label>
+        <input type="text" id="pixCopiaCola" readonly style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-top: 5px;">
+        <button onclick="copiarPix()" style="margin-top: 10px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Copiar</button>
+    </div>
+</div>
 
 
 <!-- ==================================================

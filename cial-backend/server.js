@@ -5402,7 +5402,7 @@ app.post(
   '/api/asaas/webhook',
   async (req, res) => {
     try {
-      const tokenRecebido = req.headers['x-signature'] || req.headers['x-asaas-signature'];
+      const tokenRecebido = req.headers['asaas-access-token'];
       const tokenEsperado = process.env.ASAAS_WEBHOOK_TOKEN;
 
       // Validação do token de segurança (opcional, mas recomendado)
@@ -5523,6 +5523,15 @@ app.post(
           eventosProcessados.delete(key);
         }
       }
+      console.log('[ASAAS WEBHOOK]', {
+        eventoId,
+        tipoEvento,
+        paymentId,
+        pedidoId: data?.id ?? null,
+        numeroPedido: data?.numero ?? null,
+        statusPedido,
+        gatewayStatus
+      });
 
       return res.status(200).json({ 
         received: true, 

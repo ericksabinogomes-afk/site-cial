@@ -2716,11 +2716,15 @@ app.get("/pedidos/:id", autenticarToken, async (req, res) => {
 ==========================================================*/
 
 app.get("/garantias", autenticarToken, async (req, res) => {
-
   try {
+    const usuarioId = Number(req.usuario.id);
 
-    const usuarioId =
-      Number(req.usuario.id);
+    if (!Number.isInteger(usuarioId) || usuarioId <= 0) {
+      return res.status(401).json({
+        ok: false,
+        erro: "Usuário não autenticado"
+      });
+    }
 
     const {
       data: garantias,
@@ -2732,10 +2736,14 @@ app.get("/garantias", autenticarToken, async (req, res) => {
         pedido_id,
         unidade,
         usuario_id,
+        produto_nome,
         "nome do produto",
         data_compra,
         meses_garantia,
-        vencimento
+        vencimento,
+        status,
+        assinatura,
+        assinado_em
       `)
       .eq("usuario_id", usuarioId)
       .order("data_compra", {
@@ -2743,7 +2751,6 @@ app.get("/garantias", autenticarToken, async (req, res) => {
       });
 
     if (error) {
-
       console.error(
         "Erro ao buscar garantias:",
         error
@@ -2755,13 +2762,26 @@ app.get("/garantias", autenticarToken, async (req, res) => {
       });
     }
 
+    const garantiasFormatadas = (garantias || []).map(
+      garantia => ({
+        ...garantia,
+
+        // Campo principal usado pelo frontend
+        produto_nome:
+          garantia.produto_nome ||
+          garantia["nome do produto"] ||
+          "-",
+
+        status:
+          garantia.status || "pendente"
+      })
+    );
+
     return res.json({
       ok: true,
-      data: garantias || []
+      data: garantiasFormatadas
     });
-
   } catch (err) {
-
     console.error(
       "Erro inesperado ao buscar garantias:",
       err
@@ -2773,6 +2793,7 @@ app.get("/garantias", autenticarToken, async (req, res) => {
     });
   }
 });
+
 /*==========================================================
   PREPARAR GARANTIAS DO PEDIDO
 ==========================================================*/
@@ -5419,21 +5440,31 @@ app.get(
 ==========================================================*/
 
 async function criarGarantiasDoPedido(pedidoId) {
-
   console.log(
-    'Preparando garantias do pedido:',
+    "Preparando garantias do pedido:",
     pedidoId
   );
 
-  // Buscar pedido + itens
+  const pedidoIdNumerico = Number(pedidoId);
+
+  if (
+    !Number.isInteger(pedidoIdNumerico) ||
+    pedidoIdNumerico <= 0
+  ) {
+    throw new Error("ID do pedido inválido.");
+  }
+
+  // Buscar pedido, status e itens
   const {
     data: pedido,
     error: erroPedido
   } = await supabase
-    .from('pedidos')
+    .from("pedidos")
     .select(`
       id,
       usuario_id,
+      status,
+      gateway_status,
       data_pedido,
       pedido_itens (
         id,
@@ -5442,17 +5473,29 @@ async function criarGarantiasDoPedido(pedidoId) {
         quantidade
       )
     `)
-    .eq('id', pedidoId)
+    .eq("id", pedidoIdNumerico)
     .single();
 
   if (erroPedido || !pedido) {
     throw erroPedido ||
-      new Error('Pedido não encontrado.');
+      new Error("Pedido não encontrado.");
   }
 
   if (!pedido.usuario_id) {
     throw new Error(
-      'Pedido não possui usuário vinculado.'
+      "Pedido não possui usuário vinculado."
+    );
+  }
+
+  /*
+   * A garantia só pode ser criada depois
+   * da confirmação do pagamento.
+   */
+  if (pedido.status !== "pago") {
+    throw new Error(
+      `O pedido ainda não está pago. Status atual: ${
+        pedido.status || "não informado"
+      }`
     );
   }
 
@@ -5460,8 +5503,9 @@ async function criarGarantiasDoPedido(pedidoId) {
    * Buscar categorias dos produtos.
    *
    * A garantia será criada somente para:
-   * - máquinas STIHL
-   * - bombas
+   * - máquinas STIHL;
+   * - bombas;
+   * - categorias elegíveis configuradas no banco.
    */
 
   const produtoIds = [
@@ -5473,12 +5517,11 @@ async function criarGarantiasDoPedido(pedidoId) {
   let produtosComCategorias = [];
 
   if (produtoIds.length > 0) {
-
     const {
       data: produtos,
       error: erroProdutos
     } = await supabase
-      .from('produtos')
+      .from("produtos")
       .select(`
         id,
         categoria,
@@ -5489,24 +5532,22 @@ async function criarGarantiasDoPedido(pedidoId) {
           )
         )
       `)
-      .in('id', produtoIds);
+      .in("id", produtoIds);
 
     if (erroProdutos) {
       throw erroProdutos;
     }
 
-    produtosComCategorias =
-      produtos || [];
+    produtosComCategorias = produtos || [];
   }
 
-  const dataCompra =
-    pedido.data_pedido
-      ? new Date(pedido.data_pedido)
-          .toISOString()
-          .split('T')[0]
-      : new Date()
-          .toISOString()
-          .split('T')[0];
+  const dataCompra = pedido.data_pedido
+    ? new Date(pedido.data_pedido)
+        .toISOString()
+        .split("T")[0]
+    : new Date()
+        .toISOString()
+        .split("T")[0];
 
   const garantias = [];
   let contadorUnidade = 0;
@@ -5516,7 +5557,6 @@ async function criarGarantiasDoPedido(pedidoId) {
    * uma garantia individual.
    */
   for (const item of pedido.pedido_itens || []) {
-
     const produto =
       produtosComCategorias.find(
         p => p.id === item.produto_id
@@ -5525,48 +5565,43 @@ async function criarGarantiasDoPedido(pedidoId) {
     const categorias =
       produto?.produto_categorias || [];
 
-    const slugs =
-      categorias
-        .map(relacao =>
-          relacao?.categorias?.slug
-        )
-        .filter(Boolean)
-        .map(slug =>
-          String(slug).toLowerCase()
-        );
+    const slugs = categorias
+      .map(relacao =>
+        relacao?.categorias?.slug
+      )
+      .filter(Boolean)
+      .map(slug =>
+        String(slug).toLowerCase()
+      );
 
-    const categoriaLegada =
-      produto?.categoria
-        ? String(produto.categoria)
-            .toLowerCase()
-        : '';
+    const categoriaLegada = produto?.categoria
+      ? String(produto.categoria).toLowerCase()
+      : "";
 
     const textoCategorias = [
       ...slugs,
       categoriaLegada
-    ].join(' ');
+    ].join(" ");
 
     /*
-     * Identificar produtos que possuem garantia.
-     *
-     * Não usamos o nome do produto para decidir.
+     * Identificar produtos elegíveis.
+     * A decisão usa as categorias, não o nome.
      */
     const possuiGarantia =
-      textoCategorias.includes('stihl') ||
-      textoCategorias.includes('motosserra') ||
-      textoCategorias.includes('rocadeira') ||
-      textoCategorias.includes('roçadeira') ||
-      textoCategorias.includes('soprador') ||
-      textoCategorias.includes('aparador') ||
-      textoCategorias.includes('cortador') ||
-      textoCategorias.includes('bomba');
+      textoCategorias.includes("stihl") ||
+      textoCategorias.includes("motosserra") ||
+      textoCategorias.includes("rocadeira") ||
+      textoCategorias.includes("roçadeira") ||
+      textoCategorias.includes("soprador") ||
+      textoCategorias.includes("aparador") ||
+      textoCategorias.includes("cortador") ||
+      textoCategorias.includes("bomba");
 
     if (!possuiGarantia) {
       continue;
     }
 
-    const quantidade =
-      Number(item.quantidade);
+    const quantidade = Number(item.quantidade);
 
     if (
       !Number.isInteger(quantidade) ||
@@ -5576,53 +5611,48 @@ async function criarGarantiasDoPedido(pedidoId) {
     }
 
     for (
-  let unidadeProduto = 1;
-  unidadeProduto <= quantidade;
-  unidadeProduto++
-) {
-    contadorUnidade++;
+      let unidadeProduto = 1;
+      unidadeProduto <= quantidade;
+      unidadeProduto++
+    ) {
+      contadorUnidade++;
 
-    const unidade = contadorUnidade;
+      const unidade = contadorUnidade;
 
-      const vencimento =
-        new Date(dataCompra);
+      const vencimento = new Date(dataCompra);
 
       vencimento.setFullYear(
         vencimento.getFullYear() + 1
       );
 
-      const dataVencimento =
-        vencimento
-          .toISOString()
-          .split('T')[0];
+      const dataVencimento = vencimento
+        .toISOString()
+        .split("T")[0];
 
       garantias.push({
         pedido_id: pedido.id,
         unidade,
         usuario_id: pedido.usuario_id,
 
-        "nome do produto":
-          item.produto_nome,
+        // Campo recomendado
+        produto_nome: item.produto_nome,
 
-        data_compra:
-          dataCompra,
+        // Mantido para compatibilidade com registros antigos
+        "nome do produto": item.produto_nome,
 
-        meses_garantia:
-          12,
+        data_compra: dataCompra,
+        meses_garantia: 12,
+        vencimento: dataVencimento,
 
-        vencimento:
-          dataVencimento,
-
-        status:
-          'pendente'
+        // Como o pedido já está pago, a garantia pode ser ativa
+        status: "ativa"
       });
     }
   }
 
   if (garantias.length === 0) {
-
     console.log(
-      'Nenhuma garantia necessária para o pedido:',
+      "Nenhuma garantia necessária para o pedido:",
       pedidoId
     );
 
@@ -5630,17 +5660,17 @@ async function criarGarantiasDoPedido(pedidoId) {
   }
 
   /*
-   * Verificar garantias já existentes
-   * para este pedido.
+   * Buscar garantias já existentes.
    */
   const {
     data: existentes,
     error: erroExistentes
   } = await supabase
-    .from('garantias')
-    .select('*')
-    .eq('pedido_id', pedido.id)
-    .order('unidade', {
+    .from("garantias")
+    .select("*")
+    .eq("pedido_id", pedido.id)
+    .eq("usuario_id", pedido.usuario_id)
+    .order("unidade", {
       ascending: true
     });
 
@@ -5649,48 +5679,72 @@ async function criarGarantiasDoPedido(pedidoId) {
   }
 
   /*
-   * Se já existem, usamos as existentes.
-   * Isso evita duplicação caso o processo
-   * seja chamado novamente.
+   * Atualizar garantias existentes e criar
+   * somente as que ainda não existem.
    */
-  if (
-    existentes &&
-    existentes.length >= garantias.length
-  ) {
+  const garantiasFinais = [];
 
-    console.log(
-      'Garantias já preparadas:',
-      {
-        pedidoId,
-        quantidade: existentes.length
+  for (const garantia of garantias) {
+    const garantiaExistente =
+      (existentes || []).find(
+        existente =>
+          existente.unidade === garantia.unidade
+      );
+
+    if (garantiaExistente) {
+      const {
+        data: garantiaAtualizada,
+        error: erroAtualizacao
+      } = await supabase
+        .from("garantias")
+        .update({
+          usuario_id: garantia.usuario_id,
+          pedido_id: garantia.pedido_id,
+          unidade: garantia.unidade,
+          produto_nome: garantia.produto_nome,
+          "nome do produto":
+            garantia["nome do produto"],
+          data_compra: garantia.data_compra,
+          meses_garantia: garantia.meses_garantia,
+          vencimento: garantia.vencimento,
+          status: "ativa"
+        })
+        .eq("id", garantiaExistente.id)
+        .select()
+        .single();
+
+      if (erroAtualizacao) {
+        throw erroAtualizacao;
       }
-    );
 
-    return existentes;
-  }
+      garantiasFinais.push(garantiaAtualizada);
+    } else {
+      const {
+        data: garantiaCriada,
+        error: erroCriacao
+      } = await supabase
+        .from("garantias")
+        .insert(garantia)
+        .select()
+        .single();
 
-  const {
-    data: novasGarantias,
-    error: erroGarantias
-  } = await supabase
-    .from('garantias')
-    .insert(garantias)
-    .select();
+      if (erroCriacao) {
+        throw erroCriacao;
+      }
 
-  if (erroGarantias) {
-    throw erroGarantias;
+      garantiasFinais.push(garantiaCriada);
+    }
   }
 
   console.log(
-    'Garantias preparadas com sucesso:',
+    "Garantias criadas ou atualizadas com sucesso:",
     {
       pedidoId,
-      quantidade:
-        novasGarantias?.length || 0
+      quantidade: garantiasFinais.length
     }
   );
 
-  return novasGarantias || [];
+  return garantiasFinais;
 }
 
 /*==========================================================
@@ -5728,7 +5782,10 @@ app.post(
       }
 
       const paymentId = payment.id; // ex: "pay_080225913252"
-
+      const pedidoIdReferencia =
+      payment.externalReference
+        ? Number(payment.externalReference)
+        : null;
       // Mapeamento de eventos do Asaas para status do gateway
       const statusMapping = {
         // Fluxo normal de pagamento
@@ -5775,33 +5832,76 @@ app.post(
 
       const gatewayStatus = statusMapping[tipoEvento] || 'UNKNOWN';
 
-      // Determina o status do pedido baseado no status do gateway
-      let statusPedido = 'andamento';
+      // Determina o status do pedido baseado no evento do Asaas
+      let statusPedido = "andamento";
       let paidAt = null;
 
-      if (['PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED'].includes(tipoEvento)) {
-        statusPedido = 'pago';
+      const pagamentoConfirmado = [
+        "PAYMENT_RECEIVED",
+        "PAYMENT_CONFIRMED"
+      ].includes(tipoEvento);
+
+      if (pagamentoConfirmado) {
+        statusPedido = "pago";
         paidAt = new Date().toISOString();
-      } else if (['PAYMENT_REFUNDED', 'PAYMENT_PARTIALLY_REFUNDED'].includes(tipoEvento)) {
-        statusPedido = 'estornado';
-      } else if (['PAYMENT_CHARGEBACK_REQUESTED', 'PAYMENT_CHARGEBACK_DISPUTE'].includes(tipoEvento)) {
-        statusPedido = 'chargeback';
-      } else if (['PAYMENT_OVERDUE'].includes(tipoEvento)) {
-        statusPedido = 'vencido';
-      } else if (['PAYMENT_DELETED', 'PAYMENT_CREDIT_CARD_CAPTURE_REFUSED', 'PAYMENT_REPROVED_BY_RISK_ANALYSIS'].includes(tipoEvento)) {
-        statusPedido = 'cancelado';
+      } else if (
+        [
+          "PAYMENT_REFUNDED",
+          "PAYMENT_PARTIALLY_REFUNDED"
+        ].includes(tipoEvento)
+      ) {
+        statusPedido = "estornado";
+      } else if (
+        [
+          "PAYMENT_CHARGEBACK_REQUESTED",
+          "PAYMENT_CHARGEBACK_DISPUTE"
+        ].includes(tipoEvento)
+      ) {
+        statusPedido = "chargeback";
+      } else if (
+        tipoEvento === "PAYMENT_OVERDUE"
+      ) {
+        statusPedido = "vencido";
+      } else if (
+        [
+          "PAYMENT_DELETED",
+          "PAYMENT_CREDIT_CARD_CAPTURE_REFUSED",
+          "PAYMENT_REPROVED_BY_RISK_ANALYSIS"
+        ].includes(tipoEvento)
+      ) {
+        statusPedido = "cancelado";
       }
 
       // Atualiza no Supabase
-      const { data, error } = await supabase
-        .from('pedidos')
+      let consultaPedido = supabase
+        .from("pedidos")
         .update({
           gateway_status: gatewayStatus,
           status: statusPedido,
           paid_at: paidAt,
           gateway_payment_id: paymentId
         })
-        .eq('gateway_payment_id', paymentId)
+        .eq("gateway_payment_id", paymentId);
+
+      if (
+        Number.isInteger(pedidoIdReferencia) &&
+        pedidoIdReferencia > 0
+      ) {
+        consultaPedido = supabase
+          .from("pedidos")
+          .update({
+            gateway_status: gatewayStatus,
+            status: statusPedido,
+            paid_at: paidAt,
+            gateway_payment_id: paymentId
+          })
+          .eq("id", pedidoIdReferencia);
+      }
+
+      const {
+        data,
+        error
+      } = await consultaPedido
         .select()
         .single();
 
@@ -5812,9 +5912,42 @@ app.post(
           throw error;
         }
       } else {
-        console.log(`Pedido atualizado: ${data.numero} | Status: ${statusPedido} | Gateway: ${gatewayStatus}`);
-      }
+        console.log(
+          `Pedido atualizado: ${data.numero} | ` +
+          `Status: ${statusPedido} | ` +
+          `Gateway: ${gatewayStatus}`
+        );
 
+        /*
+        * Só criar as garantias depois que o pagamento
+        * estiver confirmado.
+        */
+        if (pagamentoConfirmado) {
+          try {
+            const garantias =
+              await criarGarantiasDoPedido(data.id);
+
+            console.log(
+              "Garantias criadas ou atualizadas:",
+              {
+                pedidoId: data.id,
+                quantidade: garantias.length
+              }
+            );
+          } catch (erroGarantia) {
+            console.error(
+              "Erro ao criar garantias após pagamento:",
+              erroGarantia
+            );
+
+            /*
+            * O pedido já foi atualizado para pago.
+            * O erro da garantia é registrado no log,
+            * mas não desfaz a confirmação do pagamento.
+            */
+          }
+        }
+      }
       // Marca evento como processado (idempotência)
       eventosProcessados.set(eventoId, Date.now());
 

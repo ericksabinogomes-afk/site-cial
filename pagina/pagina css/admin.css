@@ -5336,3 +5336,362 @@ thead th:last-child{
     }
 
 }
+/* ============================================================
+   COMPLEMENTO — ELEMENTOS NOVOS DO PAINEL
+   Mantém o padrão visual CIAL
+============================================================ */
+
+
+/* ============================================================
+   PAINÉIS DAS ABAS DE PEDIDOS / ORÇAMENTOS
+============================================================ */
+
+.painel-pedido-aba{
+    width:100%;
+    min-width:0;
+}
+
+.painel-pedido-aba .table-container{
+    width:100%;
+}
+
+
+/* ============================================================
+   BOTÃO "VER" — PEDIDOS / ORÇAMENTOS
+============================================================ */
+
+.btn-acao-pedido{
+    min-height:36px;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:8px;
+
+    padding:0 14px;
+
+    border:1px solid #F5D0AA;
+    border-radius:9px;
+
+    background:#FFF8F1;
+
+    color:var(--laranja);
+
+    font-family:"Montserrat",sans-serif;
+    font-size:11px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.btn-acao-pedido i{
+    font-size:12px;
+    pointer-events:none;
+}
+
+.btn-acao-pedido:hover{
+    background:var(--laranja);
+    border-color:var(--laranja);
+    color:var(--branco);
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 6px 15px rgba(245,130,32,.20);
+}
+
+.btn-acao-pedido:active{
+    transform:translateY(0);
+}
+
+
+/* ============================================================
+   STATUS INATIVO
+============================================================ */
+
+.status-inativo{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:7px;
+
+    padding:6px 11px;
+
+    border:1px solid #F0C9C9;
+    border-radius:20px;
+
+    background:#FFF1F1;
+    color:var(--vermelho);
+
+    font-size:11px;
+    font-weight:800;
+}
+
+.status-inativo::before{
+    content:"";
+
+    width:7px;
+    height:7px;
+
+    flex-shrink:0;
+
+    border-radius:50%;
+
+    background:var(--vermelho);
+
+    box-shadow:
+        0 0 0 4px rgba(229,57,53,.08);
+}
+
+
+/* ============================================================
+   FILTROS — CABEÇALHO DO GRUPO
+============================================================ */
+
+.grupo-filtro-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:15px;
+
+    margin-bottom:14px;
+
+    padding-bottom:13px;
+
+    border-bottom:1px solid #E8E8E8;
+}
+
+.grupo-filtro-header h4{
+    margin:0;
+
+    color:var(--texto);
+
+    font-size:13px;
+    font-weight:800;
+}
+
+.grupo-filtro-header span{
+    display:block;
+
+    margin-top:4px;
+
+    color:var(--texto-suave);
+
+    font-size:10px;
+    font-weight:500;
+}
+
+
+/* ============================================================
+   FILTROS — LISTA
+============================================================ */
+
+.lista-filtros-produto{
+    display:flex;
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    width:100%;
+}
+
+
+/* ============================================================
+   ESPECIFICAÇÕES — CLASSE DO BLOCO
+============================================================ */
+
+.especificacoes-dinamicas{
+    width:100%;
+    margin-top:20px;
+}
+
+
+/* ============================================================
+   CONFIGURAÇÕES
+============================================================ */
+
+.settings-form{
+    width:100%;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:18px;
+
+    padding:25px;
+
+    background:var(--branco);
+
+    border:1px solid var(--borda);
+    border-radius:16px;
+
+    box-shadow:
+        0 6px 20px rgba(0,0,0,.06);
+}
+
+.settings-form .form-group{
+    margin-bottom:0;
+}
+
+.settings-form .btn-save{
+    grid-column:1 / -1;
+}
+
+
+/* ============================================================
+   BOTÃO SALVAR CONFIGURAÇÕES
+============================================================ */
+
+.btn-save{
+    min-height:46px;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:9px;
+
+    width:max-content;
+
+    padding:0 22px;
+
+    border:0;
+    border-radius:10px;
+
+    background:var(--laranja);
+    color:var(--branco);
+
+    font-family:"Montserrat",sans-serif;
+
+    font-size:12px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 4px 12px rgba(245,130,32,.18);
+
+    transition:
+        background .22s ease,
+        transform .22s ease,
+        box-shadow .22s ease;
+}
+
+.btn-save:hover{
+    background:var(--laranja-escuro);
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 7px 18px rgba(245,130,32,.25);
+}
+
+.btn-save:active{
+    transform:translateY(0);
+}
+
+.btn-save:disabled{
+    opacity:.7;
+    cursor:wait;
+    transform:none;
+    box-shadow:none;
+}
+
+.btn-save i{
+    font-size:13px;
+}
+
+
+/* ============================================================
+   FOOTER DO PAINEL
+============================================================ */
+
+.admin-footer{
+    margin-left:250px;
+
+    width:calc(100% - 250px);
+
+    padding:20px 40px;
+
+    border-top:1px solid var(--borda);
+
+    background:var(--branco);
+
+    text-align:center;
+}
+
+.admin-footer p{
+    color:var(--texto-suave);
+
+    font-size:11px;
+    font-weight:500;
+}
+
+
+/* ============================================================
+   RESPONSIVO — COMPLEMENTO
+============================================================ */
+
+@media(max-width:800px){
+
+    .settings-form{
+        grid-template-columns:1fr;
+
+        padding:20px;
+    }
+
+    .settings-form .btn-save{
+        grid-column:auto;
+        width:100%;
+    }
+
+    .grupo-filtro-header{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .lista-filtros-produto{
+        gap:8px;
+    }
+
+    .btn-acao-pedido{
+        min-height:34px;
+        padding:0 12px;
+        font-size:10px;
+    }
+
+    .admin-footer{
+        margin-left:0;
+        width:100%;
+        padding:18px 20px;
+    }
+}
+
+
+@media(max-width:500px){
+
+    .settings-form{
+        padding:16px;
+    }
+
+    .btn-acao-pedido{
+        width:100%;
+    }
+
+    .admin-footer p{
+        font-size:10px;
+        line-height:1.5;
+    }
+}

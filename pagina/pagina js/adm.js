@@ -26,11 +26,14 @@ const btnAtualizarUsuarios =document.getElementById("btnAtualizarUsuarios");
 /*==================================================
             AUTENTICAÇÃO DO ADMIN
 ==================================================*/
+function obterTokenAtual() {
+    return localStorage.getItem("tokenCial");
+}
 
-const token = localStorage.getItem("tokenCial");
+const tokenInicial = obterTokenAtual();
 
-if (!token) {
-  window.location.href = "../cadastro/login.html"; // ajuste o caminho conforme sua pasta de login
+if (!tokenInicial) {
+    window.location.href = "../cadastro/login.html";
 }
 
 /*==================================================
@@ -380,7 +383,7 @@ async function carregarConfiguracoesAdmin() {
             `${API_BASE}/admin/configuracoes`,
             {
                 headers: {
-                    "Authorization": `Bearer ${token}`
+                 "Authorization": `Bearer ${obterTokenAtual()}`
                 }
             }
         );
@@ -459,7 +462,7 @@ if (btnSave) {
 
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
+                     "Authorization": `Bearer ${obterTokenAtual()}`
                     },
 
                     body: JSON.stringify(dados)
@@ -532,6 +535,83 @@ const fecharModalProduto =
   document.getElementById("fecharModalProduto");
 
 
+/*==================================================
+        LIMPAR FORMULÁRIO — NOVO PRODUTO
+==================================================*/
+
+function limparFormularioProduto() {
+
+    if (!modalNovoProduto) {
+        return;
+    }
+
+    modalNovoProduto
+        .querySelectorAll("input, textarea, select")
+        .forEach(campo => {
+
+            if (
+                campo.type === "checkbox" ||
+                campo.type === "radio"
+            ) {
+                campo.checked = false;
+                return;
+            }
+
+            if (campo.tagName === "SELECT") {
+                campo.selectedIndex = 0;
+                return;
+            }
+
+            campo.value = "";
+        });
+
+    /* ATIVO COMEÇA MARCADO */
+    const ativo =
+        document.getElementById(
+            "novoProdutoAtivo"
+        );
+
+    if (ativo) {
+        ativo.checked = true;
+    }
+
+    /* LIMPAR IMAGENS */
+    arquivosSelecionados = [];
+
+    if (inputImagem) {
+        inputImagem.value = "";
+    }
+
+    if (previewImagem) {
+        previewImagem.innerHTML = "";
+    }
+
+    atualizarPreviewImagem("");
+
+    /* LIMPAR CATEGORIAS */
+    checkboxesCategorias.forEach(
+        checkbox => {
+            checkbox.checked = false;
+        }
+    );
+
+    atualizarResumoCategorias();
+
+    /* LIMPAR FILTROS */
+    atualizarFiltrosDinamicos();
+
+    /* LIMPAR ESPECIFICAÇÕES */
+    atualizarEspecificacoesProduto();
+
+    /* VOLTAR PARA ETAPA 1 */
+    mostrarEtapaProduto(1);
+
+    /* SAIR DO MODO EDIÇÃO */
+    produtoEditandoId = null;
+    produtoEditando = null;
+}
+
+
 /* ABRIR */
 
 btnAddProduto.forEach(botao => {
@@ -542,8 +622,7 @@ btnAddProduto.forEach(botao => {
             return;
         }
 
-        produtoEditandoId = null;
-        produtoEditando = null;
+        limparFormularioProduto();
 
         modalNovoProduto.classList.add("ativo");
 
@@ -758,7 +837,7 @@ console.log("📸 ARQUIVOS NO UPLOAD:", arquivosSelecionados);
     const res = await fetch(`${API_BASE}/upload-imagens`, {
         method: "POST",
         headers: {
-            "Authorization": `Bearer ${token}`
+          "Authorization": `Bearer ${obterTokenAtual()}`
         },
         body: formData
     });
@@ -835,24 +914,52 @@ btnPublicarProduto?.addEventListener(
 
             
 
-                /* IMAGENS */
+    /* IMAGENS */
 
-const urlsImagens = await enviarImagensProduto();
+let imagemPrincipal =
+    produtoEditando?.imagem || "";
 
-const imagemPrincipal = urlsImagens[0] || "";
+let imagensAdicionais =
+    Array.isArray(produtoEditando?.imagens)
+        ? [...produtoEditando.imagens]
+        : [];
 
-const imagensAdicionais = urlsImagens.slice(1);
+/*
+ * Só substitui as imagens existentes
+ * quando o usuário realmente enviar
+ * novas imagens.
+ */
+if (
+    arquivosSelecionados &&
+    arquivosSelecionados.length > 0
+) {
 
+    const urlsImagens =
+        await enviarImagensProduto();
+
+    if (urlsImagens.length > 0) {
+
+        imagemPrincipal =
+            urlsImagens[0] || imagemPrincipal;
+
+        imagensAdicionais =
+            urlsImagens.slice(1);
+
+    }
+
+}
 
             /* DADOS DO PRODUTO */
 
-            const dadosProduto = {
+                     const dadosProduto = {
 
                 ...informacoes,
 
                 imagem: imagemPrincipal,
                 imagens: imagensAdicionais,
- 
+
+                /* MANTÉM OS DOIS FORMATOS */
+                categoria: categorias[0] || "",
                 categorias,
 
                 filtros,
@@ -860,6 +967,8 @@ const imagensAdicionais = urlsImagens.slice(1);
                 especificacoes,
 
                 preco:
+
+
                     Number(
                         document.getElementById(
                             "novoProdutoPreco"
@@ -934,16 +1043,19 @@ const produtoSalvo = produtoEditandoId
             );
 
 
-            /* FECHAR MODAL */
+          /* FECHAR MODAL */
 
-            const modal =
-                document.getElementById(
-                    "modalNovoProduto"
-                );
+const modal =
+    document.getElementById(
+        "modalNovoProduto"
+    );
 
-            if (modal) {
-                modal.classList.remove("ativo");
-            }
+if (modal) {
+    modal.classList.remove("ativo");
+}
+
+/* LIMPAR FORMULÁRIO E IMAGENS APÓS SUCESSO */
+limparFormularioProduto();
 
 
             /* ATUALIZAR LISTA */
@@ -1323,7 +1435,7 @@ const filtrosProdutos = {
         ]
     },
 
-    "linha-bateria": {
+     "linha-bateria": {
         aplicacao: [
             "Uso Doméstico",
             "Uso Profissional",
@@ -1333,6 +1445,190 @@ const filtrosProdutos = {
         ],
         linha: [
             "Bateria"
+        ]
+    },
+
+    /*========================================
+        BOMBAS E IRRIGAÇÃO
+    ========================================*/
+
+    "bombas-centrifugas": {
+        aplicacao: [
+            "Uso Residencial",
+            "Uso Comercial",
+            "Uso Industrial",
+            "Agricultura",
+            "Irrigação"
+        ],
+        linha: [
+            "Elétrica",
+            "Gasolina",
+            "Diesel"
+        ]
+    },
+
+    "bombas-perifericas": {
+        aplicacao: [
+            "Uso Residencial",
+            "Uso Comercial",
+            "Irrigação"
+        ],
+        linha: [
+            "Elétrica"
+        ]
+    },
+
+    "bombas-submersas": {
+        aplicacao: [
+            "Abastecimento de água",
+            "Uso Residencial",
+            "Agricultura",
+            "Irrigação"
+        ],
+        linha: [
+            "Elétrica"
+        ]
+    },
+
+    "bombas-submersiveis": {
+        aplicacao: [
+            "Drenagem",
+            "Uso Residencial",
+            "Uso Comercial",
+            "Uso Industrial"
+        ],
+        linha: [
+            "Elétrica"
+        ]
+    },
+
+    "bombas-autoaspirantes": {
+        aplicacao: [
+            "Abastecimento de água",
+            "Uso Residencial",
+            "Agricultura",
+            "Irrigação"
+        ],
+        linha: [
+            "Elétrica",
+            "Gasolina",
+            "Diesel"
+        ]
+    },
+
+    "bombas-injetoras": {
+        aplicacao: [
+            "Abastecimento de água",
+            "Agricultura",
+            "Irrigação"
+        ],
+        linha: [
+            "Elétrica"
+        ]
+    },
+
+    "bombas-motobombas-irrigacao": {
+        aplicacao: [
+            "Irrigação",
+            "Agricultura",
+            "Uso Profissional"
+        ],
+        linha: [
+            "Gasolina",
+            "Diesel"
+        ]
+    },
+
+    "bombas-piscina": {
+        aplicacao: [
+            "Piscina",
+            "Uso Residencial",
+            "Uso Comercial"
+        ],
+        linha: [
+            "Elétrica"
+        ]
+    },
+
+    "bombas-irrigacao": {
+        aplicacao: [
+            "Irrigação",
+            "Agricultura",
+            "Uso Profissional"
+        ],
+        linha: [
+            "Elétrica",
+            "Gasolina",
+            "Diesel"
+        ]
+    },
+
+    "bombas-poco": {
+        aplicacao: [
+            "Abastecimento de água",
+            "Uso Residencial",
+            "Agricultura"
+        ],
+        linha: [
+            "Elétrica"
+        ]
+    },
+
+    "bombas-drenagem": {
+        aplicacao: [
+            "Drenagem",
+            "Uso Comercial",
+            "Uso Industrial",
+            "Construção"
+        ],
+        linha: [
+            "Elétrica",
+            "Gasolina",
+            "Diesel"
+        ]
+    },
+
+    "bombas-esgoto": {
+        aplicacao: [
+            "Esgoto",
+            "Uso Residencial",
+            "Uso Comercial",
+            "Uso Industrial"
+        ],
+        linha: [
+            "Elétrica"
+        ]
+    },
+
+    "bombas-pressurizadores": {
+        aplicacao: [
+            "Pressurização",
+            "Uso Residencial",
+            "Uso Comercial"
+        ],
+        linha: [
+            "Elétrica"
+        ]
+    },
+
+    "bombas-sistemas-pressurizacao": {
+        aplicacao: [
+            "Pressurização",
+            "Uso Residencial",
+            "Uso Comercial",
+            "Uso Industrial"
+        ],
+        linha: [
+            "Elétrica"
+        ]
+    },
+
+    "bombas-acessorios": {
+        aplicacao: [
+            "Uso Residencial",
+            "Uso Comercial",
+            "Uso Industrial",
+            "Irrigação"
         ]
     }
 
@@ -3375,7 +3671,7 @@ atualizarEspecificacoesProduto();
 /*==================================================
                 PRODUTOS - VIA API
 ==================================================*/
-
+ 
 let produtosAdmin = [];
 
 
@@ -3582,11 +3878,12 @@ async function carregarCategorias() {
 
                     <td>
 
-                        <button
+                                              <button
                             type="button"
                             class="btn-editar-categoria"
                             data-id="${item.id}"
                             data-categoria="${escaparHTML(item.nome)}"
+                            data-grupo="${escaparHTML(item.grupo || "Produtos")}"
                             title="Editar categoria">
 
                             <i class="fa-solid fa-pen"></i>
@@ -3598,11 +3895,9 @@ async function carregarCategorias() {
                             class="btn-excluir-categoria"
                             data-id="${item.id}"
                             data-categoria="${escaparHTML(item.nome)}"
+                            data-grupo="${escaparHTML(item.grupo || "Produtos")}"
                             title="Excluir categoria">
 
-                            <i class="fa-solid fa-trash"></i>
-
-                        </button>
 
                     </td>
 
@@ -3632,7 +3927,7 @@ async function carregarCategorias() {
         EDITAR CATEGORIA - MODAL
 ==================================================*/
 
-function abrirModalEditarCategoria(id, nomeAtual) {
+function abrirModalEditarCategoria(id, nomeAtual, grupoAtual) {
 
     const modalExistente =
         document.getElementById("modalCategoria");
@@ -3806,7 +4101,7 @@ function abrirModalEditarCategoria(id, nomeAtual) {
 
             try {
 
-                const resposta =
+                             const resposta =
                     await fetch(
                         `${API_BASE}/admin/categorias/${id}`,
                         {
@@ -3820,12 +4115,12 @@ function abrirModalEditarCategoria(id, nomeAtual) {
                                     "application/json",
 
                                 Authorization:
-                                    `Bearer ${token}`
+                                  `Bearer ${obterTokenAtual()}`
                             },
 
                             body: JSON.stringify({
                                 nome,
-                                grupo: "Produtos"
+                                grupo: grupoAtual
                             })
                         }
                     );
@@ -3905,15 +4200,19 @@ const botaoEditar =
 
 if (botaoEditar) {
 
-    const id =
+     const id =
         Number(botaoEditar.dataset.id);
 
     const nomeAtual =
         botaoEditar.dataset.categoria || "";
 
+    const grupoAtual =
+        botaoEditar.dataset.grupo || "Produtos";
+
     abrirModalEditarCategoria(
         id,
-        nomeAtual
+        nomeAtual,
+        grupoAtual
     );
 
     return;
@@ -3956,7 +4255,7 @@ if (botaoEditar) {
                                 "application/json",
 
                             Authorization:
-                                `Bearer ${token}`
+                              `Bearer ${obterTokenAtual()}`
                         }
                     }
                 );
@@ -4202,7 +4501,7 @@ function abrirModalCategoria() {
                                     "application/json",
 
                                 Authorization:
-                                    `Bearer ${token}`
+                                 `Bearer ${obterTokenAtual()}`
                             },
 
                             body: JSON.stringify({
@@ -4277,7 +4576,7 @@ async function criarProduto(dados) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+     "Authorization": `Bearer ${obterTokenAtual()}`
     },
     body: JSON.stringify(dados)
   });
@@ -4321,7 +4620,7 @@ async function atualizarProduto(id, dados) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+    "Authorization": `Bearer ${obterTokenAtual()}`
     },
     body: JSON.stringify(dados)
   });
@@ -4344,7 +4643,7 @@ async function excluirProduto(id) {
   const res = await fetch(url, {
     method: "DELETE",
     headers: {
-      "Authorization": `Bearer ${token}`
+    "Authorization": `Bearer ${obterTokenAtual()}`
     }
   });
 
@@ -4543,24 +4842,28 @@ async function carregarDashboardAdmin() {
 const cliente =
     pedido.cliente || "";
 
-        return `
+             return `
           <tr>
 
             <td>
-              #${pedido.id}
+              #${escaparHTML(
+                pedido.id
+              )}
             </td>
 
             <td>
-              ${cliente}
+              ${escaparHTML(cliente)}
             </td>
 
             <td>
-              ${status}
+              ${escaparHTML(status)}
             </td>
 
             <td>
               ${formatarMoeda(
-                pedido.total || 0
+                pedido.total ??
+                pedido.valor ??
+                0
               )}
             </td>
 
@@ -4930,11 +5233,10 @@ async function carregarPedidosAdmin() {
                         : "-";
 
 
-                const valor =
-                    formatarMoeda(
-                        pedido.valor || 0
-                    );
-
+               const valor =
+    formatarMoeda(
+        pedido.total ?? pedido.valor ?? 0
+    );
 
                 return `
                     <tr>
@@ -4968,7 +5270,7 @@ async function carregarPedidosAdmin() {
                             <button
                                 type="button"
                                 class="btn-acao-pedido"
-                                onclick="verPedidoAdmin(${pedido.id})"
+                              data-id="${pedido.id}"
                             >
                                 <i class="fa-solid fa-eye"></i>
                                 Ver
@@ -5124,10 +5426,12 @@ async function carregarOrcamentosAdmin() {
                         )
                         : "-";
 
-                const valor =
-                    formatarMoeda(
-                        orcamento.valor || 0
-                    );
+              const valor =
+    formatarMoeda(
+        orcamento.valor_total ??
+        orcamento.valor ??
+        0
+    );
 
                 const status =
                     orcamento.status ||
@@ -5161,7 +5465,7 @@ async function carregarOrcamentosAdmin() {
                             <button
                                 type="button"
                                 class="btn-acao-pedido"
-                                onclick="verOrcamentoAdmin(${orcamento.id})"
+                           data-id="${orcamento.id}"
                             >
                                 <i class="fa-solid fa-eye"></i>
                                 Ver
@@ -5579,43 +5883,74 @@ if (campoStatus) {
         // TOTAL
         // ==========================================
 
-        const valorTotal =
-            Number(
-                orcamento.valor_total
-            ) || 0;
+        
+const subtotalOrcamento =
+    listaItens.reduce(
+        (total, item) => {
 
+            const quantidade =
+                Number(
+                    item.quantidade
+                ) || 0;
 
-        const campoSubtotal =
-            document.getElementById(
-                "orcamentoModalSubtotal"
-            );
+            const precoUnitario =
+                Number(
+                    item.preco_unitario
+                ) || 0;
 
-
-        const campoTotal =
-            document.getElementById(
-                "orcamentoModalTotal"
-            );
-
-
-        if (campoSubtotal) {
-
-            campoSubtotal.textContent =
-                formatarMoeda(
-                    valorTotal
+            const subtotalItem =
+                Number(
+                    item.subtotal
+                ) ||
+                (
+                    quantidade *
+                    precoUnitario
                 );
 
-        }
+            return total + subtotalItem;
+        },
+        0
+    );
 
 
-        if (campoTotal) {
+const valorTotal =
+    Number(
+        orcamento.valor_total ??
+        orcamento.valor ??
+        0
+    );
 
-            campoTotal.textContent =
-                formatarMoeda(
-                    valorTotal
-                );
 
-        }
+const campoSubtotal =
+    document.getElementById(
+        "orcamentoModalSubtotal"
+    );
 
+
+const campoTotal =
+    document.getElementById(
+        "orcamentoModalTotal"
+    );
+
+
+if (campoSubtotal) {
+
+    campoSubtotal.textContent =
+        formatarMoeda(
+            subtotalOrcamento
+        );
+
+}
+
+
+if (campoTotal) {
+
+    campoTotal.textContent =
+        formatarMoeda(
+            valorTotal
+        );
+
+}
 
         // ==========================================
         // OBSERVAÇÕES
@@ -7020,30 +7355,47 @@ function renderizarProdutos() {
 
   listaProdutos.innerHTML = "";
 
-  produtosAdmin.forEach(produto => {
+    produtosAdmin.forEach(produto => {
     const linha = document.createElement("tr");
+
+    const categoriasProduto =
+      Array.isArray(produto.categorias) &&
+      produto.categorias.length > 0
+        ? produto.categorias
+        : produto.categoria
+            ? [produto.categoria]
+            : [];
+
+    const categoriaExibicao =
+      categoriasProduto.join(", ") || "Sem categoria";
 
     linha.innerHTML = `
       <td>
-        <img
-          src="${produto.imagem || ""}"
-          alt="${produto.nome}"
+              <img
+          src="${escaparHTML(produto.imagem || "")}"
+          alt="${escaparHTML(produto.nome)}"
           class="produto-imagem-tabela">
       </td>
 
-      <td>${produto.nome}</td>
+      <td>${escaparHTML(produto.nome)}</td>
 
-      <td>${produto.categoria}</td>
+      <td>${escaparHTML(categoriaExibicao)}</td>
 
       <td>${formatarMoeda(produto.preco)}</td>
 
-      <td>${produto.estoque}</td>
 
-      <td>
-        <span class="status-ativo">
-          Ativo
+
+           <td>
+
+        <span class="${produto.ativo ? "status-ativo" : "status-inativo"}">
+
+          ${produto.ativo ? "Ativo" : "Inativo"}
+
         </span>
+
       </td>
+
+
 
       <td>
         <button
@@ -7195,10 +7547,13 @@ if (destaque) {
 
     /* CATEGORIAS */
 
-    const categoriasProduto =
-        Array.isArray(produto.categorias)
+      const categoriasProduto =
+        Array.isArray(produto.categorias) &&
+        produto.categorias.length > 0
             ? produto.categorias
-            : [];
+            : produto.categoria
+                ? [produto.categoria]
+                : [];
 
     checkboxesCategorias.forEach(checkbox => {
 
@@ -7207,13 +7562,35 @@ if (destaque) {
 
     });
 
-      atualizarResumoCategorias();
+   atualizarResumoCategorias();
 
-    /* ATUALIZA FILTROS DINÂMICOS */
-    atualizarFiltrosDinamicos();
+/* ATUALIZA FILTROS DINÂMICOS */
+atualizarFiltrosDinamicos();
 
-    /* RESTAURA FILTROS SALVOS */
-    const filtrosSalvos = produto.filtros || {};
+/* ATUALIZA ESPECIFICAÇÕES DINÂMICAS */
+atualizarEspecificacoesProduto();
+
+/* RESTAURA ESPECIFICAÇÕES SALVAS */
+const especificacoesSalvas =
+    produto.especificacoes || {};
+
+Object.entries(especificacoesSalvas).forEach(
+    ([id, valor]) => {
+
+        const campo =
+            document.getElementById(
+                `especificacao_${id}`
+            );
+
+        if (campo) {
+            campo.value = valor ?? "";
+        }
+
+    }
+);
+
+/* RESTAURA FILTROS SALVOS */
+const filtrosSalvos = produto.filtros || {};
 
     Object.entries(filtrosSalvos).forEach(
         ([grupo, valores]) => {
@@ -7250,19 +7627,65 @@ if (destaque) {
 
 /* Excluir produto */
 document.addEventListener("click", async event => {
-  const botaoEditar = event.target.closest(".btn-editar-produto");
+
+  /* ==========================================
+     VER PEDIDO / VER ORÇAMENTO
+     ========================================== */
+
+  const botaoVer =
+    event.target.closest(".btn-acao-pedido[data-id]");
+
+  if (botaoVer) {
+
+    const id =
+      Number(botaoVer.dataset.id);
+
+    if (
+      botaoVer.closest("#painelPedidos")
+    ) {
+      verPedidoAdmin(id);
+      return;
+    }
+
+    if (
+      botaoVer.closest("#painelOrcamentos")
+    ) {
+      verOrcamentoAdmin(id);
+      return;
+    }
+  }
+
+
+  /* ==========================================
+     EDITAR PRODUTO
+     ========================================== */
+
+  const botaoEditar =
+    event.target.closest(".btn-editar-produto");
 
   if (botaoEditar) {
-    abrirEdicaoProduto(Number(botaoEditar.dataset.id));
+
+    abrirEdicaoProduto(
+      Number(botaoEditar.dataset.id)
+    );
+
     return;
   }
 
-  const botaoExcluir = event.target.closest(".btn-excluir-produto");
+
+  /* ==========================================
+     EXCLUIR PRODUTO
+     ========================================== */
+
+  const botaoExcluir =
+    event.target.closest(".btn-excluir-produto");
+
   if (!botaoExcluir) {
     return;
   }
 
-  const id = Number(botaoExcluir.dataset.id);
+  const id =
+    Number(botaoExcluir.dataset.id);
 
   const confirmar = confirm(
     "Deseja realmente excluir este produto?"
@@ -7273,14 +7696,22 @@ document.addEventListener("click", async event => {
   }
 
   try {
-    await excluirProduto(id);
-    await carregarProdutosAdmin();
-  } catch (erro) {
-    console.error(erro);
-    alert("Erro ao excluir produto. Verifique o console.");
-  }
-});
 
+    await excluirProduto(id);
+
+    await carregarProdutosAdmin();
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    alert(
+      "Erro ao excluir produto. Verifique o console."
+    );
+
+  }
+
+});
 
 /*==================================================
         CONTROLE DE USUÁRIOS

@@ -930,31 +930,333 @@ app.delete(
   autenticarToken,
   exigirAdmin,
   async (req, res) => {
+
     try {
-      const { id } = req.params;
 
-      // Exemplo com Supabase:
-      const { data, error } = await supabase
-        .from("produtos")
-        .delete()
-        .eq("id", id)
-        .select();
+      const produtoId =
+        Number.parseInt(req.params.id, 10);
 
-      if (error || !data || data.length === 0) {
-        return res.status(404).json({
+
+      /* ==========================================
+         VALIDAR ID
+         ========================================== */
+
+      if (
+        !Number.isInteger(produtoId) ||
+        produtoId <= 0
+      ) {
+
+        return res.status(400).json({
           ok: false,
-          erro: "Produto não encontrado ou erro ao excluir"
+          erro: "ID do produto inválido"
         });
+
       }
 
-      res.json({ ok: true });
-    } catch (err) {
-      console.error("Erro ao excluir produto:", err);
-      res.status(500).json({
-        ok: false,
-        erro: "Erro interno ao excluir produto"
+
+      /* ==========================================
+         VERIFICAR SE O PRODUTO EXISTE
+         ========================================== */
+
+      const {
+        data: produto,
+        error: erroProduto
+      } = await supabase
+        .from("produtos")
+        .select("id, nome, ativo")
+        .eq("id", produtoId)
+        .maybeSingle();
+
+
+      if (erroProduto) {
+
+        console.error(
+          "Erro ao buscar produto para exclusão:",
+          erroProduto
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroProduto.message
+        });
+
+      }
+
+
+      if (!produto) {
+
+        return res.status(404).json({
+          ok: false,
+          erro: "Produto não encontrado"
+        });
+
+      }
+
+
+      /* ==========================================
+         VERIFICAR PEDIDOS
+         ========================================== */
+
+      const {
+        data: itensPedidos,
+        error: erroPedidos
+      } = await supabase
+        .from("pedido_itens")
+        .select("id")
+        .eq("produto_id", produtoId)
+        .limit(1);
+
+
+      if (erroPedidos) {
+
+        console.error(
+          "Erro ao verificar pedidos do produto:",
+          erroPedidos
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroPedidos.message
+        });
+
+      }
+
+
+      /* ==========================================
+         VERIFICAR ORÇAMENTOS
+         ========================================== */
+
+      const {
+        data: itensOrcamentos,
+        error: erroOrcamentos
+      } = await supabase
+        .from("orcamento_itens")
+        .select("id")
+        .eq("produto_id", produtoId)
+        .limit(1);
+
+
+      if (erroOrcamentos) {
+
+        console.error(
+          "Erro ao verificar orçamentos do produto:",
+          erroOrcamentos
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroOrcamentos.message
+        });
+
+      }
+
+
+      /* ==========================================
+         POSSUI HISTÓRICO
+         → DESATIVAR
+         ========================================== */
+
+      if (
+        (itensPedidos && itensPedidos.length > 0) ||
+        (itensOrcamentos && itensOrcamentos.length > 0)
+      ) {
+
+        const {
+          data: produtoDesativado,
+          error: erroDesativar
+        } = await supabase
+          .from("produtos")
+          .update({
+            ativo: false
+          })
+          .eq("id", produtoId)
+          .select("id, nome, ativo")
+          .single();
+
+
+        if (erroDesativar) {
+
+          console.error(
+            "Erro ao desativar produto:",
+            erroDesativar
+          );
+
+          return res.status(500).json({
+            ok: false,
+            erro: erroDesativar.message
+          });
+
+        }
+
+
+        console.log(
+          "✅ Produto desativado devido ao histórico:",
+          produtoDesativado
+        );
+
+
+        return res.json({
+          ok: true,
+          desativado: true,
+          mensagem:
+            "Produto desativado porque possui histórico de pedidos ou orçamentos.",
+          data: produtoDesativado
+        });
+
+      }
+
+
+      /* ==========================================
+         REMOVER CATEGORIAS
+         ========================================== */
+
+      const {
+        error: erroCategorias
+      } = await supabase
+        .from("produto_categorias")
+        .delete()
+        .eq("produto_id", produtoId);
+
+
+      if (erroCategorias) {
+
+        console.error(
+          "Erro ao remover categorias do produto:",
+          erroCategorias
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroCategorias.message
+        });
+
+      }
+
+
+      /* ==========================================
+         REMOVER FAVORITOS
+         ========================================== */
+
+      const {
+        error: erroFavoritos
+      } = await supabase
+        .from("favoritos")
+        .delete()
+        .eq("produto_id", produtoId);
+
+
+      if (erroFavoritos) {
+
+        console.error(
+          "Erro ao remover favoritos:",
+          erroFavoritos
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroFavoritos.message
+        });
+
+      }
+
+
+      /* ==========================================
+         REMOVER DO CARRINHO
+         ========================================== */
+
+      const {
+        error: erroCarrinho
+      } = await supabase
+        .from("carrinho_itens")
+        .delete()
+        .eq("produto_id", produtoId);
+
+
+      if (erroCarrinho) {
+
+        console.error(
+          "Erro ao remover produto do carrinho:",
+          erroCarrinho
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroCarrinho.message
+        });
+
+      }
+
+
+      /* ==========================================
+         EXCLUIR DEFINITIVAMENTE
+         ========================================== */
+
+      const {
+        data: produtoExcluido,
+        error: erroExclusao
+      } = await supabase
+        .from("produtos")
+        .delete()
+        .eq("id", produtoId)
+        .select("id, nome")
+        .maybeSingle();
+
+
+      if (erroExclusao) {
+
+        console.error(
+          "Erro Supabase ao excluir produto:",
+          erroExclusao
+        );
+
+        return res.status(500).json({
+          ok: false,
+          erro: erroExclusao.message,
+          detalhes: erroExclusao.details,
+          hint: erroExclusao.hint,
+          codigo: erroExclusao.code
+        });
+
+      }
+
+
+      if (!produtoExcluido) {
+
+        return res.status(404).json({
+          ok: false,
+          erro: "Produto não foi excluído"
+        });
+
+      }
+
+
+      console.log(
+        "✅ Produto excluído definitivamente:",
+        produtoExcluido
+      );
+
+
+      return res.json({
+        ok: true,
+        mensagem: "Produto excluído com sucesso",
+        data: produtoExcluido
       });
+
+
+    } catch (err) {
+
+      console.error(
+        "Erro inesperado ao excluir produto:",
+        err
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: err.message
+      });
+
     }
+
   }
 );
 

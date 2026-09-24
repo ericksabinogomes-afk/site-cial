@@ -5189,6 +5189,15 @@ async function carregarPedidosAdmin() {
                 ? resultado.data
                 : [];
 
+        console.log(
+            "Pedidos recebidos:",
+            pedidos
+        );
+
+        console.log(
+            "Primeiro pedido:",
+            pedidos[0]
+        )
 
         if (pedidos.length === 0) {
 
@@ -5210,17 +5219,42 @@ async function carregarPedidosAdmin() {
                 const numero =
                     pedido.numero || "-";
 
+                const clienteBruto =
+                    pedido.cliente?.nome ||
+                    pedido.usuario?.nome ||
+                    pedido.cliente_dados?.nome ||
+                    pedido.nome_cliente ||
+                    (typeof pedido.cliente === "string"
+                        ? pedido.cliente
+                        : "-");
 
                 const cliente =
-                    pedido.cliente || "-";
+                    formatarClienteTabela(
+                        clienteBruto
+                    );
 
+
+                const pagamentoBruto =
+                    pedido.pagamento?.descricao ||
+                    pedido.pagamento?.metodo ||
+                    pedido.pagamento?.nome ||
+                    pedido.metodo_pagamento ||
+                    pedido.gateway_status ||
+                    pedido.gateway ||
+                    (typeof pedido.pagamento === "string"
+                        ? pedido.pagamento
+                        : "-");
 
                 const pagamento =
-                    pedido.pagamento || "-";
+                    formatarPagamentoTabela(
+                        pagamentoBruto
+                    );
 
 
                 const status =
-                    pedido.status || "-";
+                    formatarStatusTabela(
+                        pedido.status
+                    );
 
 
                 const data =
@@ -6563,42 +6597,61 @@ function preencherModalPedido(pedido) {
         {};
 
 
+
     const numero =
         pedido.numero ||
         pedido.id ||
         "—";
 
 
+
     const cliente =
-        pedido.cliente ||
+        pedido.cliente?.nome ||
         usuario.nome ||
         pedido.nome_cliente ||
-        "—";
+        (typeof pedido.cliente === "string"
+            ? pedido.cliente
+            : "—");
+
 
 
     const email =
-        pedido.email ||
+        pedido.cliente?.email ||
         usuario.email ||
+        pedido.email ||
         "—";
+
 
 
     const telefone =
-        pedido.telefone ||
+        pedido.cliente?.telefone ||
+        pedido.cliente?.whatsapp ||
         usuario.telefone ||
+        usuario.whatsapp ||
+        pedido.telefone ||
         "—";
+
 
 
     const cpf =
-        pedido.cpf ||
+        pedido.cliente?.cpf ||
         usuario.cpf ||
+        pedido.cpf ||
         "—";
+
 
 
     const pagamento =
-        pedido.pagamento ||
+        pedido.pagamento?.descricao ||
+        pedido.pagamento?.metodo ||
+        pedido.pagamento?.nome ||
         pedido.forma_pagamento ||
         pedido.metodo_pagamento ||
-        "—";
+        pedido.gateway_status ||
+        pedido.gateway ||
+        (typeof pedido.pagamento === "string"
+            ? pedido.pagamento
+            : "—");
 
 
     const data =
@@ -6611,7 +6664,10 @@ function preencherModalPedido(pedido) {
         formatarDataPedido(
             pedido.updated_at ||
             pedido.atualizado_em ||
-            pedido.data_atualizacao
+            pedido.data_atualizacao ||
+            pedido.paid_at ||
+            pedido.created_at ||
+            pedido.data_pedido
         );
 
 
@@ -6687,7 +6743,7 @@ function preencherModalPedido(pedido) {
 
     definirTexto(
         "pedidoModalPagamento",
-        pagamento
+        formatarPagamentoAdmin(pagamento)
     );
 
     definirTexto(
@@ -6786,6 +6842,57 @@ function preencherModalPedido(pedido) {
         formatarMoeda(total)
     );
 
+}
+
+
+/*==================================================
+        TRADUÇÃO DO STATUS DE PAGAMENTO
+==================================================*/
+
+function formatarPagamentoAdmin(valor) {
+    const pagamentos = {
+        PENDING: "Aguardando pagamento",
+        RECEIVED: "Pagamento recebido",
+        CONFIRMED: "Pagamento confirmado",
+        RECEIVED_IN_CASH: "Recebido em dinheiro",
+        OVERDUE: "Pagamento vencido",
+        REFUNDED: "Pagamento estornado",
+        REFUND_REQUESTED: "Estorno solicitado",
+        CHARGEBACK_REQUESTED: "Contestação solicitada",
+        CHARGEBACK_DISPUTE: "Contestação em análise",
+        AWAITING_CHARGEBACK_REVERSAL: "Aguardando reversão da contestação",
+        DUNNING_REQUESTED: "Cobrança solicitada",
+        DUNNING_RECEIVED: "Cobrança recebida",
+        AWAITING_RISK_ANALYSIS: "Aguardando análise de risco",
+        CANCELED: "Pagamento cancelado",
+        CANCELLED: "Pagamento cancelado"
+    };
+
+    if (!valor) {
+        return "—";
+    }
+
+    return pagamentos[
+        String(valor).toUpperCase()
+    ] || valor;
+}
+
+function formatarStatusPedidoAdmin(valor) {
+    const status = {
+        aguardando_pagamento: "Aguardando pagamento",
+        pagamento_aprovado: "Pagamento aprovado",
+        pago: "Pago",
+        em_preparacao: "Em preparação",
+        enviado: "Enviado",
+        entregue: "Entregue",
+        cancelado: "Cancelado"
+    };
+
+    if (!valor) {
+        return "—";
+    }
+
+    return status[valor] || valor;
 }
 
 
@@ -7075,33 +7182,49 @@ function definirTexto(id, valor) {
 
 
 function formatarDataPedido(data) {
-
     if (!data) {
         return "—";
     }
 
+    /*
+        Se vier somente como YYYY-MM-DD,
+        não use new Date() diretamente.
+        Isso evita deslocamento de dia por fuso horário.
+    */
+    if (
+        typeof data === "string" &&
+        /^\d{4}-\d{2}-\d{2}$/.test(data)
+    ) {
+        const [
+            ano,
+            mes,
+            dia
+        ] = data.split("-");
 
-    const dataObj =
-        new Date(data);
-
-
-    if (Number.isNaN(
-        dataObj.getTime()
-    )) {
-
-        return String(data);
-
+        return `${dia}/${mes}/${ano}`;
     }
 
+    const dataFormatada =
+        new Date(data);
 
-    return dataObj.toLocaleString(
+    if (
+        Number.isNaN(
+            dataFormatada.getTime()
+        )
+    ) {
+        return "—";
+    }
+
+    return dataFormatada.toLocaleString(
         "pt-BR",
         {
-            dateStyle: "short",
-            timeStyle: "short"
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
         }
     );
-
 }
 
 
@@ -8219,3 +8342,89 @@ document.addEventListener(
 
   }
 );
+
+/*==================================================
+        TRADUÇÕES DA TABELA DE PEDIDOS
+==================================================*/
+
+function formatarPagamentoTabela(valor) {
+    const pagamentos = {
+        PENDING: "Aguardando pagamento",
+        RECEIVED: "Pagamento recebido",
+        CONFIRMED: "Pagamento confirmado",
+        OVERDUE: "Pagamento vencido",
+        REFUNDED: "Pagamento estornado",
+        RECEIVED_IN_CASH: "Recebido em dinheiro",
+        REFUND_REQUESTED: "Estorno solicitado",
+        REFUND_IN_PROGRESS: "Estorno em processamento",
+        CHARGEBACK_REQUESTED: "Contestação solicitada",
+        CHARGEBACK_DISPUTE: "Contestação em análise",
+        AWAITING_RISK_ANALYSIS: "Em análise de risco",
+
+        pending: "Aguardando pagamento",
+        received: "Pagamento recebido",
+        confirmed: "Pagamento confirmado",
+        overdue: "Pagamento vencido",
+        refunded: "Pagamento estornado",
+
+        cartao_credito: "Cartão de crédito",
+        cartao_debito: "Cartão de débito",
+        pix: "PIX",
+        boleto: "Boleto"
+    };
+
+    if (!valor) {
+        return "-";
+    }
+
+    const valorTexto =
+        String(valor).trim();
+
+    return pagamentos[valorTexto] ||
+        pagamentos[valorTexto.toUpperCase()] ||
+        valorTexto;
+}
+
+
+function formatarStatusTabela(valor) {
+    const status = {
+        aguardando_pagamento: "Aguardando pagamento",
+        pagamento_aprovado: "Pagamento aprovado",
+        pago: "Pago",
+        em_preparacao: "Em preparação",
+        preparado: "Preparado",
+        enviado: "Enviado",
+        entregue: "Entregue",
+        cancelado: "Cancelado",
+        estornado: "Estornado",
+        pendente: "Pendente",
+        andamento: "Em andamento"
+    };
+
+    if (!valor) {
+        return "-";
+    }
+
+    return status[String(valor).trim()] ||
+        valor;
+}
+
+
+function formatarClienteTabela(valor) {
+    if (!valor) {
+        return "-";
+    }
+
+    const valorTexto =
+        String(valor).trim();
+
+    const clientes = {
+        admin: "Administrador",
+        Admin: "Administrador",
+        cliente: "Cliente",
+        Cliente: "Cliente"
+    };
+
+    return clientes[valorTexto] ||
+        valorTexto;
+}

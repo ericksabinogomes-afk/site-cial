@@ -6133,6 +6133,15 @@ app.get(
                 .from("pedidos")
                 .select(`
                     *,
+
+                    usuario:usuarios (
+                        id,
+                        nome,
+                        email,
+                        telefone,
+                        cpf
+                    ),
+
                     pedido_itens (
                         id,
                         produto_nome,
@@ -6284,7 +6293,8 @@ app.patch(
             const { data, error } = await supabase
                 .from("pedidos")
                 .update({
-                    status: status
+                    status: status,
+                    updated_at: new Date().toISOString()
                 })
                 .eq("id", pedidoId)
                 .select()

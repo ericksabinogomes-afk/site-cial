@@ -42,9 +42,13 @@ function aplicarConfiguracoesSite() {
     CARREGAR CONFIGURAÇÕES
 ==========================================================*/
 
+
+// URL central da API
+const API_BASE_URL = window.CIAL_API_URL || "http://localhost:4000";
+
 async function carregarConfiguracoesSite() {
     try {
-       const resposta = await fetch("/configuracoes");
+     const resposta = await fetch(`${API_BASE_URL}/configuracoes`);
 
         if (!resposta.ok) {
             throw new Error("Não foi possível carregar as configurações.");

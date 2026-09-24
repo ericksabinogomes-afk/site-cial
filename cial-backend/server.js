@@ -200,6 +200,116 @@ app.put("/meus-dados/:id", autenticarToken, async (req, res) => {
 });
 
 /*==========================================================
+    ALTERAR SENHA DO CLIENTE
+==========================================================*/
+
+app.put("/minha-senha", autenticarToken, async (req, res) => {
+  try {
+    const usuarioId = Number(req.usuario.id);
+    const { senhaAtual, novaSenha } = req.body;
+
+    if (!usuarioId) {
+      return res.status(400).json({
+        ok: false,
+        erro: "Usuário inválido"
+      });
+    }
+
+    if (!senhaAtual || !novaSenha) {
+      return res.status(400).json({
+        ok: false,
+        erro: "Informe a senha atual e a nova senha"
+      });
+    }
+
+    if (novaSenha.length < 6) {
+      return res.status(400).json({
+        ok: false,
+        erro: "A nova senha deve ter pelo menos 6 caracteres"
+      });
+    }
+
+    if (senhaAtual === novaSenha) {
+      return res.status(400).json({
+        ok: false,
+        erro: "A nova senha deve ser diferente da senha atual"
+      });
+    }
+
+    const { data: usuario, error: buscaError } = await supabase
+      .from("usuarios")
+     .select("id, senha")
+      .eq("id", usuarioId)
+      .single();
+
+    if (buscaError || !usuario) {
+      return res.status(404).json({
+        ok: false,
+        erro: "Usuário não encontrado"
+      });
+    }
+
+  const senhaHashAtual = usuario.senha;
+
+    if (!senhaHashAtual) {
+      return res.status(400).json({
+        ok: false,
+        erro: "Senha atual não encontrada"
+      });
+    }
+
+    const senhaAtualCorreta = await bcrypt.compare(
+      senhaAtual,
+      senhaHashAtual
+    );
+
+    if (!senhaAtualCorreta) {
+      return res.status(401).json({
+        ok: false,
+        erro: "A senha atual está incorreta"
+      });
+    }
+
+    const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
+
+    const { error: updateError } = await supabase
+      .from("usuarios")
+      .update({
+        senha: novaSenhaHash
+      })
+      .eq("id", usuarioId);
+
+    if (updateError) {
+      console.error(
+        "Erro ao atualizar senha:",
+        updateError
+      );
+
+      return res.status(500).json({
+        ok: false,
+        erro: "Não foi possível atualizar a senha"
+      });
+    }
+
+    return res.json({
+      ok: true,
+      mensagem: "Senha alterada com sucesso"
+    });
+
+  } catch (erro) {
+    console.error(
+      "Erro inesperado ao alterar senha:",
+      erro
+    );
+
+    return res.status(500).json({
+      ok: false,
+      erro: "Erro interno ao alterar senha"
+    });
+  }
+});
+
+/*==========================================================
     UPLOAD DE IMAGENS (LOCAL)
 ==========================================================*/
 
@@ -2444,47 +2554,67 @@ app.post("/favoritos", autenticarToken, async (req, res) => {
             .select("id, nome, imagem, preco")
             .eq("id", produtoId)
             .single();
+            
 
-        if (produtoError || !produto) {
-            return res.status(404).json({
-                ok: false,
-                erro: "Produto não encontrado"
-            });
-        }
+        // Verificar se o produto já está nos favoritos
+const { data: favoritoExistente, error: favoritoError } =
+    await supabase
+        .from("favoritos")
+        .select("id")
+        .eq("usuario_id", req.usuario.id)
+        .eq("produto_id", produto.id)
+        .maybeSingle();
 
-        // TESTE
-        console.log("========== TESTE FAVORITO ==========");
-        console.log("BODY RECEBIDO:", req.body);
-        console.log("PRODUTO ENCONTRADO:", produto);
-        console.log("====================================");
+if (favoritoError) {
+    console.error(
+        "Erro ao verificar favorito existente:",
+        favoritoError
+    );
 
-        // Salvar favorito
-        const { data, error } = await supabase
-            .from("favoritos")
-            .insert([{
-                usuario_id: req.usuario.id,
-                produto_id: produto.id,
-                produto_nome: produto.nome,
-                produto_imagem: produto.imagem || null,
-                produto_preco: Number(produto.preco) || 0
-            }])
-            .select();
+    return res.status(500).json({
+        ok: false,
+        erro: "Não foi possível verificar o favorito"
+    });
+}
 
-        if (error) {
-            console.error("Erro ao adicionar favorito:", error);
+// Produto já favoritado
+if (favoritoExistente) {
+    return res.status(409).json({
+        ok: false,
+        erro: "Este produto já está nos seus favoritos",
+        jaFavoritado: true
+    });
+}
 
-            return res.status(500).json({
-                ok: false,
-                erro: error.message
-        
-              });
-        }
+// Salvar favorito
+const { data, error } = await supabase
+    .from("favoritos")
+    .insert([{
+        usuario_id: req.usuario.id,
+        produto_id: produto.id,
+        produto_nome: produto.nome,
+        produto_imagem: produto.imagem || null,
+        produto_preco: Number(produto.preco) || 0
+    }])
+    .select();
 
-        return res.status(201).json({
-            ok: true,
-            data
-        });
+if (error) {
+    console.error(
+        "Erro ao adicionar favorito:",
+        error
+    );
 
+    return res.status(500).json({
+        ok: false,
+        erro: error.message
+    });
+}
+
+return res.status(201).json({
+    ok: true,
+    data
+});
+     
     } catch (err) {
 
         console.error("Erro inesperado ao adicionar favorito:", err);

@@ -200,6 +200,16 @@ async function carregarPedidos() {
 
   const token = localStorage.getItem("tokenCial");
 
+  if (!token) {
+  lista.innerHTML = `
+    <tr>
+      <td colspan="5">Faça login para visualizar seus pedidos.</td>
+    </tr>
+  `;
+
+  return;
+}
+
   try {
     const response = await fetch("http://localhost:4000/pedidos", {
       headers: {
@@ -227,11 +237,17 @@ async function carregarPedidos() {
     }
 
     pedidos.forEach((pedido) => {
-      const data = pedido.data_pedido || pedido.created_at;
+    const data = pedido.data_pedido || pedido.created_at;
 
-      const dataFormatada = data
-        ? new Date(`${data}T00:00:00`).toLocaleDateString("pt-BR")
-        : "-";
+let dataFormatada = "-";
+
+if (data) {
+  const dataObj = new Date(data);
+
+  if (!Number.isNaN(dataObj.getTime())) {
+    dataFormatada = dataObj.toLocaleDateString("pt-BR");
+  }
+}
 
       const valorFormatado = Number(pedido.valor || 0).toLocaleString(
         "pt-BR",
@@ -243,13 +259,26 @@ async function carregarPedidos() {
 
       const tr = document.createElement("tr");
 
-      tr.innerHTML = `
+const statusPedido = String(
+  pedido.status || "Em andamento"
+).trim();
+
+const statusClasse = statusPedido
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .replace(/\s+/g, "-");
+
+tr.innerHTML = `
+     
         <td>#${pedido.numero || pedido.id}</td>
         <td>${dataFormatada}</td>
         <td>
-          <span class="status andamento">
-            ${pedido.status || "Em andamento"}
-          </span>
+
+         <span class="status ${statusClasse}">
+         ${statusPedido}
+        </span>
+
         </td>
         <td>${valorFormatado}</td>
         <td>
@@ -1525,15 +1554,109 @@ function iniciarSeguranca() {
 
     if (!btnAlterarSenha) return;
 
-    btnAlterarSenha.addEventListener("click", (event) => {
+    btnAlterarSenha.addEventListener("click", async (event) => {
 
         event.preventDefault();
 
-        alert("Senha alterada com sucesso!");
+        const senhaAtual = document.getElementById("senhaAtual")?.value.trim();
+        const novaSenha = document.getElementById("novaSenha")?.value.trim();
+        const confirmarSenha = document.getElementById("confirmarSenha")?.value.trim();
+
+        if (!senhaAtual || !novaSenha || !confirmarSenha) {
+            alert("Preencha todos os campos de senha.");
+            return;
+        }
+
+        if (novaSenha.length < 6) {
+            alert("A nova senha deve ter pelo menos 6 caracteres.");
+            return;
+        }
+
+        if (novaSenha !== confirmarSenha) {
+            alert("A confirmação da nova senha não confere.");
+            return;
+        }
+
+        if (senhaAtual === novaSenha) {
+            alert("A nova senha deve ser diferente da senha atual.");
+            return;
+        }
+
+        const token = localStorage.getItem("tokenCial");
+
+        if (!token) {
+            alert("Sua sessão expirou. Faça login novamente.");
+            window.location.href = "login.html";
+            return;
+        }
+
+        btnAlterarSenha.disabled = true;
+        btnAlterarSenha.textContent = "Alterando...";
+
+        try {
+
+            const response = await fetch(
+                "http://localhost:4000/minha-senha",
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        senhaAtual,
+                        novaSenha
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok || !result.ok) {
+                alert(
+                    result.erro ||
+                    "Não foi possível alterar a senha."
+                );
+                return;
+            }
+
+            alert("Senha alterada com sucesso!");
+
+            const campoSenhaAtual =
+                document.getElementById("senhaAtual");
+
+            const campoNovaSenha =
+                document.getElementById("novaSenha");
+
+            const campoConfirmarSenha =
+                document.getElementById("confirmarSenha");
+
+            if (campoSenhaAtual) campoSenhaAtual.value = "";
+            if (campoNovaSenha) campoNovaSenha.value = "";
+            if (campoConfirmarSenha) campoConfirmarSenha.value = "";
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao alterar senha:",
+                error
+            );
+
+            alert(
+                "Erro de conexão ao alterar a senha."
+            );
+
+        } finally {
+
+            btnAlterarSenha.disabled = false;
+            btnAlterarSenha.textContent = "Alterar senha";
+
+        }
 
     });
 
 }
+
 /* =====================================================
    INICIALIZAÇÃO
 ===================================================== */

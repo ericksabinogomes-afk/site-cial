@@ -259,16 +259,14 @@ if (data) {
 
       const tr = document.createElement("tr");
 
-const statusPedido = String(
-  pedido.status || "Em andamento"
-).trim();
+      const statusClasse = String(orcamento.status || "analise")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-");
 
-const statusClasse = statusPedido
-  .toLowerCase()
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g, "")
-  .replace(/\s+/g, "-");
 
+    
 tr.innerHTML = `
      
         <td>#${pedido.numero || pedido.id}</td>

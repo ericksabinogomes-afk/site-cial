@@ -257,9 +257,13 @@ if (data) {
         }
       );
 
-      const tr = document.createElement("tr");
+const tr = document.createElement("tr");
 
-      const statusClasse = String(orcamento.status || "analise")
+const statusPedido = String(
+    pedido.status || "Em andamento"
+).trim();
+
+const statusClasse = statusPedido
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -290,28 +294,144 @@ tr.innerHTML = `
         </td>
       `;
 
+
       tr.querySelector(".btn-detalhes").addEventListener("click", () => {
-        const itens = pedido.pedido_itens || [];
 
-        if (itens.length === 0) {
-          alert("Este pedido ainda não possui itens cadastrados.");
-          return;
-        }
+  const modal = document.getElementById("modalDetalhesPedido");
 
-        const textoItens = itens
-          .map((item) => {
-            return `${item.quantidade}x ${item.produto_nome} — ${Number(
-              item.preco_unitario
-            ).toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL"
-            })}`;
-          })
-          .join("\n");
+  if (!modal) {
+    console.error("Modal de detalhes do pedido não encontrado.");
+    return;
+  }
 
-        alert(`Pedido #${pedido.numero || pedido.id}\n\n${textoItens}`);
+  const numero =
+    pedido.numero ||
+    pedido.id ||
+    "—";
+
+  const dataPedido = pedido.created_at
+    ? new Date(pedido.created_at).toLocaleDateString("pt-BR")
+    : "—";
+
+  const status =
+    pedido.status ||
+    "Em andamento";
+
+  const valorTotal =
+    Number(
+        pedido.valor ??
+        pedido.total ??
+        pedido.valor_total ??
+        0
+    );
+    
+  const numeroEl =
+    document.getElementById("modalPedidoNumero");
+
+  const dataEl =
+    document.getElementById("modalPedidoData");
+
+  const statusEl =
+    document.getElementById("modalPedidoStatus");
+
+  const valorEl =
+    document.getElementById("modalPedidoValor");
+
+  const totalEl =
+    document.getElementById("modalPedidoTotal");
+
+  const listaItens =
+    document.getElementById("modalPedidoListaItens");
+
+  if (numeroEl) {
+    numeroEl.textContent =
+      `Pedido #${numero}`;
+  }
+
+  if (dataEl) {
+    dataEl.textContent =
+      dataPedido;
+  }
+
+  if (statusEl) {
+    statusEl.textContent =
+      status;
+  }
+
+  if (valorEl) {
+    valorEl.textContent =
+      valorTotal.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
       });
+  }
 
+  if (totalEl) {
+    totalEl.textContent =
+      valorTotal.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+  }
+
+  const itens =
+    pedido.pedido_itens || [];
+
+  if (listaItens) {
+
+    if (itens.length === 0) {
+
+      listaItens.innerHTML = `
+        <p class="modal-pedido__item-qtd">
+          Este pedido ainda não possui itens cadastrados.
+        </p>
+      `;
+
+    } else {
+
+      listaItens.innerHTML =
+        itens.map((item) => {
+
+          const quantidade =
+            Number(item.quantidade || 0);
+
+          const preco =
+            Number(item.preco_unitario || 0);
+
+          const subtotal =
+            quantidade * preco;
+
+          return `
+            <div class="modal-pedido__item">
+
+              <div>
+                <div class="modal-pedido__item-nome">
+                  ${item.produto_nome || "Produto"}
+                </div>
+
+                <div class="modal-pedido__item-qtd">
+                  Quantidade: ${quantidade}
+                </div>
+              </div>
+
+              <div class="modal-pedido__item-valor">
+                ${subtotal.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL"
+                })}
+              </div>
+
+            </div>
+          `;
+
+        }).join("");
+    }
+  }
+
+  modal.hidden = false;
+
+});
+    
       lista.appendChild(tr);
     });
   } catch (erro) {
@@ -323,6 +443,53 @@ tr.innerHTML = `
       </tr>
     `;
   }
+}
+
+/* =====================================================
+   FECHAR MODAL — DETALHES DO PEDIDO
+===================================================== */
+
+const modalDetalhesPedido =
+  document.getElementById("modalDetalhesPedido");
+
+const fecharModalPedido =
+  document.getElementById("fecharModalPedido");
+
+const btnFecharDetalhesPedido =
+  document.getElementById("btnFecharDetalhesPedido");
+
+
+function fecharModalDetalhesPedido() {
+
+  if (!modalDetalhesPedido) {
+    return;
+  }
+
+  modalDetalhesPedido.hidden = true;
+}
+
+
+/* BOTÃO X */
+
+if (fecharModalPedido) {
+
+  fecharModalPedido.addEventListener(
+    "click",
+    fecharModalDetalhesPedido
+  );
+
+}
+
+
+/* BOTÃO FECHAR */
+
+if (btnFecharDetalhesPedido) {
+
+  btnFecharDetalhesPedido.addEventListener(
+    "click",
+    fecharModalDetalhesPedido
+  );
+
 }
 
 /* =====================================================

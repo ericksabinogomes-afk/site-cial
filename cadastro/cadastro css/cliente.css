@@ -148,25 +148,34 @@ body {
 }
 
 /* =====================================================
-   SIDEBAR
+   SIDEBAR FIXA
 ===================================================== */
 
 .sidebar {
 
     width: 280px;
 
+    height: calc(100vh - 80px);
+
+    position: sticky;
+    top: 80px;
+
+    flex-shrink: 0;
+    align-self: flex-start;
+
     background: #2b2b2b;
 
     color: white;
 
     display: flex;
-
     flex-direction: column;
-
     justify-content: space-between;
 
     padding: 30px 20px;
 
+    overflow-y: auto;
+
+    z-index: 900;
 }
 
 /* =====================================================
@@ -1391,6 +1400,483 @@ td{
 
     .orcamento-cliente-item > strong{
         align-self:flex-end;
+    }
+
+}
+/* ==================================================
+   MODAL — DETALHES DO PEDIDO
+================================================== */
+
+.modal-pedido[hidden] {
+    display: none !important;
+}
+
+.modal-pedido {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 20px;
+
+    background: rgba(0, 0, 0, 0.78);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    box-sizing: border-box;
+}
+
+
+/* ==================================================
+   CAIXA PRINCIPAL
+================================================== */
+
+.modal-pedido__conteudo {
+    position: relative;
+
+    width: min(520px, 100%);
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    padding: 30px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E5E5E5;
+    border-radius: 20px;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.35);
+
+    box-sizing: border-box;
+
+    animation: aparecerModalPedido .25s ease;
+}
+
+
+/* ==================================================
+   ANIMAÇÃO
+================================================== */
+
+@keyframes aparecerModalPedido {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+
+/* ==================================================
+   BOTÃO X
+================================================== */
+
+.modal-pedido__fechar {
+    position: absolute;
+
+    top: 14px;
+    right: 14px;
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #FFF3E8;
+
+    color: #222222;
+
+    font-family: Arial, sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+.modal-pedido__fechar:hover {
+    background: #F58220;
+
+    color: #FFFFFF;
+
+    transform: rotate(90deg);
+}
+
+
+/* ==================================================
+   CABEÇALHO
+================================================== */
+
+.modal-pedido__cabecalho {
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding-right: 55px;
+
+    margin-bottom: 25px;
+}
+
+.modal-pedido__icone {
+    width: 56px;
+    height: 56px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #FFF3E8;
+
+    font-size: 27px;
+}
+
+.modal-pedido__cabecalho h2 {
+    margin: 0;
+
+    color: #171717;
+
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.modal-pedido__cabecalho p {
+    margin: 5px 0 0;
+
+    color: #777777;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/* ==================================================
+   RESUMO DO PEDIDO
+================================================== */
+
+.modal-pedido__resumo {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 10px;
+
+    margin-bottom: 23px;
+}
+
+.modal-pedido__info {
+    min-width: 0;
+
+    padding: 14px;
+
+    background: #FAFAFA;
+
+    border: 1px solid #E6E6E6;
+    border-radius: 11px;
+
+    box-sizing: border-box;
+}
+
+.modal-pedido__info span {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #777777;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+}
+
+.modal-pedido__info strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: #202020;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* ==================================================
+   ITENS DO PEDIDO
+================================================== */
+
+.modal-pedido__itens {
+    padding: 20px;
+
+    background: #FAFAFA;
+
+    border: 1px solid #E6E6E6;
+    border-radius: 14px;
+
+    box-sizing: border-box;
+}
+
+.modal-pedido__itens h3 {
+    margin: 0 0 14px;
+
+    color: #202020;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+
+/* ==================================================
+   CADA ITEM
+================================================== */
+
+.modal-pedido__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 13px 0;
+
+    border-bottom: 1px solid #E5E5E5;
+}
+
+.modal-pedido__item:last-child {
+    border-bottom: none;
+
+    padding-bottom: 0;
+}
+
+.modal-pedido__item:first-child {
+    padding-top: 5px;
+}
+
+.modal-pedido__item-nome {
+    color: #252525;
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.modal-pedido__item-qtd {
+    margin-top: 4px;
+
+    color: #777777;
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.modal-pedido__item-valor {
+    flex-shrink: 0;
+
+    color: #F58220;
+
+    font-size: 13px;
+    font-weight: 900;
+
+    white-space: nowrap;
+}
+
+
+/* ==================================================
+   TOTAL
+================================================== */
+
+.modal-pedido__rodape {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-top: 18px;
+    padding: 17px 19px;
+
+    background: #181818;
+
+    border-radius: 12px;
+
+    box-sizing: border-box;
+}
+
+.modal-pedido__rodape strong:first-child {
+    color: #FFFFFF;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.modal-pedido__rodape strong:last-child {
+    color: #F58220;
+
+    font-size: 19px;
+    font-weight: 900;
+
+    white-space: nowrap;
+}
+
+
+/* ==================================================
+   BOTÃO FECHAR INFERIOR
+================================================== */
+
+.modal-pedido__btn {
+    width: 100%;
+
+    min-height: 47px;
+
+    margin-top: 15px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #F58220;
+
+    color: #FFFFFF;
+
+    font-family: "Montserrat", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.modal-pedido__btn:hover {
+    background: #D9680D;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(245, 130, 32, 0.25);
+}
+
+
+/* ==================================================
+   BARRA DE ROLAGEM DO MODAL
+================================================== */
+
+.modal-pedido__conteudo::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-pedido__conteudo::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modal-pedido__conteudo::-webkit-scrollbar-thumb {
+    background: #D0D0D0;
+
+    border-radius: 10px;
+}
+
+
+/* ==================================================
+   RESPONSIVO
+================================================== */
+
+@media (max-width: 600px) {
+
+    .modal-pedido {
+        padding: 12px;
+    }
+
+    .modal-pedido__conteudo {
+        width: 100%;
+        max-height: 94vh;
+
+        padding: 22px 17px;
+
+        border-radius: 16px;
+    }
+
+    .modal-pedido__cabecalho {
+        padding-right: 48px;
+    }
+
+    .modal-pedido__cabecalho h2 {
+        font-size: 18px;
+    }
+
+    .modal-pedido__resumo {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-pedido__item {
+        align-items: flex-start;
+    }
+
+    .modal-pedido__item-valor {
+        align-self: center;
+    }
+
+}
+
+@media (max-width: 400px) {
+
+    .modal-pedido__conteudo {
+        padding: 20px 14px;
+    }
+
+    .modal-pedido__cabecalho {
+        gap: 10px;
+    }
+
+    .modal-pedido__icone {
+        width: 48px;
+        height: 48px;
+
+        font-size: 23px;
+    }
+
+    .modal-pedido__rodape {
+        padding: 15px;
+    }
+
+    .modal-pedido__rodape strong:last-child {
+        font-size: 17px;
     }
 
 }

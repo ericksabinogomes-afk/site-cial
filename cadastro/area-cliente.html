@@ -514,9 +514,106 @@
     </form>
 
 </section>
-        </main>
 
-    </section>
+       </main>
+
+<!-- ==================================================
+     MODAL — DETALHES DO PEDIDO
+================================================== -->
+
+<div
+    id="modalDetalhesPedido"
+    class="modal-pedido"
+    hidden
+>
+
+    <div
+        class="modal-pedido__conteudo"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalPedidoTitulo"
+    >
+
+        <button
+            type="button"
+            id="fecharModalPedido"
+            class="modal-pedido__fechar"
+            aria-label="Fechar detalhes do pedido"
+        >
+            ×
+        </button>
+
+        <div class="modal-pedido__cabecalho">
+
+            <div class="modal-pedido__icone">
+                📦
+            </div>
+
+            <div>
+                <h2 id="modalPedidoTitulo">
+                    Detalhes do pedido
+                </h2>
+
+                <p id="modalPedidoNumero">
+                    Pedido #—
+                </p>
+            </div>
+
+        </div>
+
+        <div class="modal-pedido__resumo">
+
+            <div class="modal-pedido__info">
+                <span>Data</span>
+                <strong id="modalPedidoData">—</strong>
+            </div>
+
+            <div class="modal-pedido__info">
+                <span>Status</span>
+                <strong id="modalPedidoStatus">—</strong>
+            </div>
+
+            <div class="modal-pedido__info">
+                <span>Total</span>
+                <strong id="modalPedidoValor">
+                    R$ 0,00
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="modal-pedido__itens">
+
+            <h3>Itens do pedido</h3>
+
+            <div id="modalPedidoListaItens">
+            </div>
+
+        </div>
+
+        <div class="modal-pedido__rodape">
+
+            <strong>Total do pedido</strong>
+
+            <strong id="modalPedidoTotal">
+                R$ 0,00
+            </strong>
+
+        </div>
+
+        <button
+            type="button"
+            id="btnFecharDetalhesPedido"
+            class="modal-pedido__btn"
+        >
+            Fechar
+        </button>
+
+    </div>
+
+</div>
+
+</section>
 
     <!-- ================= FOOTER ================= -->
 

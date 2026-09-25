@@ -1600,15 +1600,56 @@ cartProducts?.addEventListener(
 );
 
 // ==================================================
-// ABRIR MODAL DE ESCOLHA DE PAGAMENTO
+// MODAL DE ENDEREÇO DE ENTREGA
 // ==================================================
 
+const modalEndereco =
+    document.getElementById("modalEndereco");
 
+const fecharModalEndereco =
+    document.getElementById("fecharModalEndereco");
+
+const confirmarEndereco =
+    document.getElementById("confirmarEndereco");
+
+const enderecoCep =
+    document.getElementById("enderecoCep");
+
+const enderecoRua =
+    document.getElementById("enderecoRua");
+
+const enderecoNumero =
+    document.getElementById("enderecoNumero");
+
+const enderecoBairro =
+    document.getElementById("enderecoBairro");
+
+const enderecoCidade =
+    document.getElementById("enderecoCidade");
+
+const enderecoEstado =
+    document.getElementById("enderecoEstado");
+
+const statusEndereco =
+    document.getElementById("statusEndereco");
+
+let enderecoAtualId = null;
+
+
+// ==================================================
+// ABRIR MODAL DE ENDEREÇO
+// ==================================================
 
 btnFinish?.addEventListener(
     "click",
     async event => {
+
         event.preventDefault();
+
+        if (carrinho.length === 0) {
+            alert("Seu carrinho está vazio.");
+            return;
+        }
 
         const token = obterToken();
 
@@ -1617,49 +1658,254 @@ btnFinish?.addEventListener(
             return;
         }
 
-        // Cria o pedido UMA VEZ.
-        const respostaPedido = await fetch(
-            `${API_CARRINHO}/pedidos/criar-do-carrinho`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    observacoes:
-                        observation?.value?.trim() || ""
-                })
-            }
-        );
-
-        const resultadoPedido =
-            await lerResposta(respostaPedido);
-
-        const pedido =
-            resultadoPedido.pedido;
-
-        if (!pedido?.id) {
-            throw new Error(
-                "O pedido foi criado, mas o ID não foi retornado."
+        if (!modalEndereco) {
+            console.error(
+                "Modal de endereço não encontrado."
             );
+
+            alert(
+                "Não foi possível abrir o endereço de entrega."
+            );
+
+            return;
         }
 
-        pedidoAtualId =
-            Number(pedido.id);
+        try {
 
-        localStorage.setItem(
-            "pedidoAtualId",
-            String(pedidoAtualId)
-        );
+            if (statusEndereco) {
+                statusEndereco.textContent =
+                    "Carregando endereço...";
+            }
 
-        console.log(
-            "Pedido criado para pagamento:",
-            pedidoAtualId
-        );
+            if (confirmarEndereco) {
+                confirmarEndereco.disabled = true;
+            }
 
-        // Só AGORA abre a escolha de Pix ou cartão.
-        modalPagamento.hidden = false;
+            const respostaEndereco =
+                await fetch(
+                    `${API_CARRINHO}/meu-endereco`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+            const resultadoEndereco =
+                await lerResposta(
+                    respostaEndereco
+                );
+
+            const endereco =
+                resultadoEndereco.data;
+
+            if (!endereco?.id) {
+                throw new Error(
+                    "Nenhum endereço válido foi encontrado."
+                );
+            }
+
+            enderecoAtualId =
+                Number(endereco.id);
+
+            if (enderecoCep) {
+                enderecoCep.textContent =
+                    endereco.cep || "—";
+            }
+
+            if (enderecoRua) {
+                enderecoRua.textContent =
+                    endereco.rua || "—";
+            }
+
+            if (enderecoNumero) {
+                enderecoNumero.textContent =
+                    endereco.numero_endereco || "—";
+            }
+
+            if (enderecoBairro) {
+                enderecoBairro.textContent =
+                    endereco.bairro || "—";
+            }
+
+            if (enderecoCidade) {
+                enderecoCidade.textContent =
+                    endereco.cidade || "—";
+            }
+
+            if (enderecoEstado) {
+                enderecoEstado.textContent =
+                    endereco.estado || "—";
+            }
+
+            if (statusEndereco) {
+                statusEndereco.textContent = "";
+            }
+
+            modalEndereco.hidden = false;
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao carregar endereço:",
+                erro
+            );
+
+            if (statusEndereco) {
+                statusEndereco.textContent =
+                    erro.message;
+            }
+
+            alert(
+                `Não foi possível carregar seu endereço:\n${erro.message}`
+            );
+
+        } finally {
+
+            if (confirmarEndereco) {
+                confirmarEndereco.disabled = false;
+            }
+        }
+    }
+);
+
+
+// ==================================================
+// FECHAR MODAL DE ENDEREÇO
+// ==================================================
+
+fecharModalEndereco?.addEventListener(
+    "click",
+    () => {
+
+        if (modalEndereco) {
+            modalEndereco.hidden = true;
+        }
+
+    }
+);
+
+
+// ==================================================
+// CONFIRMAR ENDEREÇO E CRIAR PEDIDO
+// ==================================================
+
+confirmarEndereco?.addEventListener(
+    "click",
+    async event => {
+
+        event.preventDefault();
+
+        if (!enderecoAtualId) {
+
+            if (statusEndereco) {
+                statusEndereco.textContent =
+                    "Endereço inválido.";
+            }
+
+            return;
+        }
+
+        const token = obterToken();
+
+        if (!token) {
+            redirecionarParaLogin();
+            return;
+        }
+
+        try {
+
+            confirmarEndereco.disabled = true;
+
+            if (statusEndereco) {
+                statusEndereco.textContent =
+                    "Criando seu pedido...";
+            }
+
+            const respostaPedido =
+                await fetch(
+                    `${API_CARRINHO}/pedidos/criar-do-carrinho`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+
+                            Authorization:
+                                `Bearer ${token}`
+                        },
+
+                        body: JSON.stringify({
+
+                            endereco_id:
+                                enderecoAtualId,
+
+                            observacoes:
+                                observation?.value?.trim() || ""
+                        })
+                    }
+                );
+
+            const resultadoPedido =
+                await lerResposta(
+                    respostaPedido
+                );
+
+            const pedido =
+                resultadoPedido.pedido;
+
+            if (!pedido?.id) {
+                throw new Error(
+                    "O pedido foi criado, mas o ID não foi retornado."
+                );
+            }
+
+            pedidoAtualId =
+                Number(pedido.id);
+
+            localStorage.setItem(
+                "pedidoAtualId",
+                String(pedidoAtualId)
+            );
+
+            console.log(
+                "Pedido criado para pagamento:",
+                pedidoAtualId
+            );
+
+            // Fecha endereço
+            if (modalEndereco) {
+                modalEndereco.hidden = true;
+            }
+
+            // Abre pagamento
+            if (modalPagamento) {
+                modalPagamento.hidden = false;
+            }
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao criar pedido:",
+                erro
+            );
+
+            if (statusEndereco) {
+                statusEndereco.textContent =
+                    erro.message;
+            }
+
+            alert(
+                `Não foi possível criar o pedido:\n${erro.message}`
+            );
+
+        } finally {
+
+            confirmarEndereco.disabled = false;
+        }
     }
 );
 

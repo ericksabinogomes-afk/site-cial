@@ -208,6 +208,92 @@
 
     </main>
 
+    <!-- ==================================================
+     MODAL DE ENDEREÇO DE ENTREGA
+================================================== -->
+
+<div id="modalEndereco" class="modal-endereco" hidden>
+
+    <div class="modal-endereco__conteudo">
+
+        <!-- FECHAR -->
+        <button
+            id="fecharModalEndereco"
+            class="modal-endereco__fechar"
+            type="button"
+            aria-label="Fechar endereço"
+        >
+            ×
+        </button>
+
+        <!-- ÍCONE -->
+        <div class="modal-endereco__icone">
+            <i class="fa-solid fa-location-dot"></i>
+        </div>
+
+        <h2>Endereço de entrega</h2>
+
+        <p class="modal-endereco__descricao">
+            Confira o endereço onde seu pedido será entregue.
+        </p>
+
+        <!-- ENDEREÇO -->
+        <div
+            id="enderecoEntrega"
+            class="modal-endereco__dados"
+        >
+            <p>
+                <strong>CEP:</strong>
+                <span id="enderecoCep">—</span>
+            </p>
+
+            <p>
+                <strong>Endereço:</strong>
+                <span id="enderecoRua">—</span>
+            </p>
+
+            <p>
+                <strong>Número:</strong>
+                <span id="enderecoNumero">—</span>
+            </p>
+
+            <p>
+                <strong>Bairro:</strong>
+                <span id="enderecoBairro">—</span>
+            </p>
+
+            <p>
+                <strong>Cidade:</strong>
+                <span id="enderecoCidade">—</span>
+            </p>
+
+            <p>
+                <strong>Estado:</strong>
+                <span id="enderecoEstado">—</span>
+            </p>
+        </div>
+
+        <!-- STATUS -->
+        <p
+            id="statusEndereco"
+            class="modal-endereco__status"
+            aria-live="polite"
+        ></p>
+
+        <!-- CONFIRMAR -->
+        <button
+            id="confirmarEndereco"
+            class="btn-confirmar-endereco"
+            type="button"
+        >
+            <i class="fa-solid fa-check"></i>
+            Confirmar endereço
+        </button>
+
+    </div>
+
+</div>
+
     <div id="modalPix" class="modal-pix" hidden>
         <div class="modal-pix__conteudo">
             <button

@@ -2744,7 +2744,85 @@ res.json({
   }
 });
 
+/*==========================================================
+    MEU ENDEREÇO
+==========================================================*/
 
+app.get(
+    "/meu-endereco",
+    autenticarToken,
+    async (req, res) => {
+        try {
+            const usuarioId = Number(req.usuario.id);
+
+            if (
+                !Number.isInteger(usuarioId) ||
+                usuarioId <= 0
+            ) {
+                return res.status(401).json({
+                    ok: false,
+                    erro: "Usuário inválido"
+                });
+            }
+
+            const {
+                data: endereco,
+                error
+            } = await supabase
+                .from("Enderecos")
+                .select(`
+                    id,
+                    cep,
+                    rua,
+                    bairro,
+                    cidade,
+                    estado,
+                    numero_endereco
+                `)
+                .eq("usuario_id", usuarioId)
+                .order("id", {
+                    ascending: false
+                })
+                .limit(1)
+                .maybeSingle();
+
+            if (error) {
+                console.error(
+                    "Erro ao buscar endereço:",
+                    error
+                );
+
+                return res.status(500).json({
+                    ok: false,
+                    erro: error.message
+                });
+            }
+
+            if (!endereco) {
+                return res.status(404).json({
+                    ok: false,
+                    erro: "Nenhum endereço cadastrado."
+                });
+            }
+
+            return res.json({
+                ok: true,
+                data: endereco
+            });
+
+        } catch (err) {
+            console.error(
+                "Erro inesperado ao buscar endereço:",
+                err
+            );
+
+            return res.status(500).json({
+                ok: false,
+                erro: "Erro interno ao buscar endereço"
+            });
+        }
+    }
+);
 
 /*==========================================================
   PEDIDOS DO CLIENTE
@@ -3977,6 +4055,43 @@ app.post(
     try {
       const usuarioId = req.usuario.id;
 
+            const enderecoId = Number(req.body.endereco_id);
+
+      if (
+        !Number.isInteger(enderecoId) ||
+        enderecoId <= 0
+      ) {
+        return res.status(400).json({
+          ok: false,
+          erro: 'Endereço de entrega inválido.'
+        });
+      }
+
+      const {
+        data: endereco,
+        error: erroEndereco
+      } = await supabase
+        .from('Enderecos')
+        .select(`
+          id,
+          cep,
+          rua,
+          bairro,
+          cidade,
+          estado,
+          numero_endereco
+        `)
+        .eq('id', enderecoId)
+        .eq('usuario_id', usuarioId)
+        .single();
+
+      if (erroEndereco || !endereco) {
+        return res.status(404).json({
+          ok: false,
+          erro: 'Endereço de entrega não encontrado.'
+        });
+      }
+
       const {
         data: itensCarrinho,
         error: erroCarrinho
@@ -4058,6 +4173,7 @@ app.post(
           .from('pedidos')
           .insert({
             usuario_id: usuarioId,
+            endereco_id: enderecoId,
             numero: numeroPedido,
             status: 'aguardando_pagamento',
             valor: valorTotal,
